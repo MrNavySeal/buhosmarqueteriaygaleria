@@ -1,0 +1,52 @@
+@import "mixin";
+
+.service{
+    height: 400px;
+    width: 100%;
+    position: relative;
+    img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.5);
+    }
+    h1{
+        font-size: 2.5rem;
+        position: absolute;
+        color:$color4;
+        padding: 0 2rem;
+        width: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        text-align: center;
+    }
+}
+.service--description{
+    margin: 3rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:$color3;
+    flex-wrap: wrap;
+}
+.service--item{
+    width: 100%;
+    margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img{
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+}
+.services--content{
+    list-style: none;
+}
+.service-img{
+    max-height: 350px;
+    width: 100%;
+    object-fit: cover;
+}

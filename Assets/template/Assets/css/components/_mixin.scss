@@ -1,0 +1,13 @@
+$color1:#E05A10;
+$color2:#03071E;
+$color3:#6D6A75;
+$color4:#fff;
+$color5: #BFBDC1;
+
+@mixin textColor($bg:$color4){
+    color:$bg;
+}
+@mixin bgColor($bg:$color4,$color:#03071E){
+    background-color: $bg;
+    color:$color;
+}

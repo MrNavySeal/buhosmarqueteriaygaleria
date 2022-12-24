@@ -1,0 +1,62 @@
+@import "mixin";
+
+#filter{
+    display: none;
+}
+.filter-options-overlay{
+    display: none;
+    position: fixed;
+    z-index: 9997;
+    left:0;
+    top:0;
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.151);
+}
+.pagination{
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pagination-btn{
+    margin: 0 5px;
+    cursor: pointer;
+    padding: 5px 15px;
+    border: 1px solid $color1;
+    border-radius: 50%;
+    color: #000;
+    &:hover{
+        background-color: $color1;
+        color:$color4;
+    }
+}
+.pagination-pag{
+    ul{
+        padding: 0;
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        a{
+            text-decoration: none;
+            width: 40px;
+            text-align: center;
+            cursor: pointer;
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: 1px solid $color1;
+            border-radius: 50%;
+            color:#000;
+            &:hover{
+                background-color: $color1;
+                color:$color4;
+            }
+        }
+        a.active{
+            background-color: $color1;
+            color:$color4;
+        }
+    }
+}

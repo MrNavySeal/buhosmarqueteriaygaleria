@@ -1,0 +1,398 @@
+$color1:#E05A10;
+$color2:#03071E;
+$color3:#6D6A75;
+$color4:#fff;
+$color5: #BFBDC1;
+
+@mixin textColor($bg:$color4){
+    color:$bg;
+}
+@mixin bgColor($bg:$color4,$color:#03071E){
+    background-color: $bg;
+    color:$color;
+}
+.section--title{
+    font-size: 2.5rem;
+    font-weight: bold;
+    color:$color2;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    margin-top: 1rem;
+}
+.btn-bg-1{
+    background-color: $color1;
+    color:$color4;
+    text-decoration: none;
+    border-radius: 10px;
+    &:hover{
+        color:$color4;
+        background-color: $color1;
+    }
+    a{
+        text-decoration: none;
+        color:$color4;
+    }
+}
+.btn-bg-2{
+    background-color: $color2;
+    color:$color4;
+    text-decoration: none;
+    border-radius: 10px;
+    &:hover{
+        color:$color4;
+        background-color: $color2;
+    }
+    a{
+        text-decoration: none;
+        color:$color4;
+    }
+}
+.btn-bg-4{
+    background-color: $color4;
+    color:$color2;
+    text-decoration: none;
+    border-radius: 10px;
+    &:hover{
+        color:$color2
+    }
+    a{
+        text-decoration: none;
+        color:$color2;
+    }
+}
+.card--enmarcar{
+    width: 300px;
+    padding: 15px;
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.3s ease;
+    a{
+        text-decoration: none;
+        color:$color2;
+    }
+}
+.card--enmarcar.hover{
+    &:hover{
+        transform: translateY(-20px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        transition: all 0.3s ease;
+    }
+}
+.card--enmarcar-img{
+    height: 170px;
+    width: 100%;
+    margin-bottom: 5px;
+    img{
+        height: 100%;
+        width: 100%;
+        object-fit: contain;
+    }
+}
+.card--enmarcar-info{
+    text-align: center;
+}
+.enmarcar--title{
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+.t-color-1{
+    color:$color1;
+}
+.t-color-2{
+    color:$color2;
+}
+.t-color-3{
+    color:$color3;
+}
+.t-color-4{
+    color:$color4;
+}
+.t-color-5{
+    color:$color5;
+}
+.bg-color-1{
+    color:$color4;
+    background-color: $color1;
+}
+.bg-color-2{
+    color:$color4;
+    background-color: $color2;
+}
+.bg-color-3{
+    color:$color4;
+    background-color: $color2;
+}
+.bg-color-4{
+    color:$color4;
+    background-color: $color2;
+}
+.c-p{
+    cursor: pointer;
+}
+.orientation{
+    width: 200px;
+    height: 250px;
+    margin-bottom: 1rem;
+    margin-right: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    span{
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        display: block;
+    }
+    img{
+        height: 150px;
+        width: 100%;
+        object-fit: contain;
+    }
+}
+.measures--dimension{
+    margin: 10px 10px;
+    label{
+        font-size: 1.2rem;
+        text-align: center;
+        display: block;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    div{
+        display: flex;
+        justify-content: space-between;
+
+    }
+    input{
+        border-radius: 10px;
+        height: 40px;
+        text-align: center;
+    }
+
+}
+.frame{
+    width: 100%;
+    height: 500px;
+    position: relative;
+}
+.layout{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.layout--img{
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    transform: translate(-50%,-50%);
+    img{
+        height: 100%;
+        width: 100%;
+    }
+    transition: all 0.3s ease-out;
+}
+.layout--margin{
+    background-color: #000;
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    border-image: url("/assets/images/moldura.gif") 40% repeat;
+    border-color: #000;
+    border-style: solid;
+    transition: all 0.3s ease-out;
+}
+.cube-container{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    height: 200px;
+    width: 200px;
+    
+}
+.cube{
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: perspective(700px) rotateX(-30deg) rotateY(-30deg);
+}
+.layout--face{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    img{
+        height: 100%;
+        width: 100%;
+    }
+}
+.face-front{
+    transform: translateZ(10px);
+    border: 1px solid $color3;
+}
+.face-right{
+    background-color: $color2;
+    transform: rotateY(90deg) translateZ(190px);
+    border: 1px solid $color3;
+    width: 20px;
+}
+.face-superior{
+    background-color: $color2;
+    transform: rotateX(90deg) translateZ(10px);
+    border: 1px solid $color3;
+    height:20px;
+}
+.up-image{
+    position: absolute;
+    margin: 0.5rem;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 40px;
+    z-index: 10;
+    label{
+        border-radius: 10px;
+        position: absolute;
+        background-color: $color1;
+        color:$color4;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    input{
+        display: none;
+    }
+}
+.zoom{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px;
+    margin-bottom: 1rem;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    i{
+        font-size: 20px;
+        cursor: pointer;
+        color:$color1;
+    }
+    
+    
+}
+.select--frames{
+    max-height: 340px;
+    overflow: hidden;
+    overflow-y: auto;
+    padding: 10px;
+}
+.frame--item{
+    height: 100px;
+    width: 100px;
+    border-radius: 10px;
+    padding:5px;
+    cursor: pointer;
+    position: relative;
+    img{
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.colors{
+    height: 60px;
+    width: 100%;
+    overflow: hidden;
+    overflow-x: auto;
+    display: flex;
+}
+.colors--item{
+    margin: 0 5px;
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid $color2;
+    padding: 5px;
+    cursor: pointer;
+    div{
+        height: 100%;
+        width: 100%;
+        border-radius: 10px;
+    }
+}
+.element--hover{
+    transition: all 0.3s ease;
+    border: 1px solid $color4;
+    &:hover{
+        transition: all 0.3s ease;
+        border: 1px solid $color1;
+    }
+}
+.element--active{
+    border: 1px solid $color1;
+}
+@media screen and (max-width: 992px){
+    .card--enmarcar{
+        &:nth-of-type(1){
+            display: none;
+        }
+    }
+    .card--enmarcar.hover{
+        display: block;
+    }
+}
+@media screen and (max-width: 768px){
+
+}
+@media screen and (max-width: 576px){ 
+    .orientation{
+        width: 150px;
+        height: 150px;
+        img{
+            height: 100px;
+        }
+    }
+    .card--enmarcar{
+        &:nth-of-type(2){
+            display: none;
+        }
+    }
+    .card--enmarcar-img{
+        height: 120px;
+        width: 100%;
+        img{
+            height: 100%;
+            width: 100%;
+        }
+    }
+    .card--enmarcar-info{
+        text-align: center;
+        h3{
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding-bottom: 15px;
+        }
+    }
+    .frame{
+        height: 350px;
+    }
+}

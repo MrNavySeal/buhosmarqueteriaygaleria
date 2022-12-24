@@ -1,0 +1,26 @@
+.scroll-y{
+    overflow-y: scroll;
+    max-height: 60vh;
+}
+.scrolly{
+    overflow-y: scroll;
+    height: 200px;
+}
+.scrollx{
+    overflow-x: scroll;
+}
+.stamp{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    transform: rotate(-45deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    img{
+        opacity: 0.5;
+        height: 200px;
+        max-width: 100%;
+    }
+}

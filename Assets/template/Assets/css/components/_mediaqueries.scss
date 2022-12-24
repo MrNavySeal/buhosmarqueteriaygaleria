@@ -1,0 +1,177 @@
+@import "mixin";
+
+@media screen and (max-width: 1400px) {
+}
+@media screen and (max-width: 1280px){
+    #filter{
+        display: block;
+    }
+    .filter-options{
+        background-color: #fff;
+        position: fixed;
+        left:-100%;
+        width: 40%;
+        top:0;
+        z-index: 9999;
+        height: 100vh;
+        transition: 0.3s;
+        overflow: hidden;
+        overflow-y: auto;
+    }.filter-options.active{
+        left:0;
+    }
+}
+@media screen and (max-width: 992px){
+    main{
+        margin-top: 70px;
+    }
+    header{
+        background-color: $color4;
+        position: fixed;
+        width: 100% !important;
+        padding: 0 1rem;
+        top: 0;
+        left: 0;
+        z-index: 40;
+    }
+    .card--enmarcar{
+        &:nth-of-type(1){
+            display: none;
+        }
+    }
+    .card--enmarcar.hover{
+        display: block;
+    }
+    .main--show{
+        .show--text{
+            width: 100%;
+            height: 50vh;
+            .text-title{
+                font-size: 2rem;
+            }
+        }
+        .show--img{
+            width: 100%;
+            height: 50vh;
+            img{
+                min-height: 50vh;
+            }
+        }
+    }
+    .logo{
+        display: none;
+    }
+    .icon-mobile{
+        display: block;
+    }
+    #btnNav{
+        display: block;
+    }
+    .nav--links{
+        &:nth-of-type(1){
+            display: none;
+        }
+        &:nth-of-type(2){
+            .btn{
+                display: none;
+            }
+        }
+    }
+}
+@media screen and (max-width: 768px){
+
+}
+@media screen and (max-width: 576px){ 
+    .table-cart{
+        thead{
+            display: none;
+        }
+        tbody{
+            tr{
+                td{
+                    a{
+                     text-align: center;   
+                    }
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-wrap: wrap;
+                }
+            }
+        }
+    }
+    .filter-options{
+        left:-100%;
+        width: 80%;
+    }
+    .service{
+        h1{
+            font-size: 2rem;
+        }
+    }
+    .about{
+        margin-bottom: 2rem;
+        gap: 1rem;
+        text-align: center;
+    }
+    .about--content{
+        justify-content: center;
+    }
+    .about--cta{
+        padding: 2rem 2rem;
+        text-align: center;
+    }
+    .orientation{
+        width: 150px;
+        height: 150px;
+        img{
+            height: 100px;
+        }
+    }
+    .card--enmarcar{
+        height: 320px;
+        &:nth-of-type(2){
+            display: none;
+        }
+    }
+    .card--enmarcar-img{
+        height: 120px;
+        width: 100%;
+        img{
+            height: 100%;
+            width: 100%;
+        }
+    }
+    .card--enmarcar-info{
+        text-align: center;
+        h3{
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding-bottom: 15px;
+        }
+    }
+
+    .section--title{
+        font-size: 2rem;
+    }
+    .main--carousel{
+        .carousel-item{
+            h2{
+                font-size: 2.5rem;
+                font-weight: bold;
+            }
+        }
+    }
+    .cartbar--elements{
+        width: 100%;
+    }
+    .navmobile--elements{
+        width: 100%;
+    }
+    .frame{
+        height: 350px;
+    }
+}
+@media screen and (max-width: 540px){ 
+
+}
