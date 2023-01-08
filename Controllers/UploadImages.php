@@ -26,5 +26,27 @@
                 }
             }
         }
+        public function uploadMultipleImages(){
+            if($_SESSION['permit'][7]['r'] || $_SESSION['permit'][4]['r'] ){
+                if($_FILES['txtImg'] && $_POST['pre']){
+                    $arrImages = orderFiles($_FILES['txtImg'],strClean($_POST['pre']));
+                    $arrResponse = array("status"=>true,"data"=>$arrImages,"msg"=>"Uploaded");
+                    
+                }else{
+                    $arrResponse = array("status"=>false,"data"=>$arrImages,"msg"=>"Uploaded");
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function delImg(){
+            if($_SESSION['permit'][7]['r'] || $_SESSION['permit'][4]['r'] ){
+                $image = $_POST['image'];
+                deleteFile($image);
+                $arrResponse = array("msg"=>"Deleted");
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
     }
 ?>

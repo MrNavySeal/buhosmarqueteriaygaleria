@@ -37,8 +37,8 @@
                                 <th>Nombre</th>
                                 <th>Categoria</th>
                                 <th>Subcategoria</th>
-                                <th>Precio</th>
                                 <th>Descuento</th>
+                                <th>Precio</th>
                                 <th>Cantidad</th>
                                 <th>Fecha</th>
                                 <th>Estado</th>

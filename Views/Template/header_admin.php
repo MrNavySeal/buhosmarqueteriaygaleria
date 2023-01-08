@@ -89,15 +89,14 @@
                     </ul>
                 </div>
                 <div class="header-divider"></div>
+                <div class="container-fluid">
+                <button class="btn btn-secondary text-white" type="button" onclick="window.history.go(-1); return false;"><i class="fas fa-arrow-circle-left" aria-hidden="true"></i> Atrás</button>
                 <?php
                     if($_SESSION['permitsModule']['w']){
-
-                    
                 ?>
-                <div class="container-fluid">
-                    <button class="btn btn-primary d-none" type="button" id="btnNew">Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></button>
-                </div>
+                <button class="btn btn-primary d-none" type="button" id="btnNew">Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></button>
                 <?php
-                    }
+                }
                 ?>
+                </div>
             </header>

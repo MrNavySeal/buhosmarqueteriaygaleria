@@ -58,7 +58,7 @@
 	        	$request_insert = $this->insert($query_insert,$arrData);
                 for ($i=0; $i < count($photos) ; $i++) { 
                     $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
-                    $arrImg = array($request_insert,$photos[$i]['re_name']);
+                    $arrImg = array($request_insert,$photos[$i]);
                     $requestImg = $this->insert($sqlImg,$arrImg);
                 }
 	        	$return = $request_insert;
@@ -112,7 +112,7 @@
                     $delImages = $this->deleteImages($this->intIdProduct);
                     for ($i=0; $i < count($photos) ; $i++) { 
                         $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
-                        $arrImg = array($this->intIdProduct,$photos[$i]['rename']);
+                        $arrImg = array($this->intIdProduct,$photos[$i]);
                         $requestImg = $this->insert($sqlImg,$arrImg);
                     }
                 }
@@ -208,34 +208,6 @@
                         $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name'],"rename"=>$requestImg[$i]['name']);
                     }
                 }
-            }
-            return $request;
-        }
-        public function insertTmpImage(string $name, string $rename){
-            $sql = "INSERT INTO imagetmp(name,re_name) VALUES(?,?)";
-            $arrData = array($name,$rename);
-            $request = $this->insert($sql,$arrData);
-            return $request;
-        }
-        public function deleteTmpImage($rename = null){
-            if($rename != null){
-                $sql = "DELETE FROM imagetmp WHERE re_name = '$rename'; SET @autoid :=0; 
-                UPDATE imagetmp SET id = @autoid := (@autoid+1);
-                ALTER TABLE imagetmp Auto_Increment = 1;";
-                $request = $this->delete($sql);
-            }else{
-                $sql = "DELETE FROM imagetmp ; SET @autoid :=0; 
-                UPDATE imagetmp SET id = @autoid := (@autoid+1);
-                ALTER TABLE imagetmp Auto_Increment = 1;";
-                $request = $this->delete($sql);
-            }
-            return $request;
-        }
-        public function selectTmpImages(){
-            $sql = "SELECT * FROM imagetmp";
-            $request = $this->select_all($sql);
-            for ($i=0; $i < count($request); $i++) { 
-                $request[$i]['rename'] = $request[$i]['re_name'];
             }
             return $request;
         }

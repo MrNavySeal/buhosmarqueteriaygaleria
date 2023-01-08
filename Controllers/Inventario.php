@@ -17,8 +17,26 @@
                 $data['page_title'] = "Productos";
                 $data['page_name'] = "productos";
                 $data['products'] = $this->getProducts();
-                $data['app'] = "functions_product.js";
+                $data['app'] = "functions_products.js";
                 $this->views->getView($this,"productos",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+        public function producto($params){
+            if($_SESSION['permitsModule']['w']){
+                $data['page_tag'] = "Productos";
+                $data['page_title'] = "Productos";
+                $data['page_name'] = "productos";
+                $data['app'] = "functions_product.js";
+                if($params==""){
+                    $this->views->getView($this,"crearproducto",$data);
+                }else{
+                    $id = intval(strClean($params));
+                    $data['product'] = $this->getProduct($id);
+                    $this->views->getView($this,"editarproducto",$data);
+                }
             }else{
                 header("location: ".base_url());
                 die();
@@ -66,18 +84,19 @@
                     for ($i=0; $i < count($request); $i++) { 
 
                         $status="";
-                        $btnGlobe = '<a href="'.base_url().'/tienda/producto/'.$request[$i]['route'].'" target="_blank" class="btn btn-primary m-1 text-white" title="Ver página"><i class="fas fa-globe"></i></a>';
-                        $btnView = '<button class="btn btn-info m-1" type="button" title="Watch" data-id="'.$request[$i]['idproduct'].'" name="btnView"><i class="fas fa-eye"></i></button>';
+                        $btnView = '<a href="'.base_url().'/tienda/producto/'.$request[$i]['route'].'" target="_blank" class="btn btn-info m-1 text-white" title="Ver página"><i class="fas fa-eye"></i></a>';
                         $btnEdit="";
                         $btnDelete="";
-                        $price = formatNum($request[$i]['price']);
+                        $price = "";
                         if($request[$i]['discount']>0){
-                            $discount = '<span class="text-success">'.$request[$i]['discount'].'% OFF</span>';
+                            $price = '<span class="text-danger">'.formatNum($request[$i]['price']*(1-($request[$i]['discount']*0.01)),false).'</span>'.' <span class="text-secondary text-decoration-line-through">'.formatNum($request[$i]['price'],false).'</span>';
+                            $discount = '<span class="text-danger">'.$request[$i]['discount'].'%</span>';
                         }else{
-                            $discount = '<span class="text-danger">0%</span>';
+                            $price = formatNum($request[$i]['price'],false);
+                            $discount = "0%";
                         }
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['idproduct'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<a href="'.base_url().'/inventario/producto/'.$request[$i]['idproduct'].'" class="btn btn-success m-1 text-white" title="Editar" name="btnEdit"><i class="fas fa-pencil-alt"></i></a>';
                         }
                         if($_SESSION['permitsModule']['d']){
                             $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['idproduct'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
@@ -97,12 +116,12 @@
                                 <td class="text-center">'.$request[$i]['name'].'</td>
                                 <td data-label="Categoría: ">'.$request[$i]['category'].'</td>
                                 <td data-label="Subcategoría: ">'.$request[$i]['subcategory'].'</td>
-                                <td data-label="Precio: ">'.$price.'</td>
                                 <td data-label="Descuento: ">'.$discount.'</td>
+                                <td data-label="Precio: ">'.$price.'</td>
                                 <td data-label="Cantidad: ">'.$request[$i]['stock'].'</td>
                                 <td data-label="Fecha: ">'.$request[$i]['date'].'</td>
                                 <td data-label="Estado: ">'.$status.'</td>
-                                <td class="item-btn">'.$btnGlobe.$btnView.$btnEdit.$btnDelete.'</td>
+                                <td class="item-btn">'.$btnView.$btnEdit.$btnDelete.'</td>
                             </tr>
                         ';
                     }
@@ -118,32 +137,14 @@
             
             return $arrResponse;
         }
-        public function getProduct(){
+        public function getProduct($id){
             if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    unset($_SESSION['filesInfo']);
-                    if(empty($_POST)){
-                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['idProduct']);
-                        $request = $this->model->selectProduct($id);
-                        $this->model->deleteTmpImage();
-                        if(!empty($request)){
-                            $request['priceFormat'] = formatNum($request['price']);
-                            $arrImages = $this->model->selectImages($id);
-                            for ($i=0; $i < count($arrImages) ; $i++) { 
-                                $this->model->insertTmpImage($arrImages[$i]['name'],$arrImages[$i]['rename']);
-                            }
-                            $arrResponse = array("status"=>true,"data"=>$request);
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"No hay datos"); 
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
+                $request = $this->model->selectProduct($id);
+                $request['categories'] = $this->model->selectCategories();
+                $request['subcategories'] = $this->model->getSelectSubcategories($request['idcategory']);
+                return $request;
             }else{
                 header("location: ".base_url());
-                die();
             }
             die();
         }
@@ -152,7 +153,7 @@
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     if(empty($_POST['txtName']) || empty($_POST['statusList']) || empty($_POST['categoryList'])
-                    || empty($_POST['subcategoryList']) || empty($_POST['txtPrice']) || empty($_POST['txtStock'])){
+                    || empty($_POST['subcategoryList']) || empty($_POST['txtPrice']) || empty($_POST['txtStock']) || empty($_POST['txtShortDescription'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $idProduct = intval($_POST['idProduct']);
@@ -171,9 +172,8 @@
                         $route = strtolower(str_replace("¿","",$route));
                         $route = str_replace(" ","-",$route);
                         $route = str_replace("?","",$route);
+                        $photos = json_decode($_POST['images'],true);
 
-                        $photos = $this->model->selectTmpImages();
-                        //dep($photos);
                         if($idProduct == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
@@ -186,7 +186,6 @@
                             }
                         }
                         if($request > 0 ){
-                            $this->model->deleteTmpImage();
                             if($option == 1){
                                 $arrResponse = $this->getProducts();
                                 $arrResponse['msg'] = 'Datos guardados.';
@@ -217,7 +216,6 @@
                         $id = intval($_POST['idProduct']);
                         $request = $this->model->deleteProduct($id);
                         if($request=="ok"){
-                            $this->model->deleteTmpImage();
                             $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getProducts()['data']);
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar, inténta de nuevo.");
