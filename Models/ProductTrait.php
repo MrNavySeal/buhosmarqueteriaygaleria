@@ -346,7 +346,16 @@
             $request = $this->con->select($sql);
             $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
             $requestImg = $this->con->select_all($sqlImg);
-
+            $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $idProduct AND status = 1 HAVING rate IS NOT NULL";
+            $requestRate =  $this->con->select($sqlRate);
+            //dep($requestRate);exit;
+            if(!empty($requestRate)){
+                $request['rate'] = number_format($requestRate['rate'],1);
+                $request['reviews'] = $requestRate['total'];
+            }else{
+                $request['rate'] = number_format(0,1);
+                $request['reviews'] = 0;
+            }
             if(count($requestImg)){
                 for ($i=0; $i < count($requestImg); $i++) { 
                     $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name']);
@@ -389,13 +398,114 @@
                 $idProduct =$request['idproduct'];
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                 $requestImg = $this->con->select_all($sqlImg);
-    
+                $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $idProduct AND status = 1 HAVING rate IS NOT NULL";
+                $requestRate =  $this->con->select($sqlRate);
+                //dep($requestRate);exit;
+                if(!empty($requestRate)){
+                    $request['rate'] = number_format($requestRate['rate'],1);
+                    $request['reviews'] = $requestRate['total'];
+                }else{
+                    $request['rate'] = number_format(0,1);
+                    $request['reviews'] = 0;
+                }
                 if(count($requestImg)){
                     for ($i=0; $i < count($requestImg); $i++) { 
                         $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name']);
                     }
                 }
             }
+            return $request;
+        }
+        public function setReviewT($idProduct,$idUser,$strReview,$intRate){
+            $this->con = new Mysql();
+            $this->intIdProduct = $idProduct;
+            $this->intIdPerson = $idUser;
+            $this->strReview = $strReview;
+            $this->intRate = $intRate;
+            $return="";
+            $sql = "SELECT * FROM productrate WHERE productid = $this->intIdProduct AND personid = $this->intIdPerson";
+            $request = $this->con->select_all($sql);
+            if(empty($request)){
+                $sql = "INSERT INTO productrate(productid,personid,description,rate) VALUES(?,?,?,?)";
+                $arrData = array($this->intIdProduct,$this->intIdPerson,$this->strReview,$this->intRate);
+                $request = $this->con->insert($sql,$arrData);
+                $return = $request;
+            }else{
+                $return = "exists";
+            }
+            return $return;
+        }
+        public function getRate($id){
+            $this->con = new Mysql();
+            $sql = "SELECT 
+            AVG(rate) as rate, 
+            COUNT(rate) as total,
+            sum(case when rate = 5 then 1 else 0 end) AS five,
+            sum(case when rate = 4 then 1 else 0 end) AS four, 
+            sum(case when rate = 3 then 1 else 0 end) AS three, 
+            sum(case when rate = 2 then 1 else 0 end) AS two, 
+            sum(case when rate = 1 then 1 else 0 end) AS one
+            FROM productrate WHERE productid=$id";
+            $request = $this->con->select($sql);
+
+            if($request['rate']==null){
+                $request['five'] = 0;
+                $request['four'] = 0;
+                $request['three'] = 0;
+                $request['two'] = 0;
+                $request['one'] = 0;
+                $request['rate']=0;
+            }
+            return $request;
+        }
+        public function getReviewsT($id){
+            $this->con = new Mysql();
+            $this->intIdProduct = $id;
+            $sql = "SELECT 
+                    r.id,
+                    r.personid,
+                    r.description,
+                    r.rate,
+                    p.idperson,
+                    p.image,
+                    p.firstname,
+                    p.lastname,
+                    DATE_FORMAT(r.date, '%d/%m/%Y') as date,
+                    DATE_FORMAT(r.date_updated, '%d/%m/%Y') as dateupdated
+                    FROM productrate r
+                    INNER JOIN person p, product pr
+                    WHERE p.idperson = r.personid AND pr.idproduct = r.productid AND r.status = 1 AND pr.idproduct = $this->intIdProduct";
+            $request = $this->con->select_all($sql);
+            //dep($request);exit;
+            return $request;
+        }
+        public function getReviewsSortT(int $idProduct,int $sort){
+            $this->con = new Mysql();
+            $this->intIdProduct = $idProduct;
+            $option=" ORDER BY r.rate DESC";
+            if($sort == 1){
+                $option = " ORDER BY r.id DESC"; 
+            }else if($sort == 3){
+                $option=" ORDER BY r.rate ASC";
+            }
+            $sql = "SELECT 
+                r.id,
+                r.personid,
+                r.description,
+                r.rate,
+                p.idperson,
+                p.image,
+                p.firstname,
+                p.lastname,
+                pr.name,
+                r.status,
+                DATE_FORMAT(r.date, '%d/%m/%Y') as date,
+                DATE_FORMAT(r.date_updated, '%d/%m/%Y') as dateupdated
+                FROM productrate r
+                INNER JOIN person p, product pr
+                WHERE p.idperson = r.personid AND pr.idproduct = r.productid AND r.productid = $this->intIdProduct $option";
+            $request = $this->con->select_all($sql);
+            //dep($sql);
             return $request;
         }
     }

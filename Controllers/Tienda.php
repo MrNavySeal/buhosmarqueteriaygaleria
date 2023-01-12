@@ -85,6 +85,9 @@
                     $data['products'] = $this->getProductsRelT($data['product']['categoryid'],4);
                     $data['page_title'] =$data['product']['name']." | ".$company['name'];
                     $data['app'] = "functions_product.js";
+                    $data['reviews'] = $this->getReviews($data['product']['idproduct']);
+                    $data['review'] = $this->getRate($data['product']['idproduct']);
+                    $data['modal'] = getFile("Template/Modal/modalReview",$data['product']['idproduct']);
                     $this->views->getView($this,"producto",$data); 
                 }else{
                     header("location: ".base_url()."/error");
@@ -95,6 +98,96 @@
                 header("location: ".base_url()."/error");
                 die();
             }
+        }
+        /******************************Review methods************************************/
+        public function setReview(){
+            //dep($_POST);exit;
+            if($_POST){
+                if(isset($_SESSION['login'])){
+                    if(empty($_POST['intRate']) || empty($_POST['txtReview']) || empty($_POST['idProduct'])){
+                        $arrResponse = array("status"=>false,"msg"=>"Por favor, califíque y escriba su reseña.");
+                        echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                    }else{
+                        $idUser = $_SESSION['idUser'];
+                        $idProduct = intval(openssl_decrypt($_POST['idProduct'],METHOD,KEY));
+                        $intRate = intval($_POST['intRate']);
+                        $strReview = strClean($_POST['txtReview']);
+                        $option=0;
+                        $request = $this->setReviewT($idProduct,$idUser,$strReview,$intRate);
+                        
+                        if($request>0){
+                            $arrResponse = array("status"=>true,"msg"=>"Su opinión fue enviada con éxito y está a la espera de que nuestro personal la publique.");
+                        }else if($request=="exists"){
+                            $arrResponse = array("status"=>false,"msg"=>"Ya ha compartido su opinión anteriormente.");
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo.");
+                        }
+                    }
+                }else{
+                    $arrResponse = array("login"=>false,"msg"=>"Inicie sesión para compartir su reseña.");
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getReviews($idProduct,$sort=null){
+            $reviews="";
+            if($sort != null){
+                $reviews = $this->getReviewsSortT($idProduct,$sort);
+            }else{
+                $reviews = $this->getReviewsT($idProduct);
+            }
+            $rate = $this->getRate($idProduct);
+            $html="";
+            for ($i=0; $i < count($reviews); $i++) { 
+                $image = media()."/images/uploads/".$reviews[$i]['image'];
+                $name = $reviews[$i]['firstname'].' '.$reviews[$i]['lastname'];
+                $rateComment ="";
+                for ($j = 0; $j < 5; $j++) {
+                    if($j >= intval($reviews[$i]['rate'])){
+                        $rateComment.='<i class="far fa-star"></i>';
+                    }else{
+                        $rateComment.='<i class="fas fa-star"></i>';
+                    }
+                }
+
+                $html.='
+                <li class="comment-block">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="comment-info d-flex justify-content-between">
+                                <div class="d-flex justify-content-start">
+                                    <div class="comment-img me-1">
+                                        <img src="'.$image.'" alt="'.$name.'">
+                                    </div>
+                                    <div class="review-stars">
+                                        <p class="m-0">'.$name.'</p>
+                                        '.$rateComment.'
+                                        
+                                    </div>
+                                </div>
+                                <div class="product-rate text-end m-0">
+                                    <p class="m-0 text-secondary">'.$reviews[$i]['date'].'</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-1">
+                            <p class="m-0">'.$reviews[$i]['description'].'</p>
+                        </div>
+                    </div>
+                </li>
+                ';
+            }
+            return $html;
+        }
+        public function sortReviews(){
+            if($_POST){
+                $sort = intval($_POST['sort']);
+                $id = intval(openssl_decrypt($_POST['id'],METHOD,KEY));
+                $arrResponse = $this->getReviews($id,$sort);
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
         }
         /******************************Customer methods************************************/
         public function validCustomer(){
@@ -212,7 +305,6 @@
                     $request['idproduct'] = $_POST['idProduct']; 
                     $request['priceDiscount']=$request['price']-($request['price']*($request['discount']*0.01));
                     $request['price'] = $request['price'];
-                    
                     $script = getFile("Template/Modal/modalQuickView",$request);
                     $data = array(
                         "name"=>$request['name'],

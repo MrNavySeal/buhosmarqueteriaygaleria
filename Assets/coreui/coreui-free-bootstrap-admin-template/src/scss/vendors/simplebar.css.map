@@ -1,9 +1,1 @@
-{
-    "version": 3,
-    "mappings": "AAAA,AAAA,kBAAkB,AAAC,CACjB,OAAO,CAAE,IAAI,CACb,cAAc,CAAE,MAAM,CACtB,UAAU,CAAE,IAAI,CACjB",
-    "sources": [
-        "simplebar.scss"
-    ],
-    "names": [],
-    "file": "simplebar.css"
-}
+{"version":3,"sources":["simplebar.scss"],"names":[],"mappings":"AAAA,mBACE,YAAA,CACA,qBAAA,CACA,eAAA","file":"simplebar.css"}

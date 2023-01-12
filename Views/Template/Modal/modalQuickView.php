@@ -1,11 +1,22 @@
 <?php
+    $company = getCompanyInfo();
     $price ='</span><span class="current">'.formatNum($data['price']).'</span>';
     $discount ="";
+    $rate="";
     if($data['discount'] > 0 && $data['stock'] > 0){
         $discount = '<span class="discount">-'.$data['discount'].'%</span>';
         $price ='<span class="current sale me-2">'.formatNum($data['priceDiscount']).'</span><span class="compare">'.formatNum($data['price']).'</span>';
     }else if($data['stock'] == 0){
         $price = '<span class="current sale me-2">Agotado</span>';
+    }
+    for ($i = 0; $i < 5; $i++) {
+        if($data['rate']>0 && $i >= intval($data['rate'])){
+            $rate.='<i class="far fa-star"></i>';
+        }else if($data['rate'] == 0){
+            $rate.='<i class="far fa-star"></i>';
+        }else{
+            $rate.='<i class="fas fa-star"></i>';
+        }
     }
     $id = $data['idproduct'];
 ?>
@@ -40,9 +51,15 @@
                 </div>
                 <div class="col-md-6 product-data">
                     <h1><a href="<?=base_url()."/tienda/producto/".$data['route']?>"><strong><?=$data['name']?></strong></a></h1>
-                    <p class="text-secondary m-0">Stock: (<?=$data['stock']?>) unidades</p>
-                    <p class="fs-3"><strong class="t-p"><?=$price?></strong></p>
-                    <p class="mb-3"><?=$data['description']?></p>
+                    <div>
+                        <div class="d-inline mb-3 review-measure">
+                            <?=$rate?>                              
+                        </div>
+                        <p class="t-color-1 ms-2 d-inline" id="avgRate">(<?=$data['reviews']?> opiniones) </p>
+                    </div>
+                    <p class="text-secondary m-0 mb-3">Stock: (<?=$data['stock']?>) unidades</p>
+                    <p class="fs-4"><strong class="t-p"><?=$price?></strong></p>
+                    <p class="mb-3"><?=$data['shortdescription']?></p>
                     <!--<p class="m-0">SKU: <strong></strong></p>-->
                     <a href="<?=base_url()."/tienda/categoria/".$data['routec']?>" class="m-0">Categoría:<strong> <?=$data['category']?></strong></a><br>
                     <a href="<?=base_url()."/tienda/categoria/".$data['routes']?>" class="m-0">Subcategoría:<strong> <?=$data['subcategory']?></strong></a>
@@ -62,7 +79,7 @@
                     <div class="d-flex align-items-center">
                         <ul class="social social--dark mb-3">
                             <li title="Compartir en facebook"><a href="#" onclick="window.open('http://www.facebook.com/sharer.php?u=<?=base_url()."/tienda/producto/".$data['route']?>&amp;t=<?=$data['name']?>','share','toolbar=0,status=0,width=650,height=450')"><i class="fab fa-facebook-f" aria-hidden="true"></i></a></li>
-                            <li title="Compartir en twitter"><a href="#" onclick="window.open('https://twitter.com/intent/tweet?text=<?=$data['name']?>&amp;url=<?=base_url()."/tienda/producto/".$data['route']?>&amp;hashtags=mediastore','share','toolbar=0,status=0,width=650,height=450')"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
+                            <li title="Compartir en twitter"><a href="#" onclick="window.open('https://twitter.com/intent/tweet?text=<?=$data['name']?>&amp;url=<?=base_url()."/tienda/producto/".$data['route']?>&amp;hashtags=<?=$company['name']?>','share','toolbar=0,status=0,width=650,height=450')"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
                             <li title="Compartir en linkedin"><a href="#" onclick="window.open('http://www.linkedin.com/shareArticle?url=<?=base_url()."/tienda/producto/".$data['route']?>','share','toolbar=0,status=0,width=650,height=450')"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a></li>
                             <li title="Compartir en whatsapp"><a href="#" onclick="window.open('https://api.whatsapp.com/send?text=<?=base_url()."/tienda/producto/".$data['route']?>','share','toolbar=0,status=0,width=650,height=450')"><i class="fab fa-whatsapp" aria-hidden="true"></i></a></li>
                         </ul>

@@ -107,7 +107,7 @@
         }else{
             $code="";
         }
-        $num = $companyData['currency']['symbol'].number_format($num,0,DEC,MIL)." ".$code;
+        $num = $companyData['currency']['symbol'].number_format($num,0,DEC,MIL);
         return $num;
     }
     function emailNotification(){
@@ -307,7 +307,7 @@
         }
         return $request;
     }
-    function getFile(string $url, $data){
+    function getFile(string $url, $data=""){
         ob_start();
         require_once("Views/{$url}.php");
         $file = ob_get_clean();

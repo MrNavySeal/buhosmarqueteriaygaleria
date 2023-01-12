@@ -172,6 +172,22 @@
                             <?php 
                                 }
                             ?>
+                             <?php 
+                                if($_SESSION['permit'][9]['r']){
+                            ?>
+                            <li class="nav-group">
+                                <a class="nav-link nav-group-toggle" href="#">
+                                    <svg class="nav-icon">
+                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-comment-bubble"></use>
+                                    </svg> Comentarios
+                                </a>
+                                <ul class="nav-group-items">
+                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/comentarios/opiniones"><span class="nav-icon"></span> Opiniones</a></li>
+                                </ul>
+                            </li>
+                            <?php 
+                                }
+                            ?>
                             <?php 
                                 if($_SESSION['idUser']==1){
                             ?>

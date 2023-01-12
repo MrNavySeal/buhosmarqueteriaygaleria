@@ -11,16 +11,16 @@
     $description =$company['description'];
     //dep($data['article']);exit;
     if(!empty($data['product'])){
-        $urlWeb = base_url()."/shop/product/".$data['product']['route'];
+        $urlWeb = base_url()."/tienda/producto/".$data['product']['route'];
         $urlImg = $data['product']['image'][0];
         $title = $data['product']['name'];
         $description = $data['product']['shortdescription'];
-    }else if(!empty($data['article'])){
+    }/*else if(!empty($data['article'])){
         $urlWeb = base_url()."/blog/article/".$data['article']['route'];
         $urlImg = $data['article']['picture'];
         $title = $data['article']['name'];
         $description = $data['article']['description'];
-    }
+    }*/
 
     if(isset($_SESSION['arrCart']) && !empty($_SESSION['arrCart'])){
         $arrProducts = $_SESSION['arrCart'];
