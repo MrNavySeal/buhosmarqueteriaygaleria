@@ -2,6 +2,8 @@
     //sessionCookie();
     $notification = emailNotification();
     $companyData = getCompanyInfo();
+    $comments = commentNotification();
+    $reviews = $comments['total'];
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +51,28 @@
                         if($_SESSION['permit'][5]['r']){
                     ?>
                     <ul class="header-nav ms-auto">
+                         <li class="nav-item dropdown">
+                            <a class="nav-link position-relative" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                <svg class="icon me-2">
+                                    <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-comment-bubble"></use>
+                                </svg>
+                                <?php
+                                    $notifyReview ="";
+                                    if($reviews>0){
+                                        $notifyReview='<span class="position-absolute top-0 end-0 translate-middle p-1 ms-2 mt-1 bg-danger border border-light rounded-circle"><span class="visually-hidden">New alerts</span></span>';
+                                    }
+                                ?>
+                                <?=$notifyReview?>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end pt-0">
+                                <a class="dropdown-item" href="<?=base_url()?>/comentarios/opiniones">
+                                    
+                                    <svg class="icon me-2">
+                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-star"></use>
+                                    </svg> Opiniones <span class="badge badge-sm bg-warning ms-2"><?=$reviews?></span>
+                                </a>
+                            </div>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link position-relative" href="<?=base_url()?>/administracion/correo">
                                 <?php

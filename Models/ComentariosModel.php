@@ -37,6 +37,11 @@
             //dep($request);exit;
             return $request;
         }
+        public function selectCountReviews(){
+            $sql ="SELECT COUNT(*) AS total FROM productrate WHERE status =3";
+            $request = $this->select($sql);
+            return $request;
+        }
         public function selectReview($id){
             $this->intIdReview = $id;
             $sql = "SELECT 

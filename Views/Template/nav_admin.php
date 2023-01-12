@@ -180,9 +180,16 @@
                                     <svg class="nav-icon">
                                         <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-comment-bubble"></use>
                                     </svg> Comentarios
+                                    <?php 
+                                    $notifyReview = "";
+                                    if($reviews>0){
+                                        $notifyReview='<span class="badge badge-sm bg-danger ms-auto">'.$reviews.'</span>';
+                                    }
+                                    ?>
+                                    <?=$notifyReview?>
                                 </a>
                                 <ul class="nav-group-items">
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/comentarios/opiniones"><span class="nav-icon"></span> Opiniones</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/comentarios/opiniones"><span class="nav-icon"></span> Opiniones <?=$notifyReview?></a></li>
                                 </ul>
                             </li>
                             <?php 

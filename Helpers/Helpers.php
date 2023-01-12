@@ -122,6 +122,12 @@
         }
         return $total;
     }
+    function commentNotification(){
+        require_once("Models/ComentariosModel.php");
+        $obj = new ComentariosModel();
+        $request = $obj->selectCountReviews();
+        return $request;
+    }
     function sessionUser(int $idpersona){
         require_once("Models/LoginModel.php");
         $objLogin = new LoginModel();
