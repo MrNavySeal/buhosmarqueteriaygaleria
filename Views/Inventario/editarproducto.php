@@ -116,7 +116,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary me-2" id="btnAdd"><i class="fas fa-plus-circle"></i> Agregar</button>
+                            <button type="submit" class="btn btn-primary me-2" id="btnAdd"><i class="fas fa-save"></i> Guardar</button>
                             <a href="<?=BASE_URL?>/inventario/productos" class="btn btn-secondary text-white"> Cancelar</a>
                         </div>
                     </div>

@@ -71,7 +71,7 @@ window.addEventListener("load",function(){
         btnAdd.setAttribute("disabled","");
 
         request(base_url+"/inventario/setProduct",data,"post").then(function(objData){
-            btnAdd.innerHTML=`<i class="fas fa-plus-circle"></i> Agregar`;
+            btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
                 /*form.reset();
