@@ -196,6 +196,20 @@
                                 }
                             ?>
                             <?php 
+                                if($_SESSION['permit'][10]['r']){
+                            ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?=base_url()?>/articulos">
+                                    <svg class="nav-icon">
+                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-book"></use>
+                                    </svg> 
+                                    Blog<span class="badge badge-sm bg-info ms-auto"></span>
+                                </a>
+                            </li>
+                            <?php 
+                                }
+                            ?>
+                            <?php 
                                 if($_SESSION['idUser']==1){
                             ?>
                             <li class="nav-item mt-5">
