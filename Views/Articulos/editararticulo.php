@@ -1,6 +1,10 @@
 <?php 
     headerAdmin($data);
     $article = $data['article'];
+    $img=$article['picture'];
+    if($img==""){
+        $img=media()."/images/uploads/category.jpg";
+    }
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <div class="container-lg">
@@ -9,7 +13,7 @@
                 <form id="formItem" name="formItem" class="mb-4">  
                     <input type="hidden" id="idArticle" name="idArticle" value="<?=$article['idarticle']?>">
                     <div class="mb-3 uploadImg">
-                        <img src="<?=$article['picture']?>">
+                        <img src="<?=$img?>">
                         <label for="txtImg"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
                         <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
                     </div>
