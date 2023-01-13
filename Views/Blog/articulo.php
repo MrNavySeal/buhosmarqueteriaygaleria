@@ -5,7 +5,7 @@
     $img= $articulo['picture'] != "" ? media()."/images/uploads/".$articulo['picture']:"";
     $urlShare = base_url()."/blog/articulo/".$articulo['route'];
 ?>
-<main class="container mb-5">
+<main class="container content-site mb-5">
     <h1 class="section--title"><?=$articulo['name']?></h1>
     <?php if($img!=""){?>
     <div class="w-100 mb-3">
@@ -25,7 +25,7 @@
             <li title="Compartir en whatsapp"><a href="#" onclick="window.open('https://api.whatsapp.com/send?text=<?=$urlShare?>','share','toolbar=0,status=0,width=650,height=450')"><i class="fab fa-whatsapp" aria-hidden="true"></i></a></li>
         </ul>
     </div>
-    <div><?=$articulo['description']?></div>
+    <div class="content-description"><?=$articulo['description']?></div>
     <p class="mt-4">Compartir en:</p>
     <div class="d-flex align-items-center">
         <ul class="social social--dark mb-3">

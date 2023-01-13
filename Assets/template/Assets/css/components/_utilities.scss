@@ -92,7 +92,11 @@
 .slider--control-right{
     right: 0;
 } 
-
+.link-hover-none{
+    &:hover{
+        color:$color2;
+    }
+}
 .t-color-1{
     color:$color1;
 }

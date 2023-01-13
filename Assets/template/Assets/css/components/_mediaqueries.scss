@@ -82,6 +82,9 @@
 
 }
 @media screen and (max-width: 576px){ 
+    .content-site{
+        padding: 0 2rem;
+    }
     .table-cart{
         thead{
             display: none;

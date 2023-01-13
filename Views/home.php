@@ -276,6 +276,7 @@
         <?php
             if($social[3]['link']!=""){
         ?>
+        <?php if(!empty($posts)){?>
         <section class="mt-5">
             <h2 class="section--title">Últimos artículos publicados</h2>
             <div class="row">
@@ -287,9 +288,9 @@
                 ?>
                 <div class="col-md-4 mb-3">
                     <div class="card" style="width: 100%; height:100%;">
-                        <img src="<?=$img?>" class="card-img-top" alt="<?=$posts[$i]['name']?>">
+                        <img src="<?=$img?>" alt="<?=$posts[$i]['name']?>">
                         <div class="card-body">
-                        <h5 class="card-title"><a class="t-color-2" href="<?=base_url()."/blog/articulo/".$posts[$i]['route']?>"><?=$posts[$i]['name']?></a></h5>
+                        <h5 class="card-title"><a class="t-color-2 link-hover-none" href="<?=base_url()."/blog/articulo/".$posts[$i]['route']?>"><?=$posts[$i]['name']?></a></h5>
                             <p class="card-text"><?=$posts[$i]['shortdescription']?></p>
                             <a href="<?=base_url()."/blog/articulo/".$posts[$i]['route']?>" class="btn btn-bg-2">Ver más</a>
                         </div>
@@ -298,6 +299,7 @@
                 <?php }?>
             </div>
         </section>
+        <?php }?>
         <section class="mt-5">
             <h2 class="section--title">Nuestro instagram</h2>
             <div class="row">
