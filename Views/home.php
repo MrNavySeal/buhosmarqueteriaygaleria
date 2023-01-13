@@ -3,6 +3,7 @@
     $social = getSocialMedia();
     $company = getCompanyInfo();
     $links ="";
+    $posts = $data['posts'];
     for ($i=0; $i < count($social) ; $i++) { 
         if($social[$i]['link']!=""){
             if($social[$i]['name']=="whatsapp"){
@@ -275,6 +276,28 @@
         <?php
             if($social[3]['link']!=""){
         ?>
+        <section class="mt-5">
+            <h2 class="section--title">Últimos artículos publicados</h2>
+            <div class="row">
+                <?php for ($i=0; $i < count($posts) ; $i++) {
+                    $img=media()."/images/uploads/category.jpg";
+                    if($posts[$i]['picture'] !=""){
+                        $img=media()."/images/uploads/".$posts[$i]['picture']; 
+                    }
+                ?>
+                <div class="col-md-4 mb-3">
+                    <div class="card" style="width: 100%; height:100%;">
+                        <img src="<?=$img?>" class="card-img-top" alt="<?=$posts[$i]['name']?>">
+                        <div class="card-body">
+                        <h5 class="card-title"><a class="t-color-2" href="<?=base_url()."/blog/articulo/".$posts[$i]['route']?>"><?=$posts[$i]['name']?></a></h5>
+                            <p class="card-text"><?=$posts[$i]['shortdescription']?></p>
+                            <a href="<?=base_url()."/blog/articulo/".$posts[$i]['route']?>" class="btn btn-bg-2">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+                <?php }?>
+            </div>
+        </section>
         <section class="mt-5">
             <h2 class="section--title">Nuestro instagram</h2>
             <div class="row">

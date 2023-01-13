@@ -3,8 +3,9 @@
     require_once("Models/ProductTrait.php");
     require_once("Models/CustomerTrait.php");
     require_once("Models/EnmarcarTrait.php");
+    require_once("Models/BlogTrait.php");
     class Home extends Controllers{
-        use CustomerTrait,EnmarcarTrait,ProductTrait;
+        use CustomerTrait,EnmarcarTrait,ProductTrait,BlogTrait;
         public function __construct(){
             session_start();
             parent::__construct();
@@ -18,6 +19,7 @@
             $data['productos'] = $this->getProductsT(8);
             $data['page_name'] = "home";
             $data['app'] = "functions_contact.js";
+            $data['posts'] = $this->getArticlesT(3);
             $data['tipos'] = $this->selectTipos();
             $this->views->getView($this,"home",$data);
         }

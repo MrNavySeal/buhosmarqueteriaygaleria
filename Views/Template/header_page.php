@@ -12,16 +12,17 @@
     //dep($data['article']);exit;
     if(!empty($data['product'])){
         $urlWeb = base_url()."/tienda/producto/".$data['product']['route'];
-        $urlImg = $data['product']['image'][0];
+        $urlImg = $data['product']['image'][0]['url'];
         $title = $data['product']['name'];
         $description = $data['product']['shortdescription'];
-    }/*else if(!empty($data['article'])){
-        $urlWeb = base_url()."/blog/article/".$data['article']['route'];
-        $urlImg = $data['article']['picture'];
+    }else if(!empty($data['article'])){
+        $urlWeb = base_url()."/blog/articulo/".$data['article']['route'];
+        if($data['article']['picture']!=""){
+            $urlImg = media()."/images/uploads/".$data['article']['picture'];
+        }
         $title = $data['article']['name'];
-        $description = $data['article']['description'];
-    }*/
-
+        $description = $data['article']['shortdescription'];
+    }
     if(isset($_SESSION['arrCart']) && !empty($_SESSION['arrCart'])){
         $arrProducts = $_SESSION['arrCart'];
         foreach ($arrProducts as $product) {
@@ -151,6 +152,7 @@
                     </ul>
                 </div>
                 <li class="nav-link"><a href="<?=base_url()?>/contacto">Contacto</a></li>
+                <li class="nav-link"><a href="<?=base_url()?>/blog">Blog</a></li>
             </ul>
             <ul class="nav--links">
                 <li class="nav--icon" id="btnSearch"><i class="fas fa-search"></i></li>
@@ -291,6 +293,7 @@
                     </div>
                 </div>
                 <li class="navmobile-link"><a href="<?=base_url()?>/contacto">Contacto</a></li>
+                <li class="navmobile-link"><a href="<?=base_url()?>/blog">Blog</a></li>
                 
                 <?php
                     if(isset($_SESSION['login'])){
