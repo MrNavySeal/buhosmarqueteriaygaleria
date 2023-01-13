@@ -148,8 +148,11 @@
             $ancho = $margin +$ancho;
             $area = $altura * $ancho;
             $perimetro = 0;
+            $desperdicio = 0;
             if($option){
-                $perimetro = (2*($altura+$ancho))+$datos['waste'];
+                $varas = ceil((2*($altura+$ancho))/(300-$datos['waste']));
+                $desperdicio = $datos['waste']*$varas;
+                $perimetro = (2*($altura+$ancho))+$desperdicio;
                 if($datos['discount']>0){
                     $total = ($datos['price'] - ($datos['price']*($datos['discount']/100)))*$perimetro;
                 }else{
