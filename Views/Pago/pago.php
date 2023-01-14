@@ -77,6 +77,13 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
+                                <label for="txtDocument" class="form-label">Número de cédula <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="txtDocument" name="txtDocument" value="<?=$_SESSION['userData']['identification']?>" placeholder="12345678" required="">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
                                 <label for="txtEmailOrder" class="form-label">Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" id="txtEmailOrder" name="txtEmailOrder" value="<?=$_SESSION['userData']['email']?>" required="">
                             </div>
@@ -87,10 +94,12 @@
                                 <input type="number" class="form-control" id="txtPhoneOrder" name="txtPhoneOrder" required placeholder="312 345 6789">
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="txtAddressOrder" class="form-label"> Dirección<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="txtAddressOrder" name="txtAddressOrder" required="" placeholder="Carrera, calle, barrio...">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="txtAddressOrder" class="form-label"> Dirección<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtAddressOrder" name="txtAddressOrder" required="" placeholder="Carrera, calle, barrio...">
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">

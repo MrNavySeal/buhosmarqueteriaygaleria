@@ -134,7 +134,7 @@
             if($_POST){
                 if(empty($_POST['txtNameOrder']) || empty($_POST['txtLastNameOrder']) || empty($_POST['txtEmailOrder'])
                 || empty($_POST['txtPhoneOrder']) || empty($_POST['txtAddressOrder']) || empty($_POST['listCountry']) ||
-                empty($_POST['listState']) || empty($_POST['listCity'])){
+                empty($_POST['listState']) || empty($_POST['listCity']) || empty($_POST['txtDocument'])){
                     $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                 }else{
                     $strName = strClean(ucwords($_POST['txtNameOrder']));
@@ -148,6 +148,7 @@
                     $cupon = strtoupper(strClean($_POST['cupon']));
                     $strPostal = strClean($_POST['txtPostCodeOrder']);
                     $strNote = strClean($_POST['txtNote']);
+                    $strDocument = strClean($_POST['txtDocument']);
                     $situ = strClean($_POST['situ']);
                     $strAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
                     $strName = $strName." ".$strLastName;
@@ -159,7 +160,8 @@
                         "address"=>$strAddress,
                         "note"=>$strNote,
                         "cupon"=>$cupon,
-                        "situ"=>$situ
+                        "situ"=>$situ,
+                        "document"=>$strDocument
                     );
                     $arrResponse = array("status"=>true,"msg"=>"Datos guardados");
                 }
@@ -172,14 +174,15 @@
             $arrTotal = array();
             $idUser = $_SESSION['idUser'];
             $strName = $arrData['name'];
+            $strDocument = $arrData['document'];
             $strEmail = $arrData['email'];
             $strPhone = $arrData['phone'];
             $strAddress = $arrData['address'];
             $cupon = $arrData['cupon'];
             $strNote = $arrData['note'];
-            $status = $arrData['status'];
+            $status = $arrData['status']!="" ? $arrData['status'] : "approved";
             $idTransaction =$arrData['transaction'];
-            $type =$arrData['type'];
+            $type ="mercadopago";
             $situ = $arrData['situ'];
             $envio = 0;
             $statusOrder ="confirmado";
@@ -191,7 +194,6 @@
             }
 
             if($type==""){
-                $type="other";
                 $status = "approved";
             }
 
@@ -204,7 +206,7 @@
                     $total +=$envio;
                 }
             }
-            $request = $this->insertOrder($idUser, $idTransaction,$strName,$strEmail,$strPhone,$strAddress,$strNote,$cupon,$envio,$total,$status,$type,$statusOrder);          
+            $request = $this->insertOrder($idUser, $idTransaction,$strName,$strDocument,$strEmail,$strPhone,$strAddress,$strNote,$cupon,$envio,$total,$status,$type,$statusOrder);          
             if($request>0){
                 $arrOrder = array("idorder"=>$request,"iduser"=>$_SESSION['idUser'],"products"=>$_SESSION['arrCart']);
                 $requestDetail = $this->insertOrderDetail($arrOrder);

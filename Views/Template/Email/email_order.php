@@ -80,6 +80,10 @@ $subtotal = 0;
 		    	<td><?= $order['name'] ?></td>
 		    </tr>
 			<tr>
+		    	<td>Número de cédula:</td>
+		    	<td><?= $order['identification'] ?></td>
+		    </tr>
+			<tr>
 		    	<td>Email</td>
 		    	<td><?= $order['email'] ?></td>
 		    </tr>
@@ -106,14 +110,6 @@ $subtotal = 0;
 		    </tr>
 		  </thead>
 		  <tbody id="detalleOrden">
-		  	<thead class="text-center">
-				<tr>
-					<th>Descripcion</th>
-					<th>Precio</th>
-					<th>Cantidad</th>
-					<th>Total</th>
-				</tr>
-			</thead>
 			<tbody>
 			<?php 
 				if(count($detail) > 0){
@@ -228,7 +224,8 @@ $subtotal = 0;
 		</tfoot>
 		</table>
 		<div class="text-center">
-			<h4>Gracias por tu compra!</h4>			
+			<h4>Gracias por tu compra!</h4>		
+			<p>Recuerda que puedes ver tu pedido en tu cuenta de usuario</p>	
 		</div>
 	</div>									
 </body>

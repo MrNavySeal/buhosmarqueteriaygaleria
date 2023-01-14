@@ -40,17 +40,22 @@ btnOrder.addEventListener("click",function(e){
     let intDepartamento = document.querySelector("#listState");
     let intCiudad = document.querySelector("#listCity");
     let strDireccion = document.querySelector("#txtAddressOrder").value;
+    let strDocument = document.querySelector("#txtDocument").value;
 
     
 
     if(intPais =="" || strNombre =="" || strApellido =="" || strEmail =="" || intTelefono==""
     || intPais.value =="" || intDepartamento.value ==""
-    || intCiudad.value =="" || strDireccion==""){
+    || intCiudad.value =="" || strDireccion=="" || strDocument==""){
         Swal.fire("Error","todos los campos con (*) son obligatorios","error");
         return false;
     }
-    if(intTelefono.length < 10){
+    if(intTelefono.length < 10 || intTelefono.length > 10){
         Swal.fire("Error","El número de teléfono debe tener 10 dígitos","error");
+        return false;
+    }
+    if(strDocument.length < 8 || strDocument.length > 10){
+        Swal.fire("Error","El número de cédula debe tener de 8 a 10 dígitos","error");
         return false;
     }
     if(!fntEmailValidate(strEmail)){

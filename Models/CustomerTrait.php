@@ -22,6 +22,7 @@
         private $strSubject;
         private $strMessage;
         private $intIdProduct;
+        private $strCedula;
         
 
         public function setCustomerT($strName,$strPicture,$strEmail,$strPassword,$rolid){
@@ -98,7 +99,7 @@
             $request = $this->con->insert($sql,$arrData);
             return;
         }
-        public function insertOrder(int $idUser, string $idTransaction, string $strName,string $strEmail,string $strPhone,string $strAddress,
+        public function insertOrder(int $idUser, string $idTransaction, string $strName,string $strCedula,string $strEmail,string $strPhone,string $strAddress,
         string $strNote,string $cupon,int $envio,int $total,string $status, string $type,string $statusOrder){
 
             $this->con = new Mysql();
@@ -108,12 +109,14 @@
             $this->strEmail = $strEmail;
             $this->strPhone = $strPhone;
             $this->strAddress = $strAddress;
+            $this->strCedula = $strCedula;
             
-            $sql ="INSERT INTO orderdata(personid,idtransaction,name,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            $sql ="INSERT INTO orderdata(personid,idtransaction,name,identification,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             $arrData = array(
                 $this->intIdUser, 
                 $this->strIdTransaction,
                 $this->strName,
+                $this->strCedula,
                 $this->strEmail,
                 $this->strPhone,
                 $this->strAddress,
