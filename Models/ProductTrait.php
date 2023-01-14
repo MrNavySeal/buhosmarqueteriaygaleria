@@ -36,9 +36,8 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-
+                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-                    $request[$i]['price'] = $request[$i]['price'];
 
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
@@ -97,10 +96,9 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-
+                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-                    $request[$i]['price'] = $request[$i]['price'];
-
+                    
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg =  $this->con->select_all($sqlImg);
@@ -167,9 +165,8 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-
+                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-                    $request[$i]['price'] = $request[$i]['price'];
 
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
@@ -226,9 +223,8 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-
+                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-                    $request[$i]['price'] = $request[$i]['price'];
 
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
@@ -295,9 +291,8 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-
+                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-                    $request[$i]['price'] = $request[$i]['price'];
 
                     $idProduct = $request[$i]['idproduct'];
 
@@ -344,6 +339,7 @@
             AND p.idproduct = $this->intIdProduct";
 
             $request = $this->con->select($sql);
+            $request['price'] = ($request['price']*COMISION)+TASA;
             $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
             $requestImg = $this->con->select_all($sqlImg);
             $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $idProduct AND status = 1 HAVING rate IS NOT NULL";
@@ -393,8 +389,8 @@
 
             $request = $this->con->select($sql);
             if(!empty($request)){
+                $request['price'] = ($request['price']*COMISION)+TASA;
                 $request['priceDiscount'] =  $request['price']-($request['price']*($request['discount']*0.01));
-                $request['price'] = $request['price'];
                 $idProduct =$request['idproduct'];
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                 $requestImg = $this->con->select_all($sqlImg);

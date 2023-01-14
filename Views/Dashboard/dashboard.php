@@ -190,11 +190,17 @@
                                 <?php
                                     if(count($products)){
                                         foreach ($products as $product) {
+                                            $price = formatNum($product['price'],false);
+                                            $discount = "0%";
+                                            if($product['discount']>0){
+                                                $price = '<span class="text-danger">'.formatNum($product['price']*(1-($product['discount']*0.01)),false).'</span>'.' <span class="text-secondary text-decoration-line-through">'.formatNum($product['price'],false).'</span>';
+                                                $discount = '<span class="text-danger">'.$product['discount'].'%</span>';
+                                            }
                                 ?>
                                 <tr>
                                     <td class="text-center"><?=$product['name']?></td>
-                                    <td data-label="Precio:"><?=formatNum($product['price'],false)?></td>
-                                    <td data-label="Descuento:"><?=$product['discount']?>%</td>
+                                    <td data-label="Precio:"><?=$price?></td>
+                                    <td data-label="Descuento:"><?=$discount?></td>
                                     <td class="text-center"><a href="<?=base_url()."/tienda/producto/".$product['route']?>" target="_blank" class="text-dark"><i class="fas fa-eye"></i></a></td>
                                 </tr>
                                 <?php } }else{?>

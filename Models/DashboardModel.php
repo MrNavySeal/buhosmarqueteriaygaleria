@@ -43,6 +43,11 @@
         function getLastProducts(){
             $sql = "SELECT * FROM product ORDER BY idproduct DESC LIMIT 10";
             $request = $this->select_all($sql);
+            if(!empty($request)){
+                for ($i=0; $i < count($request) ; $i++) { 
+                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
+                }
+            }
             return $request;
         }
         public function selectAccountMonth(int $year, int $month){

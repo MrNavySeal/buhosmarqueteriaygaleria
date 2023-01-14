@@ -132,6 +132,7 @@
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
+                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                     if(count($requestImg)>0){
                         $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
                     }else{
@@ -145,6 +146,7 @@
             $this->intIdProduct = $id;
             $sql = "SELECT * FROM product WHERE idproduct = $this->intIdProduct";
             $request = $this->select($sql);
+            $request['price'] = ($request['price']*COMISION)+TASA;
             $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
             $requestImg = $this->select_all($sqlImg);
             $request['image'] = media()."/images/uploads/".$requestImg[0]['name'];
@@ -184,6 +186,7 @@
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
+                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                     if(count($requestImg)>0){
                         $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
                     }else{
