@@ -302,6 +302,14 @@ function openLoginModal(){
                                         <input type="text" class="form-control" id="txtSignName" name="txtSignName" placeholder="Nombre" required>
                                     </div>
                                     <div class="mb-3 d-flex">
+                                        <div class="d-flex justify-content-center align-items p-3 bg-color-2 text-white"><i class="fas fa-id-badge"></i></div>
+                                        <input type="number" class="form-control" id="txtSignDocument" name="txtSignDocument" placeholder="Número de cédula" required>
+                                    </div>
+                                    <div class="mb-3 d-flex">
+                                        <div class="d-flex justify-content-center align-items p-3 bg-color-2 text-white"><i class="fas fa-phone"></i></div>
+                                        <input type="number" class="form-control" id="txtSignPhone" name="txtSignPhone" placeholder="Número de teléfono" required>
+                                    </div>
+                                    <div class="mb-3 d-flex">
                                         <div class="d-flex justify-content-center align-items p-3 bg-color-2 text-white"><i class="fas fa-envelope"></i></div>
                                         <input type="email" class="form-control" id="txtSignEmail" name="txtSignEmail" placeholder="Email" required>
                                     </div>
@@ -413,13 +421,23 @@ function openLoginModal(){
         let strEmail = document.querySelector('#txtSignEmail').value;
         let strPassword = document.querySelector('#txtSignPassword').value;
         let signBtn = document.querySelector("#signSubmit");
+        let strDocument = document.querySelector("#txtSignDocument").value;
+        let intPhone = document.querySelector("#txtSignPhone").value;
 
-        if(strEmail == "" || strPassword =="" || strName ==""){
+        if(strEmail == "" || strPassword =="" || strName =="" || strDocument=="" || intPhone==""){
             Swal.fire("Error", "Por favor, completa los campos", "error");
             return false;
         }
         if(strPassword.length < 8){
             Swal.fire("Error","La contraseña debe tener al menos 8 carácteres","error");
+            return false;
+        }
+        if(intPhone.length < 10 || intPhone.length > 10){
+            Swal.fire("Error","El número de teléfono debe tener 10 dígitos","error");
+            return false;
+        }
+        if(strDocument.length < 8 || strDocument.length > 10){
+            Swal.fire("Error","El número de cédula debe tener de 8 a 10 dígitos","error");
             return false;
         }
         let url = base_url+'/tienda/validCustomer'; 
@@ -444,7 +462,8 @@ function openLoginModal(){
         let strEmail = document.querySelector('#txtSignEmail').value;
         let strPassword = document.querySelector('#txtSignPassword').value;
         let signBtn = document.querySelector("#confimSignSubmit");
-
+        let strDocument = document.querySelector("#txtSignDocument").value;
+        let intPhone = document.querySelector("#txtSignPhone").value;
         if(strCode==""){
             Swal.fire("Error", "Por favor, completa los campos", "error");
             return false;
@@ -454,19 +473,24 @@ function openLoginModal(){
             let formData = new FormData(formConfirmSign);
             formData.append("txtSignName",strName);
             formData.append("txtSignEmail",strEmail);
+            formData.append("txtSignDocument",strDocument);
+            formData.append("txtSignPhone",intPhone);
             formData.append("txtSignPassword",strPassword);
             signBtn.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             signBtn.setAttribute("disabled","");
             request(url,formData,"post").then(function(objData){
-                signBtn.innerHTML=`Validate`;
+                signBtn.innerHTML=`Verificar`;
                 signBtn.removeAttribute("disabled");
                 if(objData.status){
                     window.location.reload(false);
                     modalView.hide();
                     modalItem.innerHTML = "";
-                    
                 }else{
                     Swal.fire("Error", objData.msg, "error");
+                    formSign.classList.add("d-none");
+                    formLogin.classList.remove("d-none");
+                    formConfirmSign.classList.add("d-none");
+                    formConfirmSign.reset();
                 }
             });
         }

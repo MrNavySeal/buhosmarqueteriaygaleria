@@ -208,7 +208,7 @@
                     $_SESSION['code'] = $code;
                     $sendEmail = sendEmail($dataUsuario,'email_validData');
                     if($sendEmail){
-                        $arrResponse = array("status"=>true,"msg"=>"Se ha enviado un código a su correo electrónico para validar sus datos.");
+                        $arrResponse = array("status"=>true,"msg"=>"Se ha enviado un código a tu correo electrónico para validar tus datos.");
                         
                     }else{
                         $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo.");
@@ -221,18 +221,21 @@
         }
 		public function setCustomer(){
 			if($_POST){
-				if(empty($_POST['txtSignName']) || empty($_POST['txtSignEmail']) || empty($_POST['txtSignPassword']) || empty($_POST['txtCode'])){
+				if(empty($_POST['txtSignName']) || empty($_POST['txtSignEmail']) || 
+                empty($_POST['txtSignPassword']) || empty($_POST['txtCode']) || empty($_POST['txtSignPhone']) || empty($_POST['txtSignDocument'])){
                     $arrResponse=array("status" => false, "msg" => "Error de datos");
                 }else{
                     if($_POST['txtCode'] == $_SESSION['code']){
                         unset($_SESSION['code']);
                         $strName = ucwords(strClean($_POST['txtSignName']));
                         $strEmail = strtolower(strClean($_POST['txtSignEmail']));
+                        $strDocument = strClean($_POST['txtSignDocument']);
+                        $strPhone = strClean($_POST['txtSignPhone']);
                         $strPassword = hash("SHA256",$_POST['txtSignPassword']);
                         $strPicture = "user.jpg";
                         $rolid = 2;
 
-                        $request = $this->setCustomerT($strName,$strPicture,$strEmail,$strPassword,$rolid);
+                        $request = $this->setCustomerT($strName,$strPicture,$strEmail,$strPhone,$strDocument,$strPassword,$rolid);
                         
                         if($request > 0){
                             $_SESSION['idUser'] = $request;
