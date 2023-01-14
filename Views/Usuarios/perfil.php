@@ -24,8 +24,12 @@
                                 <input type="text" class="form-control" id="txtLastName" name="txtLastName" value="<?=$_SESSION['userData']['lastname']?>" required>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="txtDocument" class="form-label">Número de cédula <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtDocument" name="txtDocument" value="<?=$_SESSION['userData']['identification']?>" required>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="txtEmail" class="form-label">Email <span class="text-danger">*</span></label>
@@ -36,6 +40,12 @@
                             <div class="mb-3">
                                 <label for="txtPhone" class="form-label">Teléfono <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" id="txtPhone" name="txtPhone" value="<?=$_SESSION['userData']['phone']?>" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="txtAddress" class="form-label">Dirección <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtAddress" name="txtAddress" value="<?=$_SESSION['userData']['address']?>" required>
                             </div>
                         </div>
                     </div>
@@ -58,10 +68,6 @@
                                 <select class="form-control" aria-label="Default select example" id="cityList" name="cityList" required></select>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="txtAddress" class="form-label">Dirección <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="txtAddress" name="txtAddress" value="<?=$_SESSION['userData']['address']?>" required>
                     </div>
                     <div class="row">
                         <hr>

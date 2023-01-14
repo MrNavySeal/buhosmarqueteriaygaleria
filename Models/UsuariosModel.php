@@ -238,7 +238,7 @@
         }
         /*************************Profile methods*******************************/
         public function updateProfile(int $idUser, string $strName,string $strLastName, string $strPicture, string $intPhone,string $strAddress, 
-            int $intCountry, int $intState,int $intCity,string $strEmail, string $strPassword){
+            int $intCountry, int $intState,int $intCity,string $strIdentification, string $strEmail, string $strPassword){
             
             $this->intIdUser = $idUser;
 			$this->strName = $strName;
@@ -251,13 +251,14 @@
             $this->intCountryId = $intCountry;
             $this->intStateId = $intState;
             $this->intCityId = $intCity;
+            $this->strIdentification = $strIdentification;
 
-			$sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND phone = '{$this->intPhone}' AND idperson != $this->intIdUser";
+			$sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND identification = '{$this->strIdentification}' AND idperson != $this->intIdUser";
 			$request = $this->select_all($sql);
 
 			if(empty($request)){
 				if($this->strPassword  != ""){
-					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?, address=?, countryid=?, stateid=?, cityid=?, password=? 
+					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?, address=?, countryid=?, stateid=?, cityid=?,identification=?, password=? 
 							WHERE idperson = $this->intIdUser";
 					$arrData = array(
                         $this->strPicture,
@@ -269,10 +270,11 @@
                         $this->intCountryId,
                         $this->intStateId,
                         $this->intCityId,
+                        $this->strIdentification,
                         $this->strPassword
                     );
 				}else{
-					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?, address=?, countryid=?, stateid=?, cityid=? 
+					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?, address=?, countryid=?, stateid=?, cityid=?,identification=?
 							WHERE idperson = $this->intIdUser";
 					$arrData = array(
                         $this->strPicture,
@@ -283,7 +285,8 @@
                         $this->strAddress,
                         $this->intCountryId,
                         $this->intStateId,
-                        $this->intCityId
+                        $this->intCityId,
+                        $this->strIdentification
                     );
 				}
 				$request = $this->update($sql,$arrData);

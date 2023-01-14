@@ -41,13 +41,14 @@ formProfile.addEventListener("submit",function(e){
     let intCountry = document.querySelector("#countryList").value;
     let intState = document.querySelector("#stateList").value;
     let intCity = document.querySelector("#cityList").value;
-    let strAddress = document.querySelector("#txtAddress");
+    let strAddress = document.querySelector("#txtAddress").value;
+    let strDocument = document.querySelector("#txtDocument").value;
     let strPassword = document.querySelector("#txtPassword").value;
     let strConfirmPassword = document.querySelector("#txtConfirmPassword").value;
     let idusuarios = document.querySelector("#idUser").value;
 
     if(strFirstName == "" || strLastName == "" || strEmail == "" || strPhone == "" || intCountry == 0 || intState == 0
-    || intCity == 0 || strAddress ==""){
+    || intCity == 0 || strAddress =="" || strDocument==""){
         Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
         return false;
     }
@@ -65,11 +66,14 @@ formProfile.addEventListener("submit",function(e){
         Swal.fire("Error","El correo electrónico no es válido","error");
         return false;
     }
-    if(strPhone.length < 9){
-        Swal.fire("Error","El número de teléfono debe tener al menos 9 dígitos","error");
+    if(strPhone.length < 10 || strPhone.length > 10){
+        Swal.fire("Error","El número de teléfono debe tener 10 dígitos","error");
         return false;
     }
-
+    if(strDocument.length < 8 || strDocument.length > 10){
+        Swal.fire("Error","El número de cédula debe tener de 8 a 10 dígitos","error");
+        return false;
+    }
     let formData = new FormData(formProfile);
     let btnAdd = document.querySelector("#btnAdd");
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;

@@ -311,7 +311,7 @@
         public function updateProfile(){
             if($_POST){
                 if(empty($_POST['txtFirstName']) || empty($_POST['txtLastName']) || empty($_POST['txtPhone']) || empty($_POST['countryList'] ) || empty($_POST['stateList'] )
-                || empty($_POST['txtEmail']) || empty($_POST['cityList'] ) || empty($_POST['txtAddress'] )){
+                || empty($_POST['txtEmail']) || empty($_POST['cityList'] ) || empty($_POST['txtAddress'] || empty($_POST['txtDocument']))){
                     $arrResponse = array("status" => false, "msg" => 'Error de datos');
                 }else{ 
                     $idUser = intval($_POST['idUser']);
@@ -324,6 +324,7 @@
                     $intCountry = intval(strClean($_POST['countryList']));
                     $intState = intval($_POST['stateList']);
                     $intCity = intval($_POST['cityList']);
+                    $strDocument = strClean($_POST['txtDocument']);
 
                     $request_user = "";
                     $photo = "";
@@ -356,6 +357,7 @@
                         $intCountry,
                         $intState,
                         $intCity,
+                        $strDocument,
                         $strEmail,
                         $strPassword
                     );
