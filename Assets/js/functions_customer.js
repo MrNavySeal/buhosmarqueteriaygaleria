@@ -75,8 +75,12 @@ function addItem(){
                                     <input type="text" class="form-control" id="txtLastName" name="txtLastName" required>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="txtDocument" class="form-label">Número de cédula <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="txtDocument" name="txtDocument" value="<?=$_SESSION['userData']['identification']?>" required>
+                                </div>
+                            </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="txtEmail" class="form-label">Email <span class="text-danger">*</span></label>
@@ -89,9 +93,7 @@ function addItem(){
                                     <input type="number" class="form-control" id="txtPhone" name="txtPhone" required>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="txtAddress" class="form-label">Dirección</label>
                                     <input type="text" class="form-control" id="txtAddress" name="txtAddress">
@@ -186,8 +188,8 @@ function addItem(){
         let strPassword = document.querySelector("#txtPassword").value;
         let statusList = document.querySelector("#statusList").value;
         let idUser = document.querySelector("#idUser").value;
-
-        if(strFirstName == "" || strLastName == "" || strEmail == "" || strPhone == "" || statusList == ""){
+        let strDocument = document.querySelector("#txtDocument").value;
+        if(strFirstName == "" || strLastName == "" || strEmail == "" || strPhone == "" || statusList == "" || strDocument==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
@@ -203,7 +205,10 @@ function addItem(){
             Swal.fire("Error","El número de teléfono debe tener al menos 9 dígitos","error");
             return false;
         }
-        
+        if(strDocument.length < 8 || strDocument.length > 10){
+            Swal.fire("Error","El número de cédula debe tener de 8 a 10 dígitos","error");
+            return false;
+        }
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
 
