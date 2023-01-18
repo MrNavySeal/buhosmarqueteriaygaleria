@@ -8,7 +8,7 @@
     $prevPage = 1;
     $current = isset($_GET['p']) ? intval(strClean($_GET['p'])) : 1 ;
     $urlSort =isset($_GET['s']) ?  "&s=".intval(strClean($_GET['s'])) : "";
-    $urlSearch = isset($_GET['b']) ? "b=".strClean($_GET['b']) : "";
+    $urlSearch = isset($_GET['b']) ? "&b=".strClean($_GET['b']) : "";
 
     $nextPage = $current+1;
     $prevPage = $current-1;
@@ -87,9 +87,9 @@
                         <div class="d-flex align-items-center justify-content-center">
                             <label for="selectSort" class="form-label m-0 me-4 text-end">Ordenar por:</label>
                             <select class="form-select w-50" aria-label="Default select example" id="selectSort">
-                                <option value="1" data-url = "<?=base_url()."/tienda/buscar?".$urlSearch."&p=".$current?>">Todo</option>
-                                <option value="2" data-url = "<?=base_url()."/tienda/buscar?".$urlSearch."&p=".$current?>">Mayor a menor precio</option>
-                                <option value="3" data-url = "<?=base_url()."/tienda/buscar?".$urlSearch."&p=".$current?>">Menor a mayor precio</option>
+                                <option value="1" data-url = "<?=base_url()."/tienda/buscar?p=".$current.$urlSearch?>">Todo</option>
+                                <option value="2" data-url = "<?=base_url()."/tienda/buscar?p=".$current.$urlSearch?>">Mayor a menor precio</option>
+                                <option value="3" data-url = "<?=base_url()."/tienda/buscar?p=".$current.$urlSearch?>">Menor a mayor precio</option>
                             </select>
                         </div>
                     </div>
@@ -134,12 +134,12 @@
                     </div>
                     <div class="pagination">
                         <?php if($current > 1){?>
-                        <a href="<?=base_url()."/tienda?p=1".$urlSort?>" class="pagination-btn pagination-start"><i class="fas fa-angle-double-left" aria-hidden="true"></i></a>
-                        <a href="<?=base_url()."/tienda?p=".$prevPage.$urlSort?>" class="pagination-btn pagination-prev"><i class="fas fa-angle-left" aria-hidden="true"></i></a>
+                        <a href="<?=base_url()."/tienda/buscar?p=1".$urlSort.$urlSearch?>" class="pagination-btn pagination-start"><i class="fas fa-angle-double-left" aria-hidden="true"></i></a>
+                        <a href="<?=base_url()."/tienda/buscar?p=".$prevPage.$urlSort.$urlSearch?>" class="pagination-btn pagination-prev"><i class="fas fa-angle-left" aria-hidden="true"></i></a>
                         <?php }?>
                         <?php if($current < $paginas){?>
-                        <a href="<?=base_url()."/tienda?p=".$nextPage.$urlSort?>" class="pagination-btn pagination-next"><i class="fas fa-angle-right" aria-hidden="true"></i></a>
-                        <a href="<?=base_url()."/tienda?p=".$paginas.$urlSort?>" class="pagination-btn pagination-end"><i class="fas fa-angle-double-right" aria-hidden="true"></i></a>
+                        <a href="<?=base_url()."/tienda/buscar?p=".$nextPage.$urlSort.$urlSearch?>" class="pagination-btn pagination-next"><i class="fas fa-angle-right" aria-hidden="true"></i></a>
+                        <a href="<?=base_url()."/tienda/buscar?p=".$paginas.$urlSort.$urlSearch?>" class="pagination-btn pagination-end"><i class="fas fa-angle-double-right" aria-hidden="true"></i></a>
                         <?php }?>
                     </div>
                 </div>

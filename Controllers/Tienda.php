@@ -65,6 +65,8 @@
             $data['page_name'] = "tienda";
             $data['categories'] = $this->getCategoriesT();
             $productsPage =  $this->getProductsSearchT($pageNow,$sort,$search);
+            $productsPage['paginas'] = $productsPage['paginas'] == 0 ? 1 : $productsPage['paginas'];
+            $productsPage['total'] = $productsPage['total'] == 0 ? 1 : $productsPage['total'];
             if($pageNow <= $productsPage['paginas']){
                 $data['products'] = $productsPage;
                 $data['app'] = "functions_shop_search.js";

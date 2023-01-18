@@ -59,12 +59,13 @@
                         $price = $request['price'] - ($request['price']*($request['discount']/100));
                     }
                     $data = array("name"=>$request['name'],"image"=>$request['image'][0]['url'],"route"=>base_url()."/tienda/producto/".$request['route']);
-
+                    $name = $request['reference']!="" ? $request['name']." - ".$request['reference']:$request['name'];
                     if(!empty($request)){
                         $arrProduct = array(
                             "topic"=>2,
                             "id"=>openssl_encrypt($id,METHOD,KEY),
-                            "name" => $request['name'],
+                            "name" => $name,
+                            "reference" => $request['reference'],
                             "qty"=>$qty,
                             "image"=>$request['image'][0]['url'],
                             "url"=>base_url()."/tienda/producto/".$request['route'],

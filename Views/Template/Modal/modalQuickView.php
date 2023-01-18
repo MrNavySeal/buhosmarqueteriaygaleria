@@ -3,6 +3,10 @@
     $price ='</span><span class="current">'.formatNum($data['price']).'</span>';
     $discount ="";
     $rate="";
+    $reference="";
+    if($data['reference'] !=""){
+        $reference = '<a href="'.base_url()."/tienda/producto/".$data['route'].'" class="m-0">Referencia:<strong> '.$data['reference'].'</strong></a><br>';
+    }
     if($data['discount'] > 0 && $data['stock'] > 0){
         $discount = '<span class="discount">-'.$data['discount'].'%</span>';
         $price ='<span class="current sale me-2">'.formatNum($data['priceDiscount']).'</span><span class="compare">'.formatNum($data['price']).'</span>';
@@ -60,7 +64,7 @@
                     <p class="text-secondary m-0 mb-3">Stock: (<?=$data['stock']?>) unidades</p>
                     <p class="fs-4"><strong class="t-p"><?=$price?></strong></p>
                     <p class="mb-3"><?=$data['shortdescription']?></p>
-                    <!--<p class="m-0">SKU: <strong></strong></p>-->
+                    <?=$reference?>
                     <a href="<?=base_url()."/tienda/categoria/".$data['routec']?>" class="m-0">Categoría:<strong> <?=$data['category']?></strong></a><br>
                     <a href="<?=base_url()."/tienda/categoria/".$data['routes']?>" class="m-0">Subcategoría:<strong> <?=$data['subcategory']?></strong></a>
                     <?php if($data['stock']> 0){?>

@@ -159,7 +159,7 @@
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
             AND p.subcategoryid = s.idsubcategory AND p.status = 1 
-            AND (p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%')
+            AND (p.reference LIKE '%$search%' || p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%')
             $option LIMIT $start,$perPage
             ";
             $request = $this->con->select_all($sql);
