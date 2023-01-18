@@ -114,6 +114,7 @@
                                     <img src="'.$request[$i]['image'].'" class="rounded">
                                 </td>
                                 <td class="text-center">'.$request[$i]['name'].'</td>
+                                <td data-label="Referencia: ">'.$request[$i]['reference'].'</td>
                                 <td data-label="Categoría: ">'.$request[$i]['category'].'</td>
                                 <td data-label="Subcategoría: ">'.$request[$i]['subcategory'].'</td>
                                 <td data-label="Descuento: ">'.$discount.'</td>

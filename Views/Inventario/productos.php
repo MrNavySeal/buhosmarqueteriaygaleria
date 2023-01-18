@@ -35,6 +35,7 @@
                             <tr>
                                 <th>Portada</th>
                                 <th>Nombre</th>
+                                <th>Referencia</th>
                                 <th>Categoria</th>
                                 <th>Subcategoria</th>
                                 <th>Descuento</th>

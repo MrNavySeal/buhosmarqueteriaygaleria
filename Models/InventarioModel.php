@@ -34,9 +34,9 @@
 			$return = 0;
             $reference="";
             if($this->strReference!=""){
-                $reference = "OR reference = '$this->strReference'";
+                $reference = "AND reference = '$this->strReference'";
             }
-			$sql = "SELECT * FROM product WHERE name = '$this->strName' $reference";
+			$sql = "SELECT * FROM product WHERE name='$this->strName' $reference";
 			$request = $this->select_all($sql);
 
 			if(empty($request))
@@ -83,7 +83,7 @@
 
             $reference="";
             if($this->strReference!=""){
-                $reference = "OR reference = '$this->strReference' AND name = '{$this->strName}' AND idproduct != $this->intIdProduct";
+                $reference = "AND reference = '$this->strReference' AND name = '{$this->strName}' AND idproduct != $this->intIdProduct";
             }
 
 			$sql = "SELECT * FROM product WHERE name = '{$this->strName}' AND idproduct != $this->intIdProduct $reference";
@@ -249,11 +249,9 @@
                 DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND
-            p.name LIKE  '%$search%' || c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND
-            c.name LIKE  '%$search%' || c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND
-            s.name LIKE '%$search%'
-            ";
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
+            AND (p.name LIKE  '%$search%' || c.name LIKE  '%$search%' || s.name LIKE '%$search%' || p.reference LIKE  '%$search%')
+            ORDER BY p.idproduct DESC";
             $request = $this->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
