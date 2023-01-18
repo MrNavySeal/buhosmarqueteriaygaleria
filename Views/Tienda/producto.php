@@ -165,6 +165,7 @@
                         $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
                         $discount = "";
                         $price ='</span><span class="current">'.formatNum($productos[$i]['price']).'</span>';
+                        $reference = $productos[$i]['reference']!="" ? "Ref: ".$productos[$i]['reference'] : "";
                         if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
                             $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
                             $price ='<span class="current sale me-2">'.formatNum($productos[$i]['priceDiscount']).'</span><span class="compare">'.formatNum($productos[$i]['price']).'</span>';
@@ -182,6 +183,7 @@
                         </div>
                         <div class="card--product-info">
                             <h4><a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?=$productos[$i]['name']?></a></h4>
+                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
                             <div class="card--price">
                                 <?=$price?>
                             </div>
