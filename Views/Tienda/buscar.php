@@ -100,6 +100,7 @@
                             for ($i=0; $i < count($productos) ; $i++) { 
                                 $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
                                 $discount = "";
+                                $reference = $productos[$i]['reference']!="" ? "Ref: ".$productos[$i]['reference'] : "";
                                 $price ='</span><span class="current">'.formatNum($productos[$i]['price']).'</span>';
                                 if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
                                     $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
@@ -118,6 +119,7 @@
                                 </div>
                                 <div class="card--product-info">
                                     <h4><a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?=$productos[$i]['name']?></a></h4>
+                                    <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
                                     <div class="card--price">
                                         <?=$price?>
                                     </div>

@@ -194,6 +194,7 @@
                     for ($i=0; $i < count($productos) ; $i++) { 
                         $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
                         $discount = "";
+                        $reference = $productos[$i]['reference']!="" ? "Ref: ".$productos[$i]['reference'] : "";
                         $price ='</span><span class="current">'.formatNum($productos[$i]['price']).'</span>';
                         if($productos[$i]['discount'] > 0){
                             $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
@@ -212,9 +213,11 @@
                         </div>
                         <div class="card--product-info">
                             <h4><a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?=$productos[$i]['name']?></a></h4>
+                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
                             <div class="card--price">
                                 <?=$price?>
                             </div>
+                            
                         </div>
                         <div class="card--product-btns">
                             <?php if($productos[$i]['stock'] > 0){?>
@@ -307,7 +310,7 @@
                     <div class="instagram">
                         <a href="<?=$social[3]['link']?>" target="_blank">
                             <div class="instagram-img">
-                                <img src="<?=media()?>/images/uploads/instagram1.png" alt="Cuadros y enmarcaciones en linea">
+                                <img src="<?=media()?>/images/uploads/instagram1.jpg" alt="Cuadros y enmarcaciones en linea">
                                 <div><i class="fab fa-instagram"></i></div>
                             </div>
                         </a>
@@ -317,7 +320,7 @@
                     <div class="instagram">
                         <a href="<?=$social[3]['link']?>" target="_blank">
                             <div class="instagram-img">
-                                <img src="<?=media()?>/images/uploads/instagram2.png" alt="Cuadros y enmarcaciones en linea">
+                                <img src="<?=media()?>/images/uploads/instagram2.jpg" alt="Cuadros y enmarcaciones en linea">
                                 <div><i class="fab fa-instagram"></i></div>
                             </div>
                         </a>
@@ -327,7 +330,7 @@
                     <div class="instagram">
                         <a href="<?=$social[3]['link']?>" target="_blank">
                             <div class="instagram-img">
-                                <img src="<?=media()?>/images/uploads/instagram3.png" alt="Cuadros y enmarcaciones en linea">
+                                <img src="<?=media()?>/images/uploads/instagram3.jpg" alt="Cuadros y enmarcaciones en linea">
                                 <div><i class="fab fa-instagram"></i></div>
                             </div>
                         </a>
@@ -337,7 +340,7 @@
                     <div class="instagram">
                         <a href="<?=$social[3]['link']?>" target="_blank">
                             <div class="instagram-img">
-                                <img src="<?=media()?>/images/uploads/instagram4.png" alt="Cuadros y enmarcaciones en linea">
+                                <img src="<?=media()?>/images/uploads/instagram4.jpg" alt="Cuadros y enmarcaciones en linea">
                                 <div><i class="fab fa-instagram"></i></div>
                             </div>
                         </a>
