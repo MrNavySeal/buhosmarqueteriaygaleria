@@ -175,18 +175,15 @@
                 DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND
-            p.name LIKE  '%$search%' AND p.status= 1|| c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND
-            c.name LIKE  '%$search%' AND p.status= 1|| c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND
-            s.name LIKE '%$search%' AND p.status= 1
-            ";
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
+            AND (p.name LIKE  '%$search%' || c.name LIKE  '%$search%' || s.name LIKE '%$search%' || p.reference LIKE  '%$search%')
+            ORDER BY p.idproduct DESC";
             $request = $this->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
-                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                     if(count($requestImg)>0){
                         $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
                     }else{

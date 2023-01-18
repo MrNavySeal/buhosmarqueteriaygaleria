@@ -325,6 +325,7 @@
                                     <img src="'.$request[$i]['image'].'" class="rounded">
                                 </td>
                                 <td class="text-center">'.$request[$i]['name'].'</td>
+                                <td data-label="Referencia: ">'.$request[$i]['reference'].'</td>
                                 <td data-label="Precio: ">'.$price.'</td>
                                 <td data-label="Descuento: ">'.$discount.'</td>
                                 <td class="text-center"><button type="button" class="btn btn-primary" onclick="addProduct('.$request[$i]['idproduct'].',this)">Agregar</button></td>
@@ -411,10 +412,11 @@
                                 "price" =>$servicePrice
                             );
                         }else{
+                            $name = $request['reference']!="" ? $request['name']." - ".$request['reference']:$request['name'];
                             $arrProduct = array(
                                 "topic"=>2,
                                 "id"=>$id,
-                                "name" => $request['name'],
+                                "name" => $name,
                                 "qty"=>$qty,
                                 "image"=>$request['image'],
                                 "price" =>$price,

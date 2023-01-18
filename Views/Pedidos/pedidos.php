@@ -179,6 +179,7 @@
                                                     <tr>
                                                         <th>Portada</th>
                                                         <th>Nombre</th>
+                                                        <th>Referencia</th>
                                                         <th>Precio</th>
                                                         <th>Descuento</th>
                                                         <th></th>
