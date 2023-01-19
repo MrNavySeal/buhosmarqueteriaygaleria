@@ -21,9 +21,9 @@
             $option = "";
             if($dimensions < 200){
                 $option="";
-            }else if($dimensions >= 200 && $dimensions <= 380){
-                $option = " AND (waste > 20 AND type = 1) || (waste > 49 AND type = 2)";
-            }else if($dimensions > 380){
+            }else if($dimensions >= 200 && $dimensions < 400){
+                $option = " AND waste > 33";
+            }else if($dimensions >= 400){
                 $option = " AND waste > 49";
             }
             $sql = "SELECT * FROM molding WHERE status = 1 $option ORDER BY waste DESC";
@@ -75,32 +75,12 @@
 
             $option = "";
             if($sort == 2){
-                if($dimensions < 200){
-                    $option=" AND type = 1";
-                }else if($dimensions >= 200 && $dimensions <= 380){
-                    $option = " AND waste > 20 AND type = 1";
-                }else if($dimensions > 380){
-                    $option = " AND waste > 49 AND type = 1";
-                }
-            }else if( $sort == 3){
-                if($dimensions < 200){
-                    $option=" AND type = 2";
-                }else if($dimensions >= 200 && $dimensions <= 380){
-                    $option = " AND waste > 50 AND type = 2";
-                }else if($dimensions > 380){
-                    $option = " AND waste > 49 AND type = 2";
-                }
-            }else{
-                if($dimensions < 200){
-                    $option="";
-                }else if($dimensions >= 200 && $dimensions <= 380){
-                    $option = " AND (waste > 20 AND type = 1) || (waste > 49 AND type = 2)";
-                }else if($dimensions > 380){
-                    $option = " AND waste > 49";
-                }
+                $option=" AND type = 1";
+            }else if($sort == 3){
+                $option = " AND type = 2";
             }
 
-            $sql = "SELECT * FROM molding WHERE status = 1 AND reference LIKE '%$search%' $option ORDER BY waste DESC ";
+            $sql = "SELECT * FROM molding WHERE status = 1  $option AND reference LIKE '%$search%' ORDER BY waste DESC";
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
@@ -116,37 +96,18 @@
             }
             return $request;
         }
-        public function sortT($search,$sort,$dimensions=""){
+        public function sortT($search,$sort,$dimensions = ""){
             $this->con = new Mysql();
             //dep($dimensions);
             $option="";
             if($sort == 2){
-                if($dimensions < 200){
-                    $option=" AND type = 1";
-                }else if($dimensions >= 200 && $dimensions <= 380){
-                    $option = " AND waste > 20 AND type = 1";
-                }else if($dimensions > 380){
-                    $option = " AND waste > 49 AND type = 1";
-                }
+                $option=" AND type = 1 ORDER BY waste DESC";
             }else if( $sort == 3){
-                if($dimensions < 200){
-                    $option=" AND type = 2";
-                }else if($dimensions >= 200 && $dimensions <= 380){
-                    $option = " AND waste > 50 AND type = 2";
-                }else if($dimensions > 380){
-                    $option = " AND waste > 49 AND type = 2";
-                }
+                $option=" AND type = 2 ORDER BY waste DESC";
             }else{
-                if($dimensions < 200){
-                    $option="";
-                }else if($dimensions >= 200 && $dimensions <= 380){
-                    $option = " AND (waste > 20 AND type = 1) || (waste > 49 AND type = 2)";
-                }else if($dimensions > 380){
-                    $option = " AND waste > 49";
-                }
+                $option=" ORDER BY waste DESC";
             }
-            
-            $sql = "SELECT * FROM molding WHERE status = 1 AND reference LIKE '%$search%' $option ORDER BY waste DESC ";
+            $sql = "SELECT * FROM molding WHERE status = 1 AND reference LIKE '%$search%' $option";
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 

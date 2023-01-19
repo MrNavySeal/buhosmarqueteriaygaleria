@@ -95,8 +95,6 @@
             return $request;
         }
         public function sortT($search,$sort,$dimensions = ""){
-            $this->con = new Mysql();
-            //dep($dimensions);
             $option="";
             if($sort == 2){
                 $option=" AND type = 1 ORDER BY waste DESC";
@@ -106,12 +104,12 @@
                 $option=" ORDER BY waste DESC";
             }
             $sql = "SELECT * FROM molding WHERE status = 1 AND reference LIKE '%$search%' $option";
-            $request = $this->con->select_all($sql);
+            $request = $this->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['id'];
                     $sqlImg = "SELECT * FROM moldingimage WHERE moldingid = $idProduct";
-                    $requestImg = $this->con->select_all($sqlImg);
+                    $requestImg = $this->select_all($sqlImg);
                     if(count($requestImg)>0){
                         $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
                     }else{
