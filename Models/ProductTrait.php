@@ -36,7 +36,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
 
                     $idProduct = $request[$i]['idproduct'];
@@ -96,7 +96,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
                     
                     $idProduct = $request[$i]['idproduct'];
@@ -165,7 +165,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
 
                     $idProduct = $request[$i]['idproduct'];
@@ -223,7 +223,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
 
                     $idProduct = $request[$i]['idproduct'];
@@ -291,7 +291,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
 
                     $idProduct = $request[$i]['idproduct'];
@@ -339,7 +339,7 @@
             AND p.idproduct = $this->intIdProduct";
 
             $request = $this->con->select($sql);
-            $request['price'] = ($request['price']*COMISION)+TASA;
+            $request['price'] = round((($request['price']*COMISION)+TASA)/1000)*1000;
             $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
             $requestImg = $this->con->select_all($sqlImg);
             $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $idProduct AND status = 1 HAVING rate IS NOT NULL";
@@ -389,7 +389,7 @@
 
             $request = $this->con->select($sql);
             if(!empty($request)){
-                $request['price'] = ($request['price']*COMISION)+TASA;
+                $request['price'] = round((($request['price']*COMISION)+TASA)/1000)*1000;
                 $request['priceDiscount'] =  $request['price']-($request['price']*($request['discount']*0.01));
                 $idProduct =$request['idproduct'];
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
