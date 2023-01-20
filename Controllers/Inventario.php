@@ -317,7 +317,13 @@
 
                         $btnEdit="";
                         $btnDelete="";
-                        
+                        $status="";
+                        if($request[$i]['status']==1){
+                            $status='<span class="badge me-1 bg-success">Activo</span>';
+                        }else{
+                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
+                        }
+
                         if($_SESSION['permitsModule']['u']){
                             $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['idcategory'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
                         }
@@ -327,6 +333,7 @@
                         $html.='
                             <tr class="item">
                                 <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
+                                <td data-label="Estado: ">'.$status.'</td>
                                 <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
                             </tr>
                         ';
@@ -376,6 +383,7 @@
                         $idCategory = intval($_POST['idCategory']);
                         $strName = ucwords(strClean($_POST['txtName']));
                         $strDescription = strClean($_POST['txtDescription']);
+                        $status = intval($_POST['statusList']);
                         $route = clear_cadena($strName);
                         $route = strtolower(str_replace("¿","",$route));
                         $route = str_replace(" ","-",$route);
@@ -397,6 +405,7 @@
                                 $request= $this->model->insertCategory(
                                     $photoCategory, 
                                     $strName,
+                                    $status,
                                     $strDescription,
                                     $route
                                 );
@@ -418,6 +427,7 @@
                                     $idCategory, 
                                     $photoCategory,
                                     $strName,
+                                    $status,
                                     $strDescription,
                                     $route
                                 );
@@ -513,7 +523,12 @@
 
                         $btnEdit="";
                         $btnDelete="";
-                        
+                        $status="";
+                        if($request[$i]['status']==1){
+                            $status='<span class="badge me-1 bg-success">Activo</span>';
+                        }else{
+                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
+                        }
                         if($_SESSION['permitsModule']['u']){
                             $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['idsubcategory'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
                         }
@@ -524,6 +539,7 @@
                             <tr class="item">
                                 <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
                                 <td data-label="Categoría: ">'.$request[$i]['category'].'</td>
+                                <td data-label="Estado: ">'.$status.'</td>
                                 <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
                             </tr>
                         ';
@@ -570,6 +586,7 @@
                     }else{ 
                         $idSubCategory = intval($_POST['idSubCategory']);
                         $strName = ucwords(strClean($_POST['txtName']));
+                        $status = intval($_POST['statusList']);
                         $idCategory = intval(strClean($_POST['categoryList']));
                         $route = clear_cadena($strName);
                         $route = strtolower(str_replace("¿","",$route));
@@ -580,12 +597,12 @@
                             if($_SESSION['permitsModule']['w']){
 
                                 $option = 1;
-                                $request= $this->model->insertSubCategory($idCategory,$strName, $route);
+                                $request= $this->model->insertSubCategory($idCategory,$strName,$status, $route);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->updateSubCategory($idSubCategory,$idCategory, $strName, $route);
+                                $request = $this->model->updateSubCategory($idSubCategory,$idCategory, $strName,$status, $route);
                             }
                         }
                         if($request > 0 ){

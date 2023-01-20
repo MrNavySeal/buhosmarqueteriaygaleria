@@ -68,6 +68,13 @@ function addItem(){
                                     <select class="form-control" aria-label="Default select example" id="categoryList" name="categoryList" required></select>
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
+                                <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
+                                    <option value="1">Activo</option>
+                                    <option value="2">Inactivo</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary" id="btnAdd"><i class="fas fa-plus-circle"></i> Agregar</button>
@@ -149,6 +156,13 @@ function editItem(id){
                                     <select class="form-control" aria-label="Default select example" id="categoryList" name="categoryList" required></select>
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
+                                <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
+                                    <option value="1">Activo</option>
+                                    <option value="2">Inactivo</option>
+                                </select>
+                            </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary" id="btnAdd">Actualizar</button>
                                 <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
@@ -173,6 +187,12 @@ function editItem(id){
                 }
             }
         });
+        let status = document.querySelectorAll("#statusList option");
+        for (let i = 0; i < status.length; i++) {
+            if(status[i].value == objData.data.status){
+                status[i].setAttribute("selected",true);
+            }
+        }
         modalView.show();
 
         let form = document.querySelector("#formItem");

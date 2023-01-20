@@ -66,6 +66,13 @@ function addItem(){
                             <input type="text" class="form-control" id="txtName" name="txtName" required>
                         </div>
                         <div class="mb-3">
+                            <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
+                            <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
+                                <option value="1">Activo</option>
+                                <option value="2">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="txtDescription" class="form-label">Descripción </label>
                             <textarea class="form-control" id="txtDescription" name="txtDescription" rows="5"></textarea>
                         </div>
@@ -79,7 +86,7 @@ function addItem(){
         </div>
     </div>
     `;
-
+    
     modalItem.innerHTML = modal;
     let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
     modalView.show();
@@ -148,6 +155,13 @@ function editItem(id){
                                 <input type="text" class="form-control" id="txtName" name="txtName" value="${objData.data.name}" required>
                             </div>
                             <div class="mb-3">
+                                <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
+                                <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
+                                    <option value="1">Activo</option>
+                                    <option value="2">Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label for="txtDescription" class="form-label">Descripción </label>
                                 <textarea class="form-control" id="txtDescription" name="txtDescription" rows="5">${objData.data.description}</textarea>
                             </div>
@@ -164,6 +178,12 @@ function editItem(id){
 
         modalItem.innerHTML = modal;
         let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
+        let status = document.querySelectorAll("#statusList option");
+        for (let i = 0; i < status.length; i++) {
+            if(status[i].value == objData.data.status){
+                status[i].setAttribute("selected",true);
+            }
+        }
         modalView.show();
 
         let img = document.querySelector("#txtImg");

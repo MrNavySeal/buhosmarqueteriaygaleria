@@ -10,11 +10,11 @@
             if(count($request)>0){
                 for ($i=0; $i < count($request) ; $i++) { 
                     $idCategory = $request[$i]['idcategory'];
-                    $sqlSub = "SELECT * FROM subcategory WHERE categoryid = $idCategory";
+                    $sqlSub = "SELECT * FROM subcategory WHERE categoryid = $idCategory AND status = 1";
                     $requestSub = $this->con->select_all($sqlSub);
                     for ($j=0; $j < count($requestSub) ; $j++) { 
                         $idSubcategory = $requestSub[$j]['idsubcategory'];
-                        $sqlQty = "SELECT COUNT(idproduct) as total FROM product WHERE subcategoryid = $idSubcategory";
+                        $sqlQty = "SELECT COUNT(idproduct) as total FROM product WHERE subcategoryid = $idSubcategory AND status = 1";
                         $requestQty = $this->con->select($sqlQty);
                         $requestSub[$j]['total'] = $requestQty['total'];
                     }

@@ -31,6 +31,7 @@
                         <thead>
                             <tr>
                                 <th>Nombre</th>
+                                <th>Estado</th>
                                 <th>Opciones</th>
                             </tr>
                         </thead>
