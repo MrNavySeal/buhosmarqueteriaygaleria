@@ -100,8 +100,13 @@
                             <div class="mb-3">
                                 <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
                                 <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                    <option value="1">Activo</option>
-                                    <option value="2">Inactivo</option>
+                                    <?php
+                                        $status='<option value="1" selected>Activo</option><option value="2" >Inactivo</option>';
+                                        if($product['status']==2){
+                                            $status='<option value="1">Activo</option><option value="2" selected>Inactivo</option>';
+                                        }
+                                    ?>
+                                    <?=$status?>
                                 </select>
                             </div>
                         </div>

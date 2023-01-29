@@ -141,12 +141,12 @@
                     </div>
                     <div class="pagination">
                         <?php if($current > 1){?>
-                        <a href="<?=base_url()."/tienda?p=1".$urlSort?>" class="pagination-btn pagination-start"><i class="fas fa-angle-double-left" aria-hidden="true"></i></a>
-                        <a href="<?=base_url()."/tienda?p=".$prevPage.$urlSort?>" class="pagination-btn pagination-prev"><i class="fas fa-angle-left" aria-hidden="true"></i></a>
+                        <a href="<?=base_url()."/tienda/categoria".$urlCategory."?p=1".$urlSort?>" class="pagination-btn pagination-start"><i class="fas fa-angle-double-left" aria-hidden="true"></i></a>
+                        <a href="<?=base_url()."/tienda/categoria".$urlCategory."?p=".$prevPage.$urlSort?>" class="pagination-btn pagination-prev"><i class="fas fa-angle-left" aria-hidden="true"></i></a>
                         <?php }?>
                         <?php if($current < $paginas){?>
-                        <a href="<?=base_url()."/tienda?p=".$nextPage.$urlSort?>" class="pagination-btn pagination-next"><i class="fas fa-angle-right" aria-hidden="true"></i></a>
-                        <a href="<?=base_url()."/tienda?p=".$paginas.$urlSort?>" class="pagination-btn pagination-end"><i class="fas fa-angle-double-right" aria-hidden="true"></i></a>
+                        <a href="<?=base_url()."/tienda/categoria".$urlCategory."?p=".$nextPage.$urlSort?>" class="pagination-btn pagination-next"><i class="fas fa-angle-right" aria-hidden="true"></i></a>
+                        <a href="<?=base_url()."/tienda/categoria".$urlCategory."?p=".$paginas.$urlSort?>" class="pagination-btn pagination-end"><i class="fas fa-angle-double-right" aria-hidden="true"></i></a>
                         <?php }?>
                     </div>
                 </div>
