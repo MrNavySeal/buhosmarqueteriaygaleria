@@ -180,6 +180,10 @@ if(document.querySelector("#pedidos")){
                                         <td>${objData.data.phone}</td>
                                     </tr>
                                     <tr>
+                                        <td><strong>Whatsapp: </strong></td>
+                                        <td><a href="https://wa.me/57${objData.data.phone}">${objData.data.phone}</a></td>
+                                    </tr>
+                                    <tr>
                                         <td><strong>Total: </strong></td>
                                         <td>${objData.data.amount}</td>
                                     </tr>
