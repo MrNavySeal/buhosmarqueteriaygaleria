@@ -201,7 +201,7 @@ if($order['status'] == "approved"){
                     </div>
                     <table class="table text-center">
                         <tbody>
-                            <tr><td><p class="fw-bold">Después de 60 días no se responde por trabajos o pedidos finalizados</p></td></tr>
+                            <tr><td><p class="fw-bold">Después de 30 días no se responde por trabajos o pedidos finalizados</p></td></tr>
                             <tr><td><p class="fw-bold">Esta factura de compra venta se asimila en todos sus efectos
                                 legales a la letra de cambio de acuerdo al ART.774 del código de comercio
                             </p></td></tr>

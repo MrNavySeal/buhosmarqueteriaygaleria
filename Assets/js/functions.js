@@ -9,7 +9,8 @@ function printDiv(element,title=null){
     position:absolute !important;
     top:0;
     left:0;
-    z-index:9999;
+    margin:4rem;
+    z-index:999999;
     margin:0;
     padding:0;
     page-break-after: always;
@@ -20,6 +21,7 @@ function printDiv(element,title=null){
     if(title!=null){
         document.querySelector("title").innerHTML = title;
     }
+    /*printJS({ printable: 'orderInfo', type: 'html', targetStyles: ['*'],documentTitle: title});*/
     window.print();
     window.location.reload();
 }
