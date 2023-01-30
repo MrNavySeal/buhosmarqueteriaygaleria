@@ -5,12 +5,6 @@ $detail = $data['orderdetail'];
 $total=0;
 $company = $data['company'];
 $subtotal = 0;
-$status = "";
-if($order['status'] == "approved"){
-    $status = '<span class="badge bg-success text-white">aprobado</span>';
-}else{
-    $status = '<span class="badge bg-warning text-white">pendiente</span>';
-}
 ?>
 
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
@@ -36,7 +30,7 @@ if($order['status'] == "approved"){
                             <p class="m-0"><span class="fw-bold">Fecha: </span><?=$order['date']?></p>
                             <p class="m-0"><span class="fw-bold">Pedido: </span>#<?=$order['idorder']?></p>
                             <p class="m-0"><span class="fw-bold">Transaccion: </span><?=$order['idtransaction']?></p>
-                            <p class="m-0"><span class="fw-bold">Estado: </span><?=$status?></p>
+                            <p class="m-0"><span class="fw-bold">Tipo de pago: </span><?=$order['type']?></p>
                         </div>
                     </div>
                     <div class="row mb-3">

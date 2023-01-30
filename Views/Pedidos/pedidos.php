@@ -39,17 +39,39 @@
                     <div id="selectedCustomer"></div>
                     <form id="formSetOrder">
                         <input type="hidden" name="id" id="idCustomer" value ="0">
-                        <div class="mt-3 mb-3">
-                            <label for="" class="form-label">Nro factura <span class="text-danger">*</span></label>
-                            <input type="number" name="txtTransaction" id="txtTransaction" class="form-control">
-                        </div>
-                        <div class="mt-3 mb-3">
-                            <label for="" class="form-label">Fecha</label>
-                            <input type="date" name="strDate" id="txtDate" class="form-control">
-                        </div>
-                        <div class="mt-3 mb-3">
-                            <label for="" class="form-label">Notas <span class="text-danger">*</span></label>
-                            <textarea rows="5" name="strNote" id="txtNotePos" class="form-control"></textarea>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mt-3 mb-3">
+                                    <label for="" class="form-label">Nro factura <span class="text-danger">*</span></label>
+                                    <input type="number" name="txtTransaction" id="txtTransaction" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mt-3 mb-3">
+                                    <label for="" class="form-label">Fecha</label>
+                                    <input type="date" name="strDate" id="txtDate" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mt-3 mb-3">
+                                    <label for="" class="form-label">Notas <span class="text-danger">*</span></label>
+                                    <textarea rows="3" name="strNote" id="txtNotePos" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mt-3 mb-3">
+                                    <label for="" class="form-label">Método de pago <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required>
+                                        <?php
+                                            $pago="";
+                                            for ($i=0; $i < count(PAGO) ; $i++) { 
+                                                $pago .='<option value="'.$i.'">'.PAGO[$i].'</option>';
+                                            }
+                                        ?>
+                                        <?=$pago?>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="mt-3 mb-3">
                             <label for="" class="form-label">Dinero recibido <span class="text-danger">*</span></label>

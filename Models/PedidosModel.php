@@ -341,11 +341,11 @@
             $request = $this->update($sql,$arrData);
             return $request;
         }
-        public function updateOrder($idOrder,$idTransaction,$strDate,$strNote,$status,$statusOrder){
+        public function updateOrder($idOrder,$idTransaction,$strDate,$strNote,$type,$status,$statusOrder){
             $this->intIdOrder = $idOrder;
             $this->strIdTransaction = $idTransaction;
-            $sql = "UPDATE orderdata SET idtransaction=?,note=?,status=?, date=?,statusorder=? WHERE idorder = $this->intIdOrder";
-            $arrData = array($this->strIdTransaction,$strNote,$status,$strDate,$statusOrder);
+            $sql = "UPDATE orderdata SET idtransaction=?,note=?,type=?,status=?, date=?,statusorder=? WHERE idorder = $this->intIdOrder";
+            $arrData = array($this->strIdTransaction,$strNote,$type,$status,$strDate,$statusOrder);
             $request = $this->update($sql,$arrData);
             return $request;
         }

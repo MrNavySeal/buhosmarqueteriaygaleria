@@ -92,6 +92,7 @@ if($order['status'] == "approved"){
             </td>
             <td class="w33 text-center">
                 <h4><strong><?= $data['company']['name'] ?></strong></h4>
+                <p>NIT 17.344.806-8 No responsable de IVA</p>
                 <p>
                     <?= $data['company']['addressfull']?> <br>
                     Teléfono: <?= $data['company']['phone'] ?> - 3193094264 <br>
@@ -100,9 +101,10 @@ if($order['status'] == "approved"){
             </td>
             <td class=" w33 text-right">
                 <p>
+                    Fecha: <?= $order['date'] ?><br>
                     Pedido: <strong><?= $order['idorder'] ?></strong><br>
                     Transacción: <strong><?= $order['idtransaction'] ?></strong><br>
-                    Fecha: <?= $order['date'] ?><br>
+                    Tipo de pago: <?=$order['type']?><br>
                 </p>
             </td>				
         </tr>

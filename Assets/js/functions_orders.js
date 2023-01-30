@@ -180,10 +180,6 @@ if(document.querySelector("#pedidos")){
                                         <td>${objData.data.phone}</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Whatsapp: </strong></td>
-                                        <td><a href="https://wa.me/57${objData.data.phone}">${objData.data.phone}</a></td>
-                                    </tr>
-                                    <tr>
                                         <td><strong>Total: </strong></td>
                                         <td>${objData.data.amount}</td>
                                     </tr>
@@ -208,6 +204,12 @@ if(document.querySelector("#pedidos")){
                                 <div class="mt-3 mb-3">
                                     <label for="" class="form-label">Notas</label>
                                     <textarea rows="5" name="strNote" id="txtNotePos" class="form-control">${objData.data.note}</textarea>
+                                </div>
+                                <div class="mt-3 mb-3">
+                                    <label for="" class="form-label">Método de pago <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required>
+                                    ${objData.data.payments}
+                                    </select>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">

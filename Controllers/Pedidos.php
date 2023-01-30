@@ -22,7 +22,7 @@
                 $data['orders'] = $this->getOrders();
                 $data['products'] = $this->getProducts();
                 $data['tipos'] = $this->model->selectCategories();
-                $data['app'] = "functions_orders.js";
+                $data['app'] = "functions_orders.js?v=".rand();
                 $this->views->getView($this,"pedidos",$data);
             }else{
                 header("location: ".base_url());
@@ -82,16 +82,32 @@
                     $data['amount'] = formatNum($data['amount']);
                     $options ="";
                     $statusOrder="";
+                    $payments="";
                     if($data['status'] == "pendent"){
                         $options='
-                        <option value="1">approved</option>
-                        <option value="2" selected>pendent</option>
+                        <option value="1">aprobado</option>
+                        <option value="2" selected>pendiente</option>
+                        <option value="3">cancelado</option>
+                        ';
+                    }else if($data['status'] == "approved"){
+                        $options='
+                        <option value="1" selected>aprobado</option>
+                        <option value="2">pendiente</option>
+                        <option value="3">cancelado</option>
                         ';
                     }else{
                         $options='
-                        <option value="1" selected>approved</option>
-                        <option value="2">pendent</option>
+                        <option value="1">aprobado</option>
+                        <option value="2">pendiente</option>
+                        <option value="3" selected>cancelado</option>
                         ';
+                    }
+                    for ($i=0; $i < count(PAGO) ; $i++) { 
+                        if($data['type'] == PAGO[$i]){
+                            $payments.='<option value="'.$i.'" selected>'.PAGO[$i].'</option>';
+                        }else{
+                            $payments.='<option value="'.$i.'">'.PAGO[$i].'</option>';
+                        }
                     }
                     for ($i=0; $i < count(STATUS) ; $i++) { 
                         if($data['statusorder'] == STATUS[$i]){
@@ -102,6 +118,7 @@
                     }
                     $data['options'] = $options;
                     $data['statusorder'] = $statusOrder;
+                    $data['payments'] = $payments;
                     $arrResponse = array("status"=>true,"data"=>$data);
                 }
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
@@ -117,19 +134,33 @@
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }
                     $idOrder = intval($_POST['idOrder']);
-                    $status = intval($_POST['statusList']) == 1 ? "approved" : "pendent";
+                    $status = intval($_POST['statusList']);
                     $statusOrder = intval($_POST['statusOrder']);
                     $strNote = strClean($_POST['strNote']);
                     $strDate = $_POST['strDate'];
                     $idTransaction = strClean($_POST['txtTransaction']);
                     $statusO ="";
+                    if($status == 1){
+                        $status = "approved";
+                    }else if($status == 2){
+                        $status ="pendent";
+                    }else{
+                        $status = "canceled";
+                    }
                     for ($i=0; $i < count(STATUS) ; $i++) { 
                         if($statusOrder == $i){
                             $statusO = STATUS[$i];
                             break;
                         }
                     }
-                    $request = $this->model->updateOrder($idOrder,$idTransaction,$strDate,$strNote,$status,$statusO);
+                    $type =intval($_POST['paymentList']);
+                    for ($i=0; $i < count(PAGO) ; $i++) { 
+                        if($i == $type){
+                            $type = PAGO[$i];
+                            break;
+                        }
+                    }
+                    $request = $this->model->updateOrder($idOrder,$idTransaction,$strDate,$strNote,$type,$status,$statusO);
                     if($request>0){
                         $arrResponse = array("status"=>true,"msg"=>"Pedido actualizado","data"=>$this->getOrders()['data']);
                     }else{
@@ -155,19 +186,22 @@
                     for ($i=0; $i < count($request); $i++) { 
 
                         $btnView='<a href="'.base_url().'/pedidos/pedido/'.$request[$i]['idorder'].'" class="btn btn-info text-white m-1" type="button" title="Ver orden" name="btnView"><i class="fas fa-eye"></i></a>';
-                        $btnPdf='<a href="'.base_url().'/factura/generarFactura/'.$request[$i]['idorder'].'" class="btn btn-danger text-white m-1" type="button" title="Ver orden"><i class="fas fa-file-pdf"></i></a>';
+                        $btnWpp="";
+                        $btnPdf='<a href="'.base_url().'/factura/generarFactura/'.$request[$i]['idorder'].'" target="_blank" class="btn btn-danger text-white m-1" type="button" title="Ver orden"><i class="fas fa-file-pdf"></i></a>';
                         $btnPaypal='';
                         $btnDelete ="";
                         $btnEdit ="";
                         $status="";
                         $statusOrder="";
-                        if($request[$i]['type'] != "pos" && $request[$i]['type'] != "other"){
+                        if($request[$i]['type'] == "mercadopago"){
                             $btnPaypal = '<a href="'.base_url().'/pedidos/transaccion/'.$request[$i]['idtransaction'].'" class="btn btn-info m-1 text-white " type="button" title="Ver transacción" name="btnPaypal"><i class="fas fa-receipt"></i></a>';
                         }
                         if($request[$i]['status'] =="pendent"){
                             $status = '<span class="badge bg-warning text-white">pendiente</span>';
-                        }else{
+                        }else if($request[$i]['status'] =="approved"){
                             $status = '<span class="badge bg-success text-white">aprobado</span>';
+                        }else if($request[$i]['status'] =="canceled"){
+                            $status = '<span class="badge bg-danger text-white">cancelado</span>';
                         }
                         if($request[$i]['statusorder'] =="confirmado"){
                             $statusOrder = '<span class="badge bg-dark text-white">confirmado</span>';
@@ -177,11 +211,14 @@
                             $statusOrder = '<span class="badge bg-info text-white">preparado</span>';
                         }else if($request[$i]['statusorder'] =="entregado"){
                             $statusOrder = '<span class="badge bg-success text-white">entregado</span>';
+                        }else if($request[$i]['statusorder'] =="cancelado"){
+                            $statusOrder = '<span class="badge bg-danger text-white">cancelado</span>';
                         }
-                        if($_SESSION['permitsModule']['d'] && $_SESSION['userData']['roleid'] == 1){
+                        /*if($_SESSION['permitsModule']['d'] && $_SESSION['userData']['roleid'] == 1){
                             $btnDelete = '<button class="btn btn-danger text-white m-1" type="button" title="Delete" data-id="'.$request[$i]['idorder'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
-                        }
+                        }*/
                         if($_SESSION['permitsModule']['u']){
+                            $btnWpp='<a href="https://wa.me/57'.$request[$i]['phone'].'?text=Buen%20dia%20'.$request[$i]['name'].'" class="btn btn-success text-white m-1" type="button" title="Whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>';
                             $btnEdit = '<button class="btn btn-success text-white m-1" type="button" title="Edit" data-id="'.$request[$i]['idorder'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['userData']['roleid'] == 1 || $_SESSION['userData']['roleid'] == 3){
@@ -195,7 +232,7 @@
                                     <td data-label="Tipo de pago: ">'.$request[$i]['type'].'</td>
                                     <td data-label="Estado de pago: ">'.$status.'</td>
                                     <td data-label="Estado de pedido: ">'.$statusOrder.'</td>
-                                    <td class="item-btn">'.$btnView.$btnPdf.$btnPaypal.$btnEdit.$btnDelete.'</td>
+                                    <td class="item-btn">'.$btnView.$btnWpp.$btnPdf.$btnPaypal.$btnEdit.'</td>
                                 </tr>
                             ';
 
@@ -209,7 +246,7 @@
                                 <td data-label="Tipo de pago: ">'.$request[$i]['type'].'</td>
                                 <td data-label="Estado de pago: ">'.$status.'</td>
                                 <td data-label="Estado de pedido: ">'.$statusOrder.'</td>
-                                <td class="item-btn">'.$btnView.$btnPdf.$btnPaypal.$btnDelete.'</td>
+                                <td class="item-btn">'.$btnView.$btnWpp.$btnPdf.$btnPaypal.'</td>
                             </tr>
                         ';
                         }
@@ -729,8 +766,14 @@
                         $strAddress = $customInfo['address'].", ".$customInfo['city']."/".$customInfo['state']."/".$customInfo['country'];
                         $cupon = "";
                         $idTransaction =strClean($_POST['txtTransaction']);
-                        $type ="pos";
+                        $type =intval($_POST['paymentList']);
                         $envio = 0;
+                        for ($i=0; $i < count(PAGO) ; $i++) { 
+                            if($i == $type){
+                                $type = PAGO[$i];
+                                break;
+                            }
+                        }
                         if($_POST['discount'] > 0 && $_POST['discount'] <=90){
                             
                             $discount = intval($_POST['discount']);

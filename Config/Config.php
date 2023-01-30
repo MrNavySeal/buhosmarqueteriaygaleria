@@ -26,8 +26,8 @@
 	const KEY = "ecommerce";
 	const METHOD = "AES-128-ECB";
 	//Estados
-	const STATUS = ["confirmado","en preparacion","preparado","entregado"];
-	
+	const STATUS = ["cancelado","confirmado","en preparacion","preparado","entregado"];
+	const PAGO = ["mercadopago","nequi","daviplata","transferencia","tarjeta","efectivo"];
 	const COMISION = 1.04;
 	const TASA = 900;
 	const PERPAGE = 12;
