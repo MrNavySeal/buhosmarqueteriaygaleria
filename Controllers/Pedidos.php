@@ -155,6 +155,7 @@
                     for ($i=0; $i < count($request); $i++) { 
 
                         $btnView='<a href="'.base_url().'/pedidos/pedido/'.$request[$i]['idorder'].'" class="btn btn-info text-white m-1" type="button" title="Ver orden" name="btnView"><i class="fas fa-eye"></i></a>';
+                        $btnPdf='<a href="'.base_url().'/factura/generarFactura/'.$request[$i]['idorder'].'" class="btn btn-danger text-white m-1" type="button" title="Ver orden"><i class="fas fa-file-pdf"></i></a>';
                         $btnPaypal='';
                         $btnDelete ="";
                         $btnEdit ="";
@@ -194,7 +195,7 @@
                                     <td data-label="Tipo de pago: ">'.$request[$i]['type'].'</td>
                                     <td data-label="Estado de pago: ">'.$status.'</td>
                                     <td data-label="Estado de pedido: ">'.$statusOrder.'</td>
-                                    <td class="item-btn">'.$btnView.$btnPaypal.$btnEdit.$btnDelete.'</td>
+                                    <td class="item-btn">'.$btnView.$btnPdf.$btnPaypal.$btnEdit.$btnDelete.'</td>
                                 </tr>
                             ';
 
@@ -208,7 +209,7 @@
                                 <td data-label="Tipo de pago: ">'.$request[$i]['type'].'</td>
                                 <td data-label="Estado de pago: ">'.$status.'</td>
                                 <td data-label="Estado de pedido: ">'.$statusOrder.'</td>
-                                <td class="item-btn">'.$btnView.$btnPaypal.$btnDelete.'</td>
+                                <td class="item-btn">'.$btnView.$btnPdf.$btnPaypal.$btnDelete.'</td>
                             </tr>
                         ';
                         }
