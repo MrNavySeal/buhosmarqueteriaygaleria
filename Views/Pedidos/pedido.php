@@ -37,6 +37,7 @@ $subtotal = 0;
                         <div class="col-12 mb-3">
                             <p class="m-0 mb-2 fw-bold">Cliente</p>
                             <p class="m-0">Nombre: <?=$order['name']?></p>
+                            <p class="m-0">CC/NIT: <?=$order['identification']?></p>
                             <p class="m-0">Teléfono: <?=$order['phone']?></p>
                             <p class="m-0">Email: <?=$order['email']?></p>
                             <p class="m-0">Dirección: <?=$order['address']?></p>

@@ -7,6 +7,7 @@
     //dep($_SESSION['arrPOS']);exit;
 ?>
 <div id="modalItem"></div>
+<div id="modalChange"></div>
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
@@ -38,7 +39,8 @@
                     </div>
                     <div id="selectedCustomer"></div>
                     <form id="formSetOrder">
-                        <input type="hidden" name="id" id="idCustomer" value ="0">
+                        <input type="hidden" id="idOrder" name="idOrder" value="">
+                        <input type="hidden" name="id" id="idCustomer" value ="">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mt-3 mb-3">
@@ -60,7 +62,7 @@
                             </div>
                             <div class="col-12">
                                 <div class="mt-3 mb-3">
-                                    <label for="" class="form-label">Método de pago <span class="text-danger">*</span></label>
+                                    <label for="" class="form-label">Tipo de pago <span class="text-danger">*</span></label>
                                     <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required>
                                         <?php
                                             $pago="";
@@ -69,6 +71,30 @@
                                             }
                                         ?>
                                         <?=$pago?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mt-3 mb-3">
+                                    <label for="typeList" class="form-label">Estado de pago <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
+                                        <option value="1">aprobado</option>
+                                        <option value="2">pendiente</option>
+                                        <option value="3">cancelado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mt-3 mb-3">
+                                    <label for="typeList" class="form-label">Estado de pedido <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="statusOrder" name="statusOrder" required>
+                                        <?php
+                                            $status="";
+                                            for ($i=0; $i < count(STATUS) ; $i++) { 
+                                                $status .='<option value="'.$i.'">'.STATUS[$i].'</option>';
+                                            }
+                                        ?>
+                                        <?=$status?>
                                     </select>
                                 </div>
                             </div>

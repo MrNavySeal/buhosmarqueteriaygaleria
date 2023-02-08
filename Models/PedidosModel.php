@@ -3,6 +3,7 @@
         private $intIdOrder;
         private $intIdUser;
         private $intIdTransaction;
+        private $strIdentification;
         private $strFirstName;
         private $strLastName;
         private $strEmail;
@@ -236,7 +237,7 @@
             $request = $this->select($sql);
             return $request;
         }
-        public function insertOrder(int $idUser, string $idTransaction, string $strName,string $strEmail,string $strPhone,string $strAddress,
+        public function insertOrder(int $idUser, string $idTransaction, string $strName,string $strIdentification,string $strEmail,string $strPhone,string $strAddress,
         string $strNote,string $strDate,string $cupon,int $envio,int $total,string $status, string $type,string $statusOrder){
 
             $this->strIdTransaction = $idTransaction;
@@ -245,16 +246,18 @@
             $this->strEmail = $strEmail;
             $this->strPhone = $strPhone;
             $this->strAddress = $strAddress;
+            $this->strIdentification = $strIdentification;
             if($strDate !=""){
                 $arrDate = explode("-",$strDate);
                 $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
                 $dateFormat = date_format($dateCreated,"Y-m-d");
                 
-                $sql ="INSERT INTO orderdata(personid,idtransaction,name,email,phone,address,note,amount,date,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql ="INSERT INTO orderdata(personid,idtransaction,name,identification,email,phone,address,note,amount,date,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $this->intIdUser, 
                     $this->strIdTransaction,
                     $this->strName,
+                    $this->strIdentification,
                     $this->strEmail,
                     $this->strPhone,
                     $this->strAddress,
@@ -269,11 +272,12 @@
                 );
                 $request = $this->insert($sql,$arrData);
             }else{
-                $sql ="INSERT INTO orderdata(personid,idtransaction,name,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql ="INSERT INTO orderdata(personid,idtransaction,name,identification,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $this->intIdUser, 
                     $this->strIdTransaction,
                     $this->strName,
+                    $this->strIdentification,
                     $this->strEmail,
                     $this->strPhone,
                     $this->strAddress,
@@ -341,11 +345,28 @@
             $request = $this->update($sql,$arrData);
             return $request;
         }
-        public function updateOrder($idOrder,$idTransaction,$strDate,$strNote,$type,$status,$statusOrder){
+        public function updateOrder($idOrder,$idTransaction,string $strName,$strIdentification,string $strEmail,string $strPhone,string $strAddress,$strDate,$strNote,$type,$status,$statusOrder){
             $this->intIdOrder = $idOrder;
             $this->strIdTransaction = $idTransaction;
-            $sql = "UPDATE orderdata SET idtransaction=?,note=?,type=?,status=?, date=?,statusorder=? WHERE idorder = $this->intIdOrder";
-            $arrData = array($this->strIdTransaction,$strNote,$type,$status,$strDate,$statusOrder);
+            $this->strName = $strName;
+            $this->strEmail = $strEmail;
+            $this->strPhone = $strPhone;
+            $this->strAddress = $strAddress;
+            $this->strIdentification = $strIdentification;
+            $sql = "UPDATE orderdata SET idtransaction=?,name=?,identification=?,email=?,phone=?,address=?,note=?,type=?,status=?, date=?,statusorder=? WHERE idorder = $this->intIdOrder";
+            $arrData = array(
+                $this->strIdTransaction,
+                $this->strName,
+                $this->strIdentification,
+                $this->strEmail,
+                $this->strPhone,
+                $this->strAddress,
+                $strNote,
+                $type,
+                $status,
+                $strDate,
+                $statusOrder
+            );
             $request = $this->update($sql,$arrData);
             return $request;
         }

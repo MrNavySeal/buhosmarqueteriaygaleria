@@ -176,6 +176,10 @@ if(document.querySelector("#pedidos")){
                                         <td>${objData.data.name}</td>
                                     </tr>
                                     <tr>
+                                        <td><strong>CC/NIT: </strong></td>
+                                        <td>${objData.data.identification}</td>
+                                    </tr>
+                                    <tr>
                                         <td><strong>Telefono: </strong></td>
                                         <td>${objData.data.phone}</td>
                                     </tr>
@@ -187,6 +191,7 @@ if(document.querySelector("#pedidos")){
                             </table>
                             <form id="formOrder">
                                 <input type="hidden" id="idOrder" name="idOrder" value="${objData.data.idorder}">
+                                <input type="hidden" id="idCustomer" name="idCustomer" value="">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mt-3 mb-3">
@@ -206,7 +211,7 @@ if(document.querySelector("#pedidos")){
                                     <textarea rows="5" name="strNote" id="txtNotePos" class="form-control">${objData.data.note}</textarea>
                                 </div>
                                 <div class="mt-3 mb-3">
-                                    <label for="" class="form-label">Método de pago <span class="text-danger">*</span></label>
+                                    <label for="" class="form-label">Tipo de pago <span class="text-danger">*</span></label>
                                     <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required>
                                     ${objData.data.payments}
                                     </select>
@@ -240,7 +245,7 @@ if(document.querySelector("#pedidos")){
                 </div>
             </div>
             `;
-    
+            
             modalItem.innerHTML = modal;
             let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
             let arrDate = new String(objData.data.date).split("/");
@@ -277,7 +282,6 @@ if(document.querySelector("#pedidos")){
         });
     }
 }
-
 function addProduct(id=null, element){
     let formData = new FormData();
     const toastLiveExample = document.getElementById('liveToast');
@@ -467,12 +471,53 @@ function updateCart(){
         })
     }
 }
-function openModalOrder(){
+function openModalOrder(idOrder=null){
     let modal = new bootstrap.Modal(document.querySelector("#modalPos"));
-    moneyReceived.value = document.querySelector("#total").getAttribute("data-value");
-    let total = moneyReceived.value;
-    document.querySelector("#saleValue").innerHTML = "Valor de venta: "+MS+total;
-    document.querySelector("#moneyBack").innerHTML = "Dinero a devolver: "+MS+0;
+    if(idOrder!=null){
+        let formData = new FormData();
+        formData.append("id",idOrder);
+        request(base_url+"/pedidos/getOrder",formData,"post").then(function(objData){
+            let div = `
+            <button class="p-2 btn w-100 text-start border border-primary" data-id="${objData.data.idorder}" onclick="delCustom(this)">
+                <p class="m-0 fw-bold">${objData.data.name}</p>
+                <p class="m-0">CC/NIT: <span>${objData.data.identification}</span></p>
+                <p class="m-0">Correo: <span>${objData.data.email}</span></p>
+                <p class="m-0">Teléfono: <span>${objData.data.phone}</span></p>
+            </button>
+            `;
+            document.querySelector("#selectedCustomer").innerHTML = div;
+            document.querySelector("#idOrder").value = idOrder;
+            document.querySelector("#idCustomer").value=objData.data.personid;
+            document.querySelector("#txtTransaction").value = objData.data.idtransaction;
+            let arrDate = new String(objData.data.date).split("/");
+            document.querySelector("#txtDate").valueAsDate = new Date(arrDate[2]+"-"+arrDate[1]+"-"+arrDate[0]);
+            document.querySelector("#txtNotePos").value = objData.data.note;
+            document.querySelector("#paymentList").innerHTML = objData.data.payments;
+            document.querySelector("#statusList").innerHTML = objData.data.options;
+            document.querySelector("#statusOrder").innerHTML = objData.data.statusorder;
+            document.querySelector("#moneyReceived").value = objData.data.amount;
+            document.querySelector("#moneyReceived").setAttribute("disabled","disabled");
+            document.querySelector("#discount").setAttribute("disabled","disabled");
+            searchCustomers.parentElement.classList.add("d-none");
+        });
+    }else{
+        moneyReceived.value = document.querySelector("#total").getAttribute("data-value");
+        let total = moneyReceived.value;
+        document.querySelector("#moneyReceived").value = total;
+        document.querySelector("#saleValue").innerHTML = "Valor de venta: "+MS+total;
+        document.querySelector("#moneyBack").innerHTML = "Dinero a devolver: "+MS+0;
+        document.querySelector("#selectedCustomer").innerHTML = "";
+        document.querySelector("#idOrder").value = "";
+        document.querySelector("#txtTransaction").value = "";
+        document.querySelector("#txtDate").value = "";
+        document.querySelector("#idCustomer").value="";
+        document.querySelector("#txtNotePos").value = "";
+        document.querySelector("#paymentList").value = 1;
+        document.querySelector("#statusList").value = 1;
+        document.querySelector("#statusOrder").value = 1;
+        document.querySelector("#moneyReceived").removeAttribute("disabled");
+        document.querySelector("#discount").removeAttribute("disabled");
+    }
     modal.show();
 }
 function addCustom(element){

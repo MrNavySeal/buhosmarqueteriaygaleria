@@ -115,6 +115,10 @@ if($order['status'] == "approved"){
             <td><?= $order['name'] ?></td>
         </tr>
         <tr>
+            <td>CC/NIT:</td>
+            <td><?= $order['identification'] ?></td>
+        </tr>
+        <tr>
             <td>Email</td>
             <td><?= $order['email'] ?></td>
         </tr>

@@ -79,7 +79,6 @@
                 if($_POST){
                     $idOrder = intval($_POST['id']);
                     $data = $this->model->selectOrder($idOrder,"");
-                    $data['amount'] = formatNum($data['amount']);
                     $options ="";
                     $statusOrder="";
                     $payments="";
@@ -122,52 +121,6 @@
                     $arrResponse = array("status"=>true,"data"=>$data);
                 }
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function updateOrder(){
-            if($_SESSION['permitsModule']['u']){
-                //dep($_POST);exit;
-                if($_POST){
-                    if(empty($_POST['strNote']) || empty($_POST['statusList']) || empty($_POST['strDate']) || 
-                    empty($_POST['txtTransaction']) || empty($_POST['statusOrder'])){
-                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                    }
-                    $idOrder = intval($_POST['idOrder']);
-                    $status = intval($_POST['statusList']);
-                    $statusOrder = intval($_POST['statusOrder']);
-                    $strNote = strClean($_POST['strNote']);
-                    $strDate = $_POST['strDate'];
-                    $idTransaction = strClean($_POST['txtTransaction']);
-                    $statusO ="";
-                    if($status == 1){
-                        $status = "approved";
-                    }else if($status == 2){
-                        $status ="pendent";
-                    }else{
-                        $status = "canceled";
-                    }
-                    for ($i=0; $i < count(STATUS) ; $i++) { 
-                        if($statusOrder == $i){
-                            $statusO = STATUS[$i];
-                            break;
-                        }
-                    }
-                    $type =intval($_POST['paymentList']);
-                    for ($i=0; $i < count(PAGO) ; $i++) { 
-                        if($i == $type){
-                            $type = PAGO[$i];
-                            break;
-                        }
-                    }
-                    $request = $this->model->updateOrder($idOrder,$idTransaction,$strDate,$strNote,$type,$status,$statusO);
-                    if($request>0){
-                        $arrResponse = array("status"=>true,"msg"=>"Pedido actualizado","data"=>$this->getOrders()['data']);
-                    }else{
-                        $arrResponse = array("status"=>false,"msg"=>"No se ha podido actualizar el pedido");
-                    }
-                }
-                echo json_encode ($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
@@ -219,7 +172,7 @@
                         }*/
                         if($_SESSION['permitsModule']['u']){
                             $btnWpp='<a href="https://wa.me/57'.$request[$i]['phone'].'?text=Buen%20dia%20'.$request[$i]['name'].'" class="btn btn-success text-white m-1" type="button" title="Whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>';
-                            $btnEdit = '<button class="btn btn-success text-white m-1" type="button" title="Edit" data-id="'.$request[$i]['idorder'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success text-white m-1" type="button" title="Edit" data-id="'.$request[$i]['idorder'].'" onclick="openModalOrder('.$request[$i]['idorder'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['userData']['roleid'] == 1 || $_SESSION['userData']['roleid'] == 3){
 
@@ -400,6 +353,7 @@
                         $html .='
                         <button class="p-2 btn w-100 text-start" data-id="'.$request[$i]['idperson'].'" onclick="addCustom(this)">
                             <p class="m-0 fw-bold">'.$request[$i]['firstname'].' '.$request[$i]['lastname'].'</p>
+                            <p class="m-0">CC/NIT: <span>'.$request[$i]['identification'].'</span></p>
                             <p class="m-0">Correo: <span>'.$request[$i]['email'].'</span></p>
                             <p class="m-0">Teléfono: <span>'.$request[$i]['phone'].'</span></p>
                         </button>
@@ -754,42 +708,70 @@
                         }
                         
                         $idUser = intval($_POST['id']);
+                        $idOrder = intval($_POST['idOrder']);
                         $customInfo = $this->model->selectCustomer($idUser);
-                        $status = "approved";
-                        $statusOrder = "confirmado";
-                        $received = intval($_POST['received']);
+                        $status = intval($_POST['statusList']);
+                        $statusOrder = intval($_POST['statusOrder']);
+                        $received = empty($_POST['received']) ? 0 : intval($_POST['received']);
                         $strNote = strClean($_POST['strNote']);
                         $strDate = $_POST['strDate'];
                         $strName = $customInfo['firstname']." ".$customInfo['lastname'];
                         $strEmail = $customInfo['email'];
                         $strPhone = $customInfo['phone'];
+                        $strIdentification = $customInfo['identification'];
                         $strAddress = $customInfo['address'].", ".$customInfo['city']."/".$customInfo['state']."/".$customInfo['country'];
                         $cupon = "";
                         $idTransaction =strClean($_POST['txtTransaction']);
                         $type =intval($_POST['paymentList']);
                         $envio = 0;
+                        $option="";
+                        $request="";
                         for ($i=0; $i < count(PAGO) ; $i++) { 
                             if($i == $type){
                                 $type = PAGO[$i];
                                 break;
                             }
                         }
-                        if($_POST['discount'] > 0 && $_POST['discount'] <=90){
-                            
-                            $discount = intval($_POST['discount']);
-                            $strNote.="- Descuento del ".$discount."%";
-                            $total = $total -($total*($discount*0.01));
+                        for ($i=0; $i < count(STATUS) ; $i++) { 
+                            if($i == $statusOrder){
+                                $statusOrder = STATUS[$i];
+                                break;
+                            }
                         }
-                        if($received < $total){
+                        if($status == 1){
+                            $status = "approved";
+                        }else if($status == 2){
                             $status = "pendent";
-                            $strNote .= " - abona ".formatNum($received,false).", debe ".formatNum($total-$received,false);
+                        }else{
+                            $status = "canceled";
                         }
-                        $request = $this->model->insertOrder($idUser, $idTransaction,$strName,$strEmail,$strPhone,$strAddress,$strNote,$strDate,$cupon,$envio,$total,$status,$type,$statusOrder);          
+                        
+                        if($idOrder == 0){
+                            $option = 1;
+                            if($_POST['discount'] > 0 && $_POST['discount'] <=90){
+                            
+                                $discount = intval($_POST['discount']);
+                                $strNote.="- Descuento del ".$discount."%";
+                                $total = $total -($total*($discount*0.01));
+                            }
+                            if($received < $total){
+                                $status = "pendent";
+                                $strNote .= " - abona ".formatNum($received,false).", debe ".formatNum($total-$received,false);
+                            }
+                            $request = $this->model->insertOrder($idUser, $idTransaction,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strNote,$strDate,$cupon,$envio,$total,$status,$type,$statusOrder);          
+                        }else{
+                            $option = 2;
+                            $request = $this->model->updateOrder($idOrder,$idTransaction,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$type,$status,$statusOrder);          
+                        }
                         if($request>0){
-                            $arrOrder = array("idorder"=>$request,"iduser"=>$idUser,"products"=>$_SESSION['arrPOS']);
-                            $requestDetail = $this->model->insertOrderDetail($arrOrder);
-                            unset($_SESSION['arrPOS']);
-                            $arrResponse = array("status"=>true,"msg"=>"Pedido realizado");
+                            if($option == 1){
+                                $arrOrder = array("idorder"=>$request,"iduser"=>$idUser,"products"=>$_SESSION['arrPOS']);
+                                $requestDetail = $this->model->insertOrderDetail($arrOrder);
+                                unset($_SESSION['arrPOS']);
+                                $arrResponse = array("status"=>true,"msg"=>"Pedido realizado");
+                            }else{
+                                $arrResponse = array("status"=>true,"msg"=>"Pedido actualizado");
+                            }
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"Error, no se ha podido realizar el pedido, inténtelo de nuevo.");
                         }
