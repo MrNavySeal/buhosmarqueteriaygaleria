@@ -77,8 +77,8 @@ function addItem(){
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="txtDocument" class="form-label">Número de cédula <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="txtDocument" name="txtDocument" value="<?=$_SESSION['userData']['identification']?>" required>
+                                    <label for="txtDocument" class="form-label">CC/NIT</label>
+                                    <input type="text" class="form-control" id="txtDocument" name="txtDocument">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -189,7 +189,7 @@ function addItem(){
         let statusList = document.querySelector("#statusList").value;
         let idUser = document.querySelector("#idUser").value;
         let strDocument = document.querySelector("#txtDocument").value;
-        if(strFirstName == "" || strLastName == "" || strEmail == "" || strPhone == "" || statusList == "" || strDocument==""){
+        if(strFirstName == "" || strLastName == "" || strEmail == "" || strPhone == "" || statusList == ""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
@@ -205,9 +205,11 @@ function addItem(){
             Swal.fire("Error","El número de teléfono debe tener al menos 9 dígitos","error");
             return false;
         }
-        if(strDocument.length < 8 || strDocument.length > 10){
-            Swal.fire("Error","El número de cédula debe tener de 8 a 10 dígitos","error");
-            return false;
+        if(strDocument!=""){
+            if(strDocument.length < 8 || strDocument.length > 10){
+                Swal.fire("Error","El número de cédula debe tener de 8 a 10 dígitos","error");
+                return false;
+            }
         }
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
@@ -264,6 +266,10 @@ function viewItem(id){
                                     <tr>
                                         <td><strong>Apellidos: </strong></td>
                                         <td>${objData.data.lastname}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CC/NIT: </strong></td>
+                                        <td>${objData.data.identification}</td>
                                     </tr>
                                     <tr>
                                         <td><strong>Email: </strong></td>
@@ -347,8 +353,12 @@ function editItem(id){
                                         <input type="text" class="form-control" id="txtLastName" name="txtLastName" value="${objData.data.lastname}" required>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="txtDocument" class="form-label">CC/NIT</label>
+                                        <input type="text" class="form-control" id="txtDocument" name="txtDocument" value="${objData.data.identification}">
+                                    </div>
+                                </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="txtEmail" class="form-label">Email <span class="text-danger">*</span></label>
@@ -361,9 +371,7 @@ function editItem(id){
                                         <input type="number" class="form-control" id="txtPhone" name="txtPhone" value="${objData.data.phone}" required>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="txtAddress" class="form-label">Dirección</label>
                                         <input type="text" class="form-control" id="txtAddress" name="txtAddress" value="${objData.data.address}">
@@ -464,7 +472,7 @@ function editItem(id){
             let statusList = document.querySelector("#statusList").value;
             let strPassword = document.querySelector("#txtPassword").value;
             let idUser = document.querySelector("#idUser").value;
-
+            let strDocument = document.querySelector("#txtDocument").value;
             if(strFirstName == "" || strLastName == "" || strEmail == "" || strPhone == "" || statusList == ""){
                 Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
                 return false;
@@ -480,6 +488,12 @@ function editItem(id){
             if(strPhone.length < 9){
                 Swal.fire("Error","El número de teléfono debe tener al menos 9 dígitos","error");
                 return false;
+            }
+            if(strDocument!=""){
+                if(strDocument.length < 8 || strDocument.length > 10){
+                    Swal.fire("Error","El número de cédula debe tener de 8 a 10 dígitos","error");
+                    return false;
+                }
             }
             
             url = base_url+"/clientes/setCustomer";

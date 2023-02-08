@@ -33,6 +33,7 @@
                                 <th>Portada</th>
                                 <th>Nombres</th>
                                 <th>Apellidos</th>
+                                <th>CC/NIT</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
                                 <th>Fecha</th>

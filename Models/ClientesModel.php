@@ -20,10 +20,11 @@
         public function __construct(){
             parent::__construct();
         }
-        public function insertCustomer(string $strName,string $strLastName, string $strPicture, string $intPhone, string $strEmail,string $strAddress, int $intCountry,int $intState,int $intCity,string $strPassword,int $intStatus,int $intRolId){
+        public function insertCustomer(string $strName,string $strLastName, string $strIdentification,string $strPicture, string $intPhone, string $strEmail,string $strAddress, int $intCountry,int $intState,int $intCity,string $strPassword,int $intStatus,int $intRolId){
             $this->strPicture = $strPicture;
 			$this->strName = $strName;
 			$this->strLastName = $strLastName;
+            $this->strIdentification = $strIdentification;
             $this->strEmail = $strEmail;
 			$this->intPhone = $intPhone;
             $this->strAddress = $strAddress;
@@ -34,15 +35,19 @@
             $this->intStatus = $intStatus;
             $this->intRolId = $intRolId;
 			$return = 0;
+            $sql="";
+            if($this->strIdentification!=""){
+                $sql= "SELECT * FROM person WHERE email = '{$this->strEmail}' OR phone = '{$this->intPhone}' OR identification = '{$this->strIdentification}'";
+            }else{
 
-			$sql = "SELECT * FROM person WHERE 
-					email = '{$this->strEmail}' OR phone = '{$this->intPhone}'";
+                $sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' OR phone = '{$this->intPhone}'";
+            }
 			$request = $this->select_all($sql);
 
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO person(image,firstname,lastname,email,phone,address,countryid,stateid,cityid,password,status,roleid) 
-								  VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+				$query_insert  = "INSERT INTO person(image,firstname,lastname,email,phone,address,countryid,stateid,cityid,identification,password,status,roleid) 
+								  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	        	$arrData = array(
                     $this->strPicture,
                     $this->strName,
@@ -53,6 +58,7 @@
                     $this->intCountryId,
                     $this->intStateId,
                     $this->intCityId,
+                    $this->strIdentification,
                     $this->strPassword,
                     $this->intStatus,
                     $this->intRolId
@@ -64,11 +70,12 @@
 			}
 	        return $return;
 		}
-        public function updateCustomer(int $idUser, string $strName,string $strLastName, string $strPicture, string $intPhone,string $strEmail, string $strAddress, int $intCountry,int $intState,int $intCity, string $strPassword,int $intStatus,int $intRolId){
+        public function updateCustomer(int $idUser, string $strName,string $strLastName,string $strIdentification, string $strPicture, string $intPhone,string $strEmail, string $strAddress, int $intCountry,int $intState,int $intCity, string $strPassword,int $intStatus,int $intRolId){
             $this->intIdUser = $idUser;
 			$this->strPicture = $strPicture;
 			$this->strName = $strName;
 			$this->strLastName = $strLastName;
+            $this->strIdentification = $strIdentification;
             $this->strEmail = $strEmail;
 			$this->intPhone = $intPhone;
             $this->strAddress = $strAddress;
@@ -79,12 +86,18 @@
             $this->intStatus = $intStatus;
             $this->intRolId = $intRolId;
 
-			$sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND phone = '{$this->intPhone}' AND idperson != $this->intIdUser";
+            $sql="";
+            if($this->strIdentification!=""){
+                $sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND phone = '{$this->intPhone}' AND identification = '{$this->strIdentification}' AND idperson != $this->intIdUser";
+            }else{
+
+                $sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND phone = '{$this->intPhone}' AND idperson != $this->intIdUser";
+            }
 			$request = $this->select_all($sql);
 
 			if(empty($request)){
 				if($this->strPassword  != ""){
-					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,cityid=?, password=?, status=?,roleid=? 
+					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,cityid=?,identification=?, password=?, status=?,roleid=? 
 							WHERE idperson = $this->intIdUser";
 					$arrData = array(
                         $this->strPicture,
@@ -96,12 +109,13 @@
                         $this->intCountryId,
                         $this->intStateId,
                         $this->intCityId,
+                        $this->strIdentification,
                         $this->strPassword,
                         $this->intStatus,
                         $this->intRolId
                     );
 				}else{
-					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,cityid=?,status=?,roleid=? 
+					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,cityid=?,identification=?,status=?,roleid=? 
 							WHERE idperson = $this->intIdUser";
 					$arrData = array(
                         $this->strPicture,
@@ -113,6 +127,7 @@
                         $this->intCountryId,
                         $this->intStateId,
                         $this->intCityId,
+                        $this->strIdentification,
                         $this->intStatus,
                         $this->intRolId
                     );

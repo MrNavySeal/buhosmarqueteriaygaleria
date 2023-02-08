@@ -61,6 +61,7 @@
                                 </td>
                                 <td data-label="Nombres: ">'.$request[$i]['firstname'].'</td>
                                 <td data-label="Apellidos: ">'.$request[$i]['lastname'].'</td>
+                                <td data-label="CC/NIT: ">'.$request[$i]['identification'].'</td>
                                 <td data-label="Correo: ">'.$request[$i]['email'].'</td>
                                 <td data-label="Teléfono: ">'.$request[$i]['phone'].'</td>
                                 <td data-label="Fecha: ">'.$request[$i]['date'].'</td>
@@ -154,6 +155,7 @@
                         $intStatus = intval($_POST['statusList']);
                         $password =$strPassword;
                         $request_user = "";
+                        $strIdentification = strClean($_POST['txtDocument']);
                         $photo = "";
                         $photoProfile="";
                         $company = getCompanyInfo();
@@ -179,6 +181,7 @@
                                 $request_user = $this->model->insertCustomer(
                                     $strName, 
                                     $strLastName,
+                                    $strIdentification,
                                     $photoProfile, 
                                     $intPhone, 
                                     $strEmail,
@@ -215,6 +218,7 @@
                                     $idUser, 
                                     $strName, 
                                     $strLastName,
+                                    $strIdentification,
                                     $photoProfile, 
                                     $intPhone, 
                                     $strEmail,
@@ -262,7 +266,7 @@
                                 
                             }
                         }else if($request_user == 'exist'){
-                            $arrResponse = array('status' => false, 'msg' => '¡Atención! el correo electrónico o el número de teléfono ya están registrados, pruebe con otro.');		
+                            $arrResponse = array('status' => false, 'msg' => '¡Atención! el correo electrónico, la identificación o el número de teléfono ya están registrados, pruebe con otro.');		
                         }else{
                             $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
                         }
