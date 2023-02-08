@@ -253,7 +253,7 @@
             $this->intCityId = $intCity;
             $this->strIdentification = $strIdentification;
 
-			$sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND identification = '{$this->strIdentification}' AND idperson != $this->intIdUser";
+			$sql = "SELECT * FROM person WHERE (email = '{$this->strEmail}' OR identification = '{$this->strIdentification}' OR phone = '{$this->intPhone}') AND idperson != $this->intIdUser";
 			$request = $this->select_all($sql);
 
 			if(empty($request)){

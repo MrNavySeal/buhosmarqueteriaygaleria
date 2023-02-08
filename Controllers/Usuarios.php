@@ -368,7 +368,7 @@
                         }
                         $arrResponse = array('status' => true, 'msg' => 'Datos actualizados');
                     }else if($request_user == 'exist'){
-                        $arrResponse = array('status' => false, 'msg' => '¡Atención! el correo electrónico o el número de teléfono ya están registrados, pruebe con otro.');		
+                        $arrResponse = array('status' => false, 'msg' => '¡Atención! el correo electrónico, la cédula o el número de teléfono ya están registrados, pruebe con otro.');		
                     }else{
                         $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos');
                     }
