@@ -88,10 +88,10 @@
 
             $sql="";
             if($this->strIdentification!=""){
-                $sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND phone = '{$this->intPhone}' AND identification = '{$this->strIdentification}' AND idperson != $this->intIdUser";
+                $sql = "SELECT * FROM person WHERE (email = '{$this->strEmail}' OR phone = '{$this->intPhone}' OR identification = '{$this->strIdentification}') AND idperson != $this->intIdUser";
             }else{
 
-                $sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND phone = '{$this->intPhone}' AND idperson != $this->intIdUser";
+                $sql = "SELECT * FROM person WHERE (email = '{$this->strEmail}' OR phone = '{$this->intPhone}') AND idperson != $this->intIdUser";
             }
 			$request = $this->select_all($sql);
 
