@@ -92,6 +92,7 @@ if($order['status'] == "approved"){
             </td>
             <td class="w33 text-center">
                 <h4><strong><?= $data['company']['name'] ?></strong></h4>
+                <p>Oswaldo Parrado Clavijo</p>
                 <p>NIT 17.344.806-8 No responsable de IVA</p>
                 <p>
                     <?= $data['company']['addressfull']?> <br>
@@ -102,8 +103,10 @@ if($order['status'] == "approved"){
             <td class=" w33 text-right">
                 <p>
                     Fecha: <?= $order['date'] ?><br>
-                    Pedido: <strong><?= $order['idorder'] ?></strong><br>
+                    Factura de venta: <strong>#<?= $order['idorder'] ?></strong><br>
+                    <?php if($order['idtransaction']){?>
                     Transacción: <strong><?= $order['idtransaction'] ?></strong><br>
+                    <?php }?>
                     Tipo de pago: <?=$order['type']?><br>
                 </p>
             </td>				

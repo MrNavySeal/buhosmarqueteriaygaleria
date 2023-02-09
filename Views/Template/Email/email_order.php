@@ -67,7 +67,7 @@ $subtotal = 0;
 				<td width="33.33%">
 					<div class="text-right">
 						<p>
-							Pedido: <strong><?= $order['idorder'] ?></strong><br>
+							Factura de venta: <strong>#<?= $order['idorder'] ?></strong><br>
                             Fecha: <?= $order['date'] ?><br>
 						</p>
 					</div>

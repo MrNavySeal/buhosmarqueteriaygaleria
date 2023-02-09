@@ -21,15 +21,17 @@ $subtotal = 0;
                                 <p class="m-0">Oswaldo Parrado Clavijo</p>
                                 <p class="m-0">NIT 17.344.806-8 No responsable de IVA</p>
                                 <p class="m-0"><?=$company['addressfull']?></p>
-                                <p class="m-0">+<?=$company['phonecode']." ".$company['phone']?></p>
+                                <p class="m-0"><?=$company['phone']?> - 3193094264</p>
                                 <p class="m-0"><?=$company['email']?></p>
                                 <p class="m-0"><?=BASE_URL?></p>
                             </div>
                         </div>
                         <div class="text-start">
                             <p class="m-0"><span class="fw-bold">Fecha: </span><?=$order['date']?></p>
-                            <p class="m-0"><span class="fw-bold">Pedido: </span>#<?=$order['idorder']?></p>
-                            <p class="m-0"><span class="fw-bold">Transaccion: </span><?=$order['idtransaction']?></p>
+                            <p class="m-0"><span class="fw-bold">Factura de venta: </span>#<?=$order['idorder']?></p>
+                            <?php if($order['idtransaction'] != ""){?>
+                            <p class="m-0"><span class="fw-bold">Transacción: </span><?=$order['idtransaction']?></p>
+                            <?php }?>
                             <p class="m-0"><span class="fw-bold">Tipo de pago: </span><?=$order['type']?></p>
                         </div>
                     </div>
