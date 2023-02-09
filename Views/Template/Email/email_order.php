@@ -80,7 +80,7 @@ $subtotal = 0;
 		    	<td><?= $order['name'] ?></td>
 		    </tr>
 			<tr>
-		    	<td>Número de cédula:</td>
+		    	<td>CC/NIT:</td>
 		    	<td><?= $order['identification'] ?></td>
 		    </tr>
 			<tr>

@@ -77,7 +77,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="txtDocument" class="form-label">Número de cédula <span class="text-danger">*</span></label>
+                                <label for="txtDocument" class="form-label">CC/NIT <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" id="txtDocument" name="txtDocument" value="<?=$_SESSION['userData']['identification']?>" placeholder="12345678" required="">
                             </div>
                         </div>
