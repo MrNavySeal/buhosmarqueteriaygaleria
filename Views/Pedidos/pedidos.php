@@ -7,7 +7,6 @@
     //dep($_SESSION['arrPOS']);exit;
 ?>
 <div id="modalItem"></div>
-<div id="modalChange"></div>
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
@@ -44,19 +43,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mt-3 mb-3">
-                                    <label for="" class="form-label">Nro factura <span class="text-danger">*</span></label>
-                                    <input type="number" name="txtTransaction" id="txtTransaction" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mt-3 mb-3">
                                     <label for="" class="form-label">Fecha</label>
                                     <input type="date" name="strDate" id="txtDate" class="form-control">
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="mt-3 mb-3">
-                                    <label for="" class="form-label">Notas <span class="text-danger">*</span></label>
+                                    <label for="" class="form-label">Notas</label>
                                     <textarea rows="3" name="strNote" id="txtNotePos" class="form-control"></textarea>
                                 </div>
                             </div>

@@ -699,13 +699,11 @@
             //dep($_POST);exit;
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
-                    if(empty($_POST['id']) || empty($_POST['strNote']) || empty($_POST['txtTransaction'])){
+                    if(empty($_POST['id'])){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $total = 0;
-                        foreach ($_SESSION['arrPOS'] as $pro) {
-                            $total +=$pro['qty']*$pro['price'];
-                        }
+                        
                         
                         $idUser = intval($_POST['id']);
                         $idOrder = intval($_POST['idOrder']);
@@ -721,7 +719,6 @@
                         $strIdentification = $customInfo['identification'];
                         $strAddress = $customInfo['address'].", ".$customInfo['city']."/".$customInfo['state']."/".$customInfo['country'];
                         $cupon = "";
-                        $idTransaction =strClean($_POST['txtTransaction']);
                         $type =intval($_POST['paymentList']);
                         $envio = 0;
                         $option="";
@@ -748,6 +745,9 @@
                         
                         if($idOrder == 0){
                             $option = 1;
+                            foreach ($_SESSION['arrPOS'] as $pro) {
+                                $total +=$pro['qty']*$pro['price'];
+                            }
                             if($_POST['discount'] > 0 && $_POST['discount'] <=90){
                             
                                 $discount = intval($_POST['discount']);
@@ -758,10 +758,10 @@
                                 $status = "pendent";
                                 $strNote .= " - abona ".formatNum($received,false).", debe ".formatNum($total-$received,false);
                             }
-                            $request = $this->model->insertOrder($idUser, $idTransaction,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strNote,$strDate,$cupon,$envio,$total,$status,$type,$statusOrder);          
+                            $request = $this->model->insertOrder($idUser,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strNote,$strDate,$cupon,$envio,$total,$status,$type,$statusOrder);          
                         }else{
                             $option = 2;
-                            $request = $this->model->updateOrder($idOrder,$idTransaction,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$type,$status,$statusOrder);          
+                            $request = $this->model->updateOrder($idOrder,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$type,$status,$statusOrder);          
                         }
                         if($request>0){
                             if($option == 1){

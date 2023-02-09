@@ -42,12 +42,11 @@ if(document.querySelector("#quickSale")){
         let received = moneyReceived.value;
         let strDate = document.querySelector("#txtDate").value;
         let strNote = document.querySelector("#txtNotePos").value;
-        let strTransaction = document.querySelector("#txtTransaction").value;
         if(id <= 0){
             Swal.fire("Error","Por favor, añada un cliente para establecer el pedido","error");
             return false;
         }
-        if(received =="" || strNote =="" || strTransaction ==""){
+        if(received ==""){
             Swal.fire("Error","Los campos con (*) son obligatorios","error");
             return false;
         }
@@ -121,8 +120,6 @@ if(document.querySelector("#pedidos")){
         let id = element.getAttribute("data-id");
         if(element.name == "btnDelete"){
             deleteItem(id);
-        }else if(element.name=="btnEdit"){
-            editItem(id);
         }
     });
     function deleteItem(id){
@@ -149,136 +146,6 @@ if(document.querySelector("#pedidos")){
                     }
                 });
             }
-        });
-    }
-    function editItem(id){
-        let formData = new FormData();
-        formData.append("id",id);
-        request(base_url+"/pedidos/getOrder",formData,"post").then(function(objData){
-            let modalItem = document.querySelector("#modalItem");
-            let modal= `
-            <div class="modal fade" id="modalElement">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Actualizar pedido</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <table class="table align-middle text-break">
-                                <tbody id="listItem">
-                                    <tr>
-                                        <td><strong>Orden: </strong></td>
-                                        <td>${objData.data.idorder}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Cliente: </strong></td>
-                                        <td>${objData.data.name}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>CC/NIT: </strong></td>
-                                        <td>${objData.data.identification}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Telefono: </strong></td>
-                                        <td>${objData.data.phone}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Total: </strong></td>
-                                        <td>${objData.data.amount}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <form id="formOrder">
-                                <input type="hidden" id="idOrder" name="idOrder" value="${objData.data.idorder}">
-                                <input type="hidden" id="idCustomer" name="idCustomer" value="">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mt-3 mb-3">
-                                            <label for="" class="form-label">Transacción <span class="text-danger">*</span></label>
-                                            <input type="number" name="txtTransaction" id="txtTransaction" class="form-control" value="${objData.data.idtransaction}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mt-3 mb-3">
-                                            <label for="" class="form-label">Fecha <span class="text-danger">*</span></label>
-                                            <input type="date" name="strDate" id="txtDate" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mt-3 mb-3">
-                                    <label for="" class="form-label">Notas</label>
-                                    <textarea rows="5" name="strNote" id="txtNotePos" class="form-control">${objData.data.note}</textarea>
-                                </div>
-                                <div class="mt-3 mb-3">
-                                    <label for="" class="form-label">Tipo de pago <span class="text-danger">*</span></label>
-                                    <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required>
-                                    ${objData.data.payments}
-                                    </select>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="typeList" class="form-label">Estado de pago <span class="text-danger">*</span></label>
-                                            <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                                ${objData.data.options}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="typeList" class="form-label">Estado de pedido <span class="text-danger">*</span></label>
-                                            <select class="form-control" aria-label="Default select example" id="statusOrder" name="statusOrder" required>
-                                                ${objData.data.statusorder}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary" id="btnAdd">Actualizar</button>
-                                    <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            `;
-            
-            modalItem.innerHTML = modal;
-            let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-            let arrDate = new String(objData.data.date).split("/");
-            document.querySelector("#txtDate").valueAsDate = new Date(arrDate[2]+"-"+arrDate[1]+"-"+arrDate[0]);
-            modalView.show();
-            let formOrder = document.querySelector("#formOrder");
-            formOrder.addEventListener("submit",function(e){
-                e.preventDefault();
-                let formData = new FormData(formOrder);
-                let status = document.querySelector("#statusList").value;
-                let strDate = document.querySelector("#txtDate").value;
-                let statusOrder = document.querySelector("#statusOrder").value;
-                let strTransaction = document.querySelector("#txtTransaction").value;
-                if(status =="" || strDate =="" || strTransaction=="" || statusOrder ==""){
-                    Swal.fire("Error","Todos los campos con (*) son obligatorios","error");
-                    return false;
-                }
-                let btnAdd = document.querySelector("#btnAdd");
-    
-                btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-                btnAdd.setAttribute("disabled","");
-                request(base_url+"/pedidos/updateOrder",formData,"post").then(function(objData){
-                    btnAdd.removeAttribute("disabled");
-                    btnAdd.innerHTML = "Actualizar"
-                    if(objData.status){
-                        Swal.fire("Actualizado",objData.msg,"success");
-                        modalView.hide();
-                        element.innerHTML = objData.data;
-                    }else{
-                        Swal.fire("Error",objData.msg,"error");
-                    }
-                });
-            })
         });
     }
 }
@@ -488,7 +355,6 @@ function openModalOrder(idOrder=null){
             document.querySelector("#selectedCustomer").innerHTML = div;
             document.querySelector("#idOrder").value = idOrder;
             document.querySelector("#idCustomer").value=objData.data.personid;
-            document.querySelector("#txtTransaction").value = objData.data.idtransaction;
             let arrDate = new String(objData.data.date).split("/");
             document.querySelector("#txtDate").valueAsDate = new Date(arrDate[2]+"-"+arrDate[1]+"-"+arrDate[0]);
             document.querySelector("#txtNotePos").value = objData.data.note;
@@ -498,17 +364,18 @@ function openModalOrder(idOrder=null){
             document.querySelector("#moneyReceived").value = objData.data.amount;
             document.querySelector("#moneyReceived").setAttribute("disabled","disabled");
             document.querySelector("#discount").setAttribute("disabled","disabled");
+            document.querySelector(".modal-title").innerHTML = "Actualizar pedido";
             searchCustomers.parentElement.classList.add("d-none");
         });
     }else{
         moneyReceived.value = document.querySelector("#total").getAttribute("data-value");
         let total = moneyReceived.value;
+        document.querySelector(".modal-title").innerHTML = "Punto de venta";
         document.querySelector("#moneyReceived").value = total;
         document.querySelector("#saleValue").innerHTML = "Valor de venta: "+MS+total;
         document.querySelector("#moneyBack").innerHTML = "Dinero a devolver: "+MS+0;
         document.querySelector("#selectedCustomer").innerHTML = "";
         document.querySelector("#idOrder").value = "";
-        document.querySelector("#txtTransaction").value = "";
         document.querySelector("#txtDate").value = "";
         document.querySelector("#idCustomer").value="";
         document.querySelector("#txtNotePos").value = "";
@@ -517,6 +384,7 @@ function openModalOrder(idOrder=null){
         document.querySelector("#statusOrder").value = 1;
         document.querySelector("#moneyReceived").removeAttribute("disabled");
         document.querySelector("#discount").removeAttribute("disabled");
+        searchCustomers.parentElement.classList.remove("d-none");
     }
     modal.show();
 }
