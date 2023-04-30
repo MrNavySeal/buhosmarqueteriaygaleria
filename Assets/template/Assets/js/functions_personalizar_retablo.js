@@ -19,20 +19,18 @@ selectColors();
 intHeight.addEventListener("change",function(){
     if(intHeight.value <= 10.0){
         intHeight.value = 10.0;
-    }else if(intHeight.value >= 300.0){
-        intHeight.value = 300.0;
+    }else if(intHeight.value >= 500.0){
+        intHeight.value = 500.0;
     }
-    calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--face.face-front img"));
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
 });
 intWidth.addEventListener("change",function(){
     if(intWidth.value <= 10.0){
         intWidth.value = 10.0;
-    }else if(intWidth.value >= 300.0){
-        intWidth.value = 300.0;
+    }else if(intWidth.value >= 500.0){
+        intWidth.value = 500.0;
     }
-    calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--face.face-front img"));
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
 });

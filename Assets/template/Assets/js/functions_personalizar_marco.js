@@ -64,17 +64,6 @@ intHeight.addEventListener("change",function(){
     }
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
-    if(intHeight.value !="" && intWidth.value!=""){
-        btnNext.classList.remove("d-none");
-        let formData = new FormData();
-        formData.append("height",intHeight.value);
-        formData.append("width",intWidth.value);
-        request(base_url+"/enmarcar/filterProducts",formData,"post").then(function(objData){
-            if(objData.status){
-                containerFrames.innerHTML = objData.data;
-            }
-        });
-    }
 });
 intWidth.addEventListener("change",function(){
     if(intWidth.value <= 10.0){
@@ -84,17 +73,6 @@ intWidth.addEventListener("change",function(){
     }
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
-    if(intHeight.value !="" && intWidth.value!=""){
-        btnNext.classList.remove("d-none");
-        let formData = new FormData();
-        formData.append("height",intHeight.value);
-        formData.append("width",intWidth.value);
-        request(base_url+"/enmarcar/filterProducts",formData,"post").then(function(objData){
-            if(objData.status){
-                containerFrames.innerHTML = objData.data;
-            }
-        });
-    }
 });
 //----------------------------------------------
 //[Zoom events]
