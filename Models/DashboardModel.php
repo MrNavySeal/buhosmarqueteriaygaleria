@@ -41,7 +41,7 @@
             return $request;
         }
         function getLastProducts(){
-            $sql = "SELECT * FROM product ORDER BY idproduct DESC LIMIT 10";
+            $sql = "SELECT * FROM product WHERE status = 1 ORDER BY idproduct  DESC LIMIT 10";
             $request = $this->select_all($sql);
             if(!empty($request)){
                 for ($i=0; $i < count($request) ; $i++) { 
