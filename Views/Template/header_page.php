@@ -321,7 +321,10 @@
             </ul>
         </div>
     </div>
-    
-    <div id="modalLogin"></div>
+    <div>
+        
+    </div>
+    <a id="btnWhatsapp" href="<?="https://wa.me/".$company['phonecode'].$company['phone']?>" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="#" class="back--top d-none"><i class="fas fa-backward"></i></a>
     <a href="#" class="back--top d-none"><i class="fas fa-backward"></i></a>
     
