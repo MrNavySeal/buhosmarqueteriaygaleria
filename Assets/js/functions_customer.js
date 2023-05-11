@@ -83,8 +83,8 @@ function addItem(){
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="txtEmail" class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" id="txtEmail" name="txtEmail" required>
+                                    <label for="txtEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="txtEmail" name="txtEmail">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -189,7 +189,7 @@ function addItem(){
         let statusList = document.querySelector("#statusList").value;
         let idUser = document.querySelector("#idUser").value;
         let strDocument = document.querySelector("#txtDocument").value;
-        if(strFirstName == "" || strLastName == "" || strEmail == "" || strPhone == "" || statusList == ""){
+        if(strFirstName == "" || strLastName == "" || strPhone == "" || statusList == ""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
@@ -197,7 +197,7 @@ function addItem(){
             Swal.fire("Error","La contraseña debe tener al menos 8 caracteres","error");
             return false;
         }
-        if(!fntEmailValidate(strEmail)){
+        if(!fntEmailValidate(strEmail) && strEmail!=""){
             Swal.fire("Error","El email es invalido","error");
             return false;
         }
@@ -361,8 +361,8 @@ function editItem(id){
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="txtEmail" class="form-label">Email <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" id="txtEmail" name="txtEmail" value="${objData.data.email}" required>
+                                        <label for="txtEmail" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="txtEmail" name="txtEmail" value="${objData.data.email}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -473,7 +473,7 @@ function editItem(id){
             let strPassword = document.querySelector("#txtPassword").value;
             let idUser = document.querySelector("#idUser").value;
             let strDocument = document.querySelector("#txtDocument").value;
-            if(strFirstName == "" || strLastName == "" || strEmail == "" || strPhone == "" || statusList == ""){
+            if(strFirstName == "" || strLastName == "" || strPhone == "" || statusList == ""){
                 Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
                 return false;
             }
@@ -481,7 +481,7 @@ function editItem(id){
                 Swal.fire("Error","La contraseña debe tener al menos 8 caracteres","error");
                 return false;
             }
-            if(!fntEmailValidate(strEmail)){
+            if(!fntEmailValidate(strEmail) && strEmail!=""){
                 Swal.fire("Error","El email es invalido","error");
                 return false;
             }

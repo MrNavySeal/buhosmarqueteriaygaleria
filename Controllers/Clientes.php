@@ -137,15 +137,14 @@
         public function setCustomer(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
-                    if(empty($_POST['txtFirstName']) || empty($_POST['txtLastName']) || empty($_POST['txtPhone']) || empty($_POST['statusList'] )
-                    || empty($_POST['txtEmail'])){
+                    if(empty($_POST['txtFirstName']) || empty($_POST['txtLastName']) || empty($_POST['txtPhone']) || empty($_POST['statusList'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $idUser = intval($_POST['idUser']);
                         $strName = ucwords(strClean($_POST['txtFirstName']));
                         $strLastName = ucwords(strClean($_POST['txtLastName']));
                         $intPhone = intval(strClean($_POST['txtPhone']));
-                        $strEmail = strtolower(strClean($_POST['txtEmail']));
+                        $strEmail = $_POST['txtEmail'] != "" ? strtolower(strClean($_POST['txtEmail'])) : "generico@generico.co";
                         $strAddress = strClean($_POST['txtAddress']);
                         $intCountry = intval($_POST['listCountry']) != 0 ? intval($_POST['listCountry']) : 99999;
                         $intState = isset($_POST['listState']) && intval($_POST['listState']) != 0   ? intval($_POST['listState']) : 99999;
@@ -155,7 +154,7 @@
                         $intStatus = intval($_POST['statusList']);
                         $password =$strPassword;
                         $request_user = "";
-                        $strIdentification = strClean($_POST['txtDocument']);
+                        $strIdentification = strClean($_POST['txtDocument']) !="" ? strClean($_POST['txtDocument']) : "222222222";
                         $photo = "";
                         $photoProfile="";
                         $company = getCompanyInfo();
@@ -245,7 +244,9 @@
                                 $data['email_remitente'] = $company['email'];
                                 $data['password'] = $password;
                                 $data['company'] = $company;
-                                sendEmail($data,"email_credentials");
+                                if($strEmail !="generico@generico.co"){
+                                    sendEmail($data,"email_credentials");
+                                }
                                 $arrResponse = $this->getCustomers();
                                 $arrResponse['msg'] = 'Datos guardados. Se ha enviado un correo electrónico al usuario con las credenciales.';
                             }else{
@@ -256,7 +257,9 @@
                                     $data['email_remitente'] = $company['email'];
                                     $data['password'] = $password;
                                     $data['company'] = $company;
-                                    sendEmail($data,"email_passwordUpdated");
+                                    if($strEmail !="generico@generico.co"){
+                                        sendEmail($data,"email_passwordUpdated");
+                                    }
                                     $arrResponse = $this->getCustomers();
                                     $arrResponse['msg'] = 'La contraseña ha sido actualizada, se ha enviado un correo electrónico con la nueva contraseña.';
                                 }else{

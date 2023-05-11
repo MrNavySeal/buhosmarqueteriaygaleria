@@ -34,14 +34,19 @@
             $this->strPassword = $strPassword;
             $this->intStatus = $intStatus;
             $this->intRolId = $intRolId;
+            
 			$return = 0;
             $sql="";
-            if($this->strIdentification!=""){
+            if($this->strIdentification=="222222222" && $this->strEmail =="generico@generico.co"){
+                $sql = "SELECT * FROM person WHERE phone = '{$this->intPhone}'";
+            }else if($this->strIdentification!="222222222"){
+                $sql= "SELECT * FROM person WHERE phone = '{$this->intPhone}' OR identification = '{$this->strIdentification}'";
+            }else if($this->strEmail !="generico@generico.co"){
+                $sql= "SELECT * FROM person WHERE email = '{$this->strEmail}' OR phone = '{$this->intPhone}'";
+            }else if($this->strIdentification!="222222222" && $this->strEmail !="generico@generico.co"){
                 $sql= "SELECT * FROM person WHERE email = '{$this->strEmail}' OR phone = '{$this->intPhone}' OR identification = '{$this->strIdentification}'";
-            }else{
-
-                $sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' OR phone = '{$this->intPhone}'";
             }
+            //dep($sql);exit;
 			$request = $this->select_all($sql);
 
 			if(empty($request))
@@ -87,12 +92,22 @@
             $this->intRolId = $intRolId;
 
             $sql="";
-            if($this->strIdentification!=""){
-                $sql = "SELECT * FROM person WHERE (email = '{$this->strEmail}' OR phone = '{$this->intPhone}' OR identification = '{$this->strIdentification}') AND idperson != $this->intIdUser";
+            /*if($this->strIdentification!='222222222'){
+                $sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND email !='generico@generico.co' OR phone = '{$this->intPhone}' OR identification = '{$this->strIdentification}' AND identification !='222222222'  AND idperson != $this->intIdUser";
             }else{
 
-                $sql = "SELECT * FROM person WHERE (email = '{$this->strEmail}' OR phone = '{$this->intPhone}') AND idperson != $this->intIdUser";
+                $sql = "SELECT * FROM person WHERE email = '{$this->strEmail}' AND email !='generico@generico.co' OR phone = '{$this->intPhone}') AND idperson != $this->intIdUser";
+            }*/
+            if($this->strIdentification=="222222222" && $this->strEmail =="generico@generico.co"){
+                $sql = "SELECT * FROM person WHERE phone = '{$this->intPhone}' AND idperson != $this->intIdUser";
+            }else if($this->strIdentification =="222222222"){
+                $sql= "SELECT * FROM person WHERE (phone = '{$this->intPhone}' OR email = '{$this->strEmail}') AND idperson != $this->intIdUser";
+            }else if($this->strEmail =="generico@generico.co"){
+                $sql= "SELECT * FROM person WHERE (identification = '{$this->strIdentification}' OR phone = '{$this->intPhone}') AND idperson != $this->intIdUser";
+            }else if($this->strIdentification !="222222222" && $this->strEmail !="generico@generico.co"){
+                $sql= "SELECT * FROM person WHERE (identification = '{$this->strIdentification}' OR phone = '{$this->intPhone}' OR email = '{$this->strEmail}') AND  idperson != $this->intIdUser";
             }
+            //ep($sql);exit;
 			$request = $this->select_all($sql);
 
 			if(empty($request)){
