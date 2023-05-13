@@ -38,8 +38,7 @@ window.addEventListener("load",function(){
         let intCategory = categoryList.value;
         let images = document.querySelectorAll(".upload-image");
 
-        if(strName == "" || intStatus == "" || intCategory == 0 || intSubCategory==0 || 
-        strShortDescription =="" || intPrice=="" || intStock==""){
+        if(strName == "" || intStatus == "" || intCategory == 0 || intSubCategory==0 || intPrice=="" || intStock==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }

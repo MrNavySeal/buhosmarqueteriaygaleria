@@ -112,7 +112,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="txtShortDescription" class="form-label">Descripción corta <span class="text-danger">*</span></label>
+                        <label for="txtShortDescription" class="form-label">Descripción corta</label>
                         <input type="text" class="form-control" id="txtShortDescription" value="<?=$product['shortdescription']?>" name="txtShortDescription" placeholder="Max 140 carácteres"></input>
                     </div>
                     <div class="mb-3">

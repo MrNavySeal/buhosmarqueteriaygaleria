@@ -46,7 +46,7 @@
                     </ol>
                 </nav>
                 <div class="row ps-2 pe-2 pb-4">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-7 mb-3">
                         <div class="product-image">
                             <?=$discount?>
                             <img src="<?=$product['image'][0]['url']?>" class="d-block w-100" alt="<?=$product['category']." ".$product['subcategory']?>">
@@ -67,7 +67,7 @@
                             <div class="slider-btn-right"><i class="fas fa-angle-right" aria-hidden="true"></i></div>
                         </div>
                     </div>
-                    <div class="col-md-6 product-data">
+                    <div class="col-md-5 product-data">
                         <h1><a href="<?=base_url()."/tienda/producto/".$product['route']?>"><strong><?=$product['name']?></strong></a></h1>
                         <div>
                             <div class="d-inline mb-3 review-measure">
