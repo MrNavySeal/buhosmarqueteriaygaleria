@@ -1,4 +1,5 @@
 const DIMENSIONDEFAULT = 4;
+const PPI = 100;
 const rangeZoom = document.querySelector("#zoomRange");
 const minusZoom = document.querySelector("#zoomMinus");
 const plusZoom = document.querySelector("#zoomPlus");
@@ -234,20 +235,20 @@ function calcDimension(picture){
         let realHeight = picture.naturalHeight;
         let realWidth = picture.naturalWidth;
     
-        let height = Math.round((realHeight*2.54)/100) < 10 ? 10 :  Math.round((realHeight*2.54)/100);
-        let width = Math.round((realWidth*2.54)/100) < 10 ? 10 :  Math.round((realWidth*2.54)/100);
+        let height = Math.round((realHeight*2.54)/PPI) < 10 ? 10 :  Math.round((realHeight*2.54)/PPI);
+        let width = Math.round((realWidth*2.54)/PPI) < 10 ? 10 :  Math.round((realWidth*2.54)/PPI);
     
-        if(height > 300){
-            height = 300;
+        if(height > PPI){
+            height = PPI;
         }
-        if(width > 300){
-            width = 300;
+        if(width > PPI){
+            width = PPI;
         }
         intHeight.value = height;
         intWidth.value = width;
         resizeFrame(intWidth.value,intHeight.value);
     
-        imgQuality.innerHTML = `Resolución 100 ppi <span class="text-success">buena calidad</span>`
+        imgQuality.innerHTML = `Resolución ${PPI} ppi <span class="text-success">buena calidad</span>`
     }
 }
 function calcPpi(height,width,picture){

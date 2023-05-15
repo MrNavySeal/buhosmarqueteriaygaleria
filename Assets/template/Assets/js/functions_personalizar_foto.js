@@ -1,4 +1,5 @@
 const DIMENSIONDEFAULT = 4;
+const PPI = 100;
 const rangeZoom = document.querySelector("#zoomRange");
 const minusZoom = document.querySelector("#zoomMinus");
 const plusZoom = document.querySelector("#zoomPlus");
@@ -445,21 +446,25 @@ function uploadImg(img,location){
     }
 }
 function calcDimension(picture){
+    if(uploadPicture.value !=""){
+        let realHeight = picture.naturalHeight;
+        let realWidth = picture.naturalWidth;
     
-    let realHeight = picture.naturalHeight;
-    let realWidth = picture.naturalWidth;
-
-    let height = Math.round((realHeight*2.54)/100) < 10 ? 10 :  Math.round((realHeight*2.54)/100);
-    let width = Math.round((realWidth*2.54)/100) < 10 ? 10 :  Math.round((realWidth*2.54)/100);
-
-    intHeight.value = height;
-    intWidth.value = width;
-    if(document.querySelector(".orientation.element--active")){
-        btnNext.classList.remove("d-none");
+        let height = Math.round((realHeight*2.54)/PPI) < 10 ? 10 :  Math.round((realHeight*2.54)/PPI);
+        let width = Math.round((realWidth*2.54)/PPI) < 10 ? 10 :  Math.round((realWidth*2.54)/PPI);
+    
+        if(height > PPI){
+            height = PPI;
+        }
+        if(width > PPI){
+            width = PPI;
+        }
+        intHeight.value = height;
+        intWidth.value = width;
+        resizeFrame(intWidth.value,intHeight.value);
+    
+        imgQuality.innerHTML = `Resolución ${PPI} ppi <span class="text-success">buena calidad</span>`
     }
-    resizeFrame(intWidth.value,intHeight.value);
-
-    imgQuality.innerHTML = `Resolución 100 ppi <span class="text-success">buena calidad</span>`
 }
 function calcPpi(height,width,picture){
     
