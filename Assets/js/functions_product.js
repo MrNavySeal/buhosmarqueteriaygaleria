@@ -9,11 +9,50 @@ window.addEventListener("load",function(){
     let img = document.querySelector("#txtImg");
     let btnAdd = document.querySelector("#btnAdd");
     let id = document.querySelector("#idProduct").value;
+    let selectProductType = document.querySelector("#selectProductType");
+    let btnVariant = document.querySelector("#btnVariant");
+    let btnSpc = document.querySelector("#btnSpc");
+    let selectFramingMode = document.querySelector("#framingMode");
     if(id == 0){
         request(base_url+"/inventario/getSelectCategories","","get").then(function(objData){
             categoryList.innerHTML = objData.data;
         });
     }
+    selectFramingMode.addEventListener("change",function(){
+        if(selectFramingMode.value == 1){
+            document.querySelector(".framingImage").classList.remove("d-none");
+        }else{
+            document.querySelector(".framingImage").classList.add("d-none");
+        }
+    });
+    let framingImg = document.querySelector("#txtImgFrame");
+    let imgLocation = ".uploadImg img";
+    framingImg.addEventListener("change",function(){
+        uploadImg(framingImg,imgLocation);
+    });
+    btnVariant.addEventListener("click",function(){
+        let height = document.querySelector("#intVariantHeight").value;
+        let width = document.querySelector("#intVariantWidth").value;
+        let stock = document.querySelector("#intVariantStock").value;
+        let price = document.querySelector("#intVariantPrice").value;
+        if(width =="" || height =="" || price ==""){
+            Swal.fire("Error","Todos los campos de la variante marcados con (*) son obligatorios","error");
+            return false;
+        }
+        addVariant(width,height,stock,price);
+    });
+    btnSpc.addEventListener("click",function(){
+        addSpec(document.querySelector("#selectTypeSpc").value);
+    });
+    selectProductType.addEventListener("change",function(){
+        if(selectProductType.value == 2){
+            document.querySelector(".productBasic").classList.add("d-none");
+            document.querySelector(".productVariant").classList.remove("d-none");
+        }else{
+            document.querySelector(".productBasic").classList.remove("d-none");
+            document.querySelector(".productVariant").classList.add("d-none");
+        }
+    });
     categoryList.addEventListener("change",function(){
         let formData = new FormData();
         formData.append("idCategory",categoryList.value);
@@ -24,6 +63,7 @@ window.addEventListener("load",function(){
     setImage(img,parent,"product");
     delImage(parent);
     setTinymce("#txtDescription");
+    
     form.addEventListener("submit",function(e){
         e.preventDefault();
         tinymce.triggerSave();
@@ -37,8 +77,9 @@ window.addEventListener("load",function(){
         let intSubCategory = subcategoryList.value;
         let intCategory = categoryList.value;
         let images = document.querySelectorAll(".upload-image");
+        
 
-        if(strName == "" || intStatus == "" || intCategory == 0 || intSubCategory==0 || intPrice=="" || intStock==""){
+        if(strName == "" || intStatus == "" || intCategory == 0 || intSubCategory==0){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
@@ -48,6 +89,7 @@ window.addEventListener("load",function(){
         }
         if(images.length < 1){
             Swal.fire("Error","Debe subir al menos una imagen","error");
+            return false;
         }
 
         if(intDiscount !=""){
@@ -61,14 +103,25 @@ window.addEventListener("load",function(){
                 return false;
             }
         }
+        if(selectProductType.value == 1 && intPrice ==""){
+            Swal.fire("Error","Por favor, para producto sin variante, ingrese al menos el precio","error");
+            return false;
+        }
+        if(selectFramingMode.value == 1 && document.querySelector("#txtImgFrame").value == "" && id==0){
+            Swal.fire("Error","Por favor, para el modo enmarcar, ingrese la foto a enmarcar","error");
+            return false;
+        }
         let arrImg =[];
         for (let i = 0; i < images.length; i++) {
             arrImg.push(images[i].getAttribute("data-rename"));
         }
+        
+        data.append("variants",JSON.stringify(getVariatns()));
         data.append("images",JSON.stringify(arrImg));
+        data.append("specs",JSON.stringify(getSpecs()));
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
-
+        
         request(base_url+"/inventario/setProduct",data,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
@@ -80,14 +133,124 @@ window.addEventListener("load",function(){
                 for (let i = 0; i < divImg.length; i++) {
                     divImg[i].remove();
                 }*/
-                window.location.href=base_url+"/inventario/productos";
+                if (id == 0) {
+                    window.location.href=base_url+"/inventario/productos";
+                } else {
+                    window.location.reload();
+                }
             }else{
                 Swal.fire("Error",objData.msg,"error");
             }
         });
-        
     });
 });
+function getVariatns(){
+    let variants = document.querySelectorAll(".variantItem");
+    let arrVariants = [];
+    for (let i = 0; i < variants.length; i++) {
+        let item = variants[i];
+        let height = item.getAttribute("attheight");
+        let width = item.getAttribute("attwidth");
+        let stock = item.getAttribute("attstock");
+        let price = item.getAttribute("attprice");
+        let obj = {
+            "width":width,
+            "height":height,
+            "stock":stock,
+            "price":price
+        }
+        arrVariants.push(obj);
+
+    }
+    return arrVariants;
+}
+function getSpecs(){
+    let specs = document.querySelectorAll(".spcItem");
+    let arrSpecs = [];
+    for (let i = 0; i < specs.length; i++) {
+        let item = specs[i];
+        let name = item.children[0].children[0].value;
+        let value = item.children[1].children[0].value;
+        let type = item.children[1].children[0].type;
+
+        if(name !="" && value !=""){
+            let obj = {
+                "name":name,
+                "value":value,
+                "type":type
+            }
+            arrSpecs.push(obj);
+        }
+    }
+    return arrSpecs;
+}
+function addVariant(width,height,stock,price){
+    let variants = document.querySelectorAll(".variantItem");
+    let flag = true;
+    if(variants.length > 0){
+        for (let i = 0; i < variants.length; i++) {
+            let item = variants[i];
+            if(item.getAttribute("attwidth") == width && item.getAttribute("attheight") == height){
+                Swal.fire("Error","La variante ya ha sido agregada","error");
+                flag = false;
+                break;
+            }
+        }
+        if(flag){
+            let div = document.createElement("div");
+            div.setAttribute("attwidth",width);
+            div.setAttribute("attheight",height);
+            div.setAttribute("attstock",stock);
+            div.setAttribute("attprice",price);
+            div.setAttribute("onclick","removeItem(this)");
+            div.classList.add("variantItem","btn","btn-success", "text-white", "m-1");
+            div.innerHTML = width+"-"+height+"-"+stock+"-"+price;
+            document.querySelector(".variantList").appendChild(div);
+            document.querySelector("#intVariantHeight").value = "";
+            document.querySelector("#intVariantWidth").value = "";
+            document.querySelector("#intVariantStock").value = 0;
+            document.querySelector("#intVariantPrice").value = "";
+        }
+    }else{
+        let div = document.createElement("div");
+        div.setAttribute("attWidth",width);
+        div.setAttribute("attHeight",height);
+        div.setAttribute("attStock",stock);
+        div.setAttribute("attPrice",price);
+        div.setAttribute("onclick","removeItem(this)");
+        div.classList.add("variantItem","btn","btn-success", "text-white", "m-1");
+        div.innerHTML = width+"-"+height+"-"+stock+"-"+price;
+        document.querySelector(".variantList").appendChild(div);
+        document.querySelector("#intVariantHeight").value = "";
+        document.querySelector("#intVariantWidth").value = "";
+        document.querySelector("#intVariantStock").value = 0;
+        document.querySelector("#intVariantPrice").value = "";
+    }
+    
+}
+function addSpec(type){
+    let tr = document.createElement("tr");
+    tr.classList.add("spcItem");
+    let html="";
+    if(type == 1){
+        html = `
+        <td><input type="text" value="" class="form-control" placeholder="Nombre dato"></td>
+        <td><input type="text" value="" class="form-control" placeholder="Dato"></td>
+        <td><button type="button" class="btn btn-danger text-white" onclick="removeItem(this.parentElement.parentElement)"><i class="fas fa-trash"></i></button></td>
+        `;
+    }else{
+        html = `
+        <td><input type="text" value="" class="form-control" placeholder="Nombre dato"></td>
+        <td><input type="number" value="" class="form-control" placeholder="Dato"></td>
+        <td><button type="button" class="btn btn-danger text-white" onclick="removeItem(this.parentElement.parentElement)"><i class="fas fa-trash"></i></button></td>
+    `;
+    }
+    tr.innerHTML=html;
+    document.querySelector(".spcList").appendChild(tr);
+}
+function removeItem(element){
+    element.remove();
+}
 function setImage(element,parent,pre){
     let formFile = document.querySelector("#formFile");
     if(pre==""){

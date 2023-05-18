@@ -88,11 +88,12 @@
                         $btnEdit="";
                         $btnDelete="";
                         $price = "";
+                        $variant = $request[$i]['product_type'] == 2? "Desde " : "";
                         if($request[$i]['discount']>0){
-                            $price = '<span class="text-danger">'.formatNum($request[$i]['price']*(1-($request[$i]['discount']*0.01)),false).'</span>'.' <span class="text-secondary text-decoration-line-through">'.formatNum($request[$i]['price'],false).'</span>';
+                            $price = '<span class="text-danger">'.$variant.formatNum($request[$i]['price']*(1-($request[$i]['discount']*0.01)),false).'</span>'.' <span class="text-secondary text-decoration-line-through">'.formatNum($request[$i]['price'],false).'</span>';
                             $discount = '<span class="text-danger">'.$request[$i]['discount'].'%</span>';
                         }else{
-                            $price = formatNum($request[$i]['price'],false);
+                            $price = $variant.formatNum($request[$i]['price'],false);
                             $discount = "0%";
                         }
                         if($_SESSION['permitsModule']['u']){
@@ -150,11 +151,10 @@
             die();
         }
         public function setProduct(){
-            //dep($_POST);exit;
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     if(empty($_POST['txtName']) || empty($_POST['statusList']) || empty($_POST['categoryList'])
-                    || empty($_POST['subcategoryList']) || empty($_POST['txtPrice']) || empty($_POST['txtStock'])){
+                    || empty($_POST['subcategoryList'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $idProduct = intval($_POST['idProduct']);
@@ -168,7 +168,14 @@
                         $intStock =  intval($_POST['txtStock']);
                         $intStatus = intval($_POST['statusList']);
                         $strDescription = strClean($_POST['txtDescription']);
+                        $intProductType = intval($_POST['selectProductType']);
+                        $framingMode = intval($_POST['framingMode']);
+                        $arrVariants = json_decode($_POST['variants'],true);
+                        $arrSpecs = $_POST['specs'];
+                        $imgFraming = "";
+                        $photoFraming="category.jpg";
                         
+
                         $route = clear_cadena($strName);
                         $route = strtolower(str_replace("¿","",$route));
                         $route = str_replace(" ","-",$route);
@@ -177,16 +184,75 @@
 
                         if($idProduct == 0){
                             if($_SESSION['permitsModule']['w']){
+                                if($framingMode==1){
+                                    if($framingMode == 1 && $_FILES['txtImgFrame']['name'] != ""){
+                                        $imgFraming = $_FILES['txtImgFrame'];
+                                        $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
+                                    }
+                                }
                                 $option = 1;
-                                $request= $this->model->insertProduct($idCategory,$idSubcategory,$strReference,$strName,$strShortDescription,$strDescription,$intPrice,$intDiscount,$intStock,$intStatus,$route,$photos);
+                                $request= $this->model->insertProduct(
+                                    $idCategory,
+                                    $idSubcategory,
+                                    $strReference,
+                                    $strName,
+                                    $strShortDescription,
+                                    $strDescription,
+                                    $intPrice,
+                                    $intDiscount,
+                                    $intStock,
+                                    $intStatus,
+                                    $route,
+                                    $photos,
+                                    $framingMode,
+                                    $photoFraming,
+                                    $intProductType,
+                                    $arrVariants,
+                                    $arrSpecs
+                                );
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
+                                $request = $this->model->selectProduct($idProduct);
+                                if($framingMode==1){
+                                    if($_FILES['txtImgFrame']['name'] == ""){
+                                        $photoFraming = $request['framing_img'];
+                                    }else{
+                                        if($request['framing_img'] != "category.jpg"){
+                                            deleteFile($request['framing_img']);
+                                        }
+                                        $imgFraming = $_FILES['txtImgFrame'];
+                                        $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
+                                    }
+                                }
+                                
                                 $option = 2;
-                                $request= $this->model->updateProduct($idProduct,$idCategory,$idSubcategory,$strReference,$strName,$strShortDescription,$strDescription,$intPrice,$intDiscount,$intStock,$intStatus,$route,$photos);
+                                $request= $this->model->updateProduct(
+                                    $idProduct,
+                                    $idCategory,
+                                    $idSubcategory,
+                                    $strReference,
+                                    $strName,
+                                    $strShortDescription,
+                                    $strDescription,
+                                    $intPrice,
+                                    $intDiscount,
+                                    $intStock,
+                                    $intStatus,
+                                    $route,
+                                    $photos,
+                                    $framingMode,
+                                    $photoFraming,
+                                    $intProductType,
+                                    $arrVariants,
+                                    $arrSpecs
+                                );
                             }
                         }
                         if($request > 0 ){
+                            if($imgFraming!="" && $photoFraming !=""){
+                                uploadImage($imgFraming,$photoFraming);
+                            }
                             if($option == 1){
                                 $arrResponse = $this->getProducts();
                                 $arrResponse['msg'] = 'Datos guardados.';
