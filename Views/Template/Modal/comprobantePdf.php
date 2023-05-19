@@ -38,6 +38,9 @@ if($order['status'] == "approved"){
 		.t-4{
 			color:#fff;
 		}
+        .w10{
+            width:10%;
+        }
         .w33{
             width:33.33%;
         }
@@ -141,6 +144,7 @@ if($order['status'] == "approved"){
     <table>
         <thead class="table-active">
         <tr>
+            <th>Referencia</th>
             <th>Descripción</th>
             <th class="text-right">Precio</th>
             <th class="text-right">Cantidad</th>
@@ -155,6 +159,9 @@ if($order['status'] == "approved"){
                         $subtotal+= $product['quantity']*$product['price'];
             ?>
             <tr>
+                <td class="text-start w10">
+                    <?=$product['reference']?><br>
+                </td>
                 <?php
                     if($product['topic'] == 2 || $product['topic'] == 3){
                 ?>
@@ -222,8 +229,8 @@ if($order['status'] == "approved"){
                     <?php }?>
                 </td>
             <?php }?>
-                <td class="text-right w15"><?=formatNum($product['price'],false)?></td>
-                <td class="text-right w15"><?= $product['quantity'] ?></td>
+                <td class="text-right w10"><?=formatNum($product['price'],false)?></td>
+                <td class="text-right w10"><?= $product['quantity'] ?></td>
                 <td class="text-right w15"><?= formatNum($product['price']*$product['quantity'],false)?></td>
             </tr>
             <?php 		
@@ -233,7 +240,7 @@ if($order['status'] == "approved"){
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="3" class="text-right">Subtotal:</th>
+                <th colspan="4" class="text-right">Subtotal:</th>
                 <td class="text-right"><?= formatNum(floor($subtotal),false)?></td>
             </tr>
             <?php
@@ -242,20 +249,20 @@ if($order['status'] == "approved"){
                     $subtotal = $subtotal - ($subtotal*($cupon['discount']/100));
             ?>
             <tr>
-                <th colspan="3" class="text-right">Cupon:</th>
+                <th colspan="4" class="text-right">Cupon:</th>
                 <td class="text-right"><?= $cupon['code']." - ".$cupon['discount']?>%</td>
             </tr>
             <tr>
-                <th colspan="3" class="text-right">Subtotal:</th>
+                <th colspan="4" class="text-right">Subtotal:</th>
                 <td class="text-right"><?= formatNum(floor($subtotal),false)?></td>
             </tr>
             <?php }?>
             <tr>
-                <th colspan="3" class="text-right">Envio:</th>
+                <th colspan="4" class="text-right">Envio:</th>
                 <td class="text-right"><?= formatNum($order['shipping'],false)?></td>
             </tr>
             <tr>
-                <th colspan="3" class="text-right">Total:</th>
+                <th colspan="4" class="text-right">Total:</th>
                 <td class="text-right"><?= formatNum($order['amount'],false)?></td>
             </tr>
         </tfoot>

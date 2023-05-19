@@ -15,7 +15,7 @@
 </div>
 <div class="card mb-4">
     <div class="card-body">
-        <a href="<?=base_url()?>/pedidos" class="btn btn-primary"><i class="fas fa-arrow-circle-left"></i> Regresar</a>
+        <a href="<?=base_url()?>/pedidos/pos" class="btn btn-primary"><i class="fas fa-arrow-circle-left"></i> Regresar</a>
     <?=$data['option']?>
     </div>
 </div>

@@ -115,6 +115,7 @@
                 p.description,
                 p.stock,
                 p.status,
+                p.product_type,
                 p.route,
                 c.idcategory,
                 c.name as category,
@@ -124,7 +125,7 @@
                 DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.stock > 0
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
             ORDER BY p.idproduct DESC
             ";
             $request = $this->select_all($sql);
@@ -138,17 +139,29 @@
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
+                        $sqlVariants = "SELECT * FROM product_variant WHERE productid = $idProduct ORDER BY price DESC";
+                        $request[$i]['price'] = $this->select($sqlV)['minimo'];
+                        $request[$i]['stock'] = $this->select($sqlTotal)['total'];
+                        $request[$i]['variants'] = $this->select_all($sqlVariants);
+                    }
                 }
             }
             return $request;
         }
-        public function selectProduct($id){
+        public function selectProduct($id,$variant=null){
             $this->intIdProduct = $id;
             $sql = "SELECT * FROM product WHERE idproduct = $this->intIdProduct";
             $request = $this->select($sql);
             $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
             $requestImg = $this->select_all($sqlImg);
             $request['image'] = media()."/images/uploads/".$requestImg[0]['name'];
+            if($request['product_type'] == 2){
+                $sqlV = "SELECT * FROM product_variant WHERE id_product_variant = $variant";
+                $request['variant'] = $this->select($sqlV);
+            }
             return $request;
         }
         public function searchProducts($search){
@@ -294,6 +307,9 @@
             $products = $arrOrder['products'];
             foreach ($products as $pro) {
                 $this->intIdProduct = $pro['id'];
+                $price = 0;
+                $price = $pro['price'];
+                $reference = isset($pro['reference']) ? $pro['reference'] : " ";
                 if($pro['topic'] == 1){
                     $description = json_encode(array(
                         "name"=>$pro['name'],
@@ -311,32 +327,46 @@
                         "photo"=>$pro['photo']
                     ));
                 }else if($pro['topic'] == 2){
-                    $description = $pro['name'];
-                    $selectProduct = $this->selectProduct($this->intIdProduct);
-                    if($selectProduct['stock']>0){
+                    $variant = $pro['producttype'] == 2 ? $pro['variant']['id_product_variant'] : null;
+                    $selectProduct = $this->selectProduct($this->intIdProduct,$variant);
+                    $price = $pro['producttype'] == 1 ? $pro['price'] : $pro['variant']['price'];
+                    $description = $pro['producttype'] == 1 ? $pro['name'] : $pro['name']." ".$pro['variant']['width']."x".$pro['variant']['height']."cm";
+                    if($selectProduct['stock']>0 && $pro['producttype'] == 1){
                         $stock = $selectProduct['stock']-$pro['qty'];
                         $this->updateStock($this->intIdProduct,$stock);
+                    }else if($selectProduct['variant']['stock'] > 0 && $pro['producttype'] == 2){
+                        $stock = $selectProduct['variant']['stock']-$pro['qty'];
+                        $this->updateStock($this->intIdProduct,$stock,$pro['variant']['id_product_variant']);
                     }
                 }else{
                     $description = $pro['name'];
                 }
-                $query = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price)
-                        VALUE(?,?,?,?,?,?,?)";
-                $arrData=array($this->intIdOrder,
-                                $this->intIdUser,
-                                $this->intIdProduct,
-                                $pro['topic'],
-                                $description,
-                                $pro['qty'],
-                                $pro['price']);
+                
+                $query = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference)
+                        VALUE(?,?,?,?,?,?,?,?)";
+                $arrData=array(
+                    $this->intIdOrder,
+                    $this->intIdUser,
+                    $this->intIdProduct,
+                    $pro['topic'],
+                    $description,
+                    $pro['qty'],
+                    $price,
+                    $reference
+                );
                 $request = $this->insert($query,$arrData);
             }
             return $request;
         }
-        public function updateStock($id,$stock){
+        public function updateStock($id,$stock,$variant=null){
             $this->intIdProduct = $id;
-            $sql = "UPDATE product SET stock=? WHERE idproduct = $this->intIdProduct";
-            $arrData = array($stock);
+            if($variant != null){
+                $sql = "UPDATE product_variant SET stock=? WHERE id_product_variant = $variant";
+                $arrData = array($stock);
+            }else{
+                $sql = "UPDATE product SET stock=? WHERE idproduct = $this->intIdProduct";
+                $arrData = array($stock);
+            }
             $request = $this->update($sql,$arrData);
             return $request;
         }

@@ -50,6 +50,7 @@ $subtotal = 0;
                     <table class="table items align-middle">
                         <thead class="text-start">
                             <tr>
+                                <th>Referencia</th>
                                 <th>Descripcion</th>
                                 <th>Precio</th>
                                 <th>Cantidad</th>
@@ -63,6 +64,9 @@ $subtotal = 0;
                                     $subtotal+= $product['quantity']*$product['price'];
                         ?>
                         <tr>
+                        <td class="text-break text-start">
+                            <?=$product['reference']?><br>
+                        </td>
                             <?php
                                 if($product['topic'] == 2 || $product['topic'] == 3){
                             ?>
@@ -141,7 +145,7 @@ $subtotal = 0;
                     </tbody>
                     <tfoot class="tdeskfoot">
                             <tr>
-                                <th colspan="3" class="text-end">Subtotal:</th>
+                                <th colspan="4" class="text-end">Subtotal:</th>
                                 <td class="text-start"><?= formatNum($subtotal,false)?></td>
                             </tr>
                             <?php
@@ -150,20 +154,20 @@ $subtotal = 0;
                                     $subDesk = $subtotal - ($subtotal*($cupon['discount']/100));
                             ?>
                             <tr>
-                                <th colspan="3" class="text-end">Cupon:</th>
+                                <th colspan="4" class="text-end">Cupon:</th>
                                 <td class="text-start"><?= $cupon['code']." - ".$cupon['discount']?>%</td>
                             </tr>
                             <tr>
-                                <th colspan="3" class="text-end">Subtotal:</th>
+                                <th colspan="4" class="text-end">Subtotal:</th>
                                 <td class="text-start"><?= formatNum($subDesk,false)?></td>
                             </tr>
                             <?php }?>
                             <tr>
-                                <th colspan="3" class="text-end">Envio:</th>
+                                <th colspan="4" class="text-end">Envio:</th>
                                 <td class="text-start"><?= formatNum($order['shipping'],false)?></td>
                             </tr>
                             <tr>
-                                <th colspan="3" class="text-end">Total:</th>
+                                <th colspan="4" class="text-end">Total:</th>
                                 <td class="text-start"><?= formatNum($order['amount'],false)?></td>
                             </tr>
                     </tfoot>

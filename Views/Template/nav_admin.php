@@ -116,13 +116,16 @@
                             <?php 
                                 if($_SESSION['permit'][6]['r']){
                             ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/pedidos">
+                            <li class="nav-group">
+                                <a class="nav-link nav-group-toggle" href="#">
                                     <svg class="nav-icon">
                                         <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-money"></use>
-                                    </svg> 
-                                    Pedidos<span class="badge badge-sm bg-info ms-auto"></span>
+                                    </svg> Pedidos
                                 </a>
+                                <ul class="nav-group-items">
+                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/pedidos"><span class="nav-icon"></span> Pedidos</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/pedidos/pos"><span class="nav-icon"></span> Punto de venta</a></li>
+                                </ul>
                             </li>
                             <?php 
                                 }
