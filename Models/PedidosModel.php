@@ -165,7 +165,7 @@
             return $request;
         }
         public function searchProducts($search){
-            $sql="SELECT 
+            $sql = "SELECT 
                 p.idproduct,
                 p.categoryid,
                 p.subcategoryid,
@@ -177,10 +177,10 @@
                 p.description,
                 p.stock,
                 p.status,
+                p.product_type,
                 p.route,
                 c.idcategory,
                 c.name as category,
-                c.route as routec,
                 s.idsubcategory,
                 s.categoryid,
                 s.name as subcategory,
@@ -200,6 +200,14 @@
                         $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
+                        $sqlVariants = "SELECT * FROM product_variant WHERE productid = $idProduct ORDER BY price DESC";
+                        $request[$i]['price'] = $this->select($sqlV)['minimo'];
+                        $request[$i]['stock'] = $this->select($sqlTotal)['total'];
+                        $request[$i]['variants'] = $this->select_all($sqlVariants);
                     }
                 }
             }
