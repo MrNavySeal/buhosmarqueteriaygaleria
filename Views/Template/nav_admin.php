@@ -124,7 +124,13 @@
                                 </a>
                                 <ul class="nav-group-items">
                                     <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/pedidos"><span class="nav-icon"></span> Pedidos</a></li>
+                                    <?php 
+                                        if($_SESSION['permit'][6]['w']){
+                                    ?>
                                     <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/pedidos/pos"><span class="nav-icon"></span> Punto de venta</a></li>
+                                    <?php 
+                                        }
+                                    ?>
                                 </ul>
                             </li>
                             <?php 
