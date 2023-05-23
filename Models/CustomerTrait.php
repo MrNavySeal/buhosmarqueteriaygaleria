@@ -142,6 +142,8 @@
             $products = $arrOrder['products'];
             foreach ($products as $pro) {
                 $this->intIdProduct = openssl_decrypt($pro['id'],METHOD,KEY);
+                $reference = isset($pro['reference']) ? $pro['reference'] : " ";
+                $price = $pro['price'];
                 if($pro['topic'] == 1){
                     $description = json_encode(array(
                         "name"=>$pro['name'],
@@ -159,22 +161,30 @@
                         "photo"=>$pro['photo']
                     ));
                 }else{
-                    $description = $pro['name'];
-                    $selectProduct = $this->selectProductC($this->intIdProduct);
-                    if($selectProduct['stock']>0){
+                    $variant = $pro['producttype'] == 2 ? openssl_decrypt($pro['variant']['id_product_variant'],METHOD,KEY) : null;
+                    $selectProduct = $this->selectProductC($this->intIdProduct,$variant);
+                    $price = $pro['producttype'] == 1 ? $pro['price'] : $pro['variant']['price'];
+                    $description = $pro['producttype'] == 1 ? $pro['name'] : $pro['name']." ".$pro['variant']['width']."x".$pro['variant']['height']."cm";
+                    if($selectProduct['stock']>0 && $pro['producttype'] == 1){
                         $stock = $selectProduct['stock']-$pro['qty'];
                         $this->updateStock($this->intIdProduct,$stock);
+                    }else if($selectProduct['variant']['stock'] > 0 && $pro['producttype'] == 2){
+                        $stock = $selectProduct['variant']['stock']-$pro['qty'];
+                        $this->updateStock($this->intIdProduct,$stock,$variant);
                     }
                 }
-                $query = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price)
-                        VALUE(?,?,?,?,?,?,?)";
-                $arrData=array($this->intIdOrder,
-                                $this->intIdUser,
-                                $this->intIdProduct,
-                                $pro['topic'],
-                                $description,
-                                $pro['qty'],
-                                $pro['price']);
+                $query = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference)
+                        VALUE(?,?,?,?,?,?,?,?)";
+                $arrData=array(
+                    $this->intIdOrder,
+                    $this->intIdUser,
+                    $this->intIdProduct,
+                    $pro['topic'],
+                    $description,
+                    $pro['qty'],
+                    $price,
+                    $reference
+                );
                 $request = $this->con->insert($query,$arrData);
             }
             return $request;
@@ -260,18 +270,27 @@
             $request = $this->con->select($sql);
             return $request;
         }
-        public function selectProductC($id){
+        public function selectProductC($id,$variant=null){
             $this->con = new Mysql();
             $this->intIdProduct = $id;
-            $sql = "SELECT * FROM product WHERE idproduct =$this->intIdProduct";
+            $sql = "SELECT * FROM product WHERE idproduct = $this->intIdProduct";
             $request = $this->con->select($sql);
+            if($request['product_type'] == 2){
+                $sqlV = "SELECT * FROM product_variant WHERE id_product_variant = $variant";
+                $request['variant'] = $this->con->select($sqlV);
+            }
             return $request;
         }
-        public function updateStock($id,$stock){
+        public function updateStock($id,$stock,$variant=null){
             $this->con = new Mysql();
             $this->intIdProduct = $id;
-            $sql = "UPDATE product SET stock=? WHERE idproduct = $this->intIdProduct";
-            $arrData = array($stock);
+            if($variant != null){
+                $sql = "UPDATE product_variant SET stock=? WHERE id_product_variant = $variant";
+                $arrData = array($stock);
+            }else{
+                $sql = "UPDATE product SET stock=? WHERE idproduct = $this->intIdProduct";
+                $arrData = array($stock);
+            }
             $request = $this->con->update($sql,$arrData);
             return $request;
         }

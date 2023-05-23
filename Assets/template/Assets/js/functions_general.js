@@ -265,8 +265,8 @@ if(document.querySelector("#formSuscriber")){
 /***************************Essentials Functions****************************** */
 function openLoginModal(){
     let modalItem = document.querySelector("#modalLogin");
-    let modal="";
-    modal= `
+    console.log(modalItem);
+    let modal= `
     <div class="modal fade" id="modalElementLogin">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -614,16 +614,28 @@ function addCart(element){
 
     let idProduct = element.getAttribute("data-id");
     let topic = element.getAttribute("data-topic");
+    let type = element.getAttribute("data-type");
     let formData = new FormData();
+    let variant = null;
     let intQty = 1;
     if(document.querySelector("#txtQty")){
         intQty = document.querySelector("#txtQty").value;
     }else if(document.querySelector("#txtQQty")){
         intQty = document.querySelector("#txtQQty").value; 
     }
+    if(type == 2){
+        if(document.querySelector(".btnv.active")){
+            variant = document.querySelector(".btnv.active").getAttribute("data-idv");
+        }else{
+            variant = document.querySelectorAll(".btnv")[0].getAttribute("data-idv");
+        }
+        
+    }
     formData.append("idProduct",idProduct);
     formData.append("topic",topic);
     formData.append("txtQty",intQty);
+    formData.append("type",type);
+    formData.append("variant",variant);
 
     element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     element.setAttribute("disabled","");
@@ -632,7 +644,7 @@ function addCart(element){
         element.removeAttribute("disabled");
         document.querySelector(".toast-header img").src=objData.data.image;
         document.querySelector(".toast-header img").alt=objData.data.name;
-        document.querySelector("#toastProduct").innerHTML=objData.data.name;
+        document.querySelector("#toastProduct").innerHTML=objData.data.reference+" "+objData.data.name;
         document.querySelector(".toast-body").innerHTML=objData.msg;
         if(objData.status){
             document.querySelector("#qtyCart").innerHTML=objData.qty;
@@ -677,8 +689,10 @@ function delProduct(elements){
             let formData = new FormData();
             let topic = element.parentElement.getAttribute("data-topic");
             let id = element.parentElement.getAttribute("data-id");
+            let variant = element.parentElement.getAttribute("data-variant") ? element.parentElement.getAttribute("data-variant") : null;
             formData.append("topic",topic);
             formData.append("id",id);
+            formData.append("id_variant",variant);
             if(topic == 1){
                 let photo = element.parentElement.getAttribute("data-f");
                 let height = element.parentElement.getAttribute("data-h");

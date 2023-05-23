@@ -4,11 +4,11 @@
         private $con;
         private $intIdProduct;
 
-        public function getProductsT($cant=""){
+        public function getProductsByCat($id,$cant=""){
+            $this->con=new Mysql();
             if($cant !=""){
                 $cant = " LIMIT $cant";
             }
-            $this->con=new Mysql();
             $sql = "SELECT 
                 p.idproduct,
                 p.categoryid,
@@ -21,37 +21,107 @@
                 p.description,
                 p.stock,
                 p.status,
+                p.product_type,
                 p.route,
                 c.idcategory,
                 c.name as category,
-                c.route as routec,
                 s.idsubcategory,
                 s.categoryid,
-                s.name as subcategory
+                s.name as subcategory,
+                c.route as routec,
+                s.route as routes,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1 AND p.stock > 0
-            ORDER BY p.idproduct DESC $cant
-            ";
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.categoryid = $id AND p.status = 1
+            ORDER BY RAND() $cant";
+            
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
-                    $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg =  $this->con->select_all($sqlImg);
-
+                    $requestImg = $this->con->select_all($sqlImg);
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $request[$i]['price'] = round((($this->con->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['stock'] = $this->con->select($sqlTotal)['stock'];
+                    }
                 }
             }
-            //dep($request);exit;
+            return $request;
+        }
+        public function getProductsT($cant=""){
+            $this->con=new Mysql();
+            if($cant !=""){
+                $cant = " LIMIT $cant";
+            }
+            $sql = "SELECT 
+                p.idproduct,
+                p.categoryid,
+                p.subcategoryid,
+                p.reference,
+                p.name,
+                p.description,
+                p.price,
+                p.discount,
+                p.description,
+                p.stock,
+                p.status,
+                p.product_type,
+                p.route,
+                c.idcategory,
+                c.name as category,
+                s.idsubcategory,
+                s.categoryid,
+                s.name as subcategory,
+                c.route as routec,
+                s.route as routes,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
+            FROM product p
+            INNER JOIN category c, subcategory s
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            ORDER BY p.idproduct DESC $cant";
+            
+            $request = $this->con->select_all($sql);
+            if(count($request)> 0){
+                for ($i=0; $i < count($request); $i++) { 
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
+                    $idProduct = $request[$i]['idproduct'];
+                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
+                    $requestImg = $this->con->select_all($sqlImg);
+                    if(count($requestImg)>0){
+                        $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
+                        $request[$i]['image'] = $requestImg[0]['name'];
+                    }else{
+                        $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $request[$i]['price'] = round((($this->con->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['stock'] = $this->con->select($sqlTotal)['stock'];
+                    }
+                }
+            }
+            return $request;
+        }
+        public function selectProductVariant($id,$variant){
+            $this->con=new Mysql();
+            $this->intIdProduct = $id;
+            $sql = "SELECT * FROM product WHERE idproduct = $this->intIdProduct";
+            $request = $this->con->select($sql);
+            $sqlV = "SELECT * FROM product_variant WHERE id_product_variant = $variant";
+            $request['variant'] = $this->con->select($sqlV);
+            $request['variant']['price'] = round((($request['variant']['price']*COMISION)+TASA)/1000)*1000;
             return $request;
         }
         public function getProductsPageT(int $pageNow, int $sort){
@@ -80,14 +150,16 @@
                 p.description,
                 p.stock,
                 p.status,
+                p.product_type,
                 p.route,
                 c.idcategory,
                 c.name as category,
-                c.route as routec,
                 s.idsubcategory,
                 s.categoryid,
                 s.name as subcategory,
-                s.route as routes
+                c.route as routec,
+                s.route as routes,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
@@ -96,18 +168,21 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
-                    $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-                    
                     $idProduct = $request[$i]['idproduct'];
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg =  $this->con->select_all($sqlImg);
-
+                    $requestImg = $this->con->select_all($sqlImg);
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $request[$i]['price'] = round((($this->con->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['stock'] = $this->con->select($sqlTotal)['stock'];
                     }
                 }
             }
@@ -148,13 +223,16 @@
                 p.description,
                 p.stock,
                 p.status,
+                p.product_type,
                 p.route,
                 c.idcategory,
                 c.name as category,
-                c.route as routec,
                 s.idsubcategory,
                 s.categoryid,
-                s.name as subcategory
+                s.name as subcategory,
+                c.route as routec,
+                s.route as routes,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
@@ -165,18 +243,21 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
-                    $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-
                     $idProduct = $request[$i]['idproduct'];
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg =  $this->con->select_all($sqlImg);
-
+                    $requestImg = $this->con->select_all($sqlImg);
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $request[$i]['price'] = round((($this->con->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['stock'] = $this->con->select($sqlTotal)['stock'];
                     }
                 }
             }
@@ -205,14 +286,16 @@
                 p.description,
                 p.stock,
                 p.status,
+                p.product_type,
                 p.route,
                 c.idcategory,
                 c.name as category,
-                c.route as routec,
                 s.idsubcategory,
                 s.categoryid,
                 s.name as subcategory,
-                s.route as routes
+                c.route as routec,
+                s.route as routes,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
@@ -223,18 +306,21 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
-                    $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-
                     $idProduct = $request[$i]['idproduct'];
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg =  $this->con->select_all($sqlImg);
-
+                    $requestImg = $this->con->select_all($sqlImg);
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $request[$i]['price'] = round((($this->con->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['stock'] = $this->con->select($sqlTotal)['stock'];
                     }
                 }
             }
@@ -243,7 +329,6 @@
         }
         public function getProductsCategoryT(string $category,int $pageNow,int $sort){
             $this->con=new Mysql();
-
             $perPage = PERPAGE;
             $option ="ORDER BY p.idproduct DESC";
             if($sort == 2){
@@ -275,14 +360,16 @@
                 p.description,
                 p.stock,
                 p.status,
+                p.product_type,
                 p.route,
                 c.idcategory,
                 c.name as category,
-                c.route as routec,
                 s.idsubcategory,
                 s.categoryid,
                 s.name as subcategory,
-                s.route as routes
+                c.route as routec,
+                s.route as routes,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1 
@@ -291,26 +378,28 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
-                    $request[$i]['priceDiscount'] =  $request[$i]['price']-($request[$i]['price']*($request[$i]['discount']*0.01));
-
                     $idProduct = $request[$i]['idproduct'];
-
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg =  $this->con->select_all($sqlImg);
-
+                    $requestImg = $this->con->select_all($sqlImg);
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $request[$i]['price'] = round((($this->con->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['stock'] = $this->con->select($sqlTotal)['stock'];
+                    }
                 }
             }
             $array = array("productos"=>$request,"paginas"=>$totalPages);
             return $array;
         }
-        public function getProductT(int $idProduct){
+        public function getProductT(int $idProduct,$id_variant){
             $this->con=new Mysql();
             $this->intIdProduct = $idProduct;
             $sql = "SELECT 
@@ -326,38 +415,52 @@
                 p.stock,
                 p.status,
                 p.route,
+                p.product_type,
+                p.framing_mode,
+                p.specifications,
+                p.framing_img,
                 c.idcategory,
                 c.name as category,
+                s.idsubcategory,
                 c.route as routec,
                 s.route as routes,
-                s.idsubcategory,
                 s.categoryid,
-                s.name as subcategory
+                s.name as subcategory,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
             AND p.idproduct = $this->intIdProduct";
-
             $request = $this->con->select($sql);
-            $request['price'] = round((($request['price']*COMISION)+TASA)/1000)*1000;
-            $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
-            $requestImg = $this->con->select_all($sqlImg);
-            $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $idProduct AND status = 1 HAVING rate IS NOT NULL";
-            $requestRate =  $this->con->select($sqlRate);
-            //dep($requestRate);exit;
-            if(!empty($requestRate)){
-                $request['rate'] = number_format($requestRate['rate'],1);
-                $request['reviews'] = $requestRate['total'];
-            }else{
-                $request['rate'] = number_format(0,1);
-                $request['reviews'] = 0;
-            }
-            if(count($requestImg)){
-                for ($i=0; $i < count($requestImg); $i++) { 
-                    $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name']);
+            if(!empty($request)){
+                $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
+                $requestImg = $this->con->select_all($sqlImg);
+                $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $idProduct AND status = 1 HAVING rate IS NOT NULL";
+                $requestRate =  $this->con->select($sqlRate);
+                $request['price'] = round((($request['price']*COMISION)+TASA)/1000)*1000;
+
+                if(!empty($requestRate)){
+                    $request['rate'] = number_format($requestRate['rate'],1);
+                    $request['reviews'] = $requestRate['total'];
+                }else{
+                    $request['rate'] = number_format(0,1);
+                    $request['reviews'] = 0;
+                }
+                if(count($requestImg)){
+                    for ($i=0; $i < count($requestImg); $i++) { 
+                        $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name']);
+                    }
+                }
+                if($request['product_type'] == 2){
+                    $sqlV = "SELECT * FROM product_variant WHERE productid = $this->intIdProduct AND id_product_variant = $id_variant";
+                    $sqlMin = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid = $idProduct AND stock > 0";
+                    $sqlStock = "SELECT MIN(stock) AS stock FROM product_variant WHERE productid = $idProduct AND stock > 0";
+                    $request['minp'] = round((($this->con->select($sqlMin)['minimo']*COMISION)+TASA)/1000)*1000;
+                    $request['mins'] = $this->con->select($sqlStock)['stock'];
+                    $request['variant'] = $this->con->select($sqlV);
+                    $request['variant']['price'] = round((($request['variant']['price']*COMISION)+TASA)/1000)*1000;
                 }
             }
-            //dep($request);exit;
             return $request;
         }
         public function getProductPageT(string $route){
@@ -375,28 +478,30 @@
                 p.stock,
                 p.status,
                 p.route,
+                p.product_type,
+                p.framing_mode,
+                p.specifications,
+                p.framing_img,
                 c.idcategory,
                 c.name as category,
-                c.route as routec,
                 s.idsubcategory,
+                c.route as routec,
+                s.route as routes,
                 s.categoryid,
                 s.name as subcategory,
-                s.route as routes
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
             AND p.route = '$route'";
-
             $request = $this->con->select($sql);
+            $this->intIdProduct = $request['idproduct'];
             if(!empty($request)){
-                $request['price'] = round((($request['price']*COMISION)+TASA)/1000)*1000;
-                $request['priceDiscount'] =  $request['price']-($request['price']*($request['discount']*0.01));
-                $idProduct =$request['idproduct'];
-                $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
+                $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
                 $requestImg = $this->con->select_all($sqlImg);
-                $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $idProduct AND status = 1 HAVING rate IS NOT NULL";
+                $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $this->intIdProduct AND status = 1 HAVING rate IS NOT NULL";
                 $requestRate =  $this->con->select($sqlRate);
-                //dep($requestRate);exit;
+                $request['price'] = round((($request['price']*COMISION)+TASA)/1000)*1000;
                 if(!empty($requestRate)){
                     $request['rate'] = number_format($requestRate['rate'],1);
                     $request['reviews'] = $requestRate['total'];
@@ -407,6 +512,17 @@
                 if(count($requestImg)){
                     for ($i=0; $i < count($requestImg); $i++) { 
                         $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name']);
+                    }
+                }
+                if($request['product_type'] == 2){
+                    $sqlV = "SELECT * FROM product_variant WHERE productid = $this->intIdProduct AND stock > 0";
+                    $requestV = $this->con->select_all($sqlV);
+                    $sqlMin = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$this->intIdProduct AND stock > 0";
+                    $sqlStock = "SELECT MIN(stock) AS stock FROM product_variant WHERE productid =$this->intIdProduct AND stock > 0";
+                    $request['minp'] = round((($this->con->select($sqlMin)['minimo']*COMISION)+TASA)/1000)*1000;
+                    $request['mins'] = $this->con->select($sqlStock)['stock'];
+                    if(count($requestV)){
+                        $request['variants'] = $requestV;
                     }
                 }
             }

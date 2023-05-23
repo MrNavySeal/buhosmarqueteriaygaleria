@@ -1,17 +1,33 @@
 <?php
     $company = getCompanyInfo();
-    $price ='</span><span class="current">'.formatNum($data['price']).'</span>';
-    $discount ="";
+    $price ="";
     $rate="";
-    $reference="";
+    $stock =0;
+    $discount = $data['discount'] > 0 ? '<span class="discount">-'.$data['discount'].'%</span>' : "";
+    $reference = $data['reference']!="" ? "REF: ".$data['reference'] : "";
+
     if($data['reference'] !=""){
         $reference = '<a href="'.base_url()."/tienda/producto/".$data['route'].'" class="m-0">Referencia:<strong> '.$data['reference'].'</strong></a><br>';
     }
-    if($data['discount'] > 0 && $data['stock'] > 0){
-        $discount = '<span class="discount">-'.$data['discount'].'%</span>';
-        $price ='<span class="current sale me-2">'.formatNum($data['priceDiscount']).'</span><span class="compare">'.formatNum($data['price']).'</span>';
-    }else if($data['stock'] == 0){
-        $price = '<span class="current sale me-2">Agotado</span>';
+    if($data['product_type'] == 1){
+        $stock = $data['stock'];
+        if($data['discount'] > 0 && $data['stock'] > 0){
+            $price ='<span class="current sale me-2">'.formatNum($data['price']*(1-($data['discount']*0.01)),false).'</span><span class="compare">'.formatNum($data['price']).'</span>';
+        }else if($data['stock'] == 0){
+            $price = '<span class="current sale me-2">Agotado</span>';
+        }else{
+            $price ='</span><span class="current">'.formatNum($data['price']).'</span>';  
+        }
+        
+    }else if($data['product_type'] == 2){
+        $stock = $data['mins'];
+        if($data['discount'] > 0 && $data['mins'] > 0){
+            $price ='<span class="current sale me-2">'.formatNum($data['minp']*(1-($data['discount']*0.01)),false).'</span><span class="compare">'.formatNum($data['minp']).'</span>';
+        }else if($data['mins'] == 0){
+            $price = '<span class="current sale me-2">Agotado</span>';
+        }else{
+            $price ='</span><span class="current">'.formatNum($data['minp']).'</span>';  
+        }
     }
     for ($i = 0; $i < 5; $i++) {
         if($data['rate']>0 && $i >= intval($data['rate'])){
@@ -63,6 +79,21 @@
                     </div>
                     <p class="text-secondary m-0 mb-3">Stock: (<?=$data['stock']?>) unidades</p>
                     <p class="fs-4"><strong class="t-p"><?=$price?></strong></p>
+                    <?php
+                        if($data['product_type'] == 2){
+                            $variants = $data['variants'];
+                                
+                    ?>
+                    <div class="mb-3">
+                        <p class="t-color-3 m-0">Tamaño</p>
+                        <?php
+                            for ($i=0; $i < count($variants); $i++) { 
+                                
+                        ?>
+                        <button type="button" class="btn btn-bg-2 m-1" ><?=$variants[$i]['width']."x".$variants[$i]['height']?>cm</button>
+                        <?php  }?>
+                    </div>
+                    <?php  }?>
                     <p class="mb-3"><?=$data['shortdescription']?></p>
                     <?=$reference?>
                     <a href="<?=base_url()."/tienda/categoria/".$data['routec']?>" class="m-0">Categoría:<strong> <?=$data['category']?></strong></a><br>

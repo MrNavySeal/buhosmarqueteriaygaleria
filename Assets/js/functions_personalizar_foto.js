@@ -1,5 +1,5 @@
 const DIMENSIONDEFAULT = 4;
-const PPI = 100;
+const PPI = 300;
 const rangeZoom = document.querySelector("#zoomRange");
 const minusZoom = document.querySelector("#zoomMinus");
 const plusZoom = document.querySelector("#zoomPlus");

@@ -105,14 +105,17 @@
                             for ($i=0; $i < count($productos) ; $i++) { 
                                 $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
                                 $discount = "";
-                                $price ='</span><span class="current">'.formatNum($productos[$i]['price']).'</span>';
-                                $reference = $productos[$i]['reference']!="" ? "Ref: ".$productos[$i]['reference'] : "";
-                                if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
+                                $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
+                                $variant = $productos[$i]['product_type'] == 2? "Desde " : "";
+                                $price ='</span><span class="current">'.$variant.formatNum($productos[$i]['price']).'</span>';
+
+                                if($productos[$i]['discount'] > 0){
                                     $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
-                                    $price ='<span class="current sale me-2">'.formatNum($productos[$i]['priceDiscount']).'</span><span class="compare">'.formatNum($productos[$i]['price']).'</span>';
+                                    $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['price']*(1-($productos[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($productos[$i]['price']).'</span>';
                                 }else if($productos[$i]['stock'] == 0){
                                     $price = '<span class="current sale me-2">Agotado</span>';
                                 }
+
                         ?>
                         <div class="col-6 col-lg-3 col-md-6">
                             <div class="card--product">
@@ -128,12 +131,14 @@
                                     <div class="card--price">
                                         <?=$price?>
                                     </div>
+                                    
                                 </div>
                                 <div class="card--product-btns">
-                                    <?php if($productos[$i]['stock'] > 0){?>
+                                    <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
                                     <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
+                                    <?php }else if($productos[$i]['product_type'] == 2){?>
+                                    <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100">Ver más</a>
                                     <?php }?>
-                                    <button type="button" class="btn btn-bg-4" data-id="<?=$id?>" onclick="quickModal(this)">Vista rápida</button>
                                 </div>
                             </div>
                         </div>

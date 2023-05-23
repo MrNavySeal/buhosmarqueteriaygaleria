@@ -113,3 +113,16 @@
     font-size: 2.5rem;
     border-radius: 50%;
 }
+.btnv.active{
+    background-color: $color1;
+    color:$color4;
+    text-decoration: none;
+    border-radius: 10px;
+    &:hover{
+        color:$color4
+    }
+    a{
+        text-decoration: none;
+        color:$color4;
+    }
+}

@@ -1,8 +1,15 @@
 <?php
+    //dep($data['categories']);exit;
     headerPage($data);
     $social = getSocialMedia();
     $company = getCompanyInfo();
     $links ="";
+
+    $categories = $data['categories'];
+    $categorie1 = $data['categorie1'];
+    $categorie2 = $data['categorie2'];
+    $categorie3 = $data['categorie3'];
+
     $posts = $data['posts'];
     for ($i=0; $i < count($social) ; $i++) { 
         if($social[$i]['link']!=""){
@@ -16,6 +23,7 @@
 
     $tipos = $data['tipos'];
     $productos = $data['productos'];
+    //dep($productos);exit;
 ?>
     <div id="modalItem"></div>
     <div id="modalPoup"></div>
@@ -106,22 +114,6 @@
             <div class="text-center">
                 <a href="<?=base_url()?>/enmarcar" class="btn btn-bg-2">Ver todo</a>
             </div>
-            <div class="section--cta">
-                <div class="row">
-                    <div class="col-md-6 d-flex align-items-center mb-3">
-                        <div class="cta-info">
-                            <h4>Marcos para cuadros</h4>
-                            <p>Elige el marco ideal para tu cuadro con nuestros mejores marcos en madera</p>
-                            <a href="<?=base_url()."/enmarcar/personalizar/".$tipos[2]['route']?>" class="btn btn-bg-1 mt-3">Enmarcar ahora</a>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="cta-img">
-                            <img src="<?=media()?>/images/uploads/cta1.jpg" class="d-block w-100" alt="Cuadros decorativos para mi hogar">
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
         <section class="mt-5">
             <h2 class="section--title">¿Cómo funciona?</h2>
@@ -141,7 +133,7 @@
                         </li>
                         <li>
                             <p>Recibelo en tu puerta</p>
-                            <p>Enviamos el pedido a tu domicilio o puedes recogerlo en nuestro local</p>
+                            <p>Envíos nacionales, recibelo en tu puerta o puedes recogerlo en nuestro local</p>
                         </li>
                     </ol>
                     <a href="<?=base_url()?>/enmarcar" class="btn btn-bg-1 mt-3">Empieza a enmarcar ahora</a>
@@ -170,38 +162,187 @@
                     </div>
                 </div>
             </div>
-            <div class="section--cta">
-                <div class="row">
-                    <div class="col-md-6 d-flex align-items-center mb-3">
-                        <div class="cta-info">
-                            <h4>Cuadros decorativos modernos</h4>
-                            <p>Elige nuestros cuadros abstractos, cuadros para sala, cuadros para oficina y mucho más!</p>
-                            <a href="<?=base_url()?>/tienda" class="btn btn-bg-1 mt-3">Ver tienda</a>
+        </section>
+        <section class="mt-5">
+            <h2 class="section--title">Nuestra tienda</h2>
+            <div class="row mb-3">
+                <?php
+                    for ($i=0; $i < count($categories); $i++) { 
+                ?>
+                <div class="col-4 mb-3">
+                    <div class="card--category">
+                        <div class="card--category-img">
+                            <a href="<?=base_url()."/tienda/categoria/".$categories[$i]['route']?>">
+                                <img src="<?=media()."/images/uploads/".$categories[$i]['picture']?>" alt="<?=$categories[$i]['name']?>">
+                            </a>
                         </div>
+                        <h3><a href="<?=base_url()."/tienda/categoria/".$categories[$i]['route']?>" class="fs-5 fw-bold text-black"><?=$categories[$i]['name']?></a></h3>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="cta-img">
-                            <img src="<?=media()?>/images/uploads/cta3.jpg" class="d-block w-100" alt="Enmarcaciones en linea">
+                    
+                </div>
+                <?php }?>
+            </div>
+            <div class="row mb-3">
+                <h2 class="section--title"><?=$categorie1[0]['category']?></h2>
+                <?php
+                    for ($i=0; $i < count($categorie1) ; $i++) { 
+                        $id = openssl_encrypt($categorie1[$i]['idproduct'],METHOD,KEY);
+                        $discount = "";
+                        $reference = $categorie1[$i]['reference']!="" ? "REF: ".$categorie1[$i]['reference'] : "";
+                        $variant = $categorie1[$i]['product_type'] == 2? "Desde " : "";
+                        $price ='</span><span class="current">'.$variant.formatNum($categorie1[$i]['price']).'</span>';
+
+                        if($categorie1[$i]['discount'] > 0){
+                            $discount = '<span class="discount">-'.$categorie1[$i]['discount'].'%</span>';
+                            $price ='<span class="current sale me-2">'.$variant.formatNum($categorie1[$i]['price']*(1-($categorie1[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($categorie1[$i]['price']).'</span>';
+                        }else if($categorie1[$i]['stock'] == 0){
+                            $price = '<span class="current sale me-2">Agotado</span>';
+                        }
+
+                ?>
+                <div class="col-6 col-lg-3 col-md-6">
+                    <div class="card--product">
+                        <div class="card--product-img">
+                            <a href="<?=base_url()."/tienda/producto/".$categorie1[$i]['route']?>">
+                                <?=$discount?>
+                                <img src="<?=$categorie1[$i]['url']?>" alt="Cuadros decorativos <?=$categorie1[$i]['subcategory']?>">
+                            </a>
+                        </div>
+                        <div class="card--product-info">
+                            <h4><a href="<?=base_url()."/tienda/producto/".$categorie1[$i]['route']?>"><?=$categorie1[$i]['name']?></a></h4>
+                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
+                            <div class="card--price">
+                                <?=$price?>
+                            </div>
+                            
+                        </div>
+                        <div class="card--product-btns">
+                            <?php if($categorie1[$i]['product_type'] == 1 && $categorie1[$i]['stock'] > 0){?>
+                            <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
+                            <?php }else if($categorie1[$i]['product_type'] == 2){?>
+                            <a href="<?=base_url()."/tienda/producto/".$categorie1[$i]['route']?>" class="btn btn-bg-1 w-100">Ver más</a>
+                            <?php }?>
                         </div>
                     </div>
                 </div>
+                <?php } ?>
+                <div class="text-center mt-3">
+                    <a href="<?=base_url()."/tienda/categoria/".$categorie1[0]['routec']?>" class="btn btn-bg-2">Ver todo</a>
+                </div>
             </div>
-        </section>
-        <section class="mt-5">
-            <h2 class="section--title">Algunos de nuestros productos</h2>
+            <div class="row mb-3">
+                <h2 class="section--title"><?=$categorie2[0]['category']?></h2>
+                <?php
+                    for ($i=0; $i < count($categorie2) ; $i++) { 
+                        $id = openssl_encrypt($categorie2[$i]['idproduct'],METHOD,KEY);
+                        $discount = "";
+                        $reference = $categorie2[$i]['reference']!="" ? "REF: ".$categorie2[$i]['reference'] : "";
+                        $variant = $categorie2[$i]['product_type'] == 2? "Desde " : "";
+                        $price ='</span><span class="current">'.$variant.formatNum($categorie2[$i]['price']).'</span>';
+
+                        if($categorie2[$i]['discount'] > 0){
+                            $discount = '<span class="discount">-'.$categorie2[$i]['discount'].'%</span>';
+                            $price ='<span class="current sale me-2">'.$variant.formatNum($categorie2[$i]['price']*(1-($categorie2[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($categorie2[$i]['price']).'</span>';
+                        }else if($categorie2[$i]['stock'] == 0){
+                            $price = '<span class="current sale me-2">Agotado</span>';
+                        }
+
+                ?>
+                <div class="col-6 col-lg-3 col-md-6">
+                    <div class="card--product">
+                        <div class="card--product-img">
+                            <a href="<?=base_url()."/tienda/producto/".$categorie2[$i]['route']?>">
+                                <?=$discount?>
+                                <img src="<?=$categorie2[$i]['url']?>" alt="Cuadros decorativos <?=$categorie2[$i]['subcategory']?>">
+                            </a>
+                        </div>
+                        <div class="card--product-info">
+                            <h4><a href="<?=base_url()."/tienda/producto/".$categorie2[$i]['route']?>"><?=$categorie2[$i]['name']?></a></h4>
+                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
+                            <div class="card--price">
+                                <?=$price?>
+                            </div>
+                            
+                        </div>
+                        <div class="card--product-btns">
+                            <?php if($categorie2[$i]['product_type'] == 1 && $categorie2[$i]['stock'] > 0){?>
+                            <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
+                            <?php }else if($categorie2[$i]['product_type'] == 2){?>
+                            <a href="<?=base_url()."/tienda/producto/".$categorie2[$i]['route']?>" class="btn btn-bg-1 w-100">Ver más</a>
+                            <?php }?>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+                <div class="text-center mt-3">
+                    <a href="<?=base_url()."/tienda/categoria/".$categorie2[0]['routec']?>" class="btn btn-bg-2">Ver todo</a>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <h2 class="section--title"><?=$categorie3[0]['category']?></h2>
+                <?php
+                    for ($i=0; $i < count($categorie3) ; $i++) { 
+                        $id = openssl_encrypt($categorie3[$i]['idproduct'],METHOD,KEY);
+                        $discount = "";
+                        $reference = $categorie3[$i]['reference']!="" ? "REF: ".$categorie3[$i]['reference'] : "";
+                        $variant = $categorie3[$i]['product_type'] == 2? "Desde " : "";
+                        $price ='</span><span class="current">'.$variant.formatNum($categorie3[$i]['price']).'</span>';
+
+                        if($categorie3[$i]['discount'] > 0){
+                            $discount = '<span class="discount">-'.$categorie3[$i]['discount'].'%</span>';
+                            $price ='<span class="current sale me-2">'.$variant.formatNum($categorie3[$i]['price']*(1-($categorie3[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($categorie3[$i]['price']).'</span>';
+                        }else if($categorie3[$i]['stock'] == 0){
+                            $price = '<span class="current sale me-2">Agotado</span>';
+                        }
+
+                ?>
+                <div class="col-6 col-lg-3 col-md-6">
+                    <div class="card--product">
+                        <div class="card--product-img">
+                            <a href="<?=base_url()."/tienda/producto/".$categorie3[$i]['route']?>">
+                                <?=$discount?>
+                                <img src="<?=$categorie3[$i]['url']?>" alt="Cuadros decorativos <?=$categorie3[$i]['subcategory']?>">
+                            </a>
+                        </div>
+                        <div class="card--product-info">
+                            <h4><a href="<?=base_url()."/tienda/producto/".$categorie3[$i]['route']?>"><?=$categorie3[$i]['name']?></a></h4>
+                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
+                            <div class="card--price">
+                                <?=$price?>
+                            </div>
+                            
+                        </div>
+                        <div class="card--product-btns">
+                            <?php if($categorie3[$i]['product_type'] == 1 && $categorie3[$i]['stock'] > 0){?>
+                            <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
+                            <?php }else if($categorie3[$i]['product_type'] == 2){?>
+                            <a href="<?=base_url()."/tienda/producto/".$categorie3[$i]['route']?>" class="btn btn-bg-1 w-100">Ver más</a>
+                            <?php }?>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+                <div class="text-center mt-3">
+                    <a href="<?=base_url()."/tienda/categoria/".$categorie3[0]['routec']?>" class="btn btn-bg-2">Ver todo</a>
+                </div>
+            </div>
             <div class="row">
+                <h2 class="section--title">Lo más reciente</h2>
                 <?php
                     for ($i=0; $i < count($productos) ; $i++) { 
                         $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
                         $discount = "";
-                        $reference = $productos[$i]['reference']!="" ? "Ref: ".$productos[$i]['reference'] : "";
-                        $price ='</span><span class="current">'.formatNum($productos[$i]['price']).'</span>';
+                        $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
+                        $variant = $productos[$i]['product_type'] == 2? "Desde " : "";
+                        $price ='</span><span class="current">'.$variant.formatNum($productos[$i]['price']).'</span>';
+
                         if($productos[$i]['discount'] > 0){
                             $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
-                            $price ='<span class="current sale me-2">'.formatNum($productos[$i]['priceDiscount']).'</span><span class="compare">'.formatNum($productos[$i]['price']).'</span>';
+                            $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['price']*(1-($productos[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($productos[$i]['price']).'</span>';
                         }else if($productos[$i]['stock'] == 0){
                             $price = '<span class="current sale me-2">Agotado</span>';
                         }
+
                 ?>
                 <div class="col-6 col-lg-3 col-md-6">
                     <div class="card--product">
@@ -220,65 +361,20 @@
                             
                         </div>
                         <div class="card--product-btns">
-                            <?php if($productos[$i]['stock'] > 0){?>
+                            <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
                             <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
+                            <?php }else if($productos[$i]['product_type'] == 2){?>
+                            <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100">Ver más</a>
                             <?php }?>
-                            <button type="button" class="btn btn-bg-4" data-id="<?=$id?>" onclick="quickModal(this)">Vista rápida</button>
                         </div>
                     </div>
                 </div>
                 <?php } ?>
-            </div>
-            <div class="text-center mt-3">
-                <a href="<?=base_url()?>/tienda" class="btn btn-bg-2">Ver todo</a>
-            </div>
-        </section>
-        <section class="mt-5">
-            <div class="section--contact">
-                <h2 class="section--title">¿No encuentras lo que buscas? <br> Contáctanos</h2>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <form class="form--contact" id="formContact">
-                            <p>Nos encontramos en <?=$company['addressfull']?></p> 
-                            <div class="form--contact-data">
-                                <label>¿Cuál es tu nombre?</label>
-                                <input type="text" id="txtContactName" name="txtContactName" placeholder="Nombre">
-                                <span class="form-focus-effect"></span>
-                            </div>
-                            <div class="form--contact-data">
-                                <label>¿Cuál es tu teléfono?</label>
-                                <input type="text" id="txtContactPhone" name="txtContactPhone" placeholder="310 123 1234">
-                                <span class="form-focus-effect"></span>
-                            </div>
-                            <div class="form--contact-data">
-                                <label>¿Cuál es tu correo?</label>
-                                <input type="text" id="txtContactEmail" name="txtContactEmail" placeholder="micorreo@ejemplo.com">
-                                <span class="form-focus-effect"></span>
-                            </div>
-                            <div class="form--contact-data">
-                                <label>Tu mensaje</label>
-                                <textarea name="txtContactMessage" id="txtContactMessage" rows="3" placeholder="Escribe tu mensaje"></textarea>
-                                <span class="form-focus-effect"></span>
-                            </div>
-                            <div class="alert alert-danger mt-3 d-none" id="alertContact" role="alert"></div>
-                            <div class="mt-3 d-flex justify-content-between align-items-center flex-wrap">
-                                <button type="submit" class="btn btn-bg-1 mb-3" id="btnMessage">Enviar mensaje</button>
-                                
-                                <ul class="social mb-3">
-                                    <?=$links?>
-                                </ul>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <iframe class="map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d497.43094086071005!2d-73.62887549945499!3d4.132008249047646!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3e2e72bdc34df1%3A0xd7ff9e6fdd7a5cbb!2sCra.%2036%20%2315a3%2C%20Villavicencio%2C%20Meta!5e0!3m2!1ses!2sco!4v1665440386579!5m2!1ses!2sco" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                    </div>
+                <div class="text-center mt-3">
+                    <a href="<?=base_url()?>/tienda" class="btn btn-bg-2">Ver todo</a>
                 </div>
             </div>
         </section>
-        <?php
-            if($social[3]['link']!=""){
-        ?>
         <?php if(!empty($posts)){?>
         <section class="mt-5">
             <h2 class="section--title">Últimos artículos publicados</h2>
@@ -300,52 +396,6 @@
                     </div>
                 </div>
                 <?php }?>
-            </div>
-        </section>
-        <?php }?>
-        <section class="mt-5">
-            <h2 class="section--title">Nuestro instagram</h2>
-            <div class="row">
-                <div class="col-6 col-lg-3 col-md-6 mb-3">
-                    <div class="instagram">
-                        <a href="<?=$social[3]['link']?>" target="_blank">
-                            <div class="instagram-img">
-                                <img src="<?=media()?>/images/uploads/instagram1.jpg" alt="Cuadros y enmarcaciones en linea">
-                                <div><i class="fab fa-instagram"></i></div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3 col-md-6 mb-3">
-                    <div class="instagram">
-                        <a href="<?=$social[3]['link']?>" target="_blank">
-                            <div class="instagram-img">
-                                <img src="<?=media()?>/images/uploads/instagram2.jpg" alt="Cuadros y enmarcaciones en linea">
-                                <div><i class="fab fa-instagram"></i></div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3 col-md-6 mb-3">
-                    <div class="instagram">
-                        <a href="<?=$social[3]['link']?>" target="_blank">
-                            <div class="instagram-img">
-                                <img src="<?=media()?>/images/uploads/instagram3.jpg" alt="Cuadros y enmarcaciones en linea">
-                                <div><i class="fab fa-instagram"></i></div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3 col-md-6 mb-3">
-                    <div class="instagram">
-                        <a href="<?=$social[3]['link']?>" target="_blank">
-                            <div class="instagram-img">
-                                <img src="<?=media()?>/images/uploads/instagram4.jpg" alt="Cuadros y enmarcaciones en linea">
-                                <div><i class="fab fa-instagram"></i></div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
             </div>
         </section>
         <?php }?>

@@ -1,10 +1,14 @@
 //btnSearch.classList.add("d-none");
 //document.querySelector(".nav-icons-qty").classList.add("d-none");
+let decrement;
+let increment;
+let inputs;
 
 window.addEventListener("load",function(){
     document.querySelector("#btnCart").classList.add("d-none");
     if(document.querySelectorAll(".table-cart .btn-del")){
-        updateCart();
+        
+        //updateCart();
         delCart(document.querySelectorAll(".btn-del-cart"))
         /*let btns = document.querySelectorAll(".table-cart .btn-del");
         for (let i = 0; i < btns.length; i++) {
@@ -45,7 +49,6 @@ window.addEventListener("load",function(){
             window.location.href=base_url+"/carrito?situ="+boolCheck.checked;
         }
     })
-    
 });
 
 if(document.querySelector("#selectCity")){
@@ -74,8 +77,9 @@ if(document.querySelector("#selectCity")){
 }
 if(document.querySelector("#btnCoupon")){
     let btnCoupon = document.querySelector("#btnCoupon");
-    btnCoupon.addEventListener("click",function(){
-        let formCoupon = document.querySelector("#formCoupon");
+    let formCoupon = document.querySelector("#formCoupon");
+    formCoupon.addEventListener("submit",function(e){
+        e.preventDefault();
         let strCoupon = document.querySelector("#txtCoupon").value;
         if(strCoupon ==""){
             alertCoupon.innerHTML="Por favor, ingresa el cupón.";
@@ -104,10 +108,12 @@ if(document.querySelector("#btnCoupon")){
         });
     })
 }
-function updateCart(){
-    let decrement = document.querySelectorAll(".cartDecrement");
-    let increment = document.querySelectorAll(".cartIncrement");
-    let inputs = document.querySelectorAll(".inputCart");
+function cartIncrement(element){
+    let parent = element.parentElement.parentElement.parentElement.parentElement;
+    console.log(parent);
+    let id = parent.getAttribute("data-id");
+    let topic = parent.getAttribute("data-topic");
+    let variant = parent.getAttribute("data-variant") ? parent.getAttribute("data-variant") : null ;
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
@@ -115,62 +121,200 @@ function updateCart(){
     if(params.get("cupon")){
         cupon = params.get("cupon");
     }
+    let city = "";
+    if(document.querySelector("#selectCity")){
+        city = document.querySelector("#selectCity").value;
+    }
+    let input = element.previousElementSibling;
+    input.value++;
+    let qty = input.value;
+    let formData = new FormData();
+    formData.append("id",id);
+    formData.append("topic",topic);
+    formData.append("qty",qty);
+    formData.append("cupon",cupon);
+    formData.append("city",city);
+    formData.append("variant",variant);
+    if(topic == 1){
+        let height = parent.getAttribute("data-h");
+        let width = parent.getAttribute("data-w");
+        let margin = parent.getAttribute("data-m");
+        let style = parent.getAttribute("data-s");
+        let colorMargin = parent.getAttribute("data-mc");
+        let colorBorder = parent.getAttribute("data-bc");
+        let idType = parent.getAttribute("data-t");
+        let reference = parent.getAttribute("data-r");
+        formData.append("height",height);
+        formData.append("width",width);
+        formData.append("margin",margin);
+        formData.append("style",style);
+        formData.append("colormargin",colorMargin);
+        formData.append("colorborder",colorBorder);
+        formData.append("idType",idType);
+        formData.append("reference",reference);
+    }
+    if(document.querySelector("#cuponTotal")){
+        document.querySelector("#cuponTotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
+    }
+    parent.children[4].innerHTML =`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    document.querySelector("#totalProducts").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    document.querySelector("#subtotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    request(base_url+"/carrito/updateCart",formData,"post").then(function(objData){
+        if(objData.status){
+            document.querySelector("#subtotal").innerHTML = objData.subtotal;
+            document.querySelector("#totalProducts").innerHTML = objData.total;
+            parent.children[4].innerHTML = objData.totalPrice;
+            input.value = objData.qty;
+            if(document.querySelector("#cuponTotal")){
+                document.querySelector("#cuponTotal").innerHTML = objData.cupon;
+            }
+        }
+    });
+}
+function cartDecrement(element){
+    let parent = element.parentElement.parentElement.parentElement.parentElement;
+    let id = parent.getAttribute("data-id");
+    let topic = parent.getAttribute("data-topic");
+    let variant = parent.getAttribute("data-variant") ? parent.getAttribute("data-variant") : null ;
+    let urlSearch = window.location.search;
+    let params = new URLSearchParams(urlSearch);
+    let cupon = "";
+    
+    if(params.get("cupon")){
+        cupon = params.get("cupon");
+    }
+    let city = "";
+    if(document.querySelector("#selectCity")){
+        city = document.querySelector("#selectCity").value;
+    }
+    let input = element.nextElementSibling;
+    if(input.value<=1){
+        input.value=1;
+    }else{
+        input.value--;
+    }
+    let qty = input.value;
+    let formData = new FormData();
+    formData.append("id",id);
+    formData.append("topic",topic);
+    formData.append("qty",qty);
+    formData.append("cupon",cupon);
+    formData.append("city",city);
+    formData.append("variant",variant);
+    if(topic == 1){
+        let height = parent.getAttribute("data-h");
+        let width = parent.getAttribute("data-w");
+        let margin = parent.getAttribute("data-m");
+        let style = parent.getAttribute("data-s");
+        let colorMargin = parent.getAttribute("data-mc");
+        let colorBorder = parent.getAttribute("data-bc");
+        let idType = parent.getAttribute("data-t");
+        let reference = parent.getAttribute("data-r");
+        formData.append("height",height);
+        formData.append("width",width);
+        formData.append("margin",margin);
+        formData.append("style",style);
+        formData.append("colormargin",colorMargin);
+        formData.append("colorborder",colorBorder);
+        formData.append("idType",idType);
+        formData.append("reference",reference);
+    }
+    if(document.querySelector("#cuponTotal")){
+        document.querySelector("#cuponTotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
+    }
+    parent.children[4].innerHTML =`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    document.querySelector("#totalProducts").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    document.querySelector("#subtotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    request(base_url+"/carrito/updateCart",formData,"post").then(function(objData){
+        if(objData.status){
+            document.querySelector("#subtotal").innerHTML = objData.subtotal;
+            document.querySelector("#totalProducts").innerHTML = objData.total;
+            parent.children[4].innerHTML = objData.totalPrice;
+            input.value = objData.qty;
+            if(document.querySelector("#cuponTotal")){
+                document.querySelector("#cuponTotal").innerHTML = objData.cupon;
+            }
+        }
+    });
+}
+function cartInput(input){
+    let parent = input.parentElement.parentElement.parentElement.parentElement;
+    let id = parent.getAttribute("data-id");
+    let topic = parent.getAttribute("data-topic");
+    let variant = parent.getAttribute("data-variant") ? parent.getAttribute("data-variant") : null ;
+    let urlSearch = window.location.search;
+    let params = new URLSearchParams(urlSearch);
+    let cupon = "";
+    
+    if(params.get("cupon")){
+        cupon = params.get("cupon");
+    }
+    let city = "";
+    if(document.querySelector("#selectCity")){
+        city = document.querySelector("#selectCity").value;
+    }
+    let qty = input.value;
+    let formData = new FormData();
+    formData.append("id",id);
+    formData.append("topic",topic);
+    formData.append("qty",qty);
+    formData.append("cupon",cupon);
+    formData.append("city",city);
+    formData.append("variant",variant);
+    if(topic == 1){
+        let height = parent.getAttribute("data-h");
+        let width = parent.getAttribute("data-w");
+        let margin = parent.getAttribute("data-m");
+        let style = parent.getAttribute("data-s");
+        let colorMargin = parent.getAttribute("data-mc");
+        let colorBorder = parent.getAttribute("data-bc");
+        let idType = parent.getAttribute("data-t");
+        let reference = parent.getAttribute("data-r");
+        formData.append("height",height);
+        formData.append("width",width);
+        formData.append("margin",margin);
+        formData.append("style",style);
+        formData.append("colormargin",colorMargin);
+        formData.append("colorborder",colorBorder);
+        formData.append("idType",idType);
+        formData.append("reference",reference);
+    }
+    if(document.querySelector("#cuponTotal")){
+        document.querySelector("#cuponTotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
+    }
+    parent.children[4].innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    document.querySelector("#totalProducts").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    document.querySelector("#subtotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    request(base_url+"/carrito/updateCart",formData,"post").then(function(objData){
+        if(objData.status){
+            document.querySelector("#subtotal").innerHTML = objData.subtotal;
+            document.querySelector("#totalProducts").innerHTML = objData.total;
+            parent.children[4].innerHTML = objData.totalPrice;
+            input.value = objData.qty;
+            if(document.querySelector("#cuponTotal")){
+                document.querySelector("#cuponTotal").innerHTML = objData.cupon;
+            }
+        }
+    });
+}
+/*
+function updateCart(){
+    decrement = document.querySelectorAll(".cartDecrement");
+    increment = document.querySelectorAll(".cartIncrement");
+    inputs = document.querySelectorAll(".inputCart");
+    
 
     for (let i = 0; i < inputs.length; i++) {
         let input = inputs[i];
+        
         let minus = decrement[i];
         let plus = increment[i];
-        let id = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-id");
-        let topic = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-topic");
-        
+        let id = parent.getAttribute("data-id");
+        let topic = parent.getAttribute("data-topic");
+        let variant = parent.getAttribute("data-variant") ? parent.getAttribute("data-variant") : null ;
         
         input.addEventListener("change",function(){
-            let city = "";
-            if(document.querySelector("#selectCity")){
-                city = document.querySelector("#selectCity").value;
-            }
-            let qty = input.value;
-            let formData = new FormData();
-            formData.append("id",id);
-            formData.append("topic",topic);
-            formData.append("qty",qty);
-            formData.append("cupon",cupon);
-            formData.append("city",city);
-            if(topic == 1){
-                let height = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-h");
-                let width = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-w");
-                let margin = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-m");
-                let style = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-s");
-                let colorMargin = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-mc");
-                let colorBorder = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-bc");
-                let idType = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-t");
-                let reference = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-r");
-                formData.append("height",height);
-                formData.append("width",width);
-                formData.append("margin",margin);
-                formData.append("style",style);
-                formData.append("colormargin",colorMargin);
-                formData.append("colorborder",colorBorder);
-                formData.append("idType",idType);
-                formData.append("reference",reference);
-            }
-            if(document.querySelector("#cuponTotal")){
-                document.querySelector("#cuponTotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
-            }
-            document.querySelectorAll(".totalPerProduct")[i].innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            document.querySelector("#totalProducts").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            document.querySelector("#subtotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            request(base_url+"/carrito/updateCart",formData,"post").then(function(objData){
-                if(objData.status){
-                    document.querySelector("#subtotal").innerHTML = objData.subtotal;
-                    document.querySelector("#totalProducts").innerHTML = objData.total;
-                    document.querySelectorAll(".totalPerProduct")[i].innerHTML = objData.totalPrice;
-                    input.value = objData.qty;
-                    if(document.querySelector("#cuponTotal")){
-                        document.querySelector("#cuponTotal").innerHTML = objData.cupon;
-                    }
-                }
-            });
+            
         })
         minus.addEventListener("click",function(){
             let city = "";
@@ -189,7 +333,7 @@ function updateCart(){
             formData.append("qty",qty);
             formData.append("cupon",cupon);
             formData.append("city",city);
-            
+            formData.append("variant",variant);
             if(topic == 1){
                 let height = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-h");
                 let width = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-w");
@@ -239,7 +383,7 @@ function updateCart(){
             formData.append("qty",qty);
             formData.append("cupon",cupon);
             formData.append("city",city);
-            
+            formData.append("variant",variant);
             if(topic == 1){
                 let height = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-h");
                 let width = input.parentElement.parentElement.parentElement.parentElement.getAttribute("data-w");
@@ -279,7 +423,7 @@ function updateCart(){
             });
         })
     }
-}
+}*/
 function delCart(elements){
     for (let i = 0; i < elements.length; i++) {
         let element = elements[i];
@@ -290,11 +434,13 @@ function delCart(elements){
             let situ="";
             let data = element.parentElement.parentElement.parentElement;
             let formData = new FormData();
+            let variant = data.getAttribute("data-variant") ? data.getAttribute("data-variant") : null ;
             let topic = data.getAttribute("data-topic");
             let id = data.getAttribute("data-id");
+            formData.append("variant",variant);
             formData.append("topic",topic);
             formData.append("id",id);
-
+            
             if(topic == 1){
                 let photo = data.getAttribute("data-f");
                 let height = data.getAttribute("data-h");
@@ -332,7 +478,8 @@ function delCart(elements){
                     }else{
                         situ = "&situ="+params.get("situ");
                     }
-                    window.location.href=base_url+"/carrito"+cupon+situ;
+                    //window.location.href=base_url+"/carrito"+cupon+situ;
+                    //updateCart();
                 }
             });
         });

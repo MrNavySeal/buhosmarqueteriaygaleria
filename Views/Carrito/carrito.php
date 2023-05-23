@@ -1,6 +1,6 @@
 <?php
     headerPage($data);
-    //dep($arrProducts);
+    //dep($_SESSION['arrCart']);
     $qtyCart = 0;
     $total = 0;
     $subtotal = 0;
@@ -8,6 +8,7 @@
     $urlCupon="";
     $situ = isset($_GET['situ']) ? $_GET['situ'] : "";
     $urlSitu = $situ !="" ? "?situ=".$situ : "";
+    
     if(isset($_GET['cupon'])){
         if($situ !=""){
             $urlCupon = "?cupon=".$_GET['cupon']."&situ=".$situ;
@@ -30,7 +31,15 @@
                     $arrProducts = $_SESSION['arrCart'];
                     $cupon = 0;
                     for ($i=0; $i < count($arrProducts) ; $i++) { 
-                        $subtotal += $arrProducts[$i]['price']*$arrProducts[$i]['qty'];
+                        if($arrProducts[$i]['topic'] == 2){
+                            if($arrProducts[$i]['producttype'] == 2){
+                                $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['variant']['price'];
+                            }else{
+                                $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
+                            }
+                        }else{
+                            $subtotal += $arrProducts[$i]['price']*$arrProducts[$i]['qty']; 
+                        }
                     }
                     if(isset($data['cupon'])){
                         $cupon = $subtotal-($subtotal*($data['cupon']['discount']/100));
@@ -57,8 +66,16 @@
                         <tbody>
                             <?php 
                                 for ($i=0; $i <count($arrProducts) ; $i++) { 
+                                    $variant = "";
+                                    $price =0;
+                                    if($arrProducts[$i]['topic'] == 2 && $arrProducts[$i]['producttype'] == 2){
+
+                                        $price = $arrProducts[$i]['variant']['price'];
+                                    }else{
+                                        $price = $arrProducts[$i]['price'];
+                                    }
                                     $totalPerProduct=0;
-                                    $totalPerProduct = formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false);
+                                    $totalPerProduct = formatNum($price*$arrProducts[$i]['qty'],false);
                                     if($arrProducts[$i]['topic'] == 1){
                                         $img = $arrProducts[$i]['img'];
                                     }elseif ($arrProducts[$i]['topic'] == 1 && $arrProducts[$i]['photo']!="") {
@@ -73,7 +90,13 @@
                         data-mc="<?=$arrProducts[$i]['colormargin']?>" data-bc="<?=$arrProducts[$i]['colorborder']?>" data-t="<?=$arrProducts[$i]['idType']?>" 
                         data-r="<?=$arrProducts[$i]['reference']?>" data-f="<?=$arrProducts[$i]['photo']?>">
                             <?php }else if($arrProducts[$i]['topic'] == 2){?>
-                            <tr data-id = "<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>">
+                                <?php if($arrProducts[$i]['producttype'] == 2){
+                                    $variant = '<ul><li><span class="fw-bold t-color-3">Tamaño:</span> '.$arrProducts[$i]['variant']['width']."x".$arrProducts[$i]['variant']['height'].'cm</li></ul>'
+                                ?>
+                                    <tr data-id = "<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>" data-variant ="<?=$arrProducts[$i]['variant']['id_product_variant']?>">
+                                <?php }else{?>
+                                    <tr data-id = "<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>">
+                                <?php }?>
                             <?php }?>
                             <td>
                                 <div class="position-relative">
@@ -82,7 +105,8 @@
                                 </div>
                             </td>
                             <td>
-                                <a class="w-100"href="<?=$arrProducts[$i]['url']?>"><?=$arrProducts[$i]['name']?></a>
+                                <a class="w-100"href="<?=$arrProducts[$i]['url']?>"><?=$arrProducts[$i]['reference']?> <?=$arrProducts[$i]['name']?></a>
+                                <?=$variant?>
                                 <?php
                                     if($arrProducts[$i]['topic'] == 1){
                                         $margen = $arrProducts[$i]['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Margen:</span> '.$arrProducts[$i]['margin'].'cm</li>' : "";
@@ -135,13 +159,13 @@
                                 <?php }?>
                                 <?php }?>
                             </td>
-                            <td><?=formatNum($arrProducts[$i]['price'],false)?></td>
+                            <td><?=formatNum($price,false)?></td>
                             <td>
                                 <div class="d-flex justify-content-center align-items-center flex-wrap">
                                     <div class="btn-qty-1">
-                                        <button class="btn cartDecrement"><i class="fas fa-minus"></i></button>
-                                        <input type="number" name="txtQty" class="inputCart"  min="1" value ="<?=$arrProducts[$i]['qty']?>">
-                                        <button class="btn cartIncrement"><i class="fas fa-plus"></i></button>
+                                        <button class="btn cartDecrement" onclick="cartDecrement(this)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" name="txtQty" class="inputCart" oninput="cartInput(this)" min="1" value ="<?=$arrProducts[$i]['qty']?>">
+                                        <button class="btn cartIncrement" onclick="cartIncrement(this)"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </div>
                             </td>

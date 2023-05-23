@@ -79,7 +79,16 @@
     }
 }
 @media screen and (max-width: 768px){
-
+    .card--product-img{
+        img{
+            height: 125px;
+        }
+    }
+    .card--category-img{
+        img{
+            height: 150px;
+        }
+    }
 }
 @media screen and (max-width: 576px){ 
     .content-site{

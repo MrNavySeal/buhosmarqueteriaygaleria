@@ -23,6 +23,12 @@
             }
             return $request;
         }
+        public function getCategoriesShowT(string $categories){
+            $this->con=new Mysql();
+            $sql = "SELECT * FROM category WHERE idcategory IN ($categories)";       
+            $request = $this->con->select_all($sql);
+            return $request;
+        }
     }
     
 ?>

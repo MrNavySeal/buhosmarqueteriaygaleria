@@ -103,6 +103,7 @@ $subtotal = 0;
 		<table>
 		  <thead class="table-active">
 		    <tr>
+			  <th>Referencia</th>
 		      <th>Descripción</th>
 		      <th class="text-right">Precio</th>
 		      <th class="text-center">Cantidad</th>
@@ -118,9 +119,13 @@ $subtotal = 0;
 						$subtotal+= $product['quantity']*$product['price'];
 			?>
 			<tr>
+			<td class="text-start">
+				<?=$product['reference']?><br>
+			</td>
 				<?php
 					if($product['topic'] == 2 || $product['topic'] == 3){
 				?>
+			
 			<td class="text-start">
 				<?=$product['description']?><br>
 			</td>
@@ -196,7 +201,7 @@ $subtotal = 0;
 		  </tbody>
 		  <tfoot>
 				<tr>
-					<th colspan="3" class="text-end">Subtotal:</th>
+					<th colspan="4" class="text-end">Subtotal:</th>
 					<td class="text-right"><?= formatNum(floor($subtotal),false)?></td>
 				</tr>
 				<?php
@@ -205,20 +210,20 @@ $subtotal = 0;
 						$subtotal = $subtotal - ($subtotal*($cupon['discount']/100));
 				?>
 				<tr>
-					<th colspan="3" class="text-end">Cupon:</th>
+					<th colspan="4" class="text-end">Cupon:</th>
 					<td class="text-right"><?= $cupon['code']." - ".$cupon['discount']?>%</td>
 				</tr>
 				<tr>
-					<th colspan="3" class="text-end">Subtotal:</th>
+					<th colspan="4" class="text-end">Subtotal:</th>
 					<td class="text-right"><?= formatNum(floor($subtotal),false)?></td>
 				</tr>
 				<?php }?>
 				<tr>
-					<th colspan="3" class="text-end">Envio:</th>
+					<th colspan="4" class="text-end">Envio:</th>
 					<td class="text-right"><?= formatNum($order['shipping'],false)?></td>
 				</tr>
 				<tr>
-					<th colspan="3" class="text-end">Total:</th>
+					<th colspan="4" class="text-end">Total:</th>
 					<td class="text-right"><?= formatNum($order['amount'],false)?></td>
 				</tr>
 		</tfoot>

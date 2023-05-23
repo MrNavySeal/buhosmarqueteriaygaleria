@@ -95,7 +95,15 @@
             $status = true;
             $arrCupon = array();
             for ($i=0; $i < count($arrProducts) ; $i++) { 
-                $subtotal += $arrProducts[$i]['price']*$arrProducts[$i]['qty']; 
+                if($arrProducts[$i]['topic'] == 2){
+                    if($arrProducts[$i]['producttype'] == 2){
+                        $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['variant']['price'];
+                    }else{
+                        $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
+                    }
+                }else{
+                    $subtotal += $arrProducts[$i]['price']*$arrProducts[$i]['qty']; 
+                }
             }
             if($arrShipping['id'] != 3){
                 $shipping = $arrShipping['value'];

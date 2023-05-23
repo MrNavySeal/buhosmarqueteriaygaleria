@@ -301,6 +301,33 @@
             echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
+        /******************************Product methods************************************/
+        public function getProductVariant(){
+            //dep(openssl_decrypt($_POST['id_product'],METHOD,KEY));exit;
+            if($_POST){
+                if(empty($_POST['id_product']) || empty($_POST['id_variant'])){
+                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                }else{
+                    $id = openssl_decrypt($_POST['id_product'],METHOD,KEY);
+                    $variant = openssl_decrypt($_POST['id_variant'],METHOD,KEY);
+                    if(is_numeric($id) && is_numeric($variant)){
+                        $request = $this->selectProductVariant($id,$variant);
+                        $discount = 0;
+                        $priceDiscount = 0;
+                        if($request['discount']>0){
+                            $discount = $request['discount'];
+                            $priceDiscount = $request['variant']['price'] -($request['variant']['price']*($discount*0.01));
+                        }
+                        $arrResponse = array("status"=>true,"stock"=>$request['variant']['stock'],"price"=>formatNum($request['variant']['price'],false),"pricediscount"=>formatNum($priceDiscount,false));
+                    }else{
+                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    }
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        
         /******************************General shop methods************************************/
         public function getProduct(){
             if($_POST){

@@ -47,34 +47,36 @@ btnNextP.addEventListener("click",function(){
 btnReview.addEventListener("click",function(){
     modal.show();
 })
-if(document.querySelector("#btnPqty")){
-    let btnPPlus = document.querySelector("#btnPIncrement");
-    let btnPMinus = document.querySelector("#btnPDecrement");
-    let intPQty = document.querySelector("#txtQty");
-    let maxStock = parseInt(intPQty.getAttribute("max"));
 
-    btnPPlus.addEventListener("click",function(){
-        if(intPQty.value >=maxStock){
-            intPQty.value = maxStock;
-        }else{
-            ++intPQty.value; 
-        }
-    });
-    btnPMinus.addEventListener("click",function(){
-        if(intPQty.value <=1){
-            intPQty.value = 1;
-        }else{
-            --intPQty.value; 
-        }
-    });
-    intPQty.addEventListener("input",function(){
-        if(intPQty.value >= maxStock){
-            intPQty.value= maxStock;
-        }else if(intPQty.value <= 1){
-            intPQty.value= 1;
-        }
-    });
-}
+let btnPPlus = document.querySelector("#btnPIncrement");
+let btnPMinus = document.querySelector("#btnPDecrement");
+let intPQty = document.querySelector("#txtQty");
+
+
+btnPPlus.addEventListener("click",function(){
+    let maxStock = parseInt(intPQty.getAttribute("max"));
+    if(intPQty.value >=maxStock){
+        intPQty.value = maxStock;
+    }else{
+        intPQty.value++; 
+    }
+});
+btnPMinus.addEventListener("click",function(){
+    if(intPQty.value <=1){
+        intPQty.value = 1;
+    }else{
+        --intPQty.value; 
+    }
+});
+intPQty.addEventListener("input",function(){
+    let maxStock = parseInt(intPQty.getAttribute("max"));
+    if(intPQty.value >= maxStock){
+        intPQty.value= maxStock;
+    }else if(intPQty.value <= 1){
+        intPQty.value= 1;
+    }
+});
+
 formReview.addEventListener("submit",function(e){
     e.preventDefault();
     let formData = new FormData(formReview);
@@ -144,4 +146,33 @@ function showMore(elements,max=null,handler){
         
     })
 }
-
+function selVariant(element){
+    let variants = document.querySelectorAll(".btnv");
+    for (let i = 0; i < variants.length; i++) {
+        variants[i].classList.remove("active");
+    }
+    
+    let formData = new FormData();
+    formData.append("id_product",element.getAttribute("data-id"));
+    formData.append("id_variant",element.getAttribute("data-idv"));
+    if(!element.classList.contains("active")){
+        element.disabled = true;
+        request(base_url+"/tienda/getProductVariant",formData,"post").then(function(objData){
+            if(objData.status){
+                element.classList.add("active");
+                let priceElement = document.querySelector("#productPrice");
+                document.querySelector("#txtQty").setAttribute("max",objData.stock);
+                document.querySelector("#txtQty").value=1;
+                document.querySelector("#productStock").innerHTML = `Stock: (${objData.stock}) unidades`
+                if(priceElement.children.length>1){
+                    priceElement.children[0].innerHTML = objData.pricediscount;
+                    priceElement.children[1].innerHTML = objData.price;
+                }else{
+                    priceElement.innerHTML = objData.price;
+                }
+            }
+        }).finally(function() {
+            element.disabled = false;
+        });
+    }
+}

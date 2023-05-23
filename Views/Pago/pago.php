@@ -16,7 +16,15 @@
     $situ = isset($_GET['situ']) ? "?situ=".$_GET['situ'] : "";
 
     for ($i=0; $i < count($arrProducts) ; $i++) { 
-        $subtotal += $arrProducts[$i]['qty'] * $arrProducts[$i]['price'];
+        if($arrProducts[$i]['topic'] == 2){
+            if($arrProducts[$i]['producttype'] == 2){
+                $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['variant']['price'];
+            }else{
+                $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
+            }
+        }else{
+            $subtotal += $arrProducts[$i]['price']*$arrProducts[$i]['qty']; 
+        }
     }
 
     if(isset($data['cupon']) && !$data['cupon']['check']){
@@ -141,7 +149,13 @@
                     <h2>Resumen</h2>
                     <?php 
                         for ($i=0; $i < count($arrProducts) ; $i++) { 
-                            $price=$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
+                            $price =0;
+                            if($arrProducts[$i]['topic'] == 2 && $arrProducts[$i]['producttype'] == 2){
+
+                                $price = $arrProducts[$i]['variant']['price']*$arrProducts[$i]['qty'];
+                            }else{
+                                $price = $arrProducts[$i]['price']*$arrProducts[$i]['qty'];
+                            }
                     ?>
                     <div class="d-flex justify-content-between">
                         <p><?=$arrProducts[$i]['name']." x ".$arrProducts[$i]['qty']?></p>
