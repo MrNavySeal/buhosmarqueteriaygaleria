@@ -30,6 +30,7 @@
                     <table class="table items align-middle" id="table<?=$data['page_title']?>">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Nombre</th>
                                 <th>Categoría</th>
                                 <th>Estado</th>

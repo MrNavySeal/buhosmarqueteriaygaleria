@@ -398,6 +398,7 @@
                         }
                         $html.='
                             <tr class="item">
+                                <td data-label="ID: ">'.$request[$i]['idcategory'].'</td>
                                 <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
                                 <td data-label="Estado: ">'.$status.'</td>
                                 <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
@@ -603,6 +604,7 @@
                         }
                         $html.='
                             <tr class="item">
+                                <td data-label="ID: ">'.$request[$i]['idsubcategory'].'</td>
                                 <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
                                 <td data-label="Categoría: ">'.$request[$i]['category'].'</td>
                                 <td data-label="Estado: ">'.$status.'</td>
