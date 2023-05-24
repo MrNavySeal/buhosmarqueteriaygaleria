@@ -515,7 +515,7 @@
                     }
                 }
                 if($request['product_type'] == 2){
-                    $sqlV = "SELECT * FROM product_variant WHERE productid = $this->intIdProduct AND stock > 0";
+                    $sqlV = "SELECT * FROM product_variant WHERE productid = $this->intIdProduct AND stock > 0 ORDER by price ASC";
                     $requestV = $this->con->select_all($sqlV);
                     $sqlMin = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$this->intIdProduct AND stock > 0";
                     $sqlStock = "SELECT MIN(stock) AS stock FROM product_variant WHERE productid =$this->intIdProduct AND stock > 0";
