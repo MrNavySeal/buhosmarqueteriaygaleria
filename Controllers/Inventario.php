@@ -174,9 +174,9 @@
                         $arrSpecs = $_POST['specs'];
                         $imgFraming = "";
                         $photoFraming="category.jpg";
-                        
+                        $reference = $strReference != "" ? $strReference."-" : "";
 
-                        $route = clear_cadena($strName);
+                        $route = clear_cadena($reference.$strName);
                         $route = strtolower(str_replace("¿","",$route));
                         $route = str_replace(" ","-",$route);
                         $route = str_replace("?","",$route);
