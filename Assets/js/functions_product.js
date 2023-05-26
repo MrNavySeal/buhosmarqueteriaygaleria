@@ -31,15 +31,11 @@ window.addEventListener("load",function(){
         uploadImg(framingImg,imgLocation);
     });
     btnVariant.addEventListener("click",function(){
-        let height = document.querySelector("#intVariantHeight").value;
-        let width = document.querySelector("#intVariantWidth").value;
-        let stock = document.querySelector("#intVariantStock").value;
-        let price = document.querySelector("#intVariantPrice").value;
-        if(width =="" || height =="" || price ==""){
+        /*if(width =="" || height =="" || price ==""){
             Swal.fire("Error","Todos los campos de la variante marcados con (*) son obligatorios","error");
             return false;
-        }
-        addVariant(width,height,stock,price);
+        }*/
+        addVariant();
     });
     btnSpc.addEventListener("click",function(){
         addSpec(document.querySelector("#selectTypeSpc").value);
@@ -65,6 +61,7 @@ window.addEventListener("load",function(){
     setTinymce("#txtDescription");
     
     form.addEventListener("submit",function(e){
+        console.log(getVariatns());
         e.preventDefault();
         tinymce.triggerSave();
         let data = new FormData(form);
@@ -78,7 +75,6 @@ window.addEventListener("load",function(){
         let intCategory = categoryList.value;
         let images = document.querySelectorAll(".upload-image");
         
-
         if(strName == "" || intStatus == "" || intCategory == 0 || intSubCategory==0){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
@@ -91,7 +87,7 @@ window.addEventListener("load",function(){
             Swal.fire("Error","Debe subir al menos una imagen","error");
             return false;
         }
-
+        
         if(intDiscount !=""){
             if(intDiscount < 0){
                 Swal.fire("Error","El descuento no puede ser inferior a 0","error"); 
@@ -107,6 +103,27 @@ window.addEventListener("load",function(){
             Swal.fire("Error","Por favor, para producto sin variante, ingrese al menos el precio","error");
             return false;
         }
+        if(selectProductType.value == 2){
+            console.log(selectProductType.value);
+            let flag = true;
+            let variants = document.querySelectorAll(".variantItem");
+            if(variants.length == 0){
+                Swal.fire("Error","Por favor, ingresa al menos una variante","error");
+                return false;
+            }else if(variants.length > 0){
+                for (let i = 0; i < variants.length; i++) {
+                    let td = variants[i];
+                    if(td.children[0].children[0].value == "" || td.children[1].children[0].value == "" || td.children[3].children[0].value == ""){
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            if(flag == false){
+                Swal.fire("Error","El ancho, alto y precio son obligatorios","error");
+                return false
+            }
+        }
         if(selectFramingMode.value == 1 && document.querySelector("#txtImgFrame").value == "" && id==0){
             Swal.fire("Error","Por favor, para el modo enmarcar, ingrese la foto a enmarcar","error");
             return false;
@@ -115,6 +132,7 @@ window.addEventListener("load",function(){
         for (let i = 0; i < images.length; i++) {
             arrImg.push(images[i].getAttribute("data-rename"));
         }
+        
         
         data.append("variants",JSON.stringify(getVariatns()));
         data.append("images",JSON.stringify(arrImg));
@@ -148,11 +166,11 @@ function getVariatns(){
     let variants = document.querySelectorAll(".variantItem");
     let arrVariants = [];
     for (let i = 0; i < variants.length; i++) {
-        let item = variants[i];
-        let height = item.getAttribute("attheight");
-        let width = item.getAttribute("attwidth");
-        let stock = item.getAttribute("attstock");
-        let price = item.getAttribute("attprice");
+        let item = variants[i].children;
+        let height = item[1].children[0].value;
+        let width = item[0].children[0].value;;
+        let stock = item[2].children[0].value;;
+        let price = item[3].children[0].value;;
         let obj = {
             "width":width,
             "height":height,
@@ -184,8 +202,19 @@ function getSpecs(){
     }
     return arrSpecs;
 }
-function addVariant(width,height,stock,price){
-    let variants = document.querySelectorAll(".variantItem");
+function addVariant(){
+    let tr = document.createElement("tr");
+    tr.classList.add("variantItem");
+    let html = `
+        <td><input type="number" value="" class="form-control" placeholder="Ancho"></td>
+        <td><input type="number" value="" class="form-control" placeholder="Alto"></td>
+        <td><input type="number" value="" class="form-control" placeholder="Cantidad"></td>
+        <td><input type="number" value="" class="form-control" placeholder="Precio"></td>
+        <td><button type="button" class="btn btn-danger text-white" onclick="removeItem(this.parentElement.parentElement)"><i class="fas fa-trash"></i></button></td>
+        `;
+    tr.innerHTML=html;
+    document.querySelector(".variantList").appendChild(tr);
+    /*let variants = document.querySelectorAll(".variantItem");
     let flag = true;
     if(variants.length > 0){
         for (let i = 0; i < variants.length; i++) {
@@ -225,7 +254,7 @@ function addVariant(width,height,stock,price){
         document.querySelector("#intVariantWidth").value = "";
         document.querySelector("#intVariantStock").value = 0;
         document.querySelector("#intVariantPrice").value = "";
-    }
+    }*/
     
 }
 function addSpec(type){

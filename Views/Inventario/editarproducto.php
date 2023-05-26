@@ -164,48 +164,30 @@
                             </div>
                         </div>
                         <div class="productVariant <?=$product2?> mb-3">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="intVariantWidth" class="form-label">Ancho <span class="text-danger">*</span></label>
-                                        <input type="number" value="" class="form-control" id="intVariantWidth" name="intVariantWidth">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="intVariantHeight" class="form-label">Alto <span class="text-danger">*</span></label>
-                                        <input type="number" value="" class="form-control" id="intVariantHeight" name="intVariantHeight">
-                                    </div>                           
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="intVariantStock" class="form-label">Cantidad</label>
-                                        <input type="number" value="0" class="form-control" id="intVariantStock" name="intVariantStock">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="intVariantPrice" class="form-label">Precio <span class="text-danger">*</span></label>
-                                        <input type="number" value="" class="form-control" id="intVariantPrice" name="intVariantPrice">
-                                    </div>
-                                </div>
-                            </div>
                             <button type="button" class="btn btn-info mb-3 text-white" id="btnVariant"><i class="fas fa-plus"></i> Agregar</button>
                             <hr>
                             <h4>Variantes</h4>
-                            <div class="variantList">
-                                <?php 
-                                    $variants = $product['variants'];
-                                    for ($i=0; $i < count($variants); $i++) { 
-                                        $vWidth = $variants[$i]['width'];
-                                        $vHeight = $variants[$i]['height'];
-                                        $vStock = $variants[$i]['stock'];
-                                        $vPrice = $variants[$i]['price'];
-                                        $showVariant = $vWidth."-".$vHeight."-".$vStock."-".$vPrice;
-                                ?>
-                                <div attwidth="<?=$vWidth?>" attheight="<?=$vHeight?>" attstock="<?=$vStock?>" attprice="<?=$vPrice?>" onclick="removeItem(this)" class="variantItem btn btn-success text-white m-1"><?=$showVariant?></div>
-                                <?php } ?>
-                            </div>
+                            <table class="table table-bordered">
+                                <tbody class="variantList">
+                                    <?php 
+                                        $variants = $product['variants'];
+                                        for ($i=0; $i < count($variants); $i++) { 
+                                            $vWidth = $variants[$i]['width'];
+                                            $vHeight = $variants[$i]['height'];
+                                            $vStock = $variants[$i]['stock'];
+                                            $vPrice = $variants[$i]['price'];
+                                            $showVariant = $vWidth."-".$vHeight."-".$vStock."-".$vPrice;
+                                    ?>
+                                    <tr class="variantItem">
+                                        <td><input type="number" value="<?=$vWidth?>" class="form-control" placeholder="Ancho"></td>
+                                        <td><input type="number" value="<?=$vHeight?>" class="form-control" placeholder="Alto"></td>
+                                        <td><input type="number" value="<?=$vStock?>" class="form-control" placeholder="Cantidad"></td>
+                                        <td><input type="number" value="<?=$vPrice?>" class="form-control" placeholder="Precio"></td>
+                                        <td><button type="button" class="btn btn-danger text-white" onclick="removeItem(this.parentElement.parentElement)"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <hr>

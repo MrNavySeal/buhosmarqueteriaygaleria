@@ -242,7 +242,7 @@
                     }
                 }
                 if($request['product_type'] == 2){
-                    $sqlV = "SELECT * FROM product_variant WHERE productid = $this->intIdProduct";
+                    $sqlV = "SELECT * FROM product_variant WHERE productid = $this->intIdProduct ORDER BY price ASC";
                     $requestV = $this->select_all($sqlV);
                     if(count($requestV)){
                         for ($i=0; $i < count($requestV); $i++) { 

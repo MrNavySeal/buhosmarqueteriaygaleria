@@ -119,36 +119,14 @@
                             </div>
                         </div>
                         <div class="productVariant d-none mb-3">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="intVariantWidth" class="form-label">Ancho <span class="text-danger">*</span></label>
-                                        <input type="number" value="" class="form-control" id="intVariantWidth" name="intVariantWidth">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="intVariantHeight" class="form-label">Alto <span class="text-danger">*</span></label>
-                                        <input type="number" value="" class="form-control" id="intVariantHeight" name="intVariantHeight">
-                                    </div>                           
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="intVariantStock" class="form-label">Cantidad</label>
-                                        <input type="number" value="0" class="form-control" id="intVariantStock" name="intVariantStock">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="intVariantPrice" class="form-label">Precio <span class="text-danger">*</span></label>
-                                        <input type="number" value="" class="form-control" id="intVariantPrice" name="intVariantPrice">
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-info mb-3 text-white" id="btnVariant"><i class="fas fa-plus"></i> Agregar</button>
+                            <button type="button" class="btn btn-info mb-3 text-white" id="btnVariant"><i class="fas fa-plus"></i> Agregar variante</button>
                             <hr>
                             <h4>Variantes</h4>
-                            <div class="variantList"></div>
+                            <table class="table table-bordered">
+                                <tbody class="variantList">
+                                    
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <hr>
