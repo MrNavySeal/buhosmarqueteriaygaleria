@@ -205,7 +205,7 @@
                         INNER JOIN category c, subcategory s
                         WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
                         AND p.subcategoryid = s.idsubcategory AND p.status = 1 
-                        AND (p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%')";
+                        AND (p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%' || p.reference LIKE '%$search%')";
                         
             $totalProducts =$this->con->select($sqlTotal)['total'];
             $totalPages = ceil($totalProducts/$perPage);
