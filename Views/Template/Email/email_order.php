@@ -59,7 +59,7 @@ $subtotal = 0;
 						<h4><strong><?= $data['company']['name'] ?></strong></h4>
 						<p>
 							<?= $data['company']['addressfull']?> <br>
-							Teléfono: <?= "+".$data['company']['phonecode']." ".$data['company']['phone'] ?> <br>
+							Teléfono: <?=$data['company']['phone']." ".$data['company']['phones'] ?> <br>
 							Email: <?= $data['company']['email'] ?>
 						</p>
 					</div>
