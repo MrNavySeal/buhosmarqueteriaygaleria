@@ -35,6 +35,7 @@ formCompany.addEventListener("submit",function(e){
     let strCompanyEmail = document.querySelector("#txtCompanyEmail").value;
     let strEmail = document.querySelector("#txtEmail").value;
     let strPhone = document.querySelector("#txtPhone").value;
+    let strPhoneS = document.querySelector("#txtPhoneS").value;
     let strAddress = document.querySelector("#txtAddress").value;
     let intCountry = document.querySelector("#countryList").value;
     let intState = document.querySelector("#stateList").value;
@@ -43,7 +44,7 @@ formCompany.addEventListener("submit",function(e){
 
     if(strName == "" || intCurrency == "" || strCompanyEmail=="" || strEmail == "" || strPhone == "" || strAddress ==""
     || intCountry == "" || intState == ""
-    || intCity == "" || strPassword==""){
+    || intCity == "" || strPassword=="" || strPhoneS == ""){
         Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
         return false;
     }
@@ -55,7 +56,7 @@ formCompany.addEventListener("submit",function(e){
         Swal.fire("Error","El correo secundario es invalido","error");
         return false;
     }
-    if(strPhone.length < 9){
+    if(strPhone.length < 9 || strPhoneS.length < 9){
         Swal.fire("Error","El número de teléfono debe tener al menos 9 dígitos","error");
         return false;
     }

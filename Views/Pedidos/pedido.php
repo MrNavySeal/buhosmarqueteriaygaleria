@@ -21,7 +21,7 @@ $subtotal = 0;
                                 <p class="m-0">Oswaldo Parrado Clavijo</p>
                                 <p class="m-0">NIT 17.344.806-8 No responsable de IVA</p>
                                 <p class="m-0"><?=$company['addressfull']?></p>
-                                <p class="m-0"><?=$company['phone']?> - 3193094264</p>
+                                <p class="m-0"><?=$company['phone']?> - <?=$company['phones']?></p>
                                 <p class="m-0"><?=$company['email']?></p>
                                 <p class="m-0"><?=BASE_URL?></p>
                             </div>

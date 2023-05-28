@@ -35,7 +35,8 @@
             if($_SESSION['idUser']==1){
                 if($_POST){
                     if(empty($_POST['txtName']) || empty($_POST['currencyList']) || empty($_POST['txtCompanyEmail']) || empty($_POST['txtEmail']) || empty($_POST['txtPhone']) 
-                    || empty($_POST['txtAddress']) || empty($_POST['countryList']) || empty($_POST['stateList']) || empty($_POST['cityList']) || empty($_POST['txtPassword'])){
+                    || empty($_POST['txtAddress']) || empty($_POST['countryList']) || empty($_POST['stateList']) || empty($_POST['cityList']) || empty($_POST['txtPassword'])
+                    || empty($_POST['txtPhoneS'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $strName = strClean($_POST['txtName']);
@@ -43,6 +44,7 @@
                         $strCompanyEmail = strtolower(strClean($_POST['txtCompanyEmail']));
                         $strEmail = strtolower(strClean($_POST['txtEmail']));
                         $strPhone = strClean($_POST['txtPhone']);
+                        $strPhoneS = strClean($_POST['txtPhoneS']);
                         $strAddress = strClean($_POST['txtAddress']);
                         $strKeywords = strClean($_POST['txtKeywords']);
                         $strDescription= strClean($_POST['txtDescription']);
@@ -78,7 +80,8 @@
                             $strPhone,
                             $strAddress,
                             $strKeywords,
-                            $strDescription);
+                            $strDescription,
+                            $strPhoneS);
                         if($request > 0 ){
                             if($photo!=""){
                                 uploadImage($photo,$logo);

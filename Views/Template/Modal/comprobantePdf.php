@@ -99,7 +99,7 @@ if($order['status'] == "approved"){
                 <p>NIT 17.344.806-8 No responsable de IVA</p>
                 <p>
                     <?= $data['company']['addressfull']?> <br>
-                    Teléfono: <?= $data['company']['phone'] ?> - 3193094264 <br>
+                    Teléfono: <?= $data['company']['phone'] ?> - <?=$data['company']['phones']?> <br>
                     Email: <?= $data['company']['email'] ?>
                 </p>
             </td>

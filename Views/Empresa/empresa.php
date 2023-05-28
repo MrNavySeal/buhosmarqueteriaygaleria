@@ -114,13 +114,19 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <div class="mb-3">
                                         <label for="txtPhone" class="form-label">Teléfono <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="txtPhone" name="txtPhone" value="<?=$data['company']['phone']?>" required>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-4">
+                                    <div class="mb-3">
+                                        <label for="txtPhoneS" class="form-label">Teléfono secundario <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="txtPhoneS" name="txtPhoneS" value="<?=$data['company']['phones']?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="txtAddress" class="form-label">Dirección <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="txtAddress" name="txtAddress" value="<?=$data['company']['address']?>" required>
