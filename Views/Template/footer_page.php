@@ -40,7 +40,7 @@ for ($i=0; $i < count($social) ; $i++) {
                     <div class="col-md-4">
                         <div class="footer--contact">
                             <i class="fas fa-phone"></i>
-                            <p><?=$company['phonecode']." ".$company['phone']?><br> Llámanos</p>
+                            <p><?=$company['phone']." - ".$company['phones']?><br> Llámanos</p>
                         </div>
                     </div>
                     <div class="col-md-4">
