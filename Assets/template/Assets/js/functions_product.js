@@ -52,30 +52,31 @@ let btnPPlus = document.querySelector("#btnPIncrement");
 let btnPMinus = document.querySelector("#btnPDecrement");
 let intPQty = document.querySelector("#txtQty");
 
-
-btnPPlus.addEventListener("click",function(){
-    let maxStock = parseInt(intPQty.getAttribute("max"));
-    if(intPQty.value >=maxStock){
-        intPQty.value = maxStock;
-    }else{
-        intPQty.value++; 
-    }
-});
-btnPMinus.addEventListener("click",function(){
-    if(intPQty.value <=1){
-        intPQty.value = 1;
-    }else{
-        --intPQty.value; 
-    }
-});
-intPQty.addEventListener("input",function(){
-    let maxStock = parseInt(intPQty.getAttribute("max"));
-    if(intPQty.value >= maxStock){
-        intPQty.value= maxStock;
-    }else if(intPQty.value <= 1){
-        intPQty.value= 1;
-    }
-});
+if(document.querySelector("#btnPIncrement")){
+    btnPPlus.addEventListener("click",function(){
+        let maxStock = parseInt(intPQty.getAttribute("max"));
+        if(intPQty.value >=maxStock){
+            intPQty.value = maxStock;
+        }else{
+            intPQty.value++; 
+        }
+    });
+    btnPMinus.addEventListener("click",function(){
+        if(intPQty.value <=1){
+            intPQty.value = 1;
+        }else{
+            --intPQty.value; 
+        }
+    });
+    intPQty.addEventListener("input",function(){
+        let maxStock = parseInt(intPQty.getAttribute("max"));
+        if(intPQty.value >= maxStock){
+            intPQty.value= maxStock;
+        }else if(intPQty.value <= 1){
+            intPQty.value= 1;
+        }
+    });
+}
 
 formReview.addEventListener("submit",function(e){
     e.preventDefault();
