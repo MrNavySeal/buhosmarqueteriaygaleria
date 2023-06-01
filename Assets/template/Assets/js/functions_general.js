@@ -70,8 +70,8 @@ navMask.addEventListener("click",function(){
 });
 
 
-document.addEventListener("readystatechange",function(){
-    if(document.readyState =="complete")loading.classList.add("d-none");
+document.addEventListener("DOMContentLoaded",function(){
+    loading.classList.add("d-none");
 });
 
 btnCart.addEventListener("click",function(){
