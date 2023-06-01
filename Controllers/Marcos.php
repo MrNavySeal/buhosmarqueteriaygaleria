@@ -260,7 +260,7 @@
                         $marcoTotal = $this->calcularMarcoInterno($estilo,$margin,$altura,$ancho,$request,$option);
                         $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo);
         
-                        $total = round((intval(UTILIDAD*($marcoEstilos+$marcoTotal['total'])))/1000)*1000;
+                        $total = round((intval(UTILIDAD*((($marcoEstilos+$marcoTotal['total'])*COMISION)+TASA)))/1000)*1000;
                         $request['total'] = array("total"=>$total,"format"=>formatNum($total));
                         $arrResponse = array("status"=>true,"data"=>$request);
                     }else{
