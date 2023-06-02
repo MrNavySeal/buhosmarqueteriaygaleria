@@ -41,14 +41,61 @@
             return $request;
         }
         function getLastProducts(){
-            $sql = "SELECT * FROM product WHERE status = 1 ORDER BY idproduct  DESC LIMIT 10";
+            $sql = "SELECT 
+                p.idproduct,
+                p.categoryid,
+                p.subcategoryid,
+                p.reference,
+                p.name,
+                p.description,
+                p.price,
+                p.discount,
+                p.description,
+                p.stock,
+                p.status,
+                p.product_type,
+                p.route,
+                c.idcategory,
+                c.name as category,
+                s.idsubcategory,
+                s.categoryid,
+                s.name as subcategory,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
+            FROM product p
+            INNER JOIN category c, subcategory s
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
+            AND p.status = 1 ORDER BY idproduct  DESC LIMIT 10
+            ";
+            $request = $this->select_all($sql);
+            if(count($request)> 0){
+                for ($i=0; $i < count($request); $i++) { 
+                    $idProduct = $request[$i]['idproduct'];
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
+                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
+                    $requestImg = $this->select_all($sqlImg);
+                    if(count($requestImg)>0){
+                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
+                    }else{
+                        $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
+                        $sqlVariants = "SELECT * FROM product_variant WHERE productid = $idProduct ORDER BY price ASC";
+                        $request[$i]['price'] = round((($this->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['stock'] = $this->select($sqlTotal)['total'];
+                    }
+                }
+            }
+            return $request;
+            /*$sql = "SELECT * FROM product WHERE status = 1 ORDER BY idproduct  DESC LIMIT 10";
             $request = $this->select_all($sql);
             if(!empty($request)){
                 for ($i=0; $i < count($request) ; $i++) { 
                     $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
                 }
             }
-            return $request;
+            return $request;*/
         }
         public function selectAccountMonth(int $year, int $month){
             $totalPerMonth = 0;
