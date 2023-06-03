@@ -91,7 +91,6 @@
                             </div>
                             <p class="t-color-1 ms-2 d-inline" id="avgRate">(<?=$product['reviews']?> opiniones) </p>
                         </div>
-                        <p class="text-secondary m-0" id="productStock">Stock: (<?=$stock?>) unidades</p>
                         <p class="fs-3 mt-3"><strong class="t-p" id="productPrice"><?=$price?></strong></p>
                         <?php
                         if($product['product_type'] == 2){
@@ -123,7 +122,18 @@
                                 <button type="button" class="btn btn-bg-1" onclick="addCart(this)" data-id="<?=$id?>" data-topic="2" data-type="<?=$product['product_type']?>">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
                             </div>
                         </div>
+                        
                         <?php }?>
+                        <div class="payment__methods">
+                            <p>Pago seguro garantizado</p>
+                            <ul>
+                                <li><img src="<?=media()?>/images/uploads/icon1.png" alt=""></li>
+                                <li><a  target="_blank" href="https://icons8.com"><img src="<?=media()?>/images/uploads/icon2.png" alt=""></a></li>
+                                <li><a  target="_blank" href="https://icons8.com"><img src="<?=media()?>/images/uploads/icon3.png" alt=""></a></li>
+                                <li><a  target="_blank" href="https://icons8.com"><img src="<?=media()?>/images/uploads/icon4.png" alt=""></a></li>
+                                <li><a  target="_blank" href="https://icons8.com"><img src="<?=media()?>/images/uploads/icon5.png" alt=""></a></li>
+                            </ul>
+                        </div>
                         <p class="mt-4">Compartir en:</p>
                         <div class="d-flex align-items-center">
                             <ul class="social social--dark mb-3">
@@ -144,6 +154,9 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pills-description-tab" data-bs-toggle="pill" data-bs-target="#pills-description" type="button" role="tab" aria-controls="pills-description" aria-selected="false">Descripción</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-tiempo-tab" data-bs-toggle="pill" data-bs-target="#pills-tiempo" type="button" role="tab" aria-controls="pills-tiempo" aria-selected="false">Tiempo y despacho</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pills-review-tab" data-bs-toggle="pill" data-bs-target="#pills-review" type="button" role="tab" aria-controls="pills-review" aria-selected="false">Opiniones (<?=$product['reviews']?>)</button>
@@ -174,6 +187,24 @@
                 </div>
                 <div class="tab-pane fade" id="pills-description" role="tabpanel" aria-labelledby="pills-description-tab" tabindex="0">
                     <?=$product['description']?>
+                </div>
+                <div class="tab-pane fade" id="pills-tiempo" role="tabpanel" aria-labelledby="pills-tiempo-tab" tabindex="0">
+                    Realizamos envíos con diferentes transportadoras del país, buscando siempre la mejor opción para nuestros clientes, los tiempos pueden variar de 3 días hasta 5 días hábiles según la ciudad o municipio destino, normalmente en ciudades principales las transportadoras entregan máximo en 3 días hábiles.<br><br>
+                    
+                    <ul>
+                        <li>
+                            <p>Para marcos y retablos, de acuerdo a la cantidad solicitada, se dará a conocer el tiempo estimado de producción a partir del siguiente día hábil de haber realizado y confirmado el pedido.</p>
+                        </li>
+                        <li>
+                            <p>Para obras de arte sobre lienzo disponibles en la tienda, su envío se realizará 2 días después a partir del siguiente día hábil de haber realizado y confirmado el pedido.</p>
+                        </li>
+                        <li>
+                            <p>Para cuadros decorativos, su proceso de fabricación será de 8 a 10 días hábiles, el envio tarda de 1-3 días habiles.</p>
+                        </li>
+                        <li>
+                            <p>Para obras de arte personalizadas nos pondremos en contacto para organizar los requisitos de la obra y el envío.</p>
+                        </li>
+                    </ul>
                 </div>
                 <div class="tab-pane fade" id="pills-review" role="tabpanel" aria-labelledby="pills-review-tab" tabindex="0">
                     <div class="review-general">

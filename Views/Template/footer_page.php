@@ -81,7 +81,6 @@ for ($i=0; $i < count($social) ; $i++) {
                             <ul>
                                 <li>Todas las tarjetas débito y crédito</li>
                                 <li>Transferencia bancaria</li>
-                                <li>Pago en efectivo</li>
                                 <li>Mercadopago</li>
                             </ul>
                         </div>

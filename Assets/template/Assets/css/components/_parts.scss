@@ -48,3 +48,22 @@
         font-size: 18px;
     }
 }
+.payment__methods{
+    border-radius: 10px;
+    border: 1px solid $color2;
+    text-align: center;
+    ul{
+        padding: 0 10px;
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img{
+            height: 40px;
+            width: 40px;
+        }
+        li{
+            padding: 0 0.5rem;
+        }
+    }
+}

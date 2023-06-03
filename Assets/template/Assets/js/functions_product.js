@@ -164,7 +164,7 @@ function selVariant(element){
                 let priceElement = document.querySelector("#productPrice");
                 document.querySelector("#txtQty").setAttribute("max",objData.stock);
                 document.querySelector("#txtQty").value=1;
-                document.querySelector("#productStock").innerHTML = `Stock: (${objData.stock}) unidades`
+                //document.querySelector("#productStock").innerHTML = `Stock: (${objData.stock}) unidades`
                 if(priceElement.children.length>1){
                     priceElement.children[0].innerHTML = objData.pricediscount;
                     priceElement.children[1].innerHTML = objData.price;
