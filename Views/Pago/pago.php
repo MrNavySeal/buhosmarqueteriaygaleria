@@ -5,6 +5,12 @@
     MercadoPago\SDK::setAccessToken($data['credentials']['secret']);
 
     $preference = new MercadoPago\Preference();
+    $preference->payment_methods = array(
+        "excluded_payment_types" => array(
+          array("id" => "ticket")
+        ),
+        "installments" => 12
+      );
     $item = new MercadoPago\Item();
     $arrProducts = $_SESSION['arrCart'];
     $arrShipping = $data['shipping'];
