@@ -31,7 +31,7 @@
             $request = $this->con->select($sql);
             return $request;
         }
-        public function getArticlesRandT($cant = null){
+        public function getArticlesRandT($id,$cant = null){
             if($cant !=null){
                 $cant = " LIMIT $cant";
             }
@@ -39,7 +39,7 @@
             $sql = "SELECT *,
             DATE_FORMAT(date_created, '%d/%m/%Y') as date,
             DATE_FORMAT(date_updated, '%d/%m/%Y') as dateupdated
-            FROM article WHERE status = 1 ORDER BY RAND() DESC $cant
+            FROM article WHERE status = 1 AND idarticle!=$id ORDER BY RAND() DESC $cant
             ";
             $request = $this->con->select_all($sql);
             return $request;
