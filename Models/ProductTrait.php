@@ -163,6 +163,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            AND c.status = 1 AND s.status = 1
             $option LIMIT $start,$perPage
             ";
             $request = $this->con->select_all($sql);
@@ -237,6 +238,7 @@
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
             AND p.subcategoryid = s.idsubcategory AND p.status = 1 
+            AND c.status = 1 AND s.status = 1
             AND (p.reference LIKE '%$search%' || p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%')
             $option LIMIT $start,$perPage
             ";
@@ -269,7 +271,10 @@
             return $array;
 
         }
-        public function getProductsRelT($id,$cant){
+        public function getProductsRelT($idProduct,$idCategory,$idSubcategory,$cant){
+            $idProduct = $idProduct;
+            $idCategory = $idCategory;
+            $idSubcategory = $idSubcategory;
             $this->con=new Mysql();
             if($cant !=""){
                 $cant = " LIMIT $cant";
@@ -300,10 +305,44 @@
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
             AND p.subcategoryid = s.idsubcategory 
-            AND p.status = 1 AND p.categoryid = $id
+            AND p.status = 1 AND p.categoryid = $idCategory AND p.idproduct != $idProduct
+            AND c.status = 1 AND s.status = 1
             ORDER BY RAND() $cant
             ";
-            $request = $this->con->select_all($sql);
+            $sqlS = "SELECT 
+                p.idproduct,
+                p.categoryid,
+                p.subcategoryid,
+                p.reference,
+                p.name,
+                p.description,
+                p.price,
+                p.discount,
+                p.description,
+                p.stock,
+                p.status,
+                p.product_type,
+                p.route,
+                c.idcategory,
+                c.name as category,
+                s.idsubcategory,
+                s.categoryid,
+                s.name as subcategory,
+                c.route as routec,
+                s.route as routes,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date
+            FROM product p
+            INNER JOIN category c, subcategory s
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
+            AND p.subcategoryid = s.idsubcategory 
+            AND p.status = 1 AND p.subcategoryid = $idSubcategory AND p.idproduct != $idProduct
+            AND c.status = 1 AND s.status = 1
+            ORDER BY RAND() $cant
+            ";
+            $request = $this->con->select_all($sqlS);
+            if(count($request) < 4){
+                $request = $this->con->select_all($sql);
+            }
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['idproduct'];
@@ -372,7 +411,8 @@
                 DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1 
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            AND c.status = 1 AND s.status = 1 
             AND (c.route = '$category' || s.route = '$category') $option 
             LIMIT $start,$perPage";
             $request = $this->con->select_all($sql);

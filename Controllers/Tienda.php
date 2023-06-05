@@ -24,6 +24,7 @@
             $data['page_name'] = "tienda";
             $data['categories'] = $this->getCategoriesT();
             $productsPage =  $this->getProductsPageT($pageNow,$sort);
+            $productsPage['productos'] = $this->bubbleSortPrice($productsPage['productos'],$sort);
             if($pageNow <= $productsPage['paginas']){
                 $data['products'] = $productsPage;
                 $data['app'] = "functions_shop.js";
@@ -44,6 +45,7 @@
             $data['categories'] = $this->getCategoriesT();
             $data['ruta'] = $params;
             $productsPage =  $this->getProductsCategoryT($params,$pageNow,$sort);
+            $productsPage['productos'] = $this->bubbleSortPrice($productsPage['productos'],$sort);
             if($pageNow <= $productsPage['paginas']){
                 $data['products'] = $productsPage;
                 $data['page_title'] = $title." | ".$company['name'];
@@ -67,6 +69,7 @@
             $productsPage =  $this->getProductsSearchT($pageNow,$sort,$search);
             $productsPage['paginas'] = $productsPage['paginas'] == 0 ? 1 : $productsPage['paginas'];
             $productsPage['total'] = $productsPage['total'] == 0 ? 1 : $productsPage['total'];
+            $productsPage['productos'] = $this->bubbleSortPrice($productsPage['productos'],$sort);
             if($pageNow <= $productsPage['paginas']){
                 $data['products'] = $productsPage;
                 $data['app'] = "functions_shop_search.js";
@@ -84,7 +87,7 @@
                     $company=getCompanyInfo();
                     $data['page_tag'] = $company['name'];
                     $data['page_name'] = "product";
-                    $data['products'] = $this->getProductsRelT($data['product']['categoryid'],4);
+                    $data['products'] = $this->getProductsRelT($data['product']['idproduct'],$data['product']['categoryid'],$data['product']['subcategoryid'],4);
                     $data['page_title'] =$data['product']['name']." | ".$company['name'];
                     $data['app'] = "functions_product.js";
                     $data['reviews'] = $this->getReviews($data['product']['idproduct']);
@@ -352,6 +355,34 @@
             }
             die();
             
+        }
+        function bubbleSortPrice($arr,$sort) {
+            $n = count($arr);
+            if($sort == 2){
+
+                for ($i = 0; $i < $n - 1; $i++) {
+                    for ($j = 0; $j < $n - $i - 1; $j++) {
+                        if ($arr[$j]['price'] < $arr[$j + 1]['price']) {
+                            // Intercambiar elementos si están en el orden incorrecto
+                            $temp = $arr[$j];
+                            $arr[$j] = $arr[$j + 1];
+                            $arr[$j + 1] = $temp;
+                        }
+                    }
+                }
+            }else if($sort == 3){
+                for ($i = 0; $i < $n - 1; $i++) {
+                    for ($j = 0; $j < $n - $i - 1; $j++) {
+                        if ($arr[$j]['price'] > $arr[$j + 1]['price']) {
+                            // Intercambiar elementos si están en el orden incorrecto
+                            $temp = $arr[$j];
+                            $arr[$j] = $arr[$j + 1];
+                            $arr[$j + 1] = $temp;
+                        }
+                    }
+                }
+            }
+            return $arr;
         }
     }
 ?>
