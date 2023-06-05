@@ -29,6 +29,7 @@
                     $data['page_tag'] = $company['name'];
                     $data['page_name'] = "artiulo";
                     $data['page_title'] =$data['article']['name']." | ".$company['name'];
+                    $data['posts'] = $this->getArticlesRandT(3);
                     $this->views->getView($this,"articulo",$data);
                 }else{
                     header("location: ".base_url()."/error");

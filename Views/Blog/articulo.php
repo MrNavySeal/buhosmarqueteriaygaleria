@@ -4,8 +4,11 @@
     $articulo = $data['article'];
     $img= $articulo['picture'] != "" ? media()."/images/uploads/".$articulo['picture']:"";
     $urlShare = base_url()."/blog/articulo/".$articulo['route'];
+    $posts = $data['posts'];
 ?>
-<main class="container content-site mb-5">
+<div class="container">
+
+<main class="content-site mb-5">
     <h1 class="section--title"><?=$articulo['name']?></h1>
     <?php if($img!=""){?>
     <div class="w-100 mb-3">
@@ -36,6 +39,31 @@
         </ul>
     </div>
 </main>
+<?php if(!empty($posts)){?>
+    <section class="mb-5">
+        <h2 class="section--title">También te puede interesar</h2>
+        <div class="row">
+            <?php for ($i=0; $i < count($posts) ; $i++) {
+                $img=media()."/images/uploads/category.jpg";
+                if($posts[$i]['picture'] !=""){
+                    $img=media()."/images/uploads/".$posts[$i]['picture']; 
+                }
+            ?>
+            <div class="col-md-4 mb-3">
+                <div class="card" style="width: 100%; height:100%;">
+                    <img src="<?=$img?>" alt="<?=$posts[$i]['name']?>">
+                    <div class="card-body">
+                    <h5 class="card-title"><a class="t-color-2 link-hover-none" href="<?=base_url()."/blog/articulo/".$posts[$i]['route']?>"><?=$posts[$i]['name']?></a></h5>
+                        <p class="card-text"><?=$posts[$i]['shortdescription']?></p>
+                        <a href="<?=base_url()."/blog/articulo/".$posts[$i]['route']?>" class="btn btn-bg-2">Ver más</a>
+                    </div>
+                </div>
+            </div>
+            <?php }?>
+        </div>
+    </section>
+<?php }?>
+</div>
 <?php
     footerPage($data);
 ?>
