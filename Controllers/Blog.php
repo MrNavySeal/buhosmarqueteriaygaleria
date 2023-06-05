@@ -8,6 +8,7 @@
         public function __construct(){
             session_start();
             parent::__construct();
+            sessionCookie();
             $this->login = new LoginModel();
         }
 
