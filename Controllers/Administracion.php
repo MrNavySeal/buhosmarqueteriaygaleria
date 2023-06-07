@@ -13,18 +13,7 @@
         }
 
         /*************************Views*******************************/
-        public function cupones(){
-            if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Cupones";
-                $data['page_title'] = "Cupones";
-                $data['page_name'] = "cupones";
-                $data['app'] = "functions_coupon.js";
-                $this->views->getView($this,"cupones",$data);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-        }
+        
         public function correo(){
             if($_SESSION['permitsModule']['r']){
                 $data['inbox'] = $this->getMails();
@@ -103,141 +92,8 @@
                 die();
             }
         }
-        /*************************Coupon methods*******************************/
-        public function getCoupons(){
-            if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request = $this->model->selectCoupons();
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-
-                        $status="";
-                        $btnEdit="";
-                        $btnDelete="";
-                        
-                        if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['id'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
-                        }
-                        if($_SESSION['permitsModule']['d'] && $request[$i]['id'] != 1){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['id'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
-                        }
-                        if($request[$i]['status']==1){
-                            $status='<span class="badge me-1 bg-success">Activo</span>';
-                        }else{
-                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
-                        }
-                        $html.='
-                            <tr class="item" data-name="'.$request[$i]['code'].'">
-                                <td data-label="Código: ">'.$request[$i]['code'].'</td>
-                                <td data-label="Descuento: ">'.$request[$i]['discount'].'%</td>
-                                <td data-label="Estado: ">'.$status.'</td>
-                                <td data-label="Fecha de creación: ">'.$request[$i]['date'].'</td>
-                                <td data-label="Fecha de actualización: ">'.$request[$i]['dateupdate'].'</td>
-                                <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
-                    }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $arrResponse = array("status"=>false,"msg"=>"No hay datos");
-                }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            
-            die();
-        }
-        public function getCoupon(){
-            if($_SESSION['permitsModule']['r']){
-
-                if($_POST){
-                    if(empty($_POST)){
-                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $idCoupon = intval($_POST['idCoupon']);
-                        $request = $this->model->selectCoupon($idCoupon);
-                        if(!empty($request)){
-                            $arrResponse = array("status"=>true,"data"=>$request);
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo."); 
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            die();
-        }
-        public function setCoupon(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    if(empty($_POST['txtName']) || empty($_POST['statusList']) || empty($_POST['intDiscount'])){
-                        $arrResponse = array("status" => false, "msg" => 'Error de datos');
-                    }else{ 
-                        $idCoupon = intval($_POST['idCoupon']);
-                        $strCode = strtoupper(strClean($_POST['txtName']));
-                        $intDiscount = intval(strClean($_POST['intDiscount']));
-                        $intStatus = intval(strClean($_POST['statusList']));
-
-                        if($idCoupon == 0){
-                            if($_SESSION['permitsModule']['w']){
-                                $option = 1;
-                                $request= $this->model->insertCoupon($strCode,$intDiscount,$intStatus);
-                            }
-                        }else{
-                            if($_SESSION['permitsModule']['u']){
-                                $option = 2;
-                                $request = $this->model->updateCoupon($idCoupon,$strCode,$intDiscount,$intStatus);
-                            }
-                        }
-                        if($request > 0 ){
-                            if($option == 1){
-                                $arrResponse = array('status' => true, 'msg' => 'Datos guardados.');
-                            }else{
-                                $arrResponse = array('status' => true, 'msg' => 'Datos actualizados.');
-                            }
-                        }else if($request == 'exist'){
-                            $arrResponse = array('status' => false, 'msg' => '¡Atención! El cupón ya existe, intente con otro código.');		
-                        }else{
-                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-			die();
-		}
-        public function delCoupon(){
-            if($_SESSION['permitsModule']['d']){
-
-                if($_POST){
-                    if(empty($_POST['idCoupon'])){
-                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['idCoupon']);
-                        $request = $this->model->deleteCoupon($id);
-                        if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado");
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar, intenta de nuevo.");
-                        }
-                        
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            die();
-        }
+        
+        
         /*************************Mailbox methods*******************************/
         public function getMails(){
             if($_SESSION['permitsModule']['r']){

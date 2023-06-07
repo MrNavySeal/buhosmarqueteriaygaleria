@@ -171,11 +171,27 @@
                                         $emails = "";
                                     }
                                     ?>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/administracion/cupones"><span class="nav-icon"></span> Cupones</a></li>
                                     <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/administracion/correo"><span class="nav-icon"></span> Correo <?=$emails?></a></li>
                                     <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/administracion/suscriptores"><span class="nav-icon"></span> Suscriptores</a></li>
                                     <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/administracion/envios"><span class="nav-icon"></span> Envio</a></li>
                                     <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/paginas"><span class="nav-icon"></span> Páginas</a></li>
+                                </ul>
+                            </li>
+                            <?php 
+                                }
+                            ?>
+                            <?php 
+                                if($_SESSION['permit'][5]['r']){
+                            ?>
+                            <li class="nav-group">
+                                <a class="nav-link nav-group-toggle" href="#">
+                                    <svg class="nav-icon">
+                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>
+                                    </svg> Descuentos
+                                </a>
+                                <ul class="nav-group-items">
+                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/descuentos/descuentos"><span class="nav-icon"></span> Descuentos</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/descuentos/cupones"><span class="nav-icon"></span> Cupones</a></li>
                                 </ul>
                             </li>
                             <?php 

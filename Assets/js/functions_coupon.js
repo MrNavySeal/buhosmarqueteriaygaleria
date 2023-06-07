@@ -26,7 +26,7 @@ element.addEventListener("click",function(e) {
 });
 
 function showItems(element){
-    let url = base_url+"/administracion/getCoupons";
+    let url = base_url+"/descuentos/getCoupons";
     request(url,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
@@ -98,7 +98,7 @@ function addItem(){
             Swal.fire("Error","El campo de descuento no puede ser superior al 100%","error");
             return false;
         }
-        let url = base_url+"/administracion/setCoupon";
+        let url = base_url+"/descuentos/setCoupon";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
 
@@ -119,7 +119,7 @@ function addItem(){
     })
 }
 function editItem(id){
-    let url = base_url+"/administracion/getCoupon";
+    let url = base_url+"/descuentos/getCoupon";
     let formData = new FormData();
     formData.append("idCoupon",id);
     request(url,formData,"post").then(function(objData){
@@ -192,7 +192,7 @@ function editItem(id){
                 return false;
             }
             
-            let url = base_url+"/administracion/setCoupon";
+            let url = base_url+"/descuentos/setCoupon";
             let formData = new FormData(form);
             let btnAdd = document.querySelector("#btnAdd");
 
@@ -225,7 +225,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/administracion/delCoupon"
+            let url = base_url+"/descuentos/delCoupon"
             let formData = new FormData();
             formData.append("idCoupon",id);
             request(url,formData,"post").then(function(objData){
