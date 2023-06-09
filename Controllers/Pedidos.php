@@ -59,7 +59,7 @@
                     $data['page_title'] = "Pedido";
                     $data['page_name'] = "pedido";
                     $data['company'] = getCompanyInfo();
-                    $data['app'] = "functions_orders.js";
+                    //$data['app'] = "functions_orders.js";
                     $this->views->getView($this,"pedido",$data);
                 }else{
                     header("location: ".base_url()."/pedidos");

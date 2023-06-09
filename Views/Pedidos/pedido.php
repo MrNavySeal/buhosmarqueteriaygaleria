@@ -5,11 +5,20 @@ $detail = $data['orderdetail'];
 $total=0;
 $company = $data['company'];
 $subtotal = 0;
+$status="";
+if($order['status'] =="pendent"){
+    $status = 'pendiente';
+}else if($order['status'] =="approved"){
+    $status = 'aprobado';
+}else if($order['status'] =="canceled"){
+    $status = 'cancelado';
+}
 ?>
 
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <div id="modalItem"></div>
-    <div class="container-lg">
+    <div class="container-lg position-relative">
+        
         <div class="card">
             <div class="card-body">
                 <div id="orderInfo" class="position-relative overflow-hidden"> 
@@ -33,6 +42,8 @@ $subtotal = 0;
                             <p class="m-0"><span class="fw-bold">Transacción: </span><?=$order['idtransaction']?></p>
                             <?php }?>
                             <p class="m-0"><span class="fw-bold">Tipo de pago: </span><?=$order['type']?></p>
+                            <p class="m-0"><span class="fw-bold">Estado de pago: </span><?=$status?></p>
+                            <p class="m-0"><span class="fw-bold">Estado de pedido: </span><?=$order['statusorder']?></p>
                         </div>
                     </div>
                     <div class="row mb-3">

@@ -4,11 +4,13 @@ $order = $data['orderdata'];
 $detail = $data['orderdetail'];
 $total=0;
 $subtotal = 0;
-$status = "";
-if($order['status'] == "approved"){
-    $status = 'aprobado';
-}else{
+$status="";
+if($order['status'] =="pendent"){
     $status = 'pendiente';
+}else if($order['status'] =="approved"){
+    $status = 'aprobado';
+}else if($order['status'] =="canceled"){
+    $status = 'cancelado';
 }
  ?>
 
@@ -105,12 +107,14 @@ if($order['status'] == "approved"){
             </td>
             <td class=" w33 text-right">
                 <p>
-                    Fecha: <?= $order['date'] ?><br>
-                    Factura de venta: <strong>#<?= $order['idorder'] ?></strong><br>
+                    <strong>Fecha:</strong> <?= $order['date'] ?><br>
+                    <strong>Factura de venta:</strong> #<?= $order['idorder'] ?><br>
                     <?php if($order['idtransaction']){?>
-                    Transacción: <strong><?= $order['idtransaction'] ?></strong><br>
+                    <strong>Transacción:</strong> <?= $order['idtransaction'] ?><br>
                     <?php }?>
-                    Tipo de pago: <?=$order['type']?><br>
+                    <strong>Tipo de pago:</strong> <?=$order['type']?><br>
+                    <strong>Estado de pago:</strong> <?=$status?><br>
+                    <strong>Estado de pedido:</strong> <?=$order['statusorder']?><br>
                 </p>
             </td>				
         </tr>
