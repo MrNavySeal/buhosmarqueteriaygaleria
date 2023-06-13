@@ -197,6 +197,20 @@
                             <?php 
                                 }
                             ?>
+                            <?php 
+                                if($_SESSION['permit'][5]['r']){
+                            ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?=base_url()?>/banners">
+                                    <svg class="nav-icon">
+                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-tag"></use>
+                                    </svg> 
+                                    Banners<span class="badge badge-sm bg-info ms-auto"></span>
+                                </a>
+                            </li>
+                            <?php 
+                                }
+                            ?>
                              <?php 
                                 if($_SESSION['permit'][9]['r']){
                             ?>
