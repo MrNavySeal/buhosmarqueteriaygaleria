@@ -108,6 +108,8 @@
                         $strName = ucwords(strClean($_POST['txtName']));
                         $strLink = strClean($_POST['txtLink']);
                         $status = intval($_POST['statusList']);
+                        $button = strClean($_POST['txtBtn']);
+                        $description = strClean($_POST['txtDescription']);
                         $photo = "";
                         $photoCategory="";
 
@@ -126,7 +128,9 @@
                                     $photoCategory, 
                                     $strName,
                                     $status,
-                                    $strLink
+                                    $strLink,
+                                    $button,
+                                    $description
                                 );
                             }
                         }else{
@@ -147,7 +151,9 @@
                                     $photoCategory,
                                     $strName,
                                     $status,
-                                    $strLink
+                                    $strLink,
+                                    $button,
+                                    $description
                                 );
                             }
                         }

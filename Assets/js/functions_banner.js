@@ -45,6 +45,14 @@ function addItem(){
                             <input type="text" class="form-control" id="txtName" name="txtName" required>
                         </div>
                         <div class="mb-3">
+                            <label for="txtDescription" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="txtDescription" name="txtDescription" value="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtBtn" class="form-label">Texto botón</label>
+                            <input type="text" class="form-control" id="txtBtn" name="txtBtn" value="">
+                        </div>
+                        <div class="mb-3">
                             <label for="txtLink" class="form-label">Enlace <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="txtLink" name="txtLink" value="" required>
                         </div>
@@ -131,6 +139,14 @@ function editItem(id){
                             <div class="mb-3">
                                 <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="txtName" name="txtName" value="${objData.data.name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtDescription" class="form-label">Descripción</label>
+                                <input type="text" class="form-control" id="txtDescription" name="txtDescription" value="${objData.data.description}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtBtn" class="form-label">Texto botón</label>
+                                <input type="text" class="form-control" id="txtBtn" name="txtBtn" value="${objData.data.button}">
                             </div>
                             <div class="mb-3">
                                 <label for="txtLink" class="form-label">Enlace <span class="text-danger">*</span></label>

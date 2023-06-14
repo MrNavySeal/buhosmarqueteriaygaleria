@@ -9,7 +9,7 @@
             parent::__construct();
         }
         /*************************Category methods*******************************/
-        public function insertBanner(string $photo,string $strName,int $status, string $strLink){
+        public function insertBanner(string $photo,string $strName,int $status, string $strLink, string $button, string $description){
 
 			$this->strName = $strName;
 			$this->strLink = $strLink;
@@ -23,13 +23,15 @@
 
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO banners(picture,status,link,name) 
-								  VALUES(?,?,?,?)";
+				$query_insert  = "INSERT INTO banners(picture,status,link,name,button,description) 
+								  VALUES(?,?,?,?,?,?)";
 	        	$arrData = array(
                     $this->strPhoto,
                     $this->intStatus,
                     $this->strLink,
-                    $this->strName
+                    $this->strName,
+                    $button,
+                    $description
         		);
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
@@ -38,7 +40,7 @@
 			}
 	        return $return;
 		}
-        public function updateBanner(int $intIdBanner,string $photo, string $strName,int $status, string $strLink){
+        public function updateBanner(int $intIdBanner,string $photo, string $strName,int $status, string $strLink,string $button,string $description){
             $this->intIdBanner = $intIdBanner;
             $this->strName = $strName;
 			$this->strLink = $strLink;
@@ -50,12 +52,14 @@
 
 			if(empty($request)){
 
-                $sql = "UPDATE banners SET picture=?,status=?,link=?,name=? WHERE id_banner = $this->intIdBanner";
+                $sql = "UPDATE banners SET picture=?,status=?,link=?,name=?, button=?,description=? WHERE id_banner = $this->intIdBanner";
                 $arrData = array(
                     $this->strPhoto,
                     $this->intStatus,
                     $this->strLink,
-                    $this->strName
+                    $this->strName,
+                    $button,
+                    $description
                 );
 				$request = $this->update($sql,$arrData);
 			}else{
