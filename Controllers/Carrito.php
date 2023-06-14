@@ -58,8 +58,9 @@
                     $price = $request['price'];
                     $variant = $productType == 2 ? $request['variant'] : array();
                     $id = openssl_encrypt($id,METHOD,KEY);
+                    
                     if(!empty($variant)){
-                        $variant['id_product_variant'] = openssl_encrypt($variant['id_product_variant'],METHOD,KEY);
+                        $variant['id_product_variant'] = openssl_encrypt($id_variant,METHOD,KEY);
                         $variant['productid'] = $id;
                     }
                     if($request['discount']>0 && $productType == 1){
@@ -263,7 +264,6 @@
             die();
         }
         public function delCart(){
-            //dep($_POST);exit;
             if($_POST){
                 $id = $_POST['id'];
                 $topic = intval($_POST['topic']);
@@ -369,7 +369,7 @@
                             </li>
                             ';
                         }else{
-                            $id_variant = openssl_encrypt($arrProducts[$i]['variant']['id_product_variant'],METHOD,KEY);
+                            $id_variant = $arrProducts[$i]['variant']['id_product_variant'];
                             $html.= '
                             <li class="cartlist--item" data-id="'.$arrProducts[$i]['id'].'" data-topic ="'.$arrProducts[$i]['topic'].'" data-variant="'.$id_variant.'">
                                 <a href="'.$arrProducts[$i]['url'].'">
