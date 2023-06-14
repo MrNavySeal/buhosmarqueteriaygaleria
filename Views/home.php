@@ -23,41 +23,37 @@
 
     $tipos = $data['tipos'];
     $productos = $data['productos'];
+    $banners = $data['banners'];
     //dep($productos);exit;
 ?>
     <div id="modalItem"></div>
     <div id="modalPoup"></div>
     <main>
-        <div id="mainSlider" class="carousel slide" data-bs-ride="carousel" data-bs-touch="false" >
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="main--show">
-                        <div class="show--text">
-                            <h1 class="text-title">Marquetería en línea, marcos en madera para tus cuadros</h1>
-                            <a href="<?=base_url()?>/enmarcar" class="btn btn-bg-1">Empieza ahora</a>
-                        </div>
-                        <div class="show--img">
-                            <img src="<?=media()?>/images/uploads/slider1.jpg" class="d-block w-100" alt="Enmarcar obras y fotos en línea">
-                        </div>
-                    </div>
+                <?php
+                    for ($i=0; $i < count($banners); $i++) { 
+                        $active="";
+                        $a= $banners[$i]['button'] != "" ? '<button class="m-1 btn btn-bg-1">'.$banners[$i]['button'].'</button>' : "";
+                        $p = $banners[$i]['description'] !="" ? '<p>'.$banners[$i]['description'].'</p>' : "";
+                        if($i == 0)$active="active";
+                        $img = media()."/images/uploads/".$banners[$i]['picture'];
+                ?>
+                <div class="carousel-item slider_item <?=$active?>">
+                    <a href="<?=$banners[$i]['link']?>" class="slider_description">
+                        <h2><?=$banners[$i]['name']?></h2>
+                        <?=$p?>
+                        <?=$a?>
+                    </a>
+                    <img src="<?=$img?>" class="d-block w-100" alt="<?=$banners[$i]['name']?>">
                 </div>
-                <div class="carousel-item">
-                    <div class="main--show">
-                        <div class="show--text">
-                            <h2 class="text-title">Cuadros decorativos para sala y mucho más</h2>
-                            <a href="<?=base_url()?>/tienda" class="btn btn-bg-1">Ver tienda</a>
-                        </div>
-                        <div class="show--img">
-                            <img src="<?=media()?>/images/uploads/slider2.jpg" class="d-block w-100" alt="Cuadros decorativos para mi hogar">
-                        </div>
-                    </div>
-                </div>
+                <?php }?>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#mainSlider" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#mainSlider" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>

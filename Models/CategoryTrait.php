@@ -29,6 +29,12 @@
             $request = $this->con->select_all($sql);
             return $request;
         }
+        public function getBanners(){
+            $this->con=new Mysql();
+            $sql = "SELECT * FROM banners WHERE status = 1 ORDER BY id_banner DESC";       
+            $request = $this->con->select_all($sql);
+            return $request;
+        }
     }
     
 ?>

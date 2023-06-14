@@ -37,6 +37,20 @@
         color:$color2;
     }
 }
+.btn-bg-t{
+    background-color: transparent;
+    color:$color4;
+    text-decoration: none;
+    border: 1px solid $color4;
+    border-radius: 10px;
+    &:hover{
+        color:$color4
+    }
+    a{
+        text-decoration: none;
+        color:$color4;
+    }
+}
 .back--top{
     position: fixed;
     right: 0;

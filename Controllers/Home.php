@@ -21,6 +21,7 @@
             $data['categorie1'] = $this->getProductsByCat(15,8);
             $data['categorie2'] = $this->getProductsByCat(18,8);
             $data['categorie3'] = $this->getProductsByCat(19,8);
+            $data['banners'] = $this->getBanners();
             $data['page_name'] = "home";
             $data['app'] = "functions_contact.js";
             $data['categories'] = $this->getCategoriesShowT("15,18,19");
