@@ -101,7 +101,7 @@
                             <td>
                                 <div class="position-relative">
                                     <img src="<?=$img?>"  class="p-2" height="100px" width="100px" alt="<?=$arrProducts[$i]['name']?>">
-                                    <div class="btn-del-cart c-p position-absolute top-0 start-0 pt-1 pb-1 pe-2 ps-2 rounded-circle bg-color-2">x</div>
+                                    <div class="c-p position-absolute btn-del-cart bg-color-2 rounded-circle ps-2 pe-2 top-0 start-0"><i class="fas fa-times"></i></div>
                                 </div>
                             </td>
                             <td>
