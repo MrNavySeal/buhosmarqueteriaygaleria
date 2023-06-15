@@ -382,5 +382,46 @@
             }
             return $arr;
         }
+        /******************************wishlist methods************************************/
+        public function addWishList(){
+            if($_POST){
+                if(isset($_SESSION['login'])){
+                    $idProduct = openssl_decrypt($_POST['idProduct'],METHOD,KEY);
+                    if(is_numeric($idProduct)){
+                        $request = $this->addWishListT($idProduct,$_SESSION['idUser']);
+                        if($request>0){
+                            $arrResponse = array("status"=>true);
+                        }else if("exists"){
+                            $arrResponse = array("status"=>true);
+                        }else{
+                            $arrResponse = array("status"=>false);
+                        }
+                    }
+                }else{
+                    $arrResponse = array("status"=>false);
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function delWishList(){
+            if($_POST){
+                if(isset($_SESSION['login'])){
+                    $idProduct = openssl_decrypt($_POST['idProduct'],METHOD,KEY);
+                    if(is_numeric($idProduct)){
+                        $request = $this->delWishListT($idProduct,$_SESSION['idUser']);
+                        if($request>0){
+                            $arrResponse = array("status"=>true);
+                        }else{
+                            $arrResponse = array("status"=>false);
+                        }
+                    }
+                }else{
+                    $arrResponse = array("status"=>false);
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
     }
 ?>

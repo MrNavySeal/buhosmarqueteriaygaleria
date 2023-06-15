@@ -43,6 +43,16 @@
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
+                    $request[$i]['favorite'] = 0;
+
+                    if(isset($_SESSION['login'])){
+                        $idUser = $_SESSION['idUser'];
+                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+                        $requestFavorite = $this->con->select($sqlFavorite);
+                        if(!empty($requestFavorite)){
+                            $request[$i]['favorite'] = $requestFavorite['status'];
+                        }
+                    }
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
@@ -98,6 +108,15 @@
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
+                    $request[$i]['favorite'] = 0;
+                    if(isset($_SESSION['login'])){
+                        $idUser = $_SESSION['idUser'];
+                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+                        $requestFavorite = $this->con->select($sqlFavorite);
+                        if(!empty($requestFavorite)){
+                            $request[$i]['favorite'] = $requestFavorite['status'];
+                        }
+                    }
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
@@ -173,6 +192,15 @@
                     $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
+                    $request[$i]['favorite'] = 0;
+                    if(isset($_SESSION['login'])){
+                        $idUser = $_SESSION['idUser'];
+                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+                        $requestFavorite = $this->con->select($sqlFavorite);
+                        if(!empty($requestFavorite)){
+                            $request[$i]['favorite'] = $requestFavorite['status'];
+                        }
+                    }
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
@@ -249,6 +277,15 @@
                     $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
+                    $request[$i]['favorite'] = 0;
+                    if(isset($_SESSION['login'])){
+                        $idUser = $_SESSION['idUser'];
+                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+                        $requestFavorite = $this->con->select($sqlFavorite);
+                        if(!empty($requestFavorite)){
+                            $request[$i]['favorite'] = $requestFavorite['status'];
+                        }
+                    }
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
@@ -349,6 +386,15 @@
                     $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
+                    $request[$i]['favorite'] = 0;
+                    if(isset($_SESSION['login'])){
+                        $idUser = $_SESSION['idUser'];
+                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+                        $requestFavorite = $this->con->select($sqlFavorite);
+                        if(!empty($requestFavorite)){
+                            $request[$i]['favorite'] = $requestFavorite['status'];
+                        }
+                    }
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
@@ -422,6 +468,15 @@
                     $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
+                    $request[$i]['favorite'] = 0;
+                    if(isset($_SESSION['login'])){
+                        $idUser = $_SESSION['idUser'];
+                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+                        $requestFavorite = $this->con->select($sqlFavorite);
+                        if(!empty($requestFavorite)){
+                            $request[$i]['favorite'] = $requestFavorite['status'];
+                        }
+                    }
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
@@ -438,6 +493,56 @@
             }
             $array = array("productos"=>$request,"paginas"=>$totalPages);
             return $array;
+        }
+        public function getProductsFavorites($id){
+            $this->con=new Mysql();
+            $sql = "SELECT 
+                p.idproduct,
+                p.categoryid,
+                p.subcategoryid,
+                p.reference,
+                p.name,
+                p.price,
+                p.discount,
+                p.stock,
+                p.product_type,
+                p.status,
+                p.route,
+                c.idcategory,
+                c.name as category,
+                c.route as routec,
+                s.idsubcategory,
+                s.categoryid,
+                s.name as subcategory
+            FROM product p
+            INNER JOIN category c, subcategory s, wishlist w
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            AND p.idproduct = w.productid AND w.personid = $id AND w.status = 1";
+            $request = $this->con->select_all($sql);
+            if(count($request)> 0){
+                for ($i=0; $i < count($request); $i++) { 
+                    $idProduct = $request[$i]['idproduct'];
+                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
+                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
+                    $requestImg = $this->con->select_all($sqlImg);
+                    $request[$i]['favorite'] = 0;
+
+                    if(count($requestImg)>0){
+                        $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
+                        $request[$i]['image'] = $requestImg[0]['name'];
+                    }else{
+                        $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+
+                    if($request[$i]['product_type'] == 2){
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $request[$i]['price'] = round((($this->con->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['stock'] = $this->con->select($sqlTotal)['stock'];
+                    }
+                }
+            }
+            return $request;
         }
         public function getProductT(int $idProduct,$id_variant){
             $this->con=new Mysql();
@@ -542,6 +647,15 @@
                 $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $this->intIdProduct AND status = 1 HAVING rate IS NOT NULL";
                 $requestRate =  $this->con->select($sqlRate);
                 $request['price'] = round((($request['price']*COMISION)+TASA)/1000)*1000;
+                $request['favorite'] = 0;
+                if(isset($_SESSION['login'])){
+                    $idUser = $_SESSION['idUser'];
+                    $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $this->intIdProduct AND personid = $idUser";
+                    $requestFavorite = $this->con->select($sqlFavorite);
+                    if(!empty($requestFavorite)){
+                        $request['favorite'] = $requestFavorite['status'];
+                    }
+                }
                 if(!empty($requestRate)){
                     $request['rate'] = number_format($requestRate['rate'],1);
                     $request['reviews'] = $requestRate['total'];
@@ -660,6 +774,28 @@
             //dep($sql);
             return $request;
         }
+        public function addWishListT($idProduct,$idUser){
+            $this->con = new Mysql();
+            $sql = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+            $request = $this->con->select_all($sql);
+            $return ="";
+            if(empty($request)){
+                $sql = "INSERT INTO wishlist (productid,personid,status) VALUE(?,?,?)";
+                $array = array($idProduct,$idUser,1);
+                $request = $this->con->insert($sql,$array);
+                $return =$request;
+            }else{
+                $return ="exists";
+            }
+            return $return;
+        }
+        public function delWishListT($idProduct,$idUser){
+            $this->con = new Mysql();
+            $sql = "DELETE FROM wishlist WHERE productid=$idProduct AND personid = $idUser";
+            $request = $this->con->delete($sql);
+            return $request;
+        }
+        
     }
     
 ?>

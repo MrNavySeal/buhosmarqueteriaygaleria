@@ -103,8 +103,13 @@
                                     $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
                                     $variant = $productos[$i]['product_type'] == 2? "Desde " : "";
                                     $price ='</span><span class="current">'.$variant.formatNum($productos[$i]['price']).'</span>';
-    
-                                    if($productos[$i]['discount'] > 0){
+                                    $favorite="";
+                                    if($productos[$i]['favorite']== 0){
+                                        $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
+                                    }else{
+                                        $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
+                                    }
+                                    if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
                                         $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
                                         $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['price']*(1-($productos[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($productos[$i]['price']).'</span>';
                                     }else if($productos[$i]['stock'] == 0){
@@ -128,11 +133,14 @@
                                         
                                     </div>
                                     <div class="card--product-btns">
-                                        <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
-                                        <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
-                                        <?php }else if($productos[$i]['product_type'] == 2){?>
-                                        <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100">Ver más</a>
-                                        <?php }?>
+                                        <div class="d-flex">
+                                            <?=$favorite?>
+                                            <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
+                                            <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
+                                            <?php }else if($productos[$i]['product_type'] == 2){?>
+                                            <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
+                                            <?php }?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

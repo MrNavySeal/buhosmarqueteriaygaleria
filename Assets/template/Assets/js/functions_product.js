@@ -177,3 +177,82 @@ function selVariant(element){
         });
     }
 }
+function addFav(element){
+    
+    let idProduct = element.getAttribute("data-id");
+    let formData = new FormData();
+    formData.append("idProduct",idProduct);
+    element.classList.toggle("active");
+    if(element.classList.contains("active")){
+        element.innerHTML = `<span class="spinner-border text-primary spinner-border-sm" role="status" aria-hidden="true"></span>`;
+        element.setAttribute("disabled","disabled");
+        request(base_url+"/tienda/addWishList",formData,"post").then(function(objData){
+            element.removeAttribute("disabled");
+            if(objData.status){
+                element.innerHTML = `<i class="fas fa-heart text-danger " title="Agregar a favoritos"></i> Mi favorito`;
+            }else{
+                openLoginModal();
+                element.innerHTML = `<i class="far fa-heart" title="Agregar a favoritos"></i> Agregar a favoritos `;
+            }
+        });
+    }else{
+        element.innerHTML = `<span class="spinner-border text-primary spinner-border-sm" role="status" aria-hidden="true"></span>`;
+        element.setAttribute("disabled","disabled");
+        request(base_url+"/tienda/delWishList",formData,"post").then(function(objData){
+            element.removeAttribute("disabled");
+            if(objData.status){
+                element.innerHTML = `<i class="far fa-heart" title="Agregar a favoritos"></i> Agregar a favoritos`;
+            }else{
+                element.innerHTML = `<i class="far fa-heart" title="Agregar a favoritos"></i> Agregar a favoritos`;
+                openLoginModal();
+            }
+        });
+        
+    }
+    
+}
+function addProductCart(element){
+
+    let idProduct = element.getAttribute("data-id");
+    let topic = element.getAttribute("data-topic");
+    let type = element.getAttribute("data-type");
+    let formData = new FormData();
+    let variant = null;
+    let intQty = 1;
+    if(document.querySelector("#txtQty")){
+        intQty = document.querySelector("#txtQty").value;
+    }else if(document.querySelector("#txtQQty")){
+        intQty = document.querySelector("#txtQQty").value; 
+    }
+    if(type == 2){
+        if(document.querySelector(".btnv.active")){
+            variant = document.querySelector(".btnv.active").getAttribute("data-idv");
+        }else{
+            variant = document.querySelectorAll(".btnv")[0].getAttribute("data-idv");
+        }
+        
+    }
+    formData.append("idProduct",idProduct);
+    formData.append("topic",topic);
+    formData.append("txtQty",intQty);
+    formData.append("type",type);
+    formData.append("variant",variant);
+
+    element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    element.setAttribute("disabled","");
+    request(base_url+"/carrito/addCart",formData,"post").then(function(objData){
+        element.innerHTML=`<i class="fas fa-shopping-cart"></i> Agregar`;
+        element.removeAttribute("disabled");
+        document.querySelector(".toast-header img").src=objData.data.image;
+        document.querySelector(".toast-header img").alt=objData.data.name;
+        document.querySelector("#toastProduct").innerHTML=objData.data.reference+" "+objData.data.name;
+        document.querySelector(".toast-body").innerHTML=objData.msg;
+        if(objData.status){
+            document.querySelector("#qtyCart").innerHTML=objData.qty;
+            document.querySelector("#qtyCartbar").innerHTML=objData.qty;
+        }
+
+        const toast = new bootstrap.Toast(toastLive);
+        toast.show();
+    });
+}

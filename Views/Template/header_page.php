@@ -133,7 +133,7 @@
                         <li><a class="dropdown-item" href="<?=base_url()?>/tienda">Ver todo</a></li>
                     </ul>
                 </div>
-                <li class="nav-link"><a href="<?=base_url()?>/nosotros">¿Quienes somos?</a></li>
+                <li class="nav-link"><a href="<?=base_url()?>/favoritos">Mis favoritos</a></li>
                 <div class="nav-link dropdown">
                     <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         Servicios
@@ -268,7 +268,7 @@
                         </div>
                     </div>
                 </div>
-                <li class="navmobile-link"><a href="<?=base_url()?>/nosotros">¿Quienes somos?</a></li>
+                <li class="navmobile-link"><a href="<?=base_url()?>/favoritos">Mis favoritos</a></li>
                 <div class="navmobile-link accordion" id="accordionExample">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingOne">

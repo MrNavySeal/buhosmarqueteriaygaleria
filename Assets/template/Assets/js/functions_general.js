@@ -617,7 +617,7 @@ function addCart(element){
     element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     element.setAttribute("disabled","");
     request(base_url+"/carrito/addCart",formData,"post").then(function(objData){
-        element.innerHTML=`Agregar`;
+        element.innerHTML=`<i class="fas fa-shopping-cart"></i>`;
         element.removeAttribute("disabled");
         document.querySelector(".toast-header img").src=objData.data.image;
         document.querySelector(".toast-header img").alt=objData.data.name;
@@ -669,7 +669,7 @@ function delProduct(elements){
             let variant = element.parentElement.getAttribute("data-variant") ? element.parentElement.getAttribute("data-variant") : null;
             formData.append("topic",topic);
             formData.append("id",id);
-            formData.append("id_variant",variant);
+            formData.append("variant",variant);
             if(topic == 1){
                 let photo = element.parentElement.getAttribute("data-f");
                 let height = element.parentElement.getAttribute("data-h");
@@ -707,4 +707,38 @@ function delProduct(elements){
             });
         });
     }
+}
+function addWishList(element){
+    
+    let idProduct = element.getAttribute("data-id");
+    let formData = new FormData();
+    formData.append("idProduct",idProduct);
+    element.classList.toggle("active");
+    if(element.classList.contains("active")){
+        element.innerHTML = `<span class="spinner-border text-primary spinner-border-sm" role="status" aria-hidden="true"></span>`;
+        element.setAttribute("disabled","disabled");
+        request(base_url+"/tienda/addWishList",formData,"post").then(function(objData){
+            element.removeAttribute("disabled");
+            if(objData.status){
+                element.innerHTML = `<i class="fas fa-heart text-danger " title="Agregar a favoritos"></i>`;
+            }else{
+                openLoginModal();
+                element.innerHTML = `<i class="far fa-heart" title="Agregar a favoritos"></i>`;
+            }
+        });
+    }else{
+        element.innerHTML = `<span class="spinner-border text-primary spinner-border-sm" role="status" aria-hidden="true"></span>`;
+        element.setAttribute("disabled","disabled");
+        request(base_url+"/tienda/delWishList",formData,"post").then(function(objData){
+            element.removeAttribute("disabled");
+            if(objData.status){
+                element.innerHTML = `<i class="far fa-heart" title="Agregar a favoritos"></i>`;
+            }else{
+                element.innerHTML = `<i class="far fa-heart " title="Agregar a favoritos"></i>`;
+                openLoginModal();
+            }
+        });
+        
+    }
+    
 }

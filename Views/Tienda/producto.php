@@ -43,9 +43,18 @@
         }
     }
 
+    $favorite="";
+
+    
+
     $id = openssl_encrypt($product['idproduct'],METHOD,KEY);
     $urlShare = base_url()."/tienda/producto/".$product['route'];
-    
+
+    if($product['favorite']== 0){
+        $favorite = '<button type="button" onclick="addFav(this)" data-id="'.$id.'" class="mb-3 btn btn-bg-3 btn-fav "><i class="far fa-heart "></i> Agregar a favoritos </button>';
+    }else{
+        $favorite = '<button type="button" onclick="addFav(this)" data-id="'.$id.'" class="mb-3 btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i> Mi favorito</button>';
+    }
 ?>
     <?=$data['modal']?>
     <div id="modalItem"></div>
@@ -111,20 +120,21 @@
                         <?=$reference?>
                         <a href="<?=base_url()."/tienda/categoria/".$product['routec']?>" class="m-0">Categoría:<strong> <?=$product['category']?></strong></a><br>
                         <a href="<?=base_url()."/tienda/categoria/".$product['routes']?>" class="m-0">Subcategoría:<strong> <?=$product['subcategory']?></strong></a>
-                        <?php if($stock > 0){?>
+                        
                         <div class="mt-4 mb-4 d-flex align-items-center">
                             <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-                                <div class="btn-qty-1 me-3" id="btnPqty">
+                                <?php if($stock > 0){?>
+                                <div class="btn-qty-1 mb-3 me-3" id="btnPqty">
                                     <button class="btn" id="btnPDecrement"><i class="fas fa-minus"></i></button>
                                     <input type="number" name="txtQty" id="txtQty" min="1" max ="<?=$stock?>" value="1">
                                     <button class="btn" id="btnPIncrement"><i class="fas fa-plus"></i></button>
                                 </div>
-                                <button type="button" class="btn btn-bg-1" onclick="addCart(this)" data-id="<?=$id?>" data-topic="2" data-type="<?=$product['product_type']?>">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
+                                <button type="button" class="btn btn-bg-1 me-3 mb-3" onclick="addProductCart(this)" data-id="<?=$id?>" data-topic="2" data-type="<?=$product['product_type']?>"><i class="fas fa-shopping-cart"></i> Agregar</button>
+                                <?php }?>
+                                <?=$favorite?>
                             </div>
                         </div>
-                        
-                        <?php }?>
-                        <div class="payment__methods">
+                        <div class="payment__methods mt-3">
                             <p>Pago seguro garantizado</p>
                             <ul>
                                 <li><img src="<?=media()?>/images/uploads/icon1.png" alt=""></li>
@@ -254,8 +264,13 @@
                         $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
                         $variant = $productos[$i]['product_type'] == 2? "Desde " : "";
                         $price ='</span><span class="current">'.$variant.formatNum($productos[$i]['price']).'</span>';
-
-                        if($productos[$i]['discount'] > 0){
+                        $favorite="";
+                        if($productos[$i]['favorite']== 0){
+                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
+                        }else{
+                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
+                        }
+                        if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
                             $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
                             $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['price']*(1-($productos[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($productos[$i]['price']).'</span>';
                         }else if($productos[$i]['stock'] == 0){
@@ -280,11 +295,14 @@
                             
                         </div>
                         <div class="card--product-btns">
-                            <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
-                            <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)">Agregar <i class="fa-solid fa-cart-shopping"></i></button>
-                            <?php }else if($productos[$i]['product_type'] == 2){?>
-                            <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100">Ver más</a>
-                            <?php }?>
+                            <div class="d-flex">
+                                <?=$favorite?>
+                                <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
+                                <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
+                                <?php }else if($productos[$i]['product_type'] == 2){?>
+                                <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
+                                <?php }?>
+                            </div>
                         </div>
                     </div>
                 </div>
