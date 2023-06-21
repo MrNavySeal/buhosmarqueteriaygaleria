@@ -7,11 +7,10 @@
     
     <div class="frame__img__container">
         <img src="<?=media()."/images/uploads/titulo.png"?>" alt="">
-        
-    </div>
-    <div class="change__img__container">
-        <div class="change__img"><i class="fas fa-angle-left" aria-hidden="true"></i></div>
-        <div class="change__img"><i class="fas fa-angle-right" aria-hidden="true"></i></div>
+        <div class="change__img__container">
+            <div class="change__img"><i class="fas fa-angle-left" aria-hidden="true"></i></div>
+            <div class="change__img"><i class="fas fa-angle-right" aria-hidden="true"></i></div>
+        </div>
     </div>
     <div class="c-p position-absolute bg-color-1 rounded-circle ps-2 pe-2 top-0 end-0 m-3" id="closeImg"><i class="fas fa-times"></i></div>
 </div>
@@ -68,12 +67,12 @@
                     <div class="d-flex flex-wrap justify-content-center align-items-center">
                         <div class="measures--dimension">
                             <label for="">Ancho (cm)</label>
-                            <div class="measures--limits"><span>min 10.0</span><span>max 200.0</span></div>
+                            <div class="measures--limits"><span>min 10.0</span><span>max 180.0</span></div>
                             <input type="number" class="measures--input" name="intWidth" id="intWidth" value="10" disabled>
                         </div>
                         <div class="measures--dimension">
                             <label for="">Alto (cm)</label>
-                            <div class="measures--limits"><span>min 10.0</span><span>max 200.0</span></div>
+                            <div class="measures--limits"><span>min 10.0</span><span>max 180.0</span></div>
                             <input type="number" class="measures--input" name="intHeight" id="intHeight" value="10" disabled>
                         </div>
                     </div>
