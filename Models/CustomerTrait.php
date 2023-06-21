@@ -153,6 +153,9 @@
                         "margin"=>$pro['margin'],
                         "colormargin"=>$pro['colormargin'],
                         "colorborder"=>$pro['colorborder'],
+                        "colorframe"=>$pro['colorframe'],
+                        "material"=>$pro['material'],
+                        "glass"=>$pro['glass'],
                         "img"=>$pro['img'],
                         "photo"=>$pro['photo']
                     ));

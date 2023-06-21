@@ -96,22 +96,28 @@ if($order['status'] =="pendent"){
                                 <?=$photo?>
                                 <?=$arrProducts['name']?>
                             <?php
-                                $margen = $arrProducts['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Margen:</span> '.$arrProducts['margin'].'cm</li>' : "";
-                                $colorMargen = $arrProducts['colormargin'] != "" ? '<li><span class="fw-bold t-color-3">Color margen:</span> '.$arrProducts['colormargin'].'</li>' : "";
-                                $colorBorder = $arrProducts['colorborder'] != "" ? '<li><span class="fw-bold t-color-3">Color Borde:</span> '.$arrProducts['colorborder'].'</li>' : "";
+                                $glass = isset($arrProducts['glass']) ? '<li><span class="fw-bold t-color-3">Tipo de vidrio:</span> '.$arrProducts['glass'].'</li>' : "";
+                                $material = isset($arrProducts['material']) ? '<li><span class="fw-bold t-color-3">Material del marco:</span> '.$arrProducts['material'].'</li>' : "";
+                                $colorFrame = isset($arrProducts['colorframe']) ? '<li><span class="fw-bold t-color-3">Color del marco:</span> '.$arrProducts['colorframe'].'</li>' : "";
+                                $margen = $arrProducts['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Medida paspartú:</span> '.$arrProducts['margin'].'cm</li>' : "";
+                                $colorMargen = $arrProducts['colormargin'] != "" ? '<li><span class="fw-bold t-color-3">Color del paspartú:</span> '.$arrProducts['colormargin'].'</li>' : "";
+                                $colorBorder = $arrProducts['colorborder'] != "" ? '<li><span class="fw-bold t-color-3">Color del bocel:</span> '.$arrProducts['colorborder'].'</li>' : "";
                                 $medidas = $arrProducts['width']."cm X ".$arrProducts['height']."cm";
                                 $medidasMarco = ($arrProducts['width']+($arrProducts['margin']*2))."cm X ".($arrProducts['height']+($arrProducts['margin']*2))."cm"; 
                             ?>
                             <?php if($arrProducts['idType'] == 1 || $arrProducts['idType'] == 4 || $arrProducts['idType'] == 5){?>
                             <ul>
-                                <li><span class="fw-bold text-start">Referencia:</span> <?=$arrProducts['reference']?></li>
+                                <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
+                                <?=$colorFrame?>
+                                <?=$material?>
                                 <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-                                <li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts['style']?></li>
-                                <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
+                                <li><span class="fw-bold t-color-3">Estilo de enmarcación:</span> <?=$arrProducts['style']?></li>
                                 <?=$margen?>
-                                <li><span class="fw-bold t-color-3">Medidas del marco:</span> <?=$medidasMarco?></li>
+                                <li><span class="fw-bold t-color-3">Medida imagen:</span> <?=$medidas?></li>
+                                <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
                                 <?=$colorMargen?>
                                 <?=$colorBorder?>
+                                <?=$glass?>
                             </ul>
                             <?php }else if($arrProducts['idType'] == 3 || $arrProducts['idType'] == 7){?>
                             <ul>

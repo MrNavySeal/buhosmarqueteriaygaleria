@@ -67,9 +67,12 @@
         width: 100%;
     }
     transition: all 0.3s ease-out;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
 }
 .layout--margin{
-    background-color: #000;
+    background-color: #fff;
     width: 150px;
     height: 150px;
     position: absolute;
@@ -78,9 +81,26 @@
     top: 50%;
     transform: translate(-50%,-50%);
     border-image: url("/assets/images/moldura.gif") 40% repeat;
-    border-color: #000;
+    border-color: #fff;
     border-style: solid;
     transition: all 0.3s ease-out;
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.75);
+}
+.layout--border{
+    background-color: transparent;
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    outline-color: transparent;
+    outline-style: solid;
+    transition: all 0.3s ease-out;
+    mix-blend-mode: multiply;
 }
 .cube-container{
     position: absolute;
@@ -168,21 +188,35 @@
     
 }
 .select--frames{
-    max-height: 340px;
+    display: flex;
+    max-height: 150px;
     overflow: hidden;
-    overflow-y: auto;
+    overflow-x: auto;
+    align-items: center;
     padding: 10px;
+    gap: 1rem;
 }
 .frame--item{
-    height: 100px;
-    width: 100px;
+    height: 80px;
+    width: 80px;
     border-radius: 10px;
     padding:5px;
     cursor: pointer;
     position: relative;
     img{
         width: 100%;
-        height: 100%;
+        height: 80%;
+    }
+    p{
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%);
+        bottom: 0;
+        margin: 0;
+        width: 100%;
+        color:$color2;
+        text-align: center;
+        font-size: 12px;
     }
 }
 
@@ -218,5 +252,56 @@
 }
 .element--active{
     border: 1px solid $color1;
+}
+#framePhotos{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    z-index: 10000;
+    background-color: rgba(0,0,0,0.75);
+    
+}
+.frame__img__container{
+    position: absolute;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    width: 350px;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    img{
+        width: 100%;
+    }
+}
+.frame__img__l{
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 20%;
+    font-size: 1rem;
+    padding: 5px 10px;
+    background-color: $color2;
+    color:$color4;
+    cursor: pointer;
+}
+.change__img__container{
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+    top: 550px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.change__img{
+    font-size: 1rem;
+    padding: 5px 10px;
+    background-color: $color2;
+    color:$color4;
+    cursor: pointer;
 }
 

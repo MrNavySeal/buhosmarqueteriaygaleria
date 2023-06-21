@@ -677,6 +677,9 @@ function delProduct(elements){
                 let margin = element.parentElement.getAttribute("data-m");
                 let marginColor = element.parentElement.getAttribute("data-mc");
                 let borderColor = element.parentElement.getAttribute("data-bc");
+                let frameColor = element.parentElement.getAttribute("data-fc");
+                let material = element.parentElement.getAttribute("data-material");
+                let glass = element.parentElement.getAttribute("data-glass");
                 let style = element.parentElement.getAttribute("data-s");
                 let type = element.parentElement.getAttribute("data-t");
                 let reference = element.parentElement.getAttribute("data-r");
@@ -689,6 +692,9 @@ function delProduct(elements){
                 formData.append("type",type);
                 formData.append("photo",photo);
                 formData.append("reference",reference);
+                formData.append("framecolor",frameColor);
+                formData.append("glass",glass);
+                formData.append("material",material);
             }
             element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             element.setAttribute("disabled","");

@@ -195,6 +195,9 @@
                     $colorBorder = strClean($_POST['colorborder']);
                     $idType = intval($_POST['idType']);
                     $reference = strClean($_POST['reference']);
+                    $material = strClean($_POST['material']);
+                    $glass = strClean($_POST['glass']);
+                    $frameColor = $_POST['framecolor'];
                 }
                 $total =0;
                 $totalPrice = 0;
@@ -208,7 +211,8 @@
                         
                         if($arrProducts[$i]['topic'] == 1 && $topic == 1){
                             if($arrProducts[$i]['style'] == $style && $arrProducts[$i]['height'] == $height &&
-                            $arrProducts[$i]['width'] == $width && $arrProducts[$i]['margin'] == $margin &&
+                            $arrProducts[$i]['width'] == $width && $arrProducts[$i]['margin'] == $margin && $glass == $arrProducts[$i]['glass'] 
+                            && $frameColor == $arrProducts[$i]['colorframe'] && $material == $arrProducts[$i]['material'] &&
                             $arrProducts[$i]['colormargin'] == $colorMargin && $arrProducts[$i]['colorborder'] == $colorBorder && 
                             $arrProducts[$i]['idType'] == $idType && $arrProducts[$i]['reference'] == $reference){
                                 $arrProducts[$i]['qty'] = $qty;
@@ -279,12 +283,16 @@
                     $type = intval($_POST['type']);
                     $borderColor = $_POST['bordercolor'];
                     $marginColor = $_POST['margincolor'];
+                    $frameColor = $_POST['framecolor'];
                     $reference = $_POST['reference'];
                     $photo = $_POST['photo'];
+                    $material = strClean($_POST['material']);
+                    $glass = strClean($_POST['glass']);
                 }
                 for ($i=0; $i < count($arrCart) ; $i++) { 
                     if($topic == 1){
-                        if($id == $arrCart[$i]['id'] && $height == $arrCart[$i]['height']
+                        if($id == $arrCart[$i]['id'] && $height == $arrCart[$i]['height'] && $glass == $arrCart[$i]['glass'] 
+                        && $frameColor == $arrCart[$i]['colorframe'] && $material == $arrCart[$i]['material']
                         && $width == $arrCart[$i]['width'] && $margin == $arrCart[$i]['margin'] && $style == $arrCart[$i]['style']
                         && $type == $arrCart[$i]['idType'] && $borderColor == $arrCart[$i]['colorborder'] && $marginColor == $arrCart[$i]['colormargin']
                         && $photo == $arrCart[$i]['photo'] && $reference == $arrCart[$i]['reference']){
@@ -333,7 +341,8 @@
                         <li class="cartlist--item" data-id="'.$arrProducts[$i]['id'].'" data-topic ="'.$arrProducts[$i]['topic'].'" data-h="'.$arrProducts[$i]['height'].'"
                         data-w="'.$arrProducts[$i]['width'].'" data-m="'.$arrProducts[$i]['margin'].'" data-s="'.$arrProducts[$i]['style'].'" 
                         data-mc="'.$arrProducts[$i]['colormargin'].'" data-bc="'.$arrProducts[$i]['colorborder'].'" data-t="'.$arrProducts[$i]['idType'].'" data-f="'.$arrProducts[$i]['photo'].'"
-                        data-r="'.$arrProducts[$i]['reference'].'">
+                        data-r="'.$arrProducts[$i]['reference'].'" data-fc="'.$arrProducts[$i]['colorframe'].'" data-glass="'.$arrProducts[$i]['glass'].'"
+                        data-material="'.$arrProducts[$i]['material'].'">
                             <a href="'.$arrProducts[$i]['url'].'">
                                 <img src="'.$photo.'" alt="'.$arrProducts[$i]['name'].'">
                             </a>

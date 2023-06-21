@@ -91,10 +91,11 @@
                         $type='Moldura importada';
                     }
                     $html.='
-                        <div class="col-4 col-lg-3 col-md-4 mb-3">
+                        <div class="mb-3 frame--container" data-r="'.$request[$i]['reference'].'">
                             <div class="frame--item frame-main element--hover" data-id="'.$id.'" onclick="selectActive(this,`.frame-main`)">
                                 '.$discount.'
                                 <img src="'.$request[$i]['image'].'" alt="'.$type.'">
+                                <p>REF: '.$request[$i]['reference'].'</p>
                             </div>
                         </div>
                     ';
@@ -134,7 +135,7 @@
         public function sort(){
             if($_POST){
                 $perimetro = (floatval($_POST['height'])+floatval($_POST['width']))*2;
-                $arrResponse = $this->getProducts(2,strClean($_POST['search']),intval($_POST['sort']),$perimetro);
+                $arrResponse = $this->getProducts(2,null,intval($_POST['sort']),null);
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
@@ -162,14 +163,22 @@
             $arrDatos = array("perimetro"=>$perimetro,"area"=>$area,"total"=>$total);
             return $arrDatos;
         }
-        public function calcularMarcoEstilos($estilo,$perimetro,$area,$tipo){
+        public function calcularMarcoEstilos($estilo,$perimetro,$area,$tipo,$vidrio){
             $material = $this->selectMaterials();
+            if($vidrio == 1){
+                $vidrio = $material[12]['price'];
+            }elseif($vidrio == 2){
+                $vidrio = $material[3]['price'];
+            }else{
+                $vidrio = 0;
+            }
+            
             $paspartu = $material[0]['price'];
             $hijillo = $material[1]['price'];
             $bocel = $material[2]['price'];
             $bastidor = $material[4]['price'];
             $triplex = $material[5]['price'];
-            $vidrio = $material[3]['price'];
+            //$vidrio = $material[3]['price'];
             $espuma = $material[6]['price'];
             $espejo3mm =$material[7]['price'];
             $impresion =$material[8]['price'];
@@ -253,10 +262,11 @@
                         $ancho = floatval($_POST['width']);
                         $estilo = intval($_POST['style']);
                         $tipo = intval($_POST['type']);
+                        $vidrio = intval($_POST['glass']);
         
         
                         $marcoTotal = $this->calcularMarcoInterno($estilo,$margin,$altura,$ancho,$request,$option);
-                        $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo);
+                        $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo,$vidrio);
         
                         $total = round((intval(UTILIDAD*((($marcoEstilos+$marcoTotal['total'])*COMISION)+TASA)))/1000)*1000;
                         $request['total'] = array("total"=>$total,"format"=>formatNum($total));
@@ -276,6 +286,7 @@
                 $ancho = $datos['width'];
                 $estilo = $datos['style'];
                 $tipo = $datos['type'];
+                $vidrio = intval($_POST['glass']);
                 $frame = array();
 
                 if(!empty($datos['frame'])){
@@ -283,7 +294,7 @@
                 }
 
                 $marcoTotal = $this->calcularMarcoInterno($estilo,$margin,$altura,$ancho,$frame,$datos['option']);
-                $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo);
+                $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo,$vidrio);
 
                 $total = round((intval(UTILIDAD*((($marcoEstilos+$marcoTotal['total'])*COMISION)+TASA)))/1000)*1000;
                 return $total;
@@ -312,13 +323,17 @@
 
                     $colorMargin = $this->selectColor(intval($_POST['colorMargin']));
                     $colorBorder = $this->selectColor(intval($_POST['colorBorder']));
+                    $colorFrame = $this->selectColor(intval($_POST['colorFrame']));
                     $colorMargin = !empty($colorMargin) ? $colorMargin['name'] : "";
                     $colorBorder = !empty($colorBorder) ? $colorBorder['name'] : "";
+                    $colorFrame = !empty($colorFrame) ? $colorFrame['name'] : "";
                     $height = floatval($_POST['height']);
                     $width = floatval($_POST['width']);
                     $margin = intval($_POST['margin']);
                     $styleName = strClean($_POST['styleName']);
                     $styleValue = intval($_POST['styleValue']);
+                    $material = strClean($_POST['material']);
+                    $glass = strClean($_POST['glass']);
                     $route = $_POST['route'];
                     $type = $_POST['type'];
                     $idType = intval($_POST['idType']);
@@ -350,6 +365,9 @@
                         "margin"=>$styleValue == 1 ? 0:$margin,
                         "colormargin"=>$colorMargin,
                         "colorborder"=>$colorBorder,
+                        "colorframe" =>$colorFrame,
+                        "material"=>$material,
+                        "glass"=>$glass,
                         "price"=>$price,
                         "qty"=>$qty,
                         "url"=>$pop['route'],
@@ -361,7 +379,9 @@
                         $flag = true;
                         for ($i=0; $i < count($arrCart) ; $i++) { 
                             if($arrCart[$i]['topic'] == 1){
-                                if($arrCart[$i]['style'] == $arrProduct['style'] && $arrCart[$i]['height'] == $arrProduct['height'] &&
+                                if($arrCart[$i]['colorframe'] == $arrProduct['colorframe'] &&
+                                    $arrCart[$i]['glass'] == $arrProduct['glass'] && $arrCart[$i]['material'] == $arrProduct['material'] &&
+                                $arrCart[$i]['style'] == $arrProduct['style'] && $arrCart[$i]['height'] == $arrProduct['height'] &&
                                 $arrCart[$i]['width'] == $arrProduct['width'] && $arrCart[$i]['margin'] == $arrProduct['margin'] &&
                                 $arrCart[$i]['colormargin'] == $arrProduct['colormargin'] && $arrCart[$i]['colorborder'] == $arrProduct['colorborder'] && 
                                 $arrCart[$i]['id'] == $arrProduct['id'] && $arrCart[$i]['idType'] == $arrProduct['idType']){
