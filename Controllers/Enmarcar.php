@@ -173,7 +173,6 @@
             }else{
                 $vidrio = 0;
             }
-            
             $paspartu = $material[0]['price'];
             $hijillo = $material[1]['price'];
             $bocel = $material[2]['price'];
@@ -201,12 +200,14 @@
                 }
             }else if($tipo == 3){
                 if($estilo == 1){
-                    $total = ($area * $triplex) +($area * $espejo3mm);
+                    $total = ($area * $vidrio)+($area*$impresion)+($area*$carton);
                 }else if($estilo == 2){
-                    $total = ($area * $triplex) + ($area * $espejo4mm);
-                }/*else if($estilo == 3){
-                    $total = ($area * $triplex) + ($area * $espejoBicelado);
-                }*/
+                    $total = ($area * $paspartu)+($perimetro*$bocel)+($area*$vidrio)+($area*$impresion)+($area*$carton);
+                }else if($estilo == 3){
+                    $total = ($area * $paspartu)+($area*$vidrio)+($area*$impresion)+($area*$carton);
+                }else if($estilo == 4){
+                    $total = ($area * $triplex)+($perimetro*$hijillo)+($area*$vidrio)+($area*$impresion)+($area*$carton);
+                }
                 
             }else if($tipo == 4){
                 if($estilo == 1){
@@ -217,15 +218,7 @@
                     $total = ($area * $triplex)+($perimetro*$bastidor);
                 }
             }else if($tipo == 5){
-                if($estilo == 1){
-                    $total = ($area * $vidrio)+($area*$impresion)+($area*$carton);
-                }else if($estilo == 2){
-                    $total = ($area * $paspartu)+($perimetro*$bocel)+($area*$vidrio)+($area*$impresion)+($area*$carton);
-                }else if($estilo == 3){
-                    $total = ($area * $paspartu)+($area*$vidrio)+($area*$impresion)+($area*$carton);
-                }else if($estilo == 4){
-                    $total = ($area * $triplex)+($perimetro*$hijillo)+($area*$vidrio)+($area*$impresion)+($area*$carton);
-                }
+                
             }else if($tipo == 6){
                 $total = ($area * $vidrio) + ($area*$triplex);
             }else if($tipo == 7){
@@ -247,6 +240,7 @@
 
         }
         public function calcularMarcoTotal($datos=null){
+            //dep($_POST);exit;
             if($datos==null){
                 if($_POST){
                     $id = intval(openssl_decrypt($_POST['id'],METHOD,KEY));
@@ -287,7 +281,7 @@
                 $ancho = $datos['width'];
                 $estilo = $datos['style'];
                 $tipo = $datos['type'];
-                $vidrio = intval($_POST['glass']);
+                $vidrio = $datos['glass'];
                 $frame = array();
 
                 if(!empty($datos['frame'])){
@@ -335,6 +329,7 @@
                     $styleValue = intval($_POST['styleValue']);
                     $material = strClean($_POST['material']);
                     $glass = strClean($_POST['glass']);
+                    $idGlass = intval($_POST['idGlass']);
                     $route = $_POST['route'];
                     $type = $_POST['type'];
                     $idType = intval($_POST['idType']);
@@ -349,7 +344,15 @@
                         uploadImage($_FILES['txtPicture'],$photo);
                     }
 
-                    $data = array("frame"=>$frame,"height"=>$height,"width"=>$width,"margin"=>$margin,"style"=>$styleValue,"type"=>$idType,"option"=>$option);
+                    $data = array(
+                    "frame"=>$frame,
+                    "height"=>$height,
+                    "width"=>$width,
+                    "margin"=>$margin,
+                    "style"=>$styleValue,
+                    "type"=>$idType,
+                    "option"=>$option,
+                    "glass"=>$idGlass);
                     $price = $this->calcularMarcoTotal($data);
                     $pop = array("name"=>$type,"image"=>$photo !="" ? media()."/images/uploads/".$photo : $frame['image'][0],"route"=>base_url()."/enmarcar/personalizar/".$route);
                     $arrProduct = array(
@@ -385,7 +388,7 @@
                                 $arrCart[$i]['style'] == $arrProduct['style'] && $arrCart[$i]['height'] == $arrProduct['height'] &&
                                 $arrCart[$i]['width'] == $arrProduct['width'] && $arrCart[$i]['margin'] == $arrProduct['margin'] &&
                                 $arrCart[$i]['colormargin'] == $arrProduct['colormargin'] && $arrCart[$i]['colorborder'] == $arrProduct['colorborder'] && 
-                                $arrCart[$i]['id'] == $arrProduct['id'] && $arrCart[$i]['idType'] == $arrProduct['idType']){
+                                $arrCart[$i]['id'] == $arrProduct['id'] && $arrCart[$i]['idType'] == $arrProduct['idType'] && $arrProduct['photo'] == $arrCart[$i]['photo']){
                                     $arrCart[$i]['qty'] +=$qty;
                                     $flag = false;
                                     break;

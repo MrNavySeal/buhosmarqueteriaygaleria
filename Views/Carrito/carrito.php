@@ -110,14 +110,16 @@
                                 <?=$variant?>
                                 <?php
                                     if($arrProducts[$i]['topic'] == 1){
-                                        $margen = $arrProducts[$i]['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Medida paspartú:</span> '.$arrProducts[$i]['margin'].'cm</li>' : "";
-                                        $colorMargen = $arrProducts[$i]['colormargin'] != "" ? '<li><span class="fw-bold t-color-3">Color del paspartú:</span> '.$arrProducts[$i]['colormargin'].'</li>' : "";
-                                        $colorBorder = $arrProducts[$i]['colorborder'] != "" ? '<li><span class="fw-bold t-color-3">Color del bocel:</span> '.$arrProducts[$i]['colorborder'].'</li>' : "";
+                                        $borderStyle = $arrProducts[$i]['style'] == "Flotante" ? "marco interno" : "bocel";
+                                        $marginStyle = $arrProducts[$i]['style'] == "Flotante" ? "fondo" : "paspartú";
+                                        $margen = $arrProducts[$i]['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Medida '.$marginStyle.':</span> '.$arrProducts[$i]['margin'].'cm</li>' : "";
+                                        $colorMargen = $arrProducts[$i]['colormargin'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$marginStyle.':</span> '.$arrProducts[$i]['colormargin'].'</li>' : "";
+                                        $colorBorder = $arrProducts[$i]['colorborder'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$borderStyle.':</span> '.$arrProducts[$i]['colorborder'].'</li>' : "";
                                         $colorFrame = $arrProducts[$i]['colorframe'] != "" ? '<li><span class="fw-bold t-color-3">Color del marco:</span> '.$arrProducts[$i]['colorframe'].'</li>' : "";
                                         $medidas = $arrProducts[$i]['width']."cm X ".$arrProducts[$i]['height']."cm";
                                         $medidasMarco = ($arrProducts[$i]['width']+($arrProducts[$i]['margin']*2))."cm X ".($arrProducts[$i]['height']+($arrProducts[$i]['margin']*2))."cm"; 
                                 ?>
-                                <?php if($arrProducts[$i]['idType'] == 1 || $arrProducts[$i]['idType'] == 4 || $arrProducts[$i]['idType'] == 5){?>
+                                <?php if($arrProducts[$i]['idType'] == 1 || $arrProducts[$i]['idType'] == 3 || $arrProducts[$i]['idType'] == 5){?>
                                 <ul>
                                     <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts[$i]['reference']?></li>
                                     <?=$colorFrame?>

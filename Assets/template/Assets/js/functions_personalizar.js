@@ -1,4 +1,5 @@
 const DIMENSIONDEFAULT = 4;
+const MAXDIMENSION = 100;
 const rangeZoom = document.querySelector("#zoomRange");
 const minusZoom = document.querySelector("#zoomMinus");
 const plusZoom = document.querySelector("#zoomPlus");
@@ -111,8 +112,8 @@ changeImgR.addEventListener("click",function(){
 intHeight.addEventListener("change",function(){
     if(intHeight.value <= 10.0){
         intHeight.value = 10.0;
-    }else if(intHeight.value >= 100.0){
-        intHeight.value = 100.0;
+    }else if(intHeight.value >= MAXDIMENSION){
+        intHeight.value = MAXDIMENSION;
     }
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
@@ -120,8 +121,8 @@ intHeight.addEventListener("change",function(){
 intWidth.addEventListener("change",function(){
     if(intWidth.value <= 10.0){
         intWidth.value = 10.0;
-    }else if(intWidth.value >= 100.0){
-        intWidth.value = 100.0;
+    }else if(intWidth.value >= MAXDIMENSION){
+        intWidth.value = MAXDIMENSION;
     }
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
@@ -280,11 +281,11 @@ addFrame.addEventListener("click",function(){
     }
     if(selectStyle.value == 2 || selectStyle.value == 4){
         if(!document.querySelector(".color--margin.element--active")){
-            Swal.fire("Error","Por favor, elige el color del margen","error");
+            Swal.fire("Error","Por favor, elige el color del paspartú","error");
             return false;
         }
         if(!document.querySelector(".color--border.element--active")){
-            Swal.fire("Error","Por favor, elige el color del borde","error");
+            Swal.fire("Error","Por favor, elige el color del bocel","error");
             return false;
         }
     }else if(selectStyle.value == 3){
@@ -328,6 +329,7 @@ addFrame.addEventListener("click",function(){
     formData.append("orientation",orientation);
     formData.append("glass",selectGlass.options[selectGlass.selectedIndex].text);
     formData.append("material",sortFrame.options[sortFrame.selectedIndex].text);
+    formData.append("idGlass",selectGlass.value);
 
     addFrame.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     addFrame.setAttribute("disabled","");
@@ -360,7 +362,12 @@ function selectOrientation(element){
     btnNext.classList.remove("d-none");
     document.querySelector("#spcMeasureImg").innerHTML = intWidth.value+" x "+intHeight.value+"cm";
     document.querySelector("#spcMeasureFrame").innerHTML = intWidth.value+" x "+intHeight.value+"cm";
-    document.querySelector("#spcOrientation").innerHTML = document.querySelectorAll(".orientation")[0].classList.contains("element--active") ? "Horizontal" : "Vertical";
+
+    if(document.querySelectorAll(".orientation")[0].classList.contains("element--active")){
+        document.querySelector("#spcOrientation").innerHTML = "Horizontal";
+    }else{
+        document.querySelector("#spcOrientation").innerHTML = "Vertical";
+    }
     resizeFrame(intWidth.value, intHeight.value);
 }
 function selectActive(element =null,elements=null){
@@ -397,6 +404,7 @@ function resizeFrame(width,height){
     layoutMargin.style.width = `${widthM}px`;
     layoutBorder.style.height = `${heightM}px`;
     layoutBorder.style.width = `${widthM}px`;
+    
 }
 function customMargin(margin){
     margin = parseFloat(margin);

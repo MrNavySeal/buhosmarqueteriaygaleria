@@ -1,5 +1,6 @@
 const DIMENSIONDEFAULT = 4;
-const PPI = 100;
+const MAXDIMENSION = 100;
+let PPI = 100;
 const rangeZoom = document.querySelector("#zoomRange");
 const minusZoom = document.querySelector("#zoomMinus");
 const plusZoom = document.querySelector("#zoomPlus");
@@ -107,8 +108,8 @@ changeImgR.addEventListener("click",function(){
 intHeight.addEventListener("change",function(){
     if(intHeight.value <= 10.0){
         intHeight.value = 10.0;
-    }else if(intHeight.value >= 100.0){
-        intHeight.value = 100.0;
+    }else if(intHeight.value >= MAXDIMENSION){
+        intHeight.value = MAXDIMENSION;
     }
     calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     calcularMarco();
@@ -117,8 +118,8 @@ intHeight.addEventListener("change",function(){
 intWidth.addEventListener("change",function(){
     if(intWidth.value <= 10.0){
         intWidth.value = 10.0;
-    }else if(intWidth.value >= 100.0){
-        intWidth.value = 100.0;
+    }else if(intWidth.value >= MAXDIMENSION){
+        intWidth.value = MAXDIMENSION;
     }
     calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     calcularMarco();
@@ -157,13 +158,23 @@ sliderRight.addEventListener("click",function(){
 //[upload image]
 
 uploadPicture.addEventListener("change",function(){
+    let file = uploadPicture.files[0];
     if(uploadPicture.value !=""){
-        uploadImg(uploadPicture,".layout--img img");
-        if(intHeight.value !="" && intWidth.value!=""){
-            btnNext.classList.remove("d-none");
-        }
-        if(document.querySelector(".orientation.element--active")){
-            btnNext.classList.remove("d-none");
+        let size = file.size;
+        let kb = parseInt(size / 1024);
+        let mb = parseInt(kb / 1024);
+        if(mb <= 30){
+            uploadImg(uploadPicture,".layout--img img");
+            if(intHeight.value !="" && intWidth.value!=""){
+                btnNext.classList.remove("d-none");
+            }
+            if(document.querySelector(".orientation.element--active")){
+                btnNext.classList.remove("d-none");
+            }
+        }else{
+            Swal.fire("Error","La imagen supera los 30MB, optimiza o cambia de imagen","error");
+            uploadPicture.value ="";
+            return false;
         }
     }else{
         btnNext.classList.add("d-none");
@@ -172,7 +183,6 @@ uploadPicture.addEventListener("change",function(){
         calcDimension(document.querySelector(".layout--img img"));
         calcularMarco();
     }, 100);
-    
     //console.log(resolution);
 });
 
@@ -259,9 +269,14 @@ selectGlass.addEventListener("change",function(){
 //--
 //----------------------------------------------
 //[Add frame]
-addFrame.addEventListener("click",function(){
-    let formData = new FormData();
+frame.addEventListener("submit",function(e){
+    e.preventDefault();
+    let formData = new FormData(frame);
 
+    if(uploadPicture.value == ""){
+        Swal.fire("Error","Por favor, sube la imagen a imprimir","error");
+        return false;
+    }
     if(intHeight.value =="" || intWidth.value==""){
         Swal.fire("Error","Por favor, ingresa las medidas","error");
         return false;
@@ -272,16 +287,25 @@ addFrame.addEventListener("click",function(){
     }
     if(selectStyle.value == 2 || selectStyle.value == 4){
         if(!document.querySelector(".color--margin.element--active")){
-            Swal.fire("Error","Por favor, elige el color del margen","error");
+            Swal.fire("Error","Por favor, elige el color del paspartú","error");
             return false;
         }
         if(!document.querySelector(".color--border.element--active")){
-            Swal.fire("Error","Por favor, elige el color del borde","error");
+            Swal.fire("Error","Por favor, elige el color del bocel","error");
             return false;
         }
     }else if(selectStyle.value == 3){
         if(!document.querySelector(".color--margin.element--active")){
             Swal.fire("Error","Por favor, elige el color del margen","error");
+            return false;
+        }
+    }else if(selectStyle.value == 4){
+        if(!document.querySelector(".color--margin.element--active")){
+            Swal.fire("Error","Por favor, elige el color del fondo","error");
+            return false;
+        }
+        if(!document.querySelector(".color--border.element--active")){
+            Swal.fire("Error","Por favor, elige el color del marco interno","error");
             return false;
         }
     }
@@ -320,7 +344,7 @@ addFrame.addEventListener("click",function(){
     formData.append("orientation",orientation);
     formData.append("glass",selectGlass.options[selectGlass.selectedIndex].text);
     formData.append("material",sortFrame.options[sortFrame.selectedIndex].text);
-
+    formData.append("idGlass",selectGlass.value);
     addFrame.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     addFrame.setAttribute("disabled","");
 
@@ -342,6 +366,10 @@ addFrame.addEventListener("click",function(){
 }); 
 
 function selectOrientation(element){
+    if(uploadPicture.value == ""){
+        Swal.fire("Error","Por favor, sube la imagen a imprimir","error");
+        return false;
+    }
     let items = document.querySelectorAll(".orientation");
     for (let i = 0; i < items.length; i++) {
         items[i].classList.remove("element--active");
@@ -352,7 +380,12 @@ function selectOrientation(element){
     btnNext.classList.remove("d-none");
     document.querySelector("#spcMeasureImg").innerHTML = intWidth.value+" x "+intHeight.value+"cm";
     document.querySelector("#spcMeasureFrame").innerHTML = intWidth.value+" x "+intHeight.value+"cm";
-    document.querySelector("#spcOrientation").innerHTML = document.querySelectorAll(".orientation")[0].classList.contains("element--active") ? "Horizontal" : "Vertical";
+
+    if(document.querySelectorAll(".orientation")[0].classList.contains("element--active")){
+        document.querySelector("#spcOrientation").innerHTML = "Horizontal";
+    }else{
+        document.querySelector("#spcOrientation").innerHTML = "Vertical";
+    }
     resizeFrame(intWidth.value, intHeight.value);
 }
 function selectActive(element =null,elements=null){
@@ -407,6 +440,9 @@ function customMargin(margin){
 }
 function selectStyleFrame(option){
     document.querySelector(".borderColor").classList.remove("d-none");
+    document.querySelector("#spanP").innerHTML="Medida del paspartú";
+    document.querySelector("#spanPC").innerHTML="Elige el color del paspartú";
+    document.querySelector("#spanBorde").innerHTML="Elige el color del bocel";
     if(option == 1){
         optionsCustom[0].classList.add("d-none");
         //optionsCustom[1].classList.add("d-none");
@@ -422,8 +458,13 @@ function selectStyleFrame(option){
         customMargin(1);
         document.querySelector("#spcMeasureP").innerHTML = "1cm";
         if(option==2){
+            document.querySelector("#spcMeasureP").innerHTML = "0cm";
             selectColors(1);
         }else{
+            document.querySelector("#spanP").innerHTML="Medida del fondo";
+            document.querySelector("#spanPC").innerHTML="Elige el color del fondo";
+            document.querySelector("#spanBorde").innerHTML="Elige el color del marco interno";
+            document.querySelector("#spcMeasureP").innerHTML = "0cm";
             selectColors(2);
         }
         document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
@@ -563,18 +604,19 @@ function calcDimension(picture){
     
         let height = Math.round((realHeight*2.54)/PPI) < 10 ? 10 :  Math.round((realHeight*2.54)/PPI);
         let width = Math.round((realWidth*2.54)/PPI) < 10 ? 10 :  Math.round((realWidth*2.54)/PPI);
-    
-        if(height > PPI){
-            height = PPI;
+        PPI = height > width ? height : width;
+        if(height > MAXDIMENSION){
+            height = Math.round((realHeight*2.54)/PPI);
         }
-        if(width > PPI){
-            width = PPI;
+        if(width > MAXDIMENSION){
+            width = Math.round((realWidth*2.54)/PPI);
         }
+        height = Math.round(height/10)*10;
+        width = Math.round(width/10)*10;
         intHeight.value = height;
         intWidth.value = width;
+        calcPpi(height,width,picture);
         resizeFrame(intWidth.value,intHeight.value);
-    
-        imgQuality.innerHTML = `Resolución ${PPI} ppi <span class="text-success">buena calidad</span>`
     }
 }
 function calcPpi(height,width,picture){
@@ -584,8 +626,8 @@ function calcPpi(height,width,picture){
 
     let h = Math.round((realHeight*2.54)/height);
     let w = Math.round((realWidth*2.54)/width);
-    let ppi = Math.round((h+w))/2;
-
+    let ppi = Math.floor((h+w))/2;
+    ppi = ppi >= 300 ? 300 : ppi;
     if(ppi<100){
         imgQuality.innerHTML = `Resolución ${ppi} ppi <span class="text-danger">mala calidad</span>, puedes reducir las dimensiones o cambiar de imagen`;
     }else{

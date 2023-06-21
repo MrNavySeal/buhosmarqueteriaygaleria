@@ -15,7 +15,7 @@
 </div>
 <main class="container mb-3">
 <h1 class="section--title" id="enmarcarTipo" data-route="<?=$data['tipo']['route']?>" data-name="<?=$data['tipo']['name']?>" data-id="<?=$data['tipo']['id']?>"><?=$data['tipo']['name']?></h1>
-    <div class="custom--frame mt-3" id="frame">
+    <form class="custom--frame mt-3" id="frame">
         <div class="row">
             <div class="col-md-6 mb-4">
                 <div class="frame">
@@ -43,15 +43,14 @@
                     <div class="slider-btn-right"><i class="fas fa-angle-right" aria-hidden="true"></i></div>
                 </div>
             </div>
+            
             <div class="col-md-6 page mb-4">
                 <div class="mb-3">
                     <span class="fw-bold">1. Sube una foto</span>
-                    <p class="t-color-3">La resolución debe ser de al menos 100ppi. Asegurate que abajo de tu imagen siempre diga: 
+                    <p class="t-color-3">Impresión en vinilo mate sobre MDF 2mm. La calidad de la imagen debe ser de al menos 100ppi, asegurate que abajo de tu imagen siempre diga: 
                     <span class="fw-bold text-success">buena calidad</span></p>
                     <div class="mt-3">
-                        <form id="formPicture">
-                            <input class="form-control" type="file" name="txtPicture" id="txtPicture" accept="image/*">
-                        </form>
+                        <input class="form-control" type="file" name="txtPicture" id="txtPicture" accept="image/*">
                     </div>
                 </div>
                 <div class="mb-3">
@@ -124,7 +123,6 @@
                             <option value="2">Paspartú con bocel</option>
                             <option value="3">Paspartú sin bocel</option>
                             <option value="4">Flotante</option>
-                            <option value="5">Flotante doble vidrio</option>
                         </select>
                     </div>
                     <div class="option--custom d-none mb-3">
@@ -174,7 +172,7 @@
                     </div>
                     <div class="text-center">
                         <div class="fw-bold fs-2 t-color-1 mt-3 totalFrame">$ 0.00</div>
-                        <button type="button" class="btn btn-bg-1 mt-2" id="addFrame"><i class="fas fa-shopping-cart"></i> Agregar</button>
+                        <button type="submit" class="btn btn-bg-1 mt-2" id="addFrame"><i class="fas fa-shopping-cart"></i> Agregar</button>
                     </div>
                 </div>
                 <div class="payment__methods mt-3">
@@ -189,8 +187,9 @@
                 </div>
                 
             </div>
+            
         </div>
-    </div>
+    </form>
     <div class="row mt-3">
         <div class="col-12 d-flex justify-content-center">
             <a href="#frame" class="btn btn-bg-2 me-1 ms-1 d-none" id="btnBack">Atrás</a>
