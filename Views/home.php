@@ -60,58 +60,7 @@
     </main>
     <div class="container">
         <section class="mt-5">
-            <h2 class="section--title">Enmarcaciones modernas sin salir de casa</h2>
-            <div id="carouselEnmarcar" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <?php
-                        for ($i=0; $i < 2 ; $i++) { 
-                            $active="";
-                            if($i == 0)$active="active";
-                        
-                    ?>
-                    <div class="carousel-item <?=$active?>">
-                        <div class="enmarcaciones">
-                            <?php
-                                for ($j=0; $j < count($tipos) ; $j++) { 
-                                    $url = base_url()."/enmarcar/personalizar/".$tipos[$j]['route'];
-                                    $img = media()."/images/uploads/".$tipos[$j]['image'];
-                                    if($i == 0 && $j == 4){
-                                        break;
-                                    }else if($i == 1 && $j < 4){
-                                        continue;
-                                    } 
-                            ?>
-                            <div class="card--enmarcar shadow">
-                                <div class="card--enmarcar-img img--contain">
-                                    <a href="<?=$url?>"><img src="<?=$img?>" alt="Enmarcar <?=$tipos[$j]['name']?>"></a>
-                                </div>
-                                <div class="card--enmarcar-info">
-                                    <a href="<?=$url?>">
-                                        <h3 class="enmarcar--title"><?=$tipos[$j]['name']?></h3>
-                                        <p><?=$tipos[$j]['description']?></p>
-                                    </a>
-                                </div>
-                            </div>
-                            <?php }?>
-                        </div>
-                    </div>
-                    <?php }?>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselEnmarcar" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselEnmarcar" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Next</span>
-                </button>
-            </div>
-            <div class="text-center">
-                <a href="<?=base_url()?>/enmarcar" class="btn btn-bg-2">Ver todo</a>
-            </div>
-        </section>
-        <section class="mt-5">
-            <h2 class="section--title">¿Cómo funciona?</h2>
+            <h2 class="section--title">Enmarcaciones modernas sin salir de casa ¿Cómo funciona?</h2>
             <div class="row">
                 <div class="col-md-6 how-img mb-3 d-flex align-items-center">
                     <img src="<?=media()?>/images/uploads/cta2.jpg" class="d-block w-100" alt="Enmarcaciones en linea">

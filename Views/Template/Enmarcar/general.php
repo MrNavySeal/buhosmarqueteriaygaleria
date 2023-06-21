@@ -4,7 +4,6 @@
 ?>
 <div id="modalPoup"></div>
 <div id="framePhotos" class="d-none">
-    
     <div class="frame__img__container">
         <img src="<?=media()."/images/uploads/titulo.png"?>" alt="">
         <div class="change__img__container">
@@ -67,12 +66,12 @@
                     <div class="d-flex flex-wrap justify-content-center align-items-center">
                         <div class="measures--dimension">
                             <label for="">Ancho (cm)</label>
-                            <div class="measures--limits"><span>min 10.0</span><span>max 180.0</span></div>
+                            <div class="measures--limits"><span>min 10.0</span><span>max 100.0</span></div>
                             <input type="number" class="measures--input" name="intWidth" id="intWidth" value="10" disabled>
                         </div>
                         <div class="measures--dimension">
                             <label for="">Alto (cm)</label>
-                            <div class="measures--limits"><span>min 10.0</span><span>max 180.0</span></div>
+                            <div class="measures--limits"><span>min 10.0</span><span>max 100.0</span></div>
                             <input type="number" class="measures--input" name="intHeight" id="intHeight" value="10" disabled>
                         </div>
                     </div>
@@ -191,69 +190,68 @@
     </div>
 </main>
 <section class="mt-3 container">
-            <ul class="nav nav-pills mb-3" id="product-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-specification-tab" data-bs-toggle="pill" data-bs-target="#pills-specification" type="button" role="tab" aria-controls="pills-specification" aria-selected="true">Especificaciones</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-tiempo-tab" data-bs-toggle="pill" data-bs-target="#pills-tiempo" type="button" role="tab" aria-controls="pills-tiempo" aria-selected="false">Tiempo y despacho</button>
-                </li>
-            </ul>
-            <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-specification" role="tabpanel" aria-labelledby="pills-specification-tab" tabindex="0">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td class="bg-light w-50" >Referencia</td>
-                                <td id="spcReference">N/A</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Color del marco</td>
-                                <td id="spcFrameColor">N/A</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Material del marco</td>
-                                <td id="spcFrameMaterial">Madera</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Orientación</td>
-                                <td id="spcOrientation">N/A</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Estilo de enmarcación</td>
-                                <td id="spcStyle">Directo</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Medida paspartú</td>
-                                <td id="spcMeasureP">0cm</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Medida imagen</td>
-                                <td id="spcMeasureImg">10x10</td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="bg-light w-50" >Medida Marco</td>
-                                <td id="spcMeasureFrame">N/A</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Color del paspartú</td>
-                                <td id="spcColorP">N/A</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Color del bocel</td>
-                                <td id="spcColorB">N/A</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light w-50" >Tipo de vidrio</td>
-                                <td id="spcGlass">Corriente</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="tab-pane fade" id="pills-tiempo" role="tabpanel" aria-labelledby="pills-tiempo-tab" tabindex="0">
-                    Realizamos envíos con diferentes transportadoras del país, buscando siempre la mejor opción para nuestros clientes, los tiempos pueden variar de 3 días hasta 5 días hábiles según la ciudad o municipio destino, normalmente en ciudades principales las transportadoras entregan máximo en 3 días hábiles.
-                </div>
-            </div>
-            
-        </section>
+    <ul class="nav nav-pills mb-3" id="product-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-specification-tab" data-bs-toggle="pill" data-bs-target="#pills-specification" type="button" role="tab" aria-controls="pills-specification" aria-selected="true">Especificaciones</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-tiempo-tab" data-bs-toggle="pill" data-bs-target="#pills-tiempo" type="button" role="tab" aria-controls="pills-tiempo" aria-selected="false">Tiempo y despacho</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-specification" role="tabpanel" aria-labelledby="pills-specification-tab" tabindex="0">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td class="bg-light w-50" >Referencia</td>
+                        <td id="spcReference">N/A</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Color del marco</td>
+                        <td id="spcFrameColor">N/A</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Material del marco</td>
+                        <td id="spcFrameMaterial">Madera</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Orientación</td>
+                        <td id="spcOrientation">N/A</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Estilo de enmarcación</td>
+                        <td id="spcStyle">Directo</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Medida paspartú</td>
+                        <td id="spcMeasureP">0cm</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Medida imagen</td>
+                        <td id="spcMeasureImg">10x10</td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="bg-light w-50" >Medida Marco</td>
+                        <td id="spcMeasureFrame">N/A</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Color del paspartú</td>
+                        <td id="spcColorP">N/A</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Color del bocel</td>
+                        <td id="spcColorB">N/A</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light w-50" >Tipo de vidrio</td>
+                        <td id="spcGlass">Corriente</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="pills-tiempo" role="tabpanel" aria-labelledby="pills-tiempo-tab" tabindex="0">
+            Realizamos envíos con diferentes transportadoras del país, buscando siempre la mejor opción para nuestros clientes, los tiempos pueden variar de 3 días hasta 5 días hábiles según la ciudad o municipio destino, normalmente en ciudades principales las transportadoras entregan máximo en 3 días hábiles.
+        </div>
+    </div>
+</section>

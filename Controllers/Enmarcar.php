@@ -33,8 +33,9 @@
                     $data['app'] = "functions_personalizar.js";
                     $data['option'] = getFile("Template/Enmarcar/general",$data);
                 }elseif($request['id'] == 3){
-                    $data['app'] = "functions_personalizar_espejo.js";
-                    $data['option'] = getFile("Template/Enmarcar/espejo",$data);
+                    $data['colores'] = $this->selectColors();
+                    $data['app'] = "functions_personalizar_foto.js";
+                    $data['option'] = getFile("Template/Enmarcar/fotografia",$data);
                 }elseif($request['id']==4){
                     $data['colores'] = $this->selectColors();
                     $data['app'] = "functions_personalizar.js";

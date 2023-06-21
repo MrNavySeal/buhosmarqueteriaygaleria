@@ -111,8 +111,8 @@ changeImgR.addEventListener("click",function(){
 intHeight.addEventListener("change",function(){
     if(intHeight.value <= 10.0){
         intHeight.value = 10.0;
-    }else if(intHeight.value >= 180.0){
-        intHeight.value = 180.0;
+    }else if(intHeight.value >= 100.0){
+        intHeight.value = 100.0;
     }
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
@@ -120,8 +120,8 @@ intHeight.addEventListener("change",function(){
 intWidth.addEventListener("change",function(){
     if(intWidth.value <= 10.0){
         intWidth.value = 10.0;
-    }else if(intWidth.value >= 180.0){
-        intWidth.value = 180.0;
+    }else if(intWidth.value >= 100.0){
+        intWidth.value = 100.0;
     }
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
