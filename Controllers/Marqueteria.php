@@ -101,9 +101,11 @@
                             $status='<span class="badge me-1 bg-warning">Inactivo</span>';
                         }
                         if($request[$i]['type']==1){
-                            $type='Moldura en madera';
+                            $type='Madera';
+                        }elseif($request[$i]['type']==2){
+                            $type='Poliestireno';
                         }else{
-                            $type='Moldura importada';
+                            $type='Madera diseño unico';
                         }
                         $html.='
                             <tr class="item">

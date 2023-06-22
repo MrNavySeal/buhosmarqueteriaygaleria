@@ -88,8 +88,9 @@ function addItem(){
                                 <div class="mb-3">
                                     <label for="molduraList" class="form-label">Tipo de moldura <span class="text-danger">*</span></label>
                                     <select class="form-control" aria-label="Default select example" id="molduraList" name="molduraList" required>
-                                        <option value="1">Moldura en madera</option>
-                                        <option value="2">Moldura importada</option>
+                                        <option value="1">Madera</option>
+                                        <option value="3">Madera diseño único</option>
+                                        <option value="2">Poliestireno</option>
                                     </select>
                                 </div>
                             </div>
@@ -263,9 +264,11 @@ function viewItem(id){
                 status='<span class="badge me-1 bg-danger">Inactivo</span>';
             }
             if(objData.data.type == 1){
-                type = 'Moldura en madera'
+                type = 'Madera';
+            }else if(objData.data.type == 3){
+                type ="Madera diseño unico";
             }else{
-                type ="Moldura importada"
+                type = 'Poliestireno';
             }
             let modalItem = document.querySelector("#modalItem");
             let modal= `
@@ -369,8 +372,9 @@ function editItem(id){
                                 <div class="mb-3">
                                     <label for="molduraList" class="form-label">Tipo de moldura <span class="text-danger">*</span></label>
                                     <select class="form-control" aria-label="Default select example" id="molduraList" name="molduraList" required>
-                                        <option value="1">Moldura en madera</option>
-                                        <option value="2">Moldura importada</option>
+                                        <option value="1">Madera</option>
+                                        <option value="3">Madera diseño único</option>
+                                        <option value="2">Poliestireno</option>
                                     </select>
                                 </div>
                             </div>
