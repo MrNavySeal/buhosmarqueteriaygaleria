@@ -1,5 +1,5 @@
 const DIMENSIONDEFAULT = 4;
-const MAXDIMENSION = 100;
+const MAXDIMENSION = 160;
 let PPI = 100;
 const rangeZoom = document.querySelector("#zoomRange");
 const minusZoom = document.querySelector("#zoomMinus");
@@ -106,20 +106,32 @@ changeImgR.addEventListener("click",function(){
 //----------------------------------------------
 //[Dimensions]
 intHeight.addEventListener("change",function(){
+    let height = intHeight.value;
+    let width = intWidth.value;
     if(intHeight.value <= 10.0){
         intHeight.value = 10.0;
-    }else if(intHeight.value >= MAXDIMENSION){
+    }
+    if(height >= MAXDIMENSION){
         intHeight.value = MAXDIMENSION;
+        intWidth.value = width >= 100 ? 100 : width;
+    }else if(height > 100){
+        intWidth.value = width >= 100 ? 100 : width;;
     }
     calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
 });
 intWidth.addEventListener("change",function(){
-    if(intWidth.value <= 10.0){
-        intWidth.value = 10.0;
-    }else if(intWidth.value >= MAXDIMENSION){
+    let height = intHeight.value;
+    let width = intWidth.value;
+    if(intHeight.value <= 10.0){
+        intHeight.value = 10.0;
+    }
+    if(width >= MAXDIMENSION){
         intWidth.value = MAXDIMENSION;
+        intHeight.value = height >= 100 ? 100 : height;
+    }else if(width > 100){
+        intHeight.value = height >= 100 ? 100 : height;
     }
     calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     calcularMarco();

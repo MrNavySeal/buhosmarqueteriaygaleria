@@ -72,12 +72,10 @@
                     <div class="d-flex flex-wrap justify-content-center align-items-center">
                         <div class="measures--dimension">
                             <label for="">Ancho (cm)</label>
-                            <div class="measures--limits"><span>min 10.0</span><span>max 100.0</span></div>
                             <input type="number" class="measures--input" name="intWidth" id="intWidth" value="10" disabled>
                         </div>
                         <div class="measures--dimension">
                             <label for="">Alto (cm)</label>
-                            <div class="measures--limits"><span>min 10.0</span><span>max 100.0</span></div>
                             <input type="number" class="measures--input" name="intHeight" id="intHeight" value="10" disabled>
                         </div>
                     </div>
