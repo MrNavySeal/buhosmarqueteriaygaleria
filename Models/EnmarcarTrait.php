@@ -104,6 +104,8 @@
                 $option=" AND type = 1 ORDER BY waste DESC";
             }else if( $sort == 2){
                 $option=" AND type = 2 ORDER BY waste DESC";
+            }else{
+                $option=" AND type = 3 ORDER BY waste DESC";
             }
             $sql = "SELECT * FROM molding WHERE status = 1 AND reference LIKE '%$search%' $option";
             $request = $this->con->select_all($sql);

@@ -90,6 +90,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <select class="form-select" aria-label="Default select example" id="sortFrame">
                             <option value="1">Madera</option>
+                            <option value="3">Madera Diseño único</option>
                             <option value="2">Poliestireno</option>
                         </select>
                         <input type="text" class="form-control" placeholder="Buscar" id="searchFrame">
