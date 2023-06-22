@@ -218,7 +218,7 @@ searchFrame.addEventListener('input',function() {
 
 sortFrame.addEventListener("change",function(){
     if(intWidth.value !="" && intHeight.value!=""){
-        if(sortFrame.value == 1){
+        if(sortFrame.value == 1 || sortFrame.value == 3){
             document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
             document.querySelector("#frame--color").classList.remove("d-none");
         }else{
