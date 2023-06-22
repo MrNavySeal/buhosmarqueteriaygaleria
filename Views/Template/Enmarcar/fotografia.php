@@ -47,7 +47,7 @@
             <div class="col-md-6 page mb-4">
                 <div class="mb-3">
                     <span class="fw-bold">1. Sube una foto</span>
-                    <p class="t-color-3">Impresión en vinilo mate sobre MDF 2mm. La calidad de la imagen debe ser de al menos 100ppi, asegurate que abajo de tu imagen siempre diga: 
+                    <p class="t-color-3">La calidad de la imagen debe ser de al menos 100ppi, asegurate que abajo de tu imagen siempre diga: 
                     <span class="fw-bold text-success">buena calidad</span></p>
                     <div class="mt-3">
                         <input class="form-control" type="file" name="txtPicture" id="txtPicture" accept="image/*">
