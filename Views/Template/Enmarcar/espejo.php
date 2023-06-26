@@ -56,7 +56,6 @@
                 </div>
                 <div class="mb-3">
                     <span class="fw-bold ">Ingresa las dimensiones</span>
-                    <p class="t-color-3">Ingresa las medidas exactas de tu documento/imagen</p>
                     <div class="d-flex flex-wrap justify-content-center align-items-center">
                         <div class="measures--dimension">
                             <label for="">Ancho (cm)</label>
