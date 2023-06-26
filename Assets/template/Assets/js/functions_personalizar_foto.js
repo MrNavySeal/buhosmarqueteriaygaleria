@@ -412,7 +412,7 @@ function selectActive(element =null,elements=null){
     element.classList.add("element--active");
 }
 function resizeFrame(width,height){
-    let margin = selectStyle.value == 1 ? 0 : parseInt(marginRange.value);
+    let margin = selectStyle.value == 1 || selectStyle.value == 4 ? 0  : parseInt(marginRange.value);
     height = parseFloat(height);
     width = parseFloat(width)
     document.querySelector("#spcMeasureImg").innerHTML = width+" x "+height+"cm";
