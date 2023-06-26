@@ -38,12 +38,12 @@
                     $data['option'] = getFile("Template/Enmarcar/fotografia",$data);
                 }elseif($request['id']==4){
                     $data['colores'] = $this->selectColors();
-                    $data['app'] = "functions_personalizar.js";
+                    $data['app'] = "functions_personalizar_lienzo.js";
                     $data['option'] = getFile("Template/Enmarcar/lienzo",$data);
                 }elseif($request['id']==5){
                     $data['colores'] = $this->selectColors();
-                    $data['app'] = "functions_personalizar_foto.js";
-                    $data['option'] = getFile("Template/Enmarcar/fotografia",$data);
+                    $data['app'] = "functions_personalizar_espejo.js";
+                    $data['option'] = getFile("Template/Enmarcar/espejo",$data);
                 }elseif($request['id'] == 6){
                     $data['colores'] = $this->selectColors();
                     $data['app'] = "functions_personalizar_papiro.js";
@@ -142,9 +142,6 @@
             die();
         }
         public function calcularMarcoInterno($estilo,$margin,$altura,$ancho,$datos,$option=true){
-            if($estilo == 1){
-                $margin = 0;
-            }
             $total =0;
             $altura = $margin+$altura;
             $ancho = $margin +$ancho;
@@ -185,6 +182,7 @@
             $retablo =$material[9]['price'];
             $carton = $material[10]['price'];
             $espejo4mm =$material[11]['price'];
+            $lienzo = $material[13]['price'];
             //$espejoBicelado =$material[12]['price'];
 
             $total = 0;
@@ -195,8 +193,6 @@
                     $total = ($area * $paspartu)+($perimetro*$bocel)+($area*$vidrio)+($area*$carton);
                 }else if($estilo == 3){
                     $total = ($area * $paspartu)+($area*$vidrio)+($area*$carton);
-                }else if($estilo == 4){
-                    $total = ($area * $triplex)+($perimetro*$hijillo)+($area*$vidrio)+($area*$carton);
                 }
             }else if($tipo == 3){
                 if($estilo == 1){
@@ -211,14 +207,18 @@
                 
             }else if($tipo == 4){
                 if($estilo == 1){
-                    $total = $perimetro * $bastidor;
-                }else if($estilo == 4){
-                    $total = ($area * $triplex)+($perimetro*$hijillo)+($perimetro*$bastidor);
-                }else if($estilo == 5){
-                    $total = ($area * $triplex)+($perimetro*$bastidor);
+                    $total = ($perimetro * $bastidor)+($area*$lienzo);
+                }else if($estilo == 2){
+                    $total = ($area * $triplex)+($perimetro*$hijillo)+($perimetro*$bastidor)+($area*$lienzo);
+                }else if($estilo == 3){
+                    $total = ($area * $triplex)+($perimetro*$bastidor)+($area*$lienzo);
                 }
             }else if($tipo == 5){
-                
+                if($estilo == 1){
+                    $total = ($area * $triplex) + ($area * $espejo3mm);
+                }else if($estilo == 2){
+                    $total = ($area * $triplex) + ($area * $espejo4mm);
+                }
             }else if($tipo == 6){
                 $total = ($area * $vidrio) + ($area*$triplex);
             }else if($tipo == 7){
@@ -237,10 +237,9 @@
                 }
             }
             return $total;
-
         }
         public function calcularMarcoTotal($datos=null){
-            //dep($_POST);exit;
+            
             if($datos==null){
                 if($_POST){
                     $id = intval(openssl_decrypt($_POST['id'],METHOD,KEY));
@@ -262,7 +261,6 @@
         
                         $marcoTotal = $this->calcularMarcoInterno($estilo,$margin,$altura,$ancho,$request,$option);
                         $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo,$vidrio);
-        
                         $total = round((intval(UTILIDAD*((($marcoEstilos+$marcoTotal['total'])*COMISION)+TASA)))/1000)*1000;
                         $request['total'] = array("total"=>$total,"format"=>formatNum($total));
                         
@@ -290,8 +288,8 @@
 
                 $marcoTotal = $this->calcularMarcoInterno($estilo,$margin,$altura,$ancho,$frame,$datos['option']);
                 $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo,$vidrio);
-
                 $total = round((intval(UTILIDAD*((($marcoEstilos+$marcoTotal['total'])*COMISION)+TASA)))/1000)*1000;
+                
                 return $total;
             }else{
                 die();
@@ -334,6 +332,10 @@
                     $type = $_POST['type'];
                     $idType = intval($_POST['idType']);
                     $orientation = $_POST['orientation'];
+
+                    if($material == "Poliestireno"){
+                        $colorFrame ="";
+                    }
 
                     if(!empty($_FILES['txtPicture'])){
                         if($id!=0){

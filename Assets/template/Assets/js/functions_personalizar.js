@@ -216,9 +216,13 @@ searchFrame.addEventListener('input',function() {
 
 sortFrame.addEventListener("change",function(){
     if(intWidth.value !="" && intHeight.value!=""){
-        if(sortFrame.value == 1 || sortFrame.value == 3){
+        if(sortFrame.value == 1){
             document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
             document.querySelector("#frame--color").classList.remove("d-none");
+        }else if(sortFrame.value == 3){
+            document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
+            layoutBorder.style.outlineColor="transparent";
+            document.querySelector("#frame--color").classList.add("d-none");
         }else{
             document.querySelector("#spcFrameMaterial").innerHTML = "Poliestireno";
             document.querySelector("#spcFrameColor").innerHTML = "N/A";
@@ -291,7 +295,7 @@ addFrame.addEventListener("click",function(){
         Swal.fire("Error","Por favor, seleccione la moldura","error");
         return false;
     }
-    if(selectStyle.value == 2 || selectStyle.value == 4){
+    if(selectStyle.value == 2){
         if(!document.querySelector(".color--margin.element--active")){
             Swal.fire("Error","Por favor, elige el color del paspartú","error");
             return false;
@@ -312,7 +316,7 @@ addFrame.addEventListener("click",function(){
             return false;
         }
     }
-    let margin = marginRange.value;
+    let margin = selectStyle.value == 1 || selectStyle.value == 4 ? 0 : marginRange.value;
     let styleFrame = selectStyle.value;
     let height = intHeight.value;
     let width = intWidth.value;
@@ -435,6 +439,8 @@ function customMargin(margin){
 }
 function selectStyleFrame(option){
     document.querySelector(".borderColor").classList.remove("d-none");
+    document.querySelector("#glassDiv").classList.remove("d-none");
+    selectGlass.value = 1;
     if(option == 1){
         optionsCustom[0].classList.add("d-none");
         //optionsCustom[1].classList.add("d-none");
@@ -443,8 +449,7 @@ function selectStyleFrame(option){
         document.querySelector("#spcColorP").innerHTML ="N/A";
         document.querySelector("#spcColorB").innerHTML ="N/A";
         document.querySelector("#spcMeasureP").innerHTML = "0cm";
-        document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
-    }else if(option == 2 || option == 4){
+    }else if(option == 2){
         optionsCustom[0].classList.remove("d-none");
         //optionsCustom[1].classList.add("d-none");
         customMargin(1);
@@ -454,8 +459,7 @@ function selectStyleFrame(option){
         }else{
             selectColors(2);
         }
-        document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
-    }else if(option == 3 || option == 5){
+    }else if(option == 3){
         optionsCustom[0].classList.remove("d-none");
         //optionsCustom[1].classList.add("d-none");
         document.querySelector(".borderColor").classList.add("d-none");
@@ -463,16 +467,25 @@ function selectStyleFrame(option){
         selectColors(0);
         document.querySelector("#spcColorB").innerHTML ="N/A";
         document.querySelector("#spcMeasureP").innerHTML = "1cm";
-        document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
+    }else if(option == 4){
+        document.querySelector("#glassDiv").classList.add("d-none");
+        selectGlass.value = 3;
+        optionsCustom[0].classList.add("d-none");
+        //optionsCustom[1].classList.add("d-none");
+        customMargin(0);
+        selectColors();
+        document.querySelector("#spcColorP").innerHTML ="N/A";
+        document.querySelector("#spcColorB").innerHTML ="N/A";
+        document.querySelector("#spcMeasureP").innerHTML = "0cm";
     }else{
         customMargin(0);
         selectColors();
         optionsCustom[0].classList.add("d-none");
         //optionsCustom[1].classList.remove("d-none");
         document.querySelector("#spcMeasureP").innerHTML = "0cm";
-        document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
     }
-
+    document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
+    document.querySelector("#spcGlass").innerHTML = selectGlass.options[selectGlass.selectedIndex].text;
 }
 function selectColorFrame(){
     for (let i = 0; i < colorFrame.length; i++) {
@@ -533,7 +546,7 @@ function calcularMarco(id=null){
     if(id == null){
         id = document.querySelector(".frame--item.element--active").getAttribute("data-id");
     }
-    let margin = marginRange.value;
+    let margin = selectStyle.value == 1 || selectStyle.value == 4 ? 0 : marginRange.value;
     let styleFrame = selectStyle.value;
     let height = intHeight.value;
     let width = intWidth.value;

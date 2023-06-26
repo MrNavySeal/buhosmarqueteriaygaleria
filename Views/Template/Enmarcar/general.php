@@ -115,6 +115,7 @@
                             <option value="1">Directo</option>
                             <option value="2">Paspartú con bocel</option>
                             <option value="3">Paspartú sin bocel</option>
+                            <option value="4">Solo marco</option>
                         </select>
                     </div>
                     <div class="option--custom d-none mb-3">
@@ -154,14 +155,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                    <span class="fw-bold">Elige el tipo de vidrio</span>
-                    <select class="form-select mt-3" aria-label="Default select example" id="selectGlass">
-                        <option value="1">Corriente</option>
-                        <option value="2">Antireflejante</option>
-                        <option value="3">Sin vidrio</option>
-                    </select>
-                </div>
+                    <div class="mb-3" id="glassDiv">
+                        <span class="fw-bold">Elige el tipo de vidrio</span>
+                        <select class="form-select mt-3" aria-label="Default select example" id="selectGlass">
+                            <option value="1">Corriente</option>
+                            <option value="2">Antireflejante</option>
+                            <option value="3">Sin vidrio</option>
+                        </select>
+                    </div>
                     <div class="text-center">
                         <div class="fw-bold fs-2 t-color-1 mt-3 totalFrame">$ 0.00</div>
                         <button type="button" class="btn btn-bg-1 mt-2" id="addFrame"><i class="fas fa-shopping-cart"></i> Agregar</button>

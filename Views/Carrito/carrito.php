@@ -118,8 +118,9 @@
                                         $colorFrame = $arrProducts[$i]['colorframe'] != "" ? '<li><span class="fw-bold t-color-3">Color del marco:</span> '.$arrProducts[$i]['colorframe'].'</li>' : "";
                                         $medidas = $arrProducts[$i]['width']."cm X ".$arrProducts[$i]['height']."cm";
                                         $medidasMarco = ($arrProducts[$i]['width']+($arrProducts[$i]['margin']*2))."cm X ".($arrProducts[$i]['height']+($arrProducts[$i]['margin']*2))."cm"; 
+
                                 ?>
-                                <?php if($arrProducts[$i]['idType'] == 1 || $arrProducts[$i]['idType'] == 3 || $arrProducts[$i]['idType'] == 5){?>
+                                <?php if($arrProducts[$i]['idType'] == 1 || $arrProducts[$i]['idType'] == 3){?>
                                 <ul>
                                     <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts[$i]['reference']?></li>
                                     <?=$colorFrame?>
@@ -133,12 +134,15 @@
                                     <?=$colorBorder?>
                                     <li><span class="fw-bold t-color-3">Tipo de vidrio:</span> <?=$arrProducts[$i]['glass']?></li>
                                 </ul>
-                                <?php }else if($arrProducts[$i]['idType'] == 3 || $arrProducts[$i]['idType'] == 7){?>
+                                <?php }else if($arrProducts[$i]['idType'] == 5){?>
                                 <ul>
-                                    <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts[$i]['reference']?></li>
+                                <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts[$i]['reference']?></li>
+                                    <?=$colorFrame?>
+                                    <li><span class="fw-bold t-color-3">Material del marco:</span> <?=$arrProducts[$i]['material']?></li>
                                     <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts[$i]['orientation']?></li>
-                                    <li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts[$i]['style']?></li>
-                                    <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
+                                    <li><span class="fw-bold t-color-3">Tipo de espejo:</span> <?=$arrProducts[$i]['style']?></li>
+                                    <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
+                                    
                                 </ul>
                                 <?php }else if($arrProducts[$i]['idType'] == 6){?>
                                     <ul>

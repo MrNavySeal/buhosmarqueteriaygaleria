@@ -149,7 +149,7 @@ $subtotal = 0;
 					$medidas = $arrProducts['width']."cm X ".$arrProducts['height']."cm";
 					$medidasMarco = ($arrProducts['width']+($arrProducts['margin']*2))."cm X ".($arrProducts['height']+($arrProducts['margin']*2))."cm"; 
 				?>
-				<?php if($arrProducts['idType'] == 1 || $arrProducts['idType'] == 3 || $arrProducts['idType'] == 5){?>
+				<?php if($arrProducts['idType'] == 1 || $arrProducts['idType'] == 3){?>
 				<ul>
 					<li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
 					<?=$colorFrame?>
@@ -163,12 +163,14 @@ $subtotal = 0;
 					<?=$colorBorder?>
 					<li><span class="fw-bold t-color-3">Tipo de vidrio:</span> <?=$arrProducts['glass']?></li>
 				</ul>
-				<?php }else if($arrProducts['idType'] == 3 || $arrProducts['idType'] == 7){?>
+				<?php }else if($arrProducts['idType'] == 5){?>
 				<ul>
-					<li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
+				<li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
+					<?=$colorFrame?>
+					<li><span class="fw-bold t-color-3">Material del marco:</span> <?=$arrProducts['material']?></li>
 					<li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-					<li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts['style']?></li>
-					<li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
+					<li><span class="fw-bold t-color-3">Tipo de espejo:</span> <?=$arrProducts['style']?></li>
+					<li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
 				</ul>
 				<?php }else if($arrProducts['idType'] == 6){?>
 					<ul>

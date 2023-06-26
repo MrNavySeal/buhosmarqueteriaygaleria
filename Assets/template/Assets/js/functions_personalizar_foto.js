@@ -218,9 +218,13 @@ searchFrame.addEventListener('input',function() {
 
 sortFrame.addEventListener("change",function(){
     if(intWidth.value !="" && intHeight.value!=""){
-        if(sortFrame.value == 1 || sortFrame.value == 3){
+        if(sortFrame.value == 1){
             document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
             document.querySelector("#frame--color").classList.remove("d-none");
+        }else if(sortFrame.value == 3){
+            document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
+            layoutBorder.style.outlineColor="transparent";
+            document.querySelector("#frame--color").classList.add("d-none");
         }else{
             document.querySelector("#spcFrameMaterial").innerHTML = "Poliestireno";
             document.querySelector("#spcFrameColor").innerHTML = "N/A";
@@ -308,7 +312,7 @@ frame.addEventListener("submit",function(e){
         }
     }else if(selectStyle.value == 3){
         if(!document.querySelector(".color--margin.element--active")){
-            Swal.fire("Error","Por favor, elige el color del margen","error");
+            Swal.fire("Error","Por favor, elige el color del paspartú","error");
             return false;
         }
     }else if(selectStyle.value == 4){
@@ -470,17 +474,15 @@ function selectStyleFrame(option){
         customMargin(1);
         document.querySelector("#spcMeasureP").innerHTML = "1cm";
         if(option==2){
-            document.querySelector("#spcMeasureP").innerHTML = "0cm";
             selectColors(1);
         }else{
             document.querySelector("#spanP").innerHTML="Medida del fondo";
             document.querySelector("#spanPC").innerHTML="Elige el color del fondo";
             document.querySelector("#spanBorde").innerHTML="Elige el color del marco interno";
-            document.querySelector("#spcMeasureP").innerHTML = "0cm";
             selectColors(2);
         }
         document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
-    }else if(option == 3 || option == 5){
+    }else if(option == 3){
         optionsCustom[0].classList.remove("d-none");
         //optionsCustom[1].classList.add("d-none");
         document.querySelector(".borderColor").classList.add("d-none");
