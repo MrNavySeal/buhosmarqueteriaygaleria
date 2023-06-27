@@ -633,6 +633,8 @@
                         }
                         if($request[$i]['status']==1){
                             $status='<span class="badge me-1 bg-success">Activo</span>';
+                        }else if($request[$i]['status']==3){
+                            $status='<span class="badge me-1 bg-warning">En proceso</span>';
                         }else{
                             $status='<span class="badge me-1 bg-danger">Inactivo</span>';
                         }

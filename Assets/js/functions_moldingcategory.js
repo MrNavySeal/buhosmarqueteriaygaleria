@@ -74,6 +74,7 @@ function addItem(){
                             <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
                                 <option value="1">Activo</option>
                                 <option value="2">Inactivo</option>
+                                <option value="3">En proceso</option>
                             </select>
                         </div>
                         <div class="modal-footer">
@@ -166,6 +167,7 @@ function editItem(id){
                                 <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
                                     <option value="1">Activo</option>
                                     <option value="2">Inactivo</option>
+                                    <option value="3">En proceso</option>
                                 </select>
                             </div>
                             <div class="modal-footer">

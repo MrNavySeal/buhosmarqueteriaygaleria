@@ -417,7 +417,7 @@
         }
         /*************************Category methods*******************************/
         public function selectCategories(){
-            $sql = "SELECT * FROM moldingcategory ORDER BY id ASC";       
+            $sql = "SELECT * FROM moldingcategory WHERE status != 3 ORDER BY id ASC";       
             $request = $this->select_all($sql);
             return $request;
         }
