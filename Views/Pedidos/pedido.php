@@ -13,7 +13,8 @@ if($order['status'] =="pendent"){
 }else if($order['status'] =="canceled"){
     $status = 'cancelado';
 }
-dep($detail);exit;
+//dep($_SESSION['arrPOS']);
+//dep($detail);exit;
 ?>
 
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
@@ -89,7 +90,7 @@ dep($detail);exit;
                                 }else{ 
                                     $arrProducts = json_decode($product['description'],true);
                                     $photo = "";
-                                    if($arrProducts['photo']!=""){
+                                    if($arrProducts['photo']!="" && $arrProducts['photo']!="retablo.png"){
                                         $photo = '<img src="'.media()."/images/uploads/".$arrProducts['photo'].'" width="70" height="70"><br>';
                                     }
                             ?>
@@ -98,7 +99,7 @@ dep($detail);exit;
                                 <?=$arrProducts['name']?>
                             <?php
                                 $borderStyle = $arrProducts['style'] == "Flotante" ? "marco interno" : "bocel";
-                                $marginStyle = $arrProducts['style'] == "Flotante" ? "fondo" : "paspartú";
+                                $marginStyle = $arrProducts['style'] == "Flotante" || $arrProducts['style'] == "Flotante sin marco interno" ? "fondo" : "paspartú";
                                 $glass = isset($arrProducts['glass']) ? '<li><span class="fw-bold t-color-3">Tipo de vidrio:</span> '.$arrProducts['glass'].'</li>' : "";
                                 $material = isset($arrProducts['material']) ? '<li><span class="fw-bold t-color-3">Material del marco:</span> '.$arrProducts['material'].'</li>' : "";
                                 $colorFrame = isset($arrProducts['colorframe']) ? '<li><span class="fw-bold t-color-3">Color del marco:</span> '.$arrProducts['colorframe'].'</li>' : "";
@@ -122,6 +123,20 @@ dep($detail);exit;
                                 <?=$colorBorder?>
                                 <?=$glass?>
                             </ul>
+                            <?php }else if($arrProducts['idType'] == 4){?>
+                            <ul>
+                                <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
+                                <?=$colorFrame?>
+                                <?=$material?>
+                                <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
+                                <li><span class="fw-bold t-color-3">Estilo de enmarcación:</span> <?=$arrProducts['style']?></li>
+                                <?=$margen?>
+                                <li><span class="fw-bold t-color-3">Medida imagen:</span> <?=$medidas?></li>
+                                <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
+                                <?=$colorMargen?>
+                                <?=$colorBorder?>
+                                <li><span class="fw-bold t-color-3">Bastidor:</span> <?=$arrProducts['glass']?></li>
+                            </ul>
                             <?php }else if($arrProducts['idType'] == 5){?>
                             <ul>
                                 <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
@@ -142,9 +157,9 @@ dep($detail);exit;
                                 </ul>
                             <?php }else if($arrProducts['idType'] == 8){?>
                                 <ul>
-                                    <li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts['style']?></li>
+                                    <li><span class="fw-bold t-color-3">Impresión:</span> <?=$arrProducts['style']?></li>
                                     <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-                                    <?=$colorBorder?>
+                                    <li><span class="fw-bold t-color-3">Color del borde:</span> <?=$arrProducts['colorborder']?></li>
                                 </ul>
                             <?php }else if($arrProducts['idType'] == 9){?>
                             <ul>

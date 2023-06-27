@@ -73,7 +73,7 @@
                     <span class="fw-bold">4. Incluye la impresion de la imagen</span>
                     <select class="form-select mt-3" aria-label="Default select example" id="selectStyle">
                         <option value="1">Con impresion</option>
-                        <option value="2">Sin impresión</option>
+                        <option value="2" selected>Sin impresión</option>
                     </select>
                 </div>
                 <div class="text-center">

@@ -1,5 +1,5 @@
 const DIMENSIONDEFAULT = 4;
-const MAXDIMENSION = 160;
+const MAXDIMENSION = 500;
 let PPI = 100;
 const rangeZoom = document.querySelector("#zoomRange");
 const minusZoom = document.querySelector("#zoomMinus");
@@ -113,25 +113,17 @@ intHeight.addEventListener("change",function(){
     }
     if(height >= MAXDIMENSION){
         intHeight.value = MAXDIMENSION;
-        intWidth.value = width >= 100 ? 100 : width;
-    }else if(height > 100){
-        intWidth.value = width >= 100 ? 100 : width;;
     }
     calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
 });
 intWidth.addEventListener("change",function(){
-    let height = intHeight.value;
-    let width = intWidth.value;
     if(intHeight.value <= 10.0){
         intHeight.value = 10.0;
     }
     if(width >= MAXDIMENSION){
         intWidth.value = MAXDIMENSION;
-        intHeight.value = height >= 100 ? 100 : height;
-    }else if(width > 100){
-        intHeight.value = height >= 100 ? 100 : height;
     }
     calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     calcularMarco();
@@ -368,8 +360,6 @@ frame.addEventListener("submit",function(e){
         addFrame.innerHTML=`<i class="fas fa-shopping-cart"></i> Agregar`;
         addFrame.removeAttribute("disabled");
         if(objData.status){
-            document.querySelector("#qtyCart").innerHTML=objData.qty;
-            document.querySelector("#qtyCartbar").innerHTML=objData.qty;
             const toast = new bootstrap.Toast(toastLiveExample);
             toast.show();
             

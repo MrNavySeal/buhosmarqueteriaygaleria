@@ -180,7 +180,9 @@ if($order['status'] =="pendent"){
                     <?=$arrProducts['name']?>
                     <?php
                         $borderStyle = $arrProducts['style'] == "Flotante" ? "marco interno" : "bocel";
-                        $marginStyle = $arrProducts['style'] == "Flotante" ? "fondo" : "paspartú";
+                        $marginStyle = $arrProducts['style'] == "Flotante" || $arrProducts['style'] == "Flotante sin marco interno" ? "fondo" : "paspartú";
+                        $glass = isset($arrProducts['glass']) ? '<li><span class="fw-bold t-color-3">Tipo de vidrio:</span> '.$arrProducts['glass'].'</li>' : "";
+                        $material = isset($arrProducts['material']) ? '<li><span class="fw-bold t-color-3">Material del marco:</span> '.$arrProducts['material'].'</li>' : "";
                         $colorFrame = isset($arrProducts['colorframe']) ? '<li><span class="fw-bold t-color-3">Color del marco:</span> '.$arrProducts['colorframe'].'</li>' : "";
                         $margen = $arrProducts['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Medida '.$marginStyle.':</span> '.$arrProducts['margin'].'cm</li>' : "";
                         $colorMargen = $arrProducts['colormargin'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$marginStyle.':</span> '.$arrProducts['colormargin'].'</li>' : "";
@@ -192,7 +194,7 @@ if($order['status'] =="pendent"){
                     <ul>
                         <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
                         <?=$colorFrame?>
-                        <li><span class="fw-bold t-color-3">Material del marco:</span> <?=$arrProducts['material']?></li>
+                        <?=$material?>
                         <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
                         <li><span class="fw-bold t-color-3">Estilo de enmarcación:</span> <?=$arrProducts['style']?></li>
                         <?=$margen?>
@@ -200,7 +202,21 @@ if($order['status'] =="pendent"){
                         <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
                         <?=$colorMargen?>
                         <?=$colorBorder?>
-                        <li><span class="fw-bold t-color-3">Tipo de vidrio:</span> <?=$arrProducts['glass']?></li>
+                        <?=$glass?>
+                    </ul>
+                    <?php }else if($arrProducts['idType'] == 4){?>
+                    <ul>
+                        <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
+                        <?=$colorFrame?>
+                        <?=$material?>
+                        <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
+                        <li><span class="fw-bold t-color-3">Estilo de enmarcación:</span> <?=$arrProducts['style']?></li>
+                        <?=$margen?>
+                        <li><span class="fw-bold t-color-3">Medida imagen:</span> <?=$medidas?></li>
+                        <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
+                        <?=$colorMargen?>
+                        <?=$colorBorder?>
+                        <li><span class="fw-bold t-color-3">Bastidor:</span> <?=$arrProducts['glass']?></li>
                     </ul>
                     <?php }else if($arrProducts['idType'] == 5){?>
                     <ul>
@@ -222,9 +238,9 @@ if($order['status'] =="pendent"){
                         </ul>
                     <?php }else if($arrProducts['idType'] == 8){?>
                         <ul>
-                            <li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts['style']?></li>
+                            <li><span class="fw-bold t-color-3">Impresión:</span> <?=$arrProducts['style']?></li>
                             <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-                            <?=$colorBorder?>
+                            <li><span class="fw-bold t-color-3">Color del borde:</span> <?=$arrProducts['colorborder']?></li>
                         </ul>
                     <?php }else if($arrProducts['idType'] == 9){?>
                     <ul>

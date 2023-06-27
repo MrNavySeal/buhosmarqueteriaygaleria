@@ -23,19 +23,19 @@
                 if($request['id'] == 1){
                     $data['colores'] = $this->model->selectColors();
                     $data['app'] = "functions_personalizar.js";
-                    $data['option'] = getFile("Template/Enmarcar/pos_marcos",$data);
+                    $data['option'] = getFile("Template/Enmarcar/pos_marcos?v=".rand(),$data);
                 }elseif($request['id'] == 3){
                     $data['colores'] = $this->model->selectColors();
                     $data['app'] = "functions_personalizar_foto.js";
-                    $data['option'] = getFile("Template/Enmarcar/pos_foto",$data);
+                    $data['option'] = getFile("Template/Enmarcar/pos_foto?v=".rand(),$data);
                 }elseif($request['id']==4){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_lienzo.js";
-                    $data['option'] = getFile("Template/Enmarcar/lienzo",$data);
+                    $data['app'] = "functions_personalizar_lienzo.js?v=".rand();
+                    $data['option'] = getFile("Template/Enmarcar/pos_lienzo",$data);
                 }elseif($request['id']==5){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_espejo.js";
-                    $data['option'] = getFile("Template/Enmarcar/espejo",$data);
+                    $data['app'] = "functions_personalizar_espejo.js?v=".rand();
+                    $data['option'] = getFile("Template/Enmarcar/pos_espejo",$data);
                 }elseif($request['id'] == 6){
                     $data['colores'] = $this->model->selectColors();
                     $data['app'] = "functions_personalizar_papiro.js";
@@ -157,15 +157,17 @@
             $material = $this->model->selectMaterials();
             if($vidrio == 1){
                 $vidrio = $material[12]['price'];
+                $bastidor = $material[4]['price'];
             }elseif($vidrio == 2){
                 $vidrio = $material[3]['price'];
             }else{
                 $vidrio = 0;
+                $bastidor = 0;
             }
             $paspartu = $material[0]['price'];
             $hijillo = $material[1]['price'];
             $bocel = $material[2]['price'];
-            $bastidor = $material[4]['price'];
+            //$bastidor = $material[4]['price'];
             $triplex = $material[5]['price'];
             //$vidrio = $material[3]['price'];
             $espuma = $material[6]['price'];
@@ -201,11 +203,11 @@
                 
             }else if($tipo == 4){
                 if($estilo == 1){
-                    $total = ($perimetro * $bastidor)+($area*$lienzo);
+                    $total = ($perimetro * $bastidor);
                 }else if($estilo == 2){
-                    $total = ($area * $triplex)+($perimetro*$hijillo)+($perimetro*$bastidor)+($area*$lienzo);
+                    $total = ($area * $triplex)+($perimetro*$hijillo)+($perimetro*$bastidor);
                 }else if($estilo == 3){
-                    $total = ($area * $triplex)+($perimetro*$bastidor)+($area*$lienzo);
+                    $total = ($area * $triplex)+($perimetro*$bastidor);
                 }
             }else if($tipo == 5){
                 if($estilo == 1){
@@ -218,10 +220,11 @@
             }else if($tipo == 7){
                 $total = ($area * $espuma) + ($area*$triplex);
             }else if($tipo == 8){
+                $bastidor = $material[4]['price'];
                 if($estilo == 1){
-                    $total = ($area*$retablo)+($area*$impresion);
+                    $total = ($perimetro * $bastidor)+($area*$retablo)+($area*$impresion);
                 }else if($estilo == 2){
-                    $total = ($area*$retablo);
+                    $total = ($perimetro * $bastidor)+($area*$retablo);
                 }
             }else if($tipo == 9){
                 if($estilo == 1){
@@ -233,7 +236,6 @@
             return $total;
         }
         public function calcularMarcoTotal($datos=null){
-            
             if($datos==null){
                 if($_POST){
                     $id = intval(openssl_decrypt($_POST['id'],METHOD,KEY));
@@ -250,8 +252,7 @@
                         $ancho = floatval($_POST['width']);
                         $estilo = intval($_POST['style']);
                         $tipo = intval($_POST['type']);
-                        $vidrio = intval($_POST['glass']);
-        
+                        $vidrio = isset($_POST['glass']) ? intval($_POST['glass']) : 0;
         
                         $marcoTotal = $this->calcularMarcoInterno($estilo,$margin,$altura,$ancho,$request,$option);
                         $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo,$vidrio);
@@ -291,7 +292,7 @@
             
         }
         public function addCart(){
-            dep($_POST);exit;
+            //dep($_POST);exit;
             //unset($_SESSION['arrPOS']);exit;
             if($_POST){
                 $id = intval(openssl_decrypt($_POST['id'],METHOD,KEY));
@@ -311,7 +312,7 @@
 
                     $colorMargin = $this->model->selectColor(intval($_POST['colorMargin']));
                     $colorBorder = $this->model->selectColor(intval($_POST['colorBorder']));
-                    $colorFrame = $this->model->selectColor(intval($_POST['colorFrame']));
+                    $colorFrame = isset($_POST['colorFrame']) ? $this->model->selectColor(intval($_POST['colorFrame'])) : "";
                     $colorMargin = !empty($colorMargin) ? $colorMargin['name'] : "";
                     $colorBorder = !empty($colorBorder) ? $colorBorder['name'] : "";
                     $colorFrame = !empty($colorFrame) ? $colorFrame['name'] : "";
@@ -320,9 +321,9 @@
                     $margin = intval($_POST['margin']);
                     $styleName = strClean($_POST['styleName']);
                     $styleValue = intval($_POST['styleValue']);
-                    $material = strClean($_POST['material']);
-                    $glass = strClean($_POST['glass']);
-                    $idGlass = intval($_POST['idGlass']);
+                    $material = isset($_POST['material']) ? strClean($_POST['material']) : "";
+                    $glass = isset($_POST['idGlass']) ? strClean($_POST['glass']) : "";
+                    $idGlass = isset($_POST['idGlass']) ? intval($_POST['idGlass']) : 0;
                     $route = $_POST['route'];
                     $type = $_POST['type'];
                     $idType = intval($_POST['idType']);
@@ -331,8 +332,7 @@
                     if($material == "Poliestireno"){
                         $colorFrame ="";
                     }
-
-                    if(!empty($_FILES['txtPicture'])){
+                    if(!empty($_FILES['txtPicture']) && $_FILES['txtPicture']['name']!=""){
                         if($id!=0){
                             $photo = 'impresion_'.bin2hex(random_bytes(6)).'.png';
                         }else if($id == 0 && $styleValue == 1){
