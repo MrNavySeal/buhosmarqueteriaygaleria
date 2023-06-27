@@ -2,7 +2,6 @@
 
 .card--enmarcar{
     width: 300px;
-    height: 350px;
     padding: 5px;
     border-radius: 10px;
     position: relative;
@@ -20,7 +19,7 @@
     }
 }
 .card--enmarcar-img{
-    height: 170px;
+    max-height: 500px;
     width: 100%;
     margin-bottom: 5px;
 }

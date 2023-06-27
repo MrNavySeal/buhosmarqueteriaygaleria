@@ -4,13 +4,13 @@
 
         public function selectTipos(){
             
-            $sql = "SELECT * FROM moldingcategory WHERE status = 1 ORDER BY id ASC";       
+            $sql = "SELECT * FROM moldingcategory WHERE ORDER BY id ASC";       
             $request = $this->select_all($sql);
             return $request;
         }
         public function selectTipo($route){
             
-            $sql = "SELECT * FROM moldingcategory WHERE status = 1 AND route = '$route'";
+            $sql = "SELECT * FROM moldingcategory WHERE route = '$route'";
             $request = $this->select($sql);
             return $request;
         }
@@ -20,11 +20,11 @@
             if($dimensions < 200){
                 $option="";
             }else if($dimensions >= 200 && $dimensions < 400){
-                $option = " AND waste > 33";
+                $option = "AND waste > 33";
             }else if($dimensions >= 400){
-                $option = " AND waste > 49";
+                $option = "AND waste > 49";
             }
-            $sql = "SELECT * FROM molding WHERE status = 1 $option ORDER BY waste DESC";
+            $sql = "SELECT * FROM molding WHERE type = 1 ORDER BY waste DESC";
             $request = $this->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
@@ -43,7 +43,7 @@
         public function selectProduct($id){
             
             $this->intIdProduct = $id;
-            $sql = "SELECT reference,frame,price,discount,waste FROM molding WHERE id = $this->intIdProduct AND status = 1";
+            $sql = "SELECT reference,frame,price,discount,waste FROM molding WHERE id = $this->intIdProduct";
             $request = $this->select($sql);
             if(!empty($request)){
                 $sqlImg = "SELECT * FROM moldingimage WHERE moldingid = $this->intIdProduct";
@@ -69,8 +69,6 @@
             return $request;
         }
         public function searchT($search,$sort,$dimensions=""){
-            
-
             $option = "";
             if($sort == 2){
                 $option=" AND type = 1";
@@ -96,14 +94,14 @@
         }
         public function sortT($search,$sort,$dimensions = ""){
             $option="";
-            if($sort == 2){
+            if($sort == 1){
                 $option=" AND type = 1 ORDER BY waste DESC";
-            }else if( $sort == 3){
+            }else if( $sort == 2){
                 $option=" AND type = 2 ORDER BY waste DESC";
             }else{
-                $option=" ORDER BY waste DESC";
+                $option=" AND type = 3 ORDER BY waste DESC";
             }
-            $sql = "SELECT * FROM molding WHERE status = 1 AND reference LIKE '%$search%' $option";
+            $sql = "SELECT * FROM molding WHERE reference LIKE '%$search%' $option";
             $request = $this->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 

@@ -13,6 +13,7 @@ if($order['status'] =="pendent"){
 }else if($order['status'] =="canceled"){
     $status = 'cancelado';
 }
+dep($detail);exit;
 ?>
 
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">

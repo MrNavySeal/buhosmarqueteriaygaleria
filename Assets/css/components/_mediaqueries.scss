@@ -5,6 +5,13 @@
 
 }
 @media screen and (max-width: 576px){
+    .orientation{
+        width: 150px;
+        height: 150px;
+        img{
+            height: 100px;
+        }
+    }
     .tmobilefoot{
         display: block;
     }
