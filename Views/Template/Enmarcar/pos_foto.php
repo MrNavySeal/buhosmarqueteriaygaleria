@@ -165,7 +165,7 @@
                         <span class="fw-bold">Elige el tipo de vidrio</span>
                         <select class="form-select mt-3" aria-label="Default select example" id="selectGlass">
                             <option value="1">Corriente</option>
-                            <option value="2">Antireflejante</option>
+                            <option value="2" selected>Antireflejante</option>
                             <option value="3">Sin vidrio</option>
                         </select>
                     </div>
