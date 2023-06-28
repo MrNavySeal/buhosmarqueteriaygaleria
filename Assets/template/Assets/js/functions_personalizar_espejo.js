@@ -114,6 +114,7 @@ intHeight.addEventListener("change",function(){
     }
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
+    filterProducts();
 });
 intWidth.addEventListener("change",function(){
     if(intWidth.value <= 10.0){
@@ -123,6 +124,7 @@ intWidth.addEventListener("change",function(){
     }
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
+    filterProducts();
 });
 //----------------------------------------------
 //[Zoom events]
@@ -216,6 +218,7 @@ containerFrames.addEventListener("click",function(e){
 selectStyle.addEventListener("change",function(){
     if(!document.querySelector(".frame--item.element--active")){
         Swal.fire("Error","Por favor, seleccione la moldura","error");
+        selectStyle.value = 1;
         return false;
     }
     if(selectStyle.value == 1){
@@ -299,7 +302,26 @@ addFrame.addEventListener("click",function(){
         }
     });
 }); 
-
+function filterProducts(){
+    let formData = new FormData();
+    formData.append("height",intHeight.value);
+    formData.append("width",intWidth.value);
+    formData.append("sort",sortFrame.value);
+    containerFrames.innerHTML=`
+        <div class="text-center p-5">
+            <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    request(base_url+"/enmarcar/filterProducts",formData,"post").then(function(objData){
+        if(objData.status){
+            containerFrames.innerHTML = objData.data;
+        }else{
+            containerFrames.innerHTML = `<p class="fw-bold text-center">${objData.data}</p>`;
+        }
+    });
+}
 function selectOrientation(element){
     let items = document.querySelectorAll(".orientation");
     for (let i = 0; i < items.length; i++) {

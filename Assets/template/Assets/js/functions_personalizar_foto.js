@@ -120,6 +120,7 @@ intHeight.addEventListener("change",function(){
     calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
+    filterProducts();
 });
 intWidth.addEventListener("change",function(){
     let height = intHeight.value;
@@ -136,6 +137,7 @@ intWidth.addEventListener("change",function(){
     calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
+    filterProducts();
 });
 //----------------------------------------------
 //[Zoom events]
@@ -269,6 +271,7 @@ marginRange.addEventListener("input",function(){
 selectStyle.addEventListener("change",function(){
     if(!document.querySelector(".frame--item.element--active")){
         Swal.fire("Error","Por favor, seleccione la moldura","error");
+        selectStyle.value = 1;
         return false;
     }
     selectStyleFrame(selectStyle.value);
@@ -277,6 +280,7 @@ selectStyle.addEventListener("change",function(){
 selectGlass.addEventListener("change",function(){
     if(!document.querySelector(".frame--item.element--active")){
         Swal.fire("Error","Por favor, seleccione la moldura","error");
+        selectGlass.value = 1;
         return false;
     }
     document.querySelector("#spcGlass").innerHTML = selectGlass.options[selectGlass.selectedIndex].text;
@@ -380,7 +384,26 @@ frame.addEventListener("submit",function(e){
         }
     });
 }); 
-
+function filterProducts(){
+    let formData = new FormData();
+    formData.append("height",intHeight.value);
+    formData.append("width",intWidth.value);
+    formData.append("sort",sortFrame.value);
+    containerFrames.innerHTML=`
+        <div class="text-center p-5">
+            <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    request(base_url+"/enmarcar/filterProducts",formData,"post").then(function(objData){
+        if(objData.status){
+            containerFrames.innerHTML = objData.data;
+        }else{
+            containerFrames.innerHTML = `<p class="fw-bold text-center">${objData.data}</p>`;
+        }
+    });
+}
 function selectOrientation(element){
     if(uploadPicture.value == ""){
         Swal.fire("Error","Por favor, sube la imagen a imprimir","error");

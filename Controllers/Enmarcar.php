@@ -136,7 +136,7 @@
         public function sort(){
             if($_POST){
                 $perimetro = (floatval($_POST['height'])+floatval($_POST['width']))*2;
-                $arrResponse = $this->getProducts(2,null,intval($_POST['sort']),null);
+                $arrResponse = $this->getProducts(2,null,intval($_POST['sort']),$perimetro);
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
@@ -421,7 +421,7 @@
         public function filterProducts(){
             if($_POST){
                 $perimetro = (floatval($_POST['height'])+floatval($_POST['width']))*2;
-                $arrResponse = $this->getProducts(null,null,null,$perimetro);
+                $arrResponse = $this->getProducts(2,null,intval($_POST['sort']),$perimetro);
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
