@@ -42,7 +42,7 @@
             </div>
             <div class="col-md-6 page mb-4">
                 <div class="mb-3">
-                    <span class="fw-bold">Elige la orientación</span>
+                    <span class="fw-bold">1. Elige la orientación</span>
                     <div class="d-flex flex-wrap justify-content-center align-items-center mt-3">
                         <div class="orientation element--hover" data-name="horizontal" onclick="selectOrientation(this)">
                             <span>Horizontal</span>
@@ -55,15 +55,15 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <span class="fw-bold ">Ingresa las dimensiones</span>
+                    <span class="fw-bold ">2. Ingresa las dimensiones</span>
                     <div class="d-flex flex-wrap justify-content-center align-items-center">
                         <div class="measures--dimension">
                             <label for="">Ancho (cm)</label>
-                            <input type="number" class="measures--input" name="intWidth" id="intWidth" value="10" disabled>
+                            <input type="number" class="measures--input" name="intWidth" id="intWidth" value="100">
                         </div>
                         <div class="measures--dimension">
                             <label for="">Alto (cm)</label>
-                            <input type="number" class="measures--input" name="intHeight" id="intHeight" value="10" disabled>
+                            <input type="number" class="measures--input" name="intHeight" id="intHeight" value="60">
                         </div>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
             <div class="col-md-6 page d-none">
                 <div class="mb-3 mt-3">
                     <div class="fw-bold d-flex justify-content-between">
-                        <span>Seleccione el tipo moldura</span>
+                        <span>3. Seleccione el tipo moldura</span>
                         <!--<span id="reference"></span>-->
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-3">
@@ -103,7 +103,7 @@
                 </div>
                 <div class="mb-3">
                     <div class="mb-3">
-                        <span class="fw-bold">Elige el tipo de espejo</span>
+                        <span class="fw-bold">4. Elige el tipo de espejo</span>
                         <select class="form-select mt-3" aria-label="Default select example" id="selectStyle">
                             <option value="1">Espejo 3mm</option>
                             <option value="2">Espejo biselado</option>
@@ -131,7 +131,7 @@
     <div class="row mt-3">
         <div class="col-12 d-flex justify-content-center">
             <a href="#frame" class="btn btn-bg-2 me-1 ms-1 d-none" id="btnBack">Atrás</a>
-            <a href="#frame" class="btn btn-bg-2 me-1 ms-1 d-none" id="btnNext">Siguiente</a>
+            <a href="#frame" class="btn btn-bg-2 me-1 ms-1" id="btnNext">Siguiente</a>
         </div>
     </div>
 </main>
@@ -166,7 +166,7 @@
                     </tr>
                     <tr>
                         <td class="bg-light w-50" >Tipo de espejo</td>
-                        <td id="spcStyle">Directo</td>
+                        <td id="spcStyle">Espejo 3mm</td>
                     </tr>
                     <tr>
                         <td class="bg-light w-50" >Medida Marco</td>

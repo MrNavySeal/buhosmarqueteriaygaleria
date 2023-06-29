@@ -22,12 +22,12 @@
                 $data['molduras'] = $this->getProducts();
                 if($request['id'] == 1){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar.js";
-                    $data['option'] = getFile("Template/Enmarcar/pos_marcos?v=".rand(),$data);
+                    $data['app'] = "functions_personalizar.js?v=".rand();
+                    $data['option'] = getFile("Template/Enmarcar/pos_marcos",$data);
                 }elseif($request['id'] == 3){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_foto.js";
-                    $data['option'] = getFile("Template/Enmarcar/pos_foto?v=".rand(),$data);
+                    $data['app'] = "functions_personalizar_foto.js?v=".rand();
+                    $data['option'] = getFile("Template/Enmarcar/pos_foto",$data);
                 }elseif($request['id']==4){
                     $data['colores'] = $this->model->selectColors();
                     $data['app'] = "functions_personalizar_lienzo.js?v=".rand();

@@ -297,6 +297,7 @@
             
         }
         public function addCart(){
+            //dep($_POST);exit;
             //unset($_SESSION['arrCart']);exit;
             if($_POST){
                 $id = intval(openssl_decrypt($_POST['id'],METHOD,KEY));
