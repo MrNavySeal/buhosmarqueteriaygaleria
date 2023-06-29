@@ -59,11 +59,11 @@
                     <div class="d-flex flex-wrap justify-content-center align-items-center">
                         <div class="measures--dimension">
                             <label for="">Ancho (cm)</label>
-                            <input type="number" class="measures--input" name="intWidth" id="intWidth" value="10" disabled>
+                            <input type="number" class="measures--input" name="intWidth" id="intWidth" value="100">
                         </div>
                         <div class="measures--dimension">
                             <label for="">Alto (cm)</label>
-                            <input type="number" class="measures--input" name="intHeight" id="intHeight" value="10" disabled>
+                            <input type="number" class="measures--input" name="intHeight" id="intHeight" value="70">
                         </div>
                     </div>
                 </div>
@@ -131,7 +131,7 @@
     <div class="row mt-3">
         <div class="col-12 d-flex justify-content-center">
             <a href="#frame" class="btn btn-bg-2 me-1 ms-1 d-none" id="btnBack">Atrás</a>
-            <a href="#frame" class="btn btn-bg-2 me-1 ms-1 d-none" id="btnNext">Siguiente</a>
+            <a href="#frame" class="btn btn-bg-2 me-1 ms-1" id="btnNext">Siguiente</a>
         </div>
     </div>
 </main>

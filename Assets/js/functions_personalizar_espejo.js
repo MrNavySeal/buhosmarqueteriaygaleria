@@ -36,6 +36,8 @@ window.addEventListener("load",function(){
     selectColorFrame();
     layoutImg.style.border = "none";
     layoutImg.style.background ="linear-gradient(transparent, rgba(0, 0, 0, 0.2))";
+    resizeFrame(intWidth.value, intHeight.value);
+    setDefaultConfig();
 })
 //----------------------------------------------
 //[Change Pages]
@@ -112,8 +114,8 @@ intHeight.addEventListener("change",function(){
     }else if(intHeight.value >= MAXDIMENSION){
         intHeight.value = MAXDIMENSION;
     }
-    calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
+    setDefaultConfig();
 });
 intWidth.addEventListener("change",function(){
     if(intWidth.value <= 10.0){
@@ -121,8 +123,8 @@ intWidth.addEventListener("change",function(){
     }else if(intWidth.value >= MAXDIMENSION){
         intWidth.value = MAXDIMENSION;
     }
-    calcularMarco();
     resizeFrame(intWidth.value, intHeight.value);
+    setDefaultConfig();
 });
 //----------------------------------------------
 //[Zoom events]
@@ -200,6 +202,7 @@ sortFrame.addEventListener("change",function(){
         request(base_url+"/marcos/sort",formData,"post").then(function(objData){
             if(objData.status){
                 containerFrames.innerHTML = objData.data;
+                setDefaultConfig();
             }else{
                 containerFrames.innerHTML = `<p class="fw-bold text-center">${objData.data}</p>`;
             }
@@ -228,7 +231,8 @@ selectStyle.addEventListener("change",function(){
 
     document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
     //resizeFrame(intWidth.value, intHeight.value);
-    calcularMarco();
+    selectStyleFrame(selectStyle.value);
+    setDefaultConfig();
 });
 //----------------------------------------------
 //[Add frame]
@@ -297,7 +301,24 @@ addFrame.addEventListener("click",function(){
         }
     });
 }); 
-
+function setDefaultConfig(){
+    if(!document.querySelector(".frame--item.element--active")){
+        document.querySelectorAll(".frame--item")[document.querySelectorAll(".frame--item").length-1].classList.add("element--active");
+    }
+    if(!document.querySelector(".color--frame.element--active") && sortFrame.value == 1){
+        document.querySelectorAll(".color--frame")[2].classList.add("element--active");
+        let bg = getComputedStyle(document.querySelector(".color--frame.element--active").children[0]).backgroundColor;
+        layoutBorder.style.outlineColor=bg;
+        document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
+        document.querySelector("#spcFrameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
+    }else{
+        document.querySelector("#spcFrameColor").innerHTML = "N/A";
+        layoutBorder.style.outlineColor="transparent";
+        selectColorFrame();
+    }
+    document.querySelectorAll(".orientation")[0].classList.add("element--active");
+    calcularMarco();
+}
 function selectOrientation(element){
     let items = document.querySelectorAll(".orientation");
     for (let i = 0; i < items.length; i++) {
@@ -367,6 +388,9 @@ function customMargin(margin){
 function selectColorFrame(){
     for (let i = 0; i < colorFrame.length; i++) {
         let frame = colorFrame[i];
+        if(frame.className.includes("element--active")){
+            frame.classList.remove("element--active");
+        }
         frame.addEventListener("click",function(){
             if(!document.querySelector(".frame--item.element--active")){
                 Swal.fire("Error","Por favor, seleccione la moldura","error");

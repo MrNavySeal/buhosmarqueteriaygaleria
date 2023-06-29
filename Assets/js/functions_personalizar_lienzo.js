@@ -41,6 +41,8 @@ const toastLiveExample = document.getElementById('liveToast');
 
 window.addEventListener("load",function(){
     selectColorFrame();
+    resizeFrame(intWidth.value, intHeight.value);
+    setDefaultConfig();
 })
 //----------------------------------------------
 //[Change Pages]
@@ -114,7 +116,7 @@ intHeight.addEventListener("change",function(){
     if(height >= MAXDIMENSION){
         intHeight.value = MAXDIMENSION;
     }
-    calcularMarco();
+    setDefaultConfig();
     resizeFrame(intWidth.value, intHeight.value);
 });
 intWidth.addEventListener("change",function(){
@@ -126,7 +128,7 @@ intWidth.addEventListener("change",function(){
     if(width >= MAXDIMENSION){
         intWidth.value = MAXDIMENSION;
     }
-    calcularMarco();
+    setDefaultConfig();
     resizeFrame(intWidth.value, intHeight.value);
 });
 //----------------------------------------------
@@ -183,9 +185,13 @@ searchFrame.addEventListener('input',function() {
 
 sortFrame.addEventListener("change",function(){
     if(intWidth.value !="" && intHeight.value!=""){
-        if(sortFrame.value == 1 || sortFrame.value == 3){
+        if(sortFrame.value == 1){
             document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
             document.querySelector("#frame--color").classList.remove("d-none");
+        }else if(sortFrame.value == 3){
+            document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
+            layoutBorder.style.outlineColor="transparent";
+            document.querySelector("#frame--color").classList.add("d-none");
         }else{
             document.querySelector("#spcFrameMaterial").innerHTML = "Poliestireno";
             document.querySelector("#spcFrameColor").innerHTML = "N/A";
@@ -207,6 +213,7 @@ sortFrame.addEventListener("change",function(){
         request(base_url+"/marcos/sort",formData,"post").then(function(objData){
             if(objData.status){
                 containerFrames.innerHTML = objData.data;
+                setDefaultConfig();
             }else{
                 containerFrames.innerHTML = `<p class="fw-bold text-center">${objData.data}</p>`;
             }
@@ -233,7 +240,7 @@ selectStyle.addEventListener("change",function(){
         return false;
     }
     selectStyleFrame(selectStyle.value);
-    calcularMarco();
+    setDefaultConfig();
 });
 selectGlass.addEventListener("change",function(){
     if(!document.querySelector(".frame--item.element--active")){
@@ -324,7 +331,25 @@ addFrame.addEventListener("click",function(){
         }
     });
 }); 
-
+function setDefaultConfig(){
+    if(!document.querySelector(".frame--item.element--active")){
+        document.querySelectorAll(".frame--item")[0].classList.add("element--active");
+    }
+    if(!document.querySelector(".color--frame.element--active")){
+        document.querySelectorAll(".color--frame")[2].classList.add("element--active");
+    }else if(sortFrame.value == 1){
+        let bg = getComputedStyle(document.querySelector(".color--frame.element--active").children[0]).backgroundColor;
+        layoutBorder.style.outlineColor=bg;
+        document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
+        document.querySelector("#spcFrameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
+    }else{
+        document.querySelector("#spcFrameColor").innerHTML = "N/A";
+        layoutBorder.style.outlineColor="transparent";
+        selectColorFrame();
+    }
+    document.querySelectorAll(".orientation")[0].classList.add("element--active");
+    calcularMarco();
+}
 function selectOrientation(element){
     let items = document.querySelectorAll(".orientation");
     for (let i = 0; i < items.length; i++) {
@@ -410,6 +435,16 @@ function selectStyleFrame(option){
         customMargin(1);
         selectColors(2);
         document.querySelector("#spcMeasureP").innerHTML = "1cm";
+        if(!document.querySelector(".color--border.element--active") && !document.querySelector(".color--margin.element--active")){
+            document.querySelectorAll(".color--border")[2].classList.add("element--active");
+            document.querySelectorAll(".color--margin")[2].classList.add("element--active");
+            layoutMargin.style.backgroundColor = getComputedStyle(document.querySelectorAll(".color--margin")[2]).backgroundColor;
+            layoutImg.style.borderColor = getComputedStyle(document.querySelectorAll(".color--border")[2]).backgroundColor;
+            document.querySelector("#marginColor").innerHTML = "Blanco";
+            document.querySelector("#spcColorP").innerHTML = "Blanco";
+            document.querySelector("#borderColor").innerHTML = "Blanco";
+            document.querySelector("#spcColorB").innerHTML = "Blanco";
+        }
     }else if(option == 3){
         optionsCustom[0].classList.remove("d-none");
         //optionsCustom[1].classList.add("d-none");
@@ -418,14 +453,16 @@ function selectStyleFrame(option){
         selectColors(0);
         document.querySelector("#spcColorB").innerHTML ="N/A";
         document.querySelector("#spcMeasureP").innerHTML = "1cm";
-    }else if(option == 4){
-        optionsCustom[0].classList.add("d-none");
-        //optionsCustom[1].classList.add("d-none");
-        customMargin(0);
-        selectColors();
-        document.querySelector("#spcColorP").innerHTML ="N/A";
-        document.querySelector("#spcColorB").innerHTML ="N/A";
-        document.querySelector("#spcMeasureP").innerHTML = "0cm";
+        if(!document.querySelector(".color--border.element--active") && !document.querySelector(".color--margin.element--active")){
+            document.querySelectorAll(".color--border")[2].classList.add("element--active");
+            document.querySelectorAll(".color--margin")[2].classList.add("element--active");
+            layoutMargin.style.backgroundColor = getComputedStyle(document.querySelectorAll(".color--margin")[2]).backgroundColor;
+            layoutImg.style.borderColor = getComputedStyle(document.querySelectorAll(".color--border")[2]).backgroundColor;
+            document.querySelector("#marginColor").innerHTML = "Blanco";
+            document.querySelector("#spcColorP").innerHTML = "Blanco";
+            document.querySelector("#borderColor").innerHTML = "Blanco";
+            document.querySelector("#spcColorB").innerHTML = "Blanco";
+        }
     }else{
         customMargin(0);
         selectColors();
@@ -438,6 +475,9 @@ function selectStyleFrame(option){
 function selectColorFrame(){
     for (let i = 0; i < colorFrame.length; i++) {
         let frame = colorFrame[i];
+        if(frame.className.includes("element--active")){
+            frame.classList.remove("element--active");
+        }
         frame.addEventListener("click",function(){
             if(!document.querySelector(".frame--item.element--active")){
                 Swal.fire("Error","Por favor, seleccione la moldura","error");

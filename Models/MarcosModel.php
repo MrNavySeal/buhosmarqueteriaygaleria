@@ -24,7 +24,7 @@
             }else if($dimensions >= 400){
                 $option = "AND waste > 49";
             }
-            $sql = "SELECT * FROM molding WHERE type = 1 ORDER BY waste DESC";
+            $sql = "SELECT * FROM molding WHERE type = 1 ORDER BY waste ASC";
             $request = $this->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
@@ -95,11 +95,11 @@
         public function sortT($search,$sort,$dimensions = ""){
             $option="";
             if($sort == 1){
-                $option=" AND type = 1 ORDER BY waste DESC";
+                $option=" AND type = 1 ORDER BY waste ASC";
             }else if( $sort == 2){
-                $option=" AND type = 2 ORDER BY waste DESC";
+                $option=" AND type = 2 ORDER BY waste ASC";
             }else{
-                $option=" AND type = 3 ORDER BY waste DESC";
+                $option=" AND type = 3 ORDER BY waste ASC";
             }
             $sql = "SELECT * FROM molding WHERE reference LIKE '%$search%' $option";
             $request = $this->select_all($sql);
