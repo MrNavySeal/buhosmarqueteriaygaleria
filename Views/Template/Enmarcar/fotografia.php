@@ -119,8 +119,8 @@
                         <span class="fw-bold">5. Elige el estilo de enmarcación</span>
                         <select class="form-select mt-3" aria-label="Default select example" id="selectStyle">
                             <option value="1">Directo</option>
-                            <option value="2">Paspartú con bocel</option>
-                            <option value="3">Paspartú sin bocel</option>
+                            <option value="2" disabled>Paspartú con bocel</option>
+                            <option value="3" disabled>Paspartú sin bocel</option>
                             <option value="4">Flotante</option>
                         </select>
                     </div>

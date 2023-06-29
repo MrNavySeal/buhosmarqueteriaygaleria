@@ -128,8 +128,8 @@ intHeight.addEventListener("change",function(){
 intWidth.addEventListener("change",function(){
     let height = intHeight.value;
     let width = intWidth.value;
-    if(intHeight.value <= 10.0){
-        intHeight.value = 10.0;
+    if(intWidth.value <= 10.0){
+        intWidth.value = 10.0;
     }
     if(width >= MAXDIMENSION){
         intWidth.value = MAXDIMENSION;
@@ -198,7 +198,7 @@ uploadPicture.addEventListener("change",function(){
     }
     setTimeout(function() {
         calcDimension(document.querySelector(".layout--img img"));
-        calcularMarco();
+        filterProducts();
     }, 100);
     //console.log(resolution);
 });
@@ -408,9 +408,21 @@ function setDefaultConfig(){
     calcularMarco();
 }
 function filterProducts(){
+    let height = parseFloat(intHeight.value);
+    let width = parseFloat(intWidth.value);
+    let perimetro =(height+width)*2;
+    if(perimetro > 240 && selectStyle.value != 4){
+        selectStyle.value = 1;
+        selectStyle.options[1].setAttribute("disabled","");
+        selectStyle.options[2].setAttribute("disabled","");
+        selectStyleFrame(1);
+    }else if(perimetro <= 240){
+        selectStyle.options[1].removeAttribute("disabled","");
+        selectStyle.options[2].removeAttribute("disabled","");
+    }
     let formData = new FormData();
-    formData.append("height",intHeight.value);
-    formData.append("width",intWidth.value);
+    formData.append("height",height);
+    formData.append("width",width);
     formData.append("sort",sortFrame.value);
     containerFrames.innerHTML=`
         <div class="text-center p-5">
@@ -427,6 +439,7 @@ function filterProducts(){
             containerFrames.innerHTML = `<p class="fw-bold text-center">${objData.data}</p>`;
         }
     });
+
 }
 function selectOrientation(element){
     if(uploadPicture.value == ""){
@@ -459,7 +472,7 @@ function selectActive(element =null,elements=null){
     element.classList.add("element--active");
 }
 function resizeFrame(width,height){
-    let margin = selectStyle.value == 1 || selectStyle.value == 4 ? 0  : parseInt(marginRange.value);
+    let margin = selectStyle.value == 1 ? 0  : parseInt(marginRange.value);
     height = parseFloat(height);
     width = parseFloat(width)
     document.querySelector("#spcMeasureImg").innerHTML = width+" x "+height+"cm";
@@ -506,6 +519,7 @@ function selectStyleFrame(option){
     document.querySelector("#spanP").innerHTML="Medida del paspartú";
     document.querySelector("#spanPC").innerHTML="Elige el color del paspartú";
     document.querySelector("#spanBorde").innerHTML="Elige el color del bocel";
+    selectGlass.value = 2;
     if(option == 1){
         optionsCustom[0].classList.add("d-none");
         //optionsCustom[1].classList.add("d-none");
@@ -521,11 +535,13 @@ function selectStyleFrame(option){
         document.querySelector("#spcMeasureP").innerHTML = "1cm";
         if(option==2){
             selectColors(1);
+            marginRange.setAttribute("max",5);
         }else{
             document.querySelector("#spanP").innerHTML="Medida del fondo";
             document.querySelector("#spanPC").innerHTML="Elige el color del fondo";
             document.querySelector("#spanBorde").innerHTML="Elige el color del marco interno";
             selectColors(2);
+            marginRange.setAttribute("max",10);
         }
         if(!document.querySelector(".color--border.element--active") && !document.querySelector(".color--margin.element--active")){
             document.querySelectorAll(".color--border")[2].classList.add("element--active");
@@ -543,6 +559,7 @@ function selectStyleFrame(option){
         document.querySelector(".borderColor").classList.add("d-none");
         customMargin(1);
         selectColors(0);
+        marginRange.setAttribute("max",5);
         document.querySelector("#spcColorB").innerHTML ="N/A";
         document.querySelector("#spcMeasureP").innerHTML = "1cm";
         

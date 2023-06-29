@@ -112,9 +112,8 @@ changeImgR.addEventListener("click",function(){
 //----------------------------------------------
 //[Dimensions]
 intHeight.addEventListener("change",function(){
-    let height = intHeight.value;
-    let width = intWidth.value;
-    
+    let height = parseFloat(intHeight.value);
+    let width = parseFloat(intWidth.value);
     if(intHeight.value <= 10.0){
         intHeight.value = 10.0;
     }
@@ -124,15 +123,17 @@ intHeight.addEventListener("change",function(){
     }else if(height > 100){
         intWidth.value = width >= 100 ? 100 : width;;
     }
+    
+    
     //calcularMarco();
     filterProducts();
     resizeFrame(intWidth.value, intHeight.value);
 });
 intWidth.addEventListener("change",function(){
-    let height = intHeight.value;
-    let width = intWidth.value;
-    if(intHeight.value <= 10.0){
-        intHeight.value = 10.0;
+    let height = parseFloat(intHeight.value);
+    let width = parseFloat(intWidth.value);
+    if(intWidth.value <= 10.0){
+        intWidth.value = 10.0;
     }
     if(width >= MAXDIMENSION){
         intWidth.value = MAXDIMENSION;
@@ -394,9 +395,21 @@ function setDefaultConfig(){
     calcularMarco();
 }
 function filterProducts(){
+    let height = parseFloat(intHeight.value);
+    let width = parseFloat(intWidth.value);
+    let perimetro =(height+width)*2;
+    if(perimetro > 240 && selectStyle.value != 4){
+        selectStyle.value = 1;
+        selectStyle.options[1].setAttribute("disabled","");
+        selectStyle.options[2].setAttribute("disabled","");
+        selectStyleFrame(1);
+    }else if(perimetro <= 240){
+        selectStyle.options[1].removeAttribute("disabled","");
+        selectStyle.options[2].removeAttribute("disabled","");
+    }
     let formData = new FormData();
-    formData.append("height",intHeight.value);
-    formData.append("width",intWidth.value);
+    formData.append("height",height);
+    formData.append("width",width);
     formData.append("sort",sortFrame.value);
     containerFrames.innerHTML=`
         <div class="text-center p-5">
@@ -444,7 +457,7 @@ function selectActive(element =null,elements=null){
 function resizeFrame(width,height){
     let margin = selectStyle.value == 1 || selectStyle.value == 4 ? 0  : parseInt(marginRange.value);
     height = parseFloat(height);
-    width = parseFloat(width)
+    width = parseFloat(width);
     document.querySelector("#spcMeasureImg").innerHTML = width+" x "+height+"cm";
     document.querySelector("#spcMeasureFrame").innerHTML = (width+(margin*2))+" x "+(height+(margin*2))+"cm";
 
@@ -487,6 +500,7 @@ function customMargin(margin){
 function selectStyleFrame(option){
     document.querySelector(".borderColor").classList.remove("d-none");
     document.querySelector("#glassDiv").classList.remove("d-none");
+    selectGlass.value = 2;
     if(option == 1){
         optionsCustom[0].classList.add("d-none");
         //optionsCustom[1].classList.add("d-none");
@@ -509,12 +523,9 @@ function selectStyleFrame(option){
             document.querySelector("#borderColor").innerHTML = "Blanco";
             document.querySelector("#spcColorB").innerHTML = "Blanco";
         }
-        //optionsCustom[1].classList.add("d-none");
-        
         document.querySelector("#spcMeasureP").innerHTML = "1cm";
     }else if(option == 3){
         optionsCustom[0].classList.remove("d-none");
-        //optionsCustom[1].classList.add("d-none");
         document.querySelector(".borderColor").classList.add("d-none");
         customMargin(1);
         selectColors(0);

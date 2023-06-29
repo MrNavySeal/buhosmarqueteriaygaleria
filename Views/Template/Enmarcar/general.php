@@ -113,15 +113,15 @@
                         <span class="fw-bold">4. Elige el estilo de enmarcación</span>
                         <select class="form-select mt-3" aria-label="Default select example" id="selectStyle">
                             <option value="1">Directo</option>
-                            <option value="2">Paspartú con bocel</option>
-                            <option value="3">Paspartú sin bocel</option>
+                            <option value="2" disabled>Paspartú con bocel</option>
+                            <option value="3" disabled>Paspartú sin bocel</option>
                             <option value="4">Solo marco</option>
                         </select>
                     </div>
                     <div class="option--custom d-none mb-3">
                         <div class="mb-3">
                             <span class="fw-bold">Medida del paspartú</span>
-                            <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="10" value="0" id="marginRange">
+                            <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="5" value="0" id="marginRange">
                             <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
                         </div>
                         <div class="mb-3">
