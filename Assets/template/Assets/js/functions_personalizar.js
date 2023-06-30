@@ -280,7 +280,7 @@ selectStyle.addEventListener("change",function(){
         return false;
     }
     selectStyleFrame(selectStyle.value);
-    filterProducts();
+    calcularMarco();
 });
 selectGlass.addEventListener("change",function(){
     if(!document.querySelector(".frame--item.element--active")){

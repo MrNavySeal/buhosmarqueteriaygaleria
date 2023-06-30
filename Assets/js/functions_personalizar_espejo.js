@@ -232,7 +232,7 @@ selectStyle.addEventListener("change",function(){
     document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
     //resizeFrame(intWidth.value, intHeight.value);
     selectStyleFrame(selectStyle.value);
-    setDefaultConfig();
+    calcularMarco();
 });
 //----------------------------------------------
 //[Add frame]
