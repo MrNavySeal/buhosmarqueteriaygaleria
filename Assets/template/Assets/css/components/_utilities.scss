@@ -112,6 +112,11 @@
 .t-color-5{
     color:$color5;
 }
+.t-color-h-2{
+    &:hover{
+        color:$color1;
+    }
+}
 .bg-color-1{
     color:$color4;
     background-color: $color1;
@@ -147,3 +152,15 @@
         object-fit: cover;
     }
 }
+.scroll-y{
+    overflow-y: scroll;
+    max-height: 60vh;
+}
+.scrolly{
+    overflow-y: scroll;
+    height: 200px;
+}
+.scrollx{
+    overflow-x: scroll;
+}
+

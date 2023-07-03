@@ -67,7 +67,14 @@
     <!------------------------------------Styles--------------------------->
     <link rel="stylesheet" href="<?=media()?>/template/Assets/css/normalize.css">
     <link rel="stylesheet" href="<?=media()."/template/Assets/css/style.css?v=".rand()?>">
-
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8MPBNE6BYH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-8MPBNE6BYH');
+    </script>
 </head>
 <body>
 
@@ -216,20 +223,20 @@
         <div class="navmobile--elements">
             <div class="navmobile--header">
                 <div class="navmobile--title">
-                    <a href="<?=base_url()?>">Buho's <span>Marquetería</span> <span>&</span> <span>Galería</span></a>
+                    <p class="t-color-2 fw-bold"href="<?=base_url()?>">Buho's <span class="t-color-1">Marquetería</span> <span>&</span> <span class="t-color-1">Galería</span></p>
                 </div>
-                <span id="closeNav"><i class="fas fa-times"></i></span>
+                <span id="closeNav" class="t-color-2"><i class="fas fa-times"></i></span>
             </div>
             <ul class="navmobile-links">
                 <li class="navmobile-link"><a href="<?=base_url()?>">Inicio</a></li>
-                <div class="navmobile-link accordion" id="accordionExample">
+                <div class="navmobile-link accordion" id="accordionFraming">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingFraming">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFraming" aria-expanded="true" aria-controls="collapseFraming">
                             Enmarcar aquí
                         </button>
                         </h2>
-                        <div id="collapseFraming" class="accordion-collapse collapse" aria-labelledby="headingFraming" data-bs-parent="#accordionExample">
+                        <div id="collapseFraming" class="accordion-collapse collapse" aria-labelledby="headingFraming" data-bs-parent="#accordionFraming">
                             <div class="accordion-body">
                                 <ul>
                                     <?php 
@@ -245,14 +252,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="navmobile-link accordion" id="accordionExample">
+                <div class="navmobile-link accordion" id="accordionCategory">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingCategory">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategory" aria-expanded="true" aria-controls="collapseCategory">
                             Tienda
                         </button>
                         </h2>
-                        <div id="collapseCategory" class="accordion-collapse collapse" aria-labelledby="headingCategory" data-bs-parent="#accordionExample">
+                        <div id="collapseCategory" class="accordion-collapse collapse" aria-labelledby="headingCategory" data-bs-parent="#accordionCategory">
                             <div class="accordion-body">
                                 <ul>
                                     <?php 
@@ -269,43 +276,19 @@
                     </div>
                 </div>
                 <li class="navmobile-link"><a href="<?=base_url()?>/favoritos">Mis favoritos</a></li>
-                <div class="navmobile-link accordion" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Servicios
-                        </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <ul>
-                                    <?php 
-                                    for ($i=0; $i < count($subLinks['services']); $i++) { 
-                                        $link = $subLinks['services'][$i];
-                                        if($i <= 8){
-                                    ?>
-                                    <li class="navmobile-link"><a href="<?=base_url()."/servicios/servicio/".$link['route']?>"><?=$link['name']?></a></li>
-                                    <?php } }?>
-                                    <li class="navmobile-link"><a href="<?=base_url()?>/servicios">Ver todo</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <li class="navmobile-link"><a href="<?=base_url()?>/contacto">Contacto</a></li>
                 <li class="navmobile-link"><a href="<?=base_url()?>/blog">Blog</a></li>
                 
                 <?php
                     if(isset($_SESSION['login'])){
                 ?>
-                <div class="navmobile-link accordion" id="accordionExample">
+                <div class="navmobile-link accordion" id="accordionPerfil">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingPerfil">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerfil" aria-expanded="true" aria-controls="collapsePerfil">
+                        <button class="accordion-button t-color-h-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerfil" aria-expanded="true" aria-controls="collapsePerfil">
                             Mi cuenta
                         </button>
                         </h2>
-                        <div id="collapsePerfil" class="accordion-collapse collapse" aria-labelledby="headingPerfil" data-bs-parent="#accordionExample">
+                        <div id="collapsePerfil" class="accordion-collapse collapse" aria-labelledby="headingPerfil" data-bs-parent="#accordionPerfil">
                             <div class="accordion-body">
                                 <ul>
                                     <li class="navmobile-link"><a href="<?=base_url()?>/usuarios/perfil">Perfil</a></li>

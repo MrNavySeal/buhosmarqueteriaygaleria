@@ -6,8 +6,8 @@
         text-align: start;
     }
 }
-@import "components/item","components/mailbox","components/util","components/variable","components/mediaqueries","components/util"; 
-@import "components/form";
+@import "components/mediaqueries","components/util"; 
+
 .ui-datepicker-calendar{
     display: none;
 }

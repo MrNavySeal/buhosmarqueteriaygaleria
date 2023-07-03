@@ -3,7 +3,14 @@ $color2:#03071E;
 $color3:#6D6A75;
 $color4:#fff;
 $color5: #BFBDC1;
-
+$primary:#321fdb;
+$secondary:#9da5b1;
+$success: #2eb85c;
+$danger:#e55353;
+$warning:#f9b115;
+$info:#3399ff;
+$light:#ebedef;
+$dark:#4f5d73;
 @mixin textColor($bg:$color4){
     color:$bg;
 }
