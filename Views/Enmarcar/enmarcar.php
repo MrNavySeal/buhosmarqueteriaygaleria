@@ -11,6 +11,25 @@
                     $url = base_url()."/enmarcar/personalizar/".$tipos[$i]['route'];
                     $img = media()."/images/uploads/".$tipos[$i]['image'];
             ?>
+            <div class="col-lg-3">
+                <div class="card--product">
+                    <a href="<?=$url?>">
+                        <img class="img-fluid" src="<?=$img?>" alt="Cuadros decorativos <?=$tipo[$i]['name']?>">
+                    </a>
+                    <div class="card--product-info mt-3">
+                        <h2 class="enmarcar--title"><?=$tipos[$i]['name']?></h2>
+                        <p><?=$tipos[$i]['description']?></p>
+                    </div>
+                    <?php
+                        if($tipos[$i]['button']!=""){
+                    ?>
+                    <div class="card--product-btns">
+                        <a href="<?=$url?>" class="btn btn-bg-1 w-100"><?=$tipos[$i]['button']?></a>
+                    </div>
+                    <?php }?>
+                </div>
+            </div>
+            <!--
             <div class="col-md-4 col-lg-3 mb-3">
                 <div class="card--enmarcar w-100 hover">
                     <div class="card--enmarcar-img img--contain">
@@ -23,7 +42,7 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <?php }?>
         </div>
     </main>

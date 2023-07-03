@@ -377,7 +377,7 @@
         }
 
         /*************************Category methods*******************************/
-        public function insertCategory(string $photo,string $strName, string $strDescription, string $strRoute, int $intStatus){
+        public function insertCategory(string $photo,string $strName, string $strDescription, string $strRoute, int $intStatus, string $button){
 
 			$this->strName = $strName;
 			$this->strRoute = $strRoute;
@@ -392,9 +392,9 @@
 
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO moldingcategory(image,name,description,route,status) 
-								  VALUES(?,?,?,?,?)";
-	        	$arrData = array($this->strPhoto,$this->strName,$this->strDescription,$this->strRoute,$this->intStatus);
+				$query_insert  = "INSERT INTO moldingcategory(image,name,description,route,status,button) 
+								  VALUES(?,?,?,?,?,?)";
+	        	$arrData = array($this->strPhoto,$this->strName,$this->strDescription,$this->strRoute,$this->intStatus,$button);
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
 			}else{
@@ -402,7 +402,7 @@
 			}
 	        return $return;
 		}
-        public function updateCategory(int $intIdCategory,string $photo, string $strName, string $strDescription,string $strRoute, int $intStatus){
+        public function updateCategory(int $intIdCategory,string $photo, string $strName, string $strDescription,string $strRoute, int $intStatus, string $button){
             $this->intIdCategory = $intIdCategory;
             $this->strName = $strName;
             $this->strDescription = $strDescription;
@@ -416,8 +416,8 @@
 
 			if(empty($request)){
 
-                $sql = "UPDATE moldingcategory SET image=?, name=?,description=?, route=?, status=? WHERE id = $this->intIdCategory";
-                $arrData = array($this->strPhoto,$this->strName,$this->strDescription,$this->strRoute,$this->intStatus);
+                $sql = "UPDATE moldingcategory SET image=?, name=?,description=?, route=?, status=?, button=? WHERE id = $this->intIdCategory";
+                $arrData = array($this->strPhoto,$this->strName,$this->strDescription,$this->strRoute,$this->intStatus,$button);
 				$request = $this->update($sql,$arrData);
 			}else{
 				$request = "exist";
