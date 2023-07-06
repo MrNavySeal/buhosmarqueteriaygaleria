@@ -1,7 +1,9 @@
 <?php
     Class Errors extends Controllers{
         public function __construct(){
+            session_start();
             parent::__construct();
+            sessionCookie();
         }
 
         public function notFound(){

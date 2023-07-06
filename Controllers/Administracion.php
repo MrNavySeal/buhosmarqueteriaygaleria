@@ -21,7 +21,7 @@
                 $data['page_tag'] = "Correo";
                 $data['page_title'] = "Correo";
                 $data['page_name'] = "correo";
-                $data['app'] = "functions_mailbox.js";
+                $data['panelapp'] = "functions_mailbox.js";
                 $this->views->getView($this,"correo",$data);
             }else{
                 header("location: ".base_url());
@@ -36,7 +36,7 @@
                     $data['page_tag'] = "Mensaje";
                     $data['page_title'] = "Mensaje";
                     $data['page_name'] = "mensaje";
-                    $data['app'] = "functions_mailbox.js";
+                    $data['panelapp'] = "functions_mailbox.js";
                     $this->views->getView($this,"mensaje",$data);
                 }else{
                     header("location: ".base_url()."/administracion/mailbox");
@@ -85,7 +85,7 @@
                 $data['countries'] = $this->model->selectCountries();
                 $data['ShippingCities'] = $this->getShippingCities();
                 $data['flat'] = $this->model->selectFlatRate();
-                $data['app'] = "functions_shipping.js";
+                $data['panelapp'] = "functions_shipping.js";
                 $this->views->getView($this,"envios",$data);
             }else{
                 header("location: ".base_url());

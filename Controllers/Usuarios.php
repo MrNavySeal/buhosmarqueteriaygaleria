@@ -15,9 +15,9 @@
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "Usuario";
                 $data['page_title'] = "Usuarios";
-                $data['page_name'] = "user";
+                $data['page_name'] = "usuario";
                 $data['data'] = $this->getUsers();
-                $data['app'] = "functions_user.js";
+                $data['panelapp'] = "functions_user.js";
                 $this->views->getView($this,"usuarios",$data);
             }else{
                 header("location: ".base_url());
@@ -305,7 +305,7 @@
             $data['page_tag'] = "Perfil";
             $data['page_title'] = "Perfil";
             $data['page_name'] = "profile";
-            $data['app'] = "functions_profile.js";
+            $data['panelapp'] = "functions_profile.js";
             $this->views->getView($this,"perfil",$data);
         }
         public function updateProfile(){

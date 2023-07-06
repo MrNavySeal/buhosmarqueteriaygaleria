@@ -1,304 +1,312 @@
-<!--sidebar-->
-  <div class="sidebar sidebar-dark sidebar-fixed" id="sidebar">
-    <div class="sidebar-brand d-none d-md-flex">
-        <a href="<?=base_url()?>" class="fs-4 m-0 text-decoration-none text-white d-flex align-items-center justify-content-between">
-            <img src="<?=media()."/images/uploads/".$companyData['logo']?>" alt="MediaStore Logo" width="50" height="46" class="me-2 rounded">
-            <p class="m-0 fs-6"><?=$companyData['name']?></p>
-        </a>
-    </div>
-    <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="init">
-        <div class="simplebar-wrapper" style="margin: 0px;">
-            <div class="simplebar-height-auto-observer-wrapper">
-                <div class="simplebar-height-auto-observer"></div>
+<?php
+    $notification = emailNotification(); 
+    $comments = commentNotification();
+    $reviews = $comments['total'];
+?>
+<nav class="mt-5 mb-2" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>">Inicio</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><?=$data['page_tag']?></li>
+    </ol>
+</nav>
+<div class="col-3 col-lg-3 col-md-12">
+    <aside class="p-2 filter-options">
+        <div class="accordion accordion-flush" id="accordionFlushExample">
+            <?php
+                if($_SESSION['permit'][1]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/dashboard" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-chart-line"></i> Dashboard </a>
+                </h2>
             </div>
-            <div class="simplebar-mask">
-                <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
-                    <div class="simplebar-content-wrapper" style="height: 100%; overflow: hidden;">
-                        <div class="simplebar-content" style="padding: 0px;">
+            <?php 
+                }
+            ?>
+            <?php  if($_SESSION['permit'][2]['r']){?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="true" aria-controls="flush-collapseTwo">
+                    
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-users"></i> Usuarios</a>
+                </h2>
+                <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/usuarios" class="w-100">Usuarios</a>
+                            </li> 
                             <?php
-                                if($_SESSION['permit'][1]['r']){
-
-                                
+                                if($_SESSION['idUser'] == 1 && $_SESSION['permit'][2]['r']){
                             ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/dashboard">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-speedometer"></use>
-                                    </svg> 
-                                    Dashboard<span class="badge badge-sm bg-info ms-auto"></span>
-                                </a>
-                            </li>
-                            <?php
-                                }
-                            ?>
-                            <?php  if($_SESSION['permit'][2]['r']){?>
-                            <li class="nav-group">
-                                <a class="nav-link nav-group-toggle" href="#">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-user"></use>
-                                    </svg> Usuarios
-                                </a>
-                                <ul class="nav-group-items">
-                                    <?php
-                                        if($_SESSION['idUser'] == 1 && $_SESSION['permit'][2]['r']){
-                                    ?>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/roles"><span class="nav-icon"></span> Roles</a></li>
-                                    <?php
-                                        }
-                                    ?>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/usuarios"><span class="nav-icon"></span> Usuarios</a></li>
-                                </ul>
-                            </li>
-                            <?php
-                                }
-                            ?>
-                            <?php 
-                                if($_SESSION['permit'][3]['r']){
-                            ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/clientes">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-user-follow"></use>
-                                    </svg> 
-                                    Clientes<span class="badge badge-sm bg-info ms-auto"></span>
-                                </a>
-                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/roles" class="w-100">Roles</a>
+                            </li>   
                             <?php 
                                 }
-                            ?>
-                            <?php 
-                                if($_SESSION['permit'][7]['r']){
-                            ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/contabilidad">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>
-                                    </svg> 
-                                    Contabilidad<span class="badge badge-sm bg-info ms-auto"></span>
-                                </a>
-                            </li>
-                            
-                            <?php 
-                                }
-                            ?>
-                            
-                            <?php 
-                                if($_SESSION['permit'][4]['r']){
-                            ?>
-                            <li class="nav-group">
-                                <a class="nav-link nav-group-toggle" href="#">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-filter-frames"></use>
-                                    </svg> Marqueteria
-                                </a>
-                                <ul class="nav-group-items">
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/marqueteria/categorias"><span class="nav-icon"></span> Categorias</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/marqueteria/molduras"><span class="nav-icon"></span> Molduras</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/marqueteria/colores"><span class="nav-icon"></span> Colores</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/marqueteria/materiales"><span class="nav-icon"></span> Materiales</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-group">
-                                <a class="nav-link nav-group-toggle" href="#">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-inbox"></use>
-                                    </svg> Inventario
-                                </a>
-                                <ul class="nav-group-items">
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/inventario/categorias"><span class="nav-icon"></span> Categorias</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/inventario/subcategorias"><span class="nav-icon"></span> Subcategorias</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/inventario/productos"><span class="nav-icon"></span> Productos</a></li>
-                                </ul>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                            <?php 
-                                if($_SESSION['permit'][6]['r']){
-                            ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/pedidos">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-money"></use>
-                                    </svg> 
-                                    Pedidos<span class="badge badge-sm bg-info ms-auto"></span>
-                                </a>
-                            </li>
-                            <?php 
-                                if($_SESSION['permit'][6]['w']){
-                            ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/pedidos/pos">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-basket"></use>
-                                    </svg> 
-                                    Punto de venta<span class="badge badge-sm bg-info ms-auto"></span>
-                                </a>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                            <?php 
-                                }
-                            ?>
-                            <?php 
-                                if($_SESSION['permit'][8]['r']){
-                            ?>
-                            <li class="nav-group">
-                                <a class="nav-link nav-group-toggle" href="#">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-cart"></use>
-                                    </svg> Compras
-                                </a>
-                                <ul class="nav-group-items">
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/compras/proveedores"><span class="nav-icon"></span> Proveedores</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/compras/compras"><span class="nav-icon"></span> Compras</a></li>
-                                </ul>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                            <?php 
-                                if($_SESSION['permit'][5]['r']){
-                            ?>
-                            <li class="nav-group">
-                                <a class="nav-link nav-group-toggle" href="#">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-screen-desktop"></use>
-                                    </svg> Administración
-                                </a>
-                                <ul class="nav-group-items">
-                                    <?php 
-                                    $emails = "";
-                                    if($notification>0){
-                                        $emails = '<span class="badge badge-sm bg-danger ms-auto">'.$notification.'</span>';
-                                    }else{
-                                        $emails = "";
-                                    }
-                                    ?>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/administracion/correo"><span class="nav-icon"></span> Correo <?=$emails?></a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/administracion/suscriptores"><span class="nav-icon"></span> Suscriptores</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/administracion/envios"><span class="nav-icon"></span> Envio</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/paginas"><span class="nav-icon"></span> Páginas</a></li>
-                                </ul>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                            <?php 
-                                if($_SESSION['permit'][5]['r']){
-                            ?>
-                            <li class="nav-group">
-                                <a class="nav-link nav-group-toggle" href="#">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>
-                                    </svg> Descuentos
-                                </a>
-                                <ul class="nav-group-items">
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/descuentos/descuentos"><span class="nav-icon"></span> Descuentos</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/descuentos/cupones"><span class="nav-icon"></span> Cupones</a></li>
-                                </ul>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                            <?php 
-                                if($_SESSION['permit'][5]['r']){
-                            ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/banners">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-tag"></use>
-                                    </svg> 
-                                    Banners<span class="badge badge-sm bg-info ms-auto"></span>
-                                </a>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                             <?php 
-                                if($_SESSION['permit'][9]['r']){
-                            ?>
-                            <li class="nav-group">
-                                <a class="nav-link nav-group-toggle" href="#">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-comment-bubble"></use>
-                                    </svg> Comentarios
-                                    <?php 
-                                    $notifyReview = "";
-                                    if($reviews>0){
-                                        $notifyReview='<span class="badge badge-sm bg-danger ms-auto">'.$reviews.'</span>';
-                                    }
-                                    ?>
-                                    <?=$notifyReview?>
-                                </a>
-                                <ul class="nav-group-items">
-                                    <li class="nav-item"><a class="nav-link" href="<?=base_url()?>/comentarios/opiniones"><span class="nav-icon"></span> Opiniones <?=$notifyReview?></a></li>
-                                </ul>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                            <?php 
-                                if($_SESSION['permit'][10]['r']){
-                            ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/articulos">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-book"></use>
-                                    </svg> 
-                                    Blog<span class="badge badge-sm bg-info ms-auto"></span>
-                                </a>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                            <?php 
-                                if($_SESSION['idUser']==1){
-                            ?>
-                            <li class="nav-item mt-5">
-                                <a class="nav-link" href="<?=base_url()?>/empresa">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-storage"></use>
-                                    </svg> Empresa
-                                </a>
-                            </li>
-                            <?php 
-                                }
-                            ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/usuarios/perfil">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-user"></use>
-                                    </svg> Perfil
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-at"></use>
-                                    </svg> Ir al sitio web
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?=base_url()?>/logout">
-                                    <svg class="nav-icon">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-account-logout"></use>
-                                    </svg> Cerrar sesión
-                                </a>
-                            </li>
-                        </div>
+                            ?>     
+                        </ul>
                     </div>
                 </div>
             </div>
-            <div class="simplebar-placeholder" style="width: auto; height: 843px;"></div>
-        </div>
-        <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
-            <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
-        </div>
-        <div class="simplebar-track simplebar-vertical" style="visibility: hidden;">
-            <div class="simplebar-scrollbar" style="height: 0px; transform: translate3d(0px, 0px, 0px); display: none;"></div>
-        </div>
-    </ul>
-    <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][3]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/clientes" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-user"></i> Clientes </a>
+                </h2>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][4]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-heading4">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse4" aria-expanded="true" aria-controls="flush-collapse4"> 
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-crop-alt"></i> Marqueteria</a>
+                </h2>
+                <div id="flush-collapse4" class="accordion-collapse collapse" aria-labelledby="flush-heading4">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/marqueteria/molduras" class="w-100">Molduras</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/marqueteria/materiales" class="w-100">Materiales</a>
+                            </li>      
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/marqueteria/colores" class="w-100">Colores</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/marqueteria/categorias" class="w-100">Categorias</a>
+                            </li>   
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-heading5">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse5" aria-expanded="true" aria-controls="flush-collapse5"> 
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-archive"></i> Inventario</a>
+                </h2>
+                <div id="flush-collapse5" class="accordion-collapse collapse" aria-labelledby="flush-heading5">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/inventario/categorias" class="w-100">Categorias</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/inventario/subcategorias" class="w-100">Subcategorias</a>
+                            </li>      
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/inventario/productos" class="w-100">Productos</a>
+                            </li> 
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][6]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/pedidos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-coins"></i> Pedidos </a>
+                </h2>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][6]['w']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/pedidos/pos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-cash-register"></i> Punto de venta </a>
+                </h2>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][8]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-heading6">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse6" aria-expanded="true" aria-controls="flush-collapse6"> 
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-shopping-basket"></i> Compras</a>
+                </h2>
+                <div id="flush-collapse6" class="accordion-collapse collapse" aria-labelledby="flush-heading6">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/compras/proveedores" class="w-100">Proveedores</a>
+                            </li>     
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/compras/compras" class="w-100">Compras</a>
+                            </li> 
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][5]['r']){
+                    $emails = "";
+                    if($notification>0){
+                        $emails = '<span class="badge badge-sm bg-danger ms-auto">'.$notification.'</span>';
+                    }else{
+                        $emails = "";
+                    }
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-heading7">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse7" aria-expanded="true" aria-controls="flush-collapse7"> 
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-tools"></i> Administración</a>
+                </h2>
+                <div id="flush-collapse7" class="accordion-collapse collapse" aria-labelledby="flush-heading7">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/administracion/correo" class="w-100">Correo <?=$emails?></a>
+                            </li>     
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/administracion/suscriptores" class="w-100">Suscriptores</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/administracion/envios" class="w-100">Envio</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/paginas" class="w-100">Paginas</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][5]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-heading8">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse8" aria-expanded="true" aria-controls="flush-collapse8"> 
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-dollar-sign"></i> Descuentos</a>
+                </h2>
+                <div id="flush-collapse8" class="accordion-collapse collapse" aria-labelledby="flush-heading8">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/descuentos/cupones" class="w-100">Cupones</a>
+                            </li>     
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/descuentos/descuentos" class="w-100">Descuentos</a>
+                            </li> 
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][5]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/banners" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-tags"></i> Banners </a>
+                </h2>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][9]['r']){
+            ?>
+            <div class="accordion-item">
+                <?php 
+                    $notifyReview = "";
+                    if($reviews>0){
+                        $notifyReview='<span class="badge badge-sm bg-danger ms-auto">'.$reviews.'</span>';
+                    }
+                    ?>
+                    
+                <h2 class="accordion-header" id="flush-heading9">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse9" aria-expanded="true" aria-controls="flush-collapse9"> 
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-comments"></i> Comentarios <?=$notifyReview?></a>
+                </h2>
+                <div id="flush-collapse9" class="accordion-collapse collapse" aria-labelledby="flush-heading9">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/comentarios/opiniones" class="w-100">Opiniones <?=$notifyReview?></a>
+                            </li>     
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][10]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/articulos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="far fa-newspaper"></i> Blog</a>
+                </h2>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['idUser']==1){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/empresa" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-briefcase"></i> Empresa </a>
+                </h2>
+            </div>
+            <?php 
+                }
+            ?>
+            <div class="accordion-item mt-3">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/usuarios/perfil" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-id-card-alt"></i> Perfil </a>
+                </h2>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-categorie">
+                    <button class="btn" type="button"></button>
+                    <a href="<?=base_url()?>/logout" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-sign-out-alt"></i> Cerrar sesión </a>
+                </h2>
+            </div>
+    </aside>
+    <div class="filter-options-overlay"></div>
 </div>

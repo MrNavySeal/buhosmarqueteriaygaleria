@@ -17,7 +17,7 @@
                 $data['page_title'] = "Articulos";
                 $data['page_name'] = "articulos";
                 $data['data'] = $this->getArticles();
-                $data['app'] = "functions_blog.js";
+                $data['panelapp'] = "functions_blog.js";
                 $this->views->getView($this,"articulos",$data);
             }else{
                 header("location: ".base_url());
@@ -29,7 +29,7 @@
                 $data['page_tag'] = "Articulo";
                 $data['page_title'] = "Articulo";
                 $data['page_name'] = "articulo";
-                $data['app'] = "functions_article.js";
+                $data['panelapp'] = "functions_article.js";
                 if($params==""){
                     $this->views->getView($this,"creararticulo",$data);
                 }else{

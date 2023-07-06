@@ -76,12 +76,12 @@ formPOS.addEventListener("submit",function(e){
 
 });
 if(document.querySelector("#pedidos")){
-    let search = document.querySelector("#search");
-    let sort = document.querySelector("#sortBy");
+    let searchPanel = document.querySelector("#search");
+    let sortPanel = document.querySelector("#sortBy");
     let element = document.querySelector("#listItem");
     
-    search.addEventListener('input',function() {
-        request(base_url+"/pedidos/search/"+search.value,"","get").then(function(objData){
+    searchPanel.addEventListener('input',function() {
+        request(base_url+"/pedidos/search/"+searchPanel.value,"","get").then(function(objData){
             if(objData.status){
                 element.innerHTML = objData.data;
             }else{
@@ -90,8 +90,8 @@ if(document.querySelector("#pedidos")){
         });
     });
     
-    sort.addEventListener("change",function(){
-        request(base_url+"/pedidos/sort/"+sort.value,"","get").then(function(objData){
+    sortPanel.addEventListener("change",function(){
+        request(base_url+"/pedidos/sort/"+sortPanel.value,"","get").then(function(objData){
             if(objData.status){
                 element.innerHTML = objData.data;
             }else{

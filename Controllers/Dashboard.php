@@ -19,11 +19,11 @@
                 $data['totalOrders'] = $this->model->getTotalOrders($idUser);
                 $data['totalSales'] = $this->model->getTotalSales();
                 $data['orders'] = $this->model->getLastOrders($idUser);
-                $data['products'] = $this->model->getLastProducts();
+                $data['products'] = $this->model->getLastProducts(4);
                 $data['page_tag'] = "Dashboard";
                 $data['page_title'] = "Dashboard";
                 $data['page_name'] = "dashboard";
-                $data['app'] = "functions_dashboard.js";
+                $data['panelapp'] = "functions_dashboard.js";
                 $year = date('Y');
                 $month = date('m');
                 $data['resumenMensual'] = $this->model->selectAccountMonth($year,$month);

@@ -40,7 +40,10 @@
             $request = $this->select_all($sql);
             return $request;
         }
-        function getLastProducts(){
+        function getLastProducts($cant=""){
+            if($cant !=""){
+                $cant = " LIMIT $cant";
+            }
             $sql = "SELECT 
                 p.idproduct,
                 p.categoryid,
@@ -60,42 +63,45 @@
                 s.idsubcategory,
                 s.categoryid,
                 s.name as subcategory,
+                c.route as routec,
+                s.route as routes,
                 DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
-            AND p.status = 1 ORDER BY idproduct  DESC LIMIT 10
-            ";
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            ORDER BY p.idproduct DESC $cant";
+            
             $request = $this->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $idProduct = $request[$i]['idproduct'];
                     $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
+                    $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
+                    $request[$i]['favorite'] = 0;
+                    if(isset($_SESSION['login'])){
+                        $idUser = $_SESSION['idUser'];
+                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+                        $requestFavorite = $this->select($sqlFavorite);
+                        if(!empty($requestFavorite)){
+                            $request[$i]['favorite'] = $requestFavorite['status'];
+                        }
+                    }
                     if(count($requestImg)>0){
-                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
+                        $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
+                        $request[$i]['image'] = $requestImg[0]['name'];
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 2){
-                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
-                        $sqlVariants = "SELECT * FROM product_variant WHERE productid = $idProduct ORDER BY price ASC";
+                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
+                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
                         $request[$i]['price'] = round((($this->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
-                        $request[$i]['stock'] = $this->select($sqlTotal)['total'];
+                        $request[$i]['stock'] = $this->select($sqlTotal)['stock'];
                     }
                 }
             }
             return $request;
-            /*$sql = "SELECT * FROM product WHERE status = 1 ORDER BY idproduct  DESC LIMIT 10";
-            $request = $this->select_all($sql);
-            if(!empty($request)){
-                for ($i=0; $i < count($request) ; $i++) { 
-                    $request[$i]['price'] = ($request[$i]['price']*COMISION)+TASA;
-                }
-            }
-            return $request;*/
         }
         public function selectAccountMonth(int $year, int $month){
             $totalPerMonth = 0;

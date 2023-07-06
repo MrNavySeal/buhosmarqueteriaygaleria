@@ -1,5 +1,5 @@
 setTinymce("#txtDescription",600);
-document.querySelector("#btnNew").classList.add("d-none");
+
 let img = document.querySelector("#txtImg");
 let imgLocation = ".uploadImg img";
 img.addEventListener("change",function(){

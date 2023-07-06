@@ -17,7 +17,7 @@
                 $data['page_title'] = "Paginas";
                 $data['page_name'] = "pagina";
                 $data['data'] = $this->getPages();
-                $data['app'] = "functions_pages.js";
+                $data['panelapp'] = "functions_pages.js";
                 $this->views->getView($this,"paginas",$data);
             }else{
                 header("location: ".base_url());
@@ -33,7 +33,7 @@
                         $data['page_tag'] = $data['page']['name'];
                         $data['page_title'] = $data['page']['name'];
                         $data['page_name'] = "pagina";
-                        $data['app'] = "functions_page.js";
+                        $data['panelapp'] = "functions_page.js";
                         $this->views->getView($this,"pagina",$data);
                     }else{
                         header("location: ".base_url()."/paginas");

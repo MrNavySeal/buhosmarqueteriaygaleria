@@ -1,5 +1,5 @@
 <?php 
-headerAdmin($data);
+headerPage($data);
 
 $transaction = $data['transaction'];
 $details = $transaction->transaction_details;
@@ -26,11 +26,12 @@ if(!empty($refunds)){
 }
 ?>
 <div id="modalItem"></div>
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div id="modalItem"></div>
-    <div class="container-lg">
-        <div class="card">
-            <div class="card-body">
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
+                <h2 class="text-center"><?=$data['page_title']?></h2>
                 <div id="orderInfo">
                     <div class="d-flex justify-content-between align-items-center flex-wrap">
                         <img src="<?=media()?>/images/uploads/mercadopago.jpg" style="width=100px;height:100px;" alt="">
@@ -74,5 +75,5 @@ if(!empty($refunds)){
             </div>
         </div>
     </div>
-</div>
-<?php footerAdmin($data)?>        
+</main>
+<?php footerPage($data)?>        

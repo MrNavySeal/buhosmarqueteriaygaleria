@@ -1,15 +1,16 @@
 <?php 
-    headerAdmin($data);
+    headerPage($data);
     $article = $data['article'];
     $img=$article['picture'];
     if($img==""){
         $img=media()."/images/uploads/category.jpg";
     }
 ?>
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div class="container-lg">
-        <div class="card mb-4">
-            <div class="card-body">
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <form id="formItem" name="formItem" class="mb-4">  
                     <input type="hidden" id="idArticle" name="idArticle" value="<?=$article['idarticle']?>">
                     <div class="mb-3 uploadImg">
@@ -53,7 +54,5 @@
             </div>
         </div>
     </div>
-</div>
-
-<?php footerAdmin($data)?>     
-</script> 
+</main>
+<?php footerPage($data)?>     

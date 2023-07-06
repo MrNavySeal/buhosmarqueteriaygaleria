@@ -1,11 +1,11 @@
-<?php headerAdmin($data); ?>
-
+<?php headerPage($data); ?>
 <div id="modalItem"></div>
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div class="container-lg">
-        <div class="card">
-            <div class="card-body"> 
-                <h2 class="fs-5"><?=$data['message']['subject']?></h2>
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
+            <h2 class="fs-5"><?=$data['message']['subject']?></h2>
                 <div class="d-flex justify-content-between flex-wrap">
                     <p class="m-0"><?=$data['message']['email']?></p>
                     <p class="m-0"><?=$data['message']['date']?></p>
@@ -22,5 +22,5 @@
             </div>
         </div>
     </div>
-</div>
-<?php footerAdmin($data)?>        
+</main>  
+<?php footerPage($data)?>        

@@ -3,7 +3,7 @@ const btnAdd = document.querySelector("#btnAddProduct");
 const btnPurchase = document.querySelector("#btnPurchase");
 const total = document.querySelector("#total");
 const selectSupplier = document.querySelector("#selectSupplier");
-const search = document.querySelector("#search");
+const searchPanel = document.querySelector("#search");
 const element = document.querySelector("#listItem");
 
 element.addEventListener("click",function(e) {
@@ -13,8 +13,8 @@ element.addEventListener("click",function(e) {
         deleteItem(id);
     }
 });
-search.addEventListener('input',function() {
-    request(base_url+"/compras/searchPurchase/"+search.value,"","get").then(function(objData){
+searchPanel.addEventListener('input',function() {
+    request(base_url+"/compras/searchPurchase/"+searchPanel.value,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{

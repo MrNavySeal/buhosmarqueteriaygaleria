@@ -15,7 +15,7 @@
                 $data['page_name'] = "compras";
                 $data['proveedores'] = $this->getSelectSuppliers();
                 $data['data'] = $this->getPurchases();
-                $data['app'] = "functions_compras.js";
+                $data['panelapp'] = "functions_compras.js";
                 $this->views->getView($this,"compras",$data);
             }else{
                 header("location: ".base_url());
@@ -49,7 +49,7 @@
                 $data['page_title'] = "Proveedores";
                 $data['page_name'] = "proveedores";
                 $data['data'] = $this->getSuppliers();
-                $data['app'] = "functions_proveedores.js";
+                $data['panelapp'] = "functions_proveedores.js";
                 $this->views->getView($this,"proveedores",$data);
             }else{
                 header("location: ".base_url());

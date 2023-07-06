@@ -1,9 +1,10 @@
-<?php headerAdmin($data)?>
+<?php headerPage($data)?>
 <div id="modalItem"></div>
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div class="container-lg">
-        <div class="card">
-            <div class="card-body">
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <h2 class="text-center"><?=$data['page_title']?></h2>
                 <button type="button" class="btn btn-success text-white" id="exportExcel" data-name="table<?=$data['page_title']?>" title="Export to excel" ><i class="fas fa-file-excel"></i></button>
                 <div class="row mb-3">
@@ -45,5 +46,5 @@
             </div>
         </div>
     </div>
-</div>
-<?php footerAdmin($data)?>        
+</main>  
+<?php footerPage($data)?>        

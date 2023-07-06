@@ -3,11 +3,14 @@
 let element = document.querySelector("#listItem");
 let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
 
+
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
         document.querySelector(".modal-title").innerHTML ="Nuevo descuento";
+        document.querySelector("#idDiscount").value = "";
+        document.querySelector("#intDiscount").value = "";
         modalView.show();
     });
 }
@@ -113,6 +116,7 @@ function editItem(id){
             document.querySelector("#statusList").innerHTML = objData.data.htmlStatus;
             document.querySelector("#intDiscount").value = objData.data.discount;
             document.querySelector(".modal-title").innerHTML ="Actualizar descuento";
+            
             if(objData.data.type == 2){
                 document.querySelector(".subcategoryDisplay").classList.remove("d-none");
                 document.querySelector("#subcategoryList").innerHTML = objData.data.htmls;

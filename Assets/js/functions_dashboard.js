@@ -17,9 +17,6 @@ $('.date-picker').datepicker( {
     }
 });
 
-let search = document.querySelector("#search");
-let sort = document.querySelector("#sortBy");
-let element = document.querySelector("#listItem");
 
 let btnContabilidadMes = document.querySelector("#btnContabilidadMes");
 let btnContabilidadAnio = document.querySelector("#btnContabilidadAnio");

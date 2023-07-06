@@ -16,8 +16,8 @@
                 $data['page_tag'] = "Productos";
                 $data['page_title'] = "Productos";
                 $data['page_name'] = "productos";
-                $data['products'] = $this->getProducts();
-                $data['app'] = "functions_products.js";
+                $data['data'] = $this->getProducts();
+                $data['panelapp'] = "functions_products.js";
                 $this->views->getView($this,"productos",$data);
             }else{
                 header("location: ".base_url());
@@ -29,7 +29,7 @@
                 $data['page_tag'] = "Productos";
                 $data['page_title'] = "Productos";
                 $data['page_name'] = "productos";
-                $data['app'] = "functions_product.js";
+                $data['panelapp'] = "functions_product.js";
                 if($params==""){
                     $this->views->getView($this,"crearproducto",$data);
                 }else{
@@ -44,11 +44,11 @@
         }
         public function categorias(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Categoría";
+                $data['page_tag'] = "Categorías";
                 $data['page_title'] = "Categorias";
-                $data['page_name'] = "categoria";
-                $data['categories'] = $this->getCategories();
-                $data['app'] = "functions_productcategory.js";
+                $data['page_name'] = "categorias";
+                $data['data'] = $this->getCategories();
+                $data['panelapp'] = "functions_productcategory.js";
                 $this->views->getView($this,"categorias",$data);
             }else{
                 header("location: ".base_url());
@@ -57,11 +57,11 @@
         }
         public function subcategorias(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Subcategoria";
+                $data['page_tag'] = "Subcategorias";
                 $data['page_title'] = "Subcategorias";
-                $data['page_name'] = "subcategoria";
-                $data['subcategories'] = $this->getSubCategories();
-                $data['app'] = "functions_productsubcategory.js";
+                $data['page_name'] = "subcategorias";
+                $data['data'] = $this->getSubCategories();
+                $data['panelapp'] = "functions_productsubcategory.js";
                 $this->views->getView($this,"subcategorias",$data);
             }else{
                 header("location: ".base_url());

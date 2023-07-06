@@ -12,10 +12,10 @@
         }
         public function roles(){
             if($_SESSION['idUser'] == 1){
-                $data['page_tag'] = "Rol";
+                $data['page_tag'] = "Roles";
                 $data['page_title'] = "Roles";
-                $data['page_name'] = "role";
-                $data['app'] = "functions_role.js";
+                $data['page_name'] = "roles";
+                $data['panelapp'] = "functions_role.js";
                 $data['data'] = $this->getRoles();
                 $this->views->getView($this,"roles",$data);
             }else{

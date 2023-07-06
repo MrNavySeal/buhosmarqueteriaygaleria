@@ -1,12 +1,12 @@
-<?php headerAdmin($data)?>
+<?php headerPage($data)?>
 <div id="modalItem"></div>
-
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div class="container-lg">
-        <div class="card">
-            <div class="card-body">
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <h2 class="text-center"><?=$data['page_title']?></h2>
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-pills" id="product-tab">
                     <li class="nav-item">
                         <button class="nav-link active" id="purchase-tab" data-bs-toggle="tab" data-bs-target="#purchase" type="button" role="tab" aria-controls="purchase" aria-selected="true">Nueva compra</button>
                     </li>
@@ -89,5 +89,5 @@
             </div>
         </div>
     </div>
-</div>
-<?php footerAdmin($data)?>        
+</main>
+<?php footerPage($data)?>        

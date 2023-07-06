@@ -17,7 +17,7 @@
                 $data['page_tag'] = "Cupones";
                 $data['page_title'] = "Cupones";
                 $data['page_name'] = "cupones";
-                $data['app'] = "functions_coupon.js";
+                $data['panelapp'] = "functions_coupon.js";
                 $this->views->getView($this,"cupones",$data);
             }else{
                 header("location: ".base_url());
@@ -29,7 +29,7 @@
                 $data['page_tag'] = "Descuentos";
                 $data['page_title'] = "Descuentos";
                 $data['page_name'] = "descuentos";
-                $data['app'] = "functions_discount.js";
+                $data['panelapp'] = "functions_discount.js";
                 $data['categories'] = $this->getSelectCategories();
                 $this->views->getView($this,"descuentos",$data);
             }else{

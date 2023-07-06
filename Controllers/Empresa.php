@@ -16,7 +16,7 @@
                 $data['page_tag'] = "Empresa";
                 $data['page_title'] = "Empresa";
                 $data['page_name'] = "empresa";
-                $data['app'] = "functions_company.js";
+                $data['panelapp'] = "functions_company.js";
                 $data['company'] = $this->model->selectCompany();
                 $data['currencies'] = $this->model->selectCurrencies();
                 $data['countries'] = $this->model->selectCountries();

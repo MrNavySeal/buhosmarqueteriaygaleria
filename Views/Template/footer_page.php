@@ -124,11 +124,22 @@ for ($i=0; $i < count($social) ; $i++) {
 </footer>
     
     <!------------------------------Frameworks--------------------------------->
+    <script src="<?= media();?>/frameworks/jquery/jquery.js"></script>
     <script src="<?= media(); ?>/frameworks/bootstrap/popper.min.js?n=1"></script>
     <script src="<?= media(); ?>/frameworks/bootstrap/bootstrap.min.js?n=1"></script>
+    
+    
     <!------------------------------Plugins--------------------------------->
     <script src="<?= media();?>/plugins/fontawesome/fontawesome.js"></script>
     <script src="<?= media();?>/plugins/sweetalert/sweetalert.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+    <script src="<?= media();?>/plugins/datepicker/jquery-ui.min.js"></script>
+    <script src="<?= media();?>/plugins/sheetjs/sheetjs.js"></script>
+    <script src="<?= media();?>/plugins/print/print.min.js"></script>
     <!------------------------------My functions--------------------------------->
     <script>
         const base_url = "<?= base_url(); ?>";
@@ -143,7 +154,8 @@ for ($i=0; $i < count($social) ; $i++) {
     <?php if(isset($data['app'])){?>
     <script src="<?=media();?>/template/Assets/js/<?=$data['app']."?v=".rand()?>"></script>
     <?php }?>
-    
-    
+    <?php if(isset($data['panelapp'])){?>
+    <script src="<?=media();?>/js/<?=$data['panelapp']."?v=".rand()?>"></script>
+    <?php }?>
 </body>
 </html>

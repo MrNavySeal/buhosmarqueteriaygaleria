@@ -1,78 +1,8 @@
 <?php headerPage($data)?>
 <div id="modalItem"></div>
-<main class="addFilter container mt-5 mb-3" id="<?=$data['page_name']?>">
-    <nav class="mt-2 mb-2" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>">Inicio</a></li>
-            <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>/perfil">Perfil</a></li>
-        </ol>
-    </nav>
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
     <div class="row w-100">
-        <div class="col-3 col-lg-3 col-md-12">
-            <aside class="p-2 filter-options">
-                <div class="accordion accordion-flush" id="accordionFlushExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-categorie">
-                            <button class="btn" type="button"></button>
-                            <a href="<?=base_url()?>/dashboard" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-chart-line"></i> Dashboard </a>
-                        </h2>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="true" aria-controls="flush-collapseTwo">
-                            
-                        </button>
-                        <a href="<?=base_url()?>/usuarios" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-users"></i> Usuarios</a>
-                        </h2>
-                        <div id="flush-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="flush-headingTwo">
-                            <div class="accordion-body">
-                                <ul class="list-group">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="<?=base_url()?>/usuarios">Usuarios</a>
-                                    </li> 
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="<?=base_url()?>/roles">Roles</a>
-                                    </li>        
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-categorie">
-                            <button class="btn" type="button"></button>
-                            <a href="<?=base_url()?>/clientes" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-user"></i> Clientes </a>
-                        </h2>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-heading4">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse4" aria-expanded="true" aria-controls="flush-collapse4">
-                            
-                        </button>
-                        <a href="" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-crop-alt"></i> Marqueteria</a>
-                        </h2>
-                        <div id="flush-collapse4" class="accordion-collapse collapse show" aria-labelledby="flush-heading4">
-                            <div class="accordion-body">
-                                <ul class="list-group">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="<?=base_url()?>/marqueteria/molduras">Molduras</a>
-                                    </li> 
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="<?=base_url()?>/marqueteria/materiales">Materiales</a>
-                                    </li>      
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="<?=base_url()?>/marqueteria/colores">Colores</a>
-                                    </li> 
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="<?=base_url()?>/marqueteria/categorias">Categorias</a>
-                                    </li>   
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-            <div class="filter-options-overlay"></div>
-        </div>
+        <?php require_once('Views/Template/nav_admin.php');?>
         <div class="col-12 col-lg-9 col-md-12">
             <form id="formProfile" name="formProfile" class="mb-4">
                 <input type="hidden" id="idUser" name="idUser" value="<?=$_SESSION['idUser']?>">

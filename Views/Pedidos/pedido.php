@@ -1,28 +1,25 @@
 <?php 
-headerAdmin($data);
-$order = $data['orderdata'];
-$detail = $data['orderdetail'];
-$total=0;
-$company = $data['company'];
-$subtotal = 0;
-$status="";
-if($order['status'] =="pendent"){
-    $status = 'pendiente';
-}else if($order['status'] =="approved"){
-    $status = 'aprobado';
-}else if($order['status'] =="canceled"){
-    $status = 'cancelado';
-}
-//dep($_SESSION['arrPOS']);
-//dep($detail);exit;
+    headerPage($data);
+    $order = $data['orderdata'];
+    $detail = $data['orderdetail'];
+    $total=0;
+    $company = $data['company'];
+    $subtotal = 0;
+    $status="";
+    if($order['status'] =="pendent"){
+        $status = 'pendiente';
+    }else if($order['status'] =="approved"){
+        $status = 'aprobado';
+    }else if($order['status'] =="canceled"){
+        $status = 'cancelado';
+    }
 ?>
-
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div id="modalItem"></div>
-    <div class="container-lg position-relative">
-        
-        <div class="card">
-            <div class="card-body">
+<div id="modalItem"></div>
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <div id="orderInfo" class="position-relative overflow-hidden"> 
                     <div class="d-flex justify-content-between flex-wrap mb-3">
                         <div class="mb-3 d-flex flex-wrap align-items-center">
@@ -257,5 +254,5 @@ if($order['status'] =="pendent"){
             </div>
         </div>
     </div>
-</div>
-<?php footerAdmin($data)?>        
+</main>
+<?php footerPage($data)?>             

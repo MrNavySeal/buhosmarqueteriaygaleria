@@ -1,5 +1,5 @@
 <?php 
-    headerAdmin($data);
+    headerPage($data);
     $product = $data['product'];
     $images = $product['image'];
     $categories = $product['categories'];
@@ -22,10 +22,12 @@
         }
     }
 ?>
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div class="container-lg">
-        <div class="card mb-4">
-            <div class="card-body">
+<div id="modalItem"></div>
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <form id="formFile" name="formFile">
                     <div class="row scrolly" id="upload-multiple">
                         <div class="col-6 col-lg-3">
@@ -228,7 +230,5 @@
             </div>
         </div>
     </div>
-</div>
-
-<?php footerAdmin($data)?>     
-</script> 
+</main>
+<?php footerPage($data)?>     

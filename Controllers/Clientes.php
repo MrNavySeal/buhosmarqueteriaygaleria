@@ -13,11 +13,11 @@
         }
         public function clientes(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Cliente";
+                $data['page_tag'] = "Clientes";
                 $data['page_title'] = "Clientes";
-                $data['page_name'] = "customer";
-                $data['customers'] = $this->getCustomers();
-                $data['app'] = "functions_customer.js";
+                $data['page_name'] = "clientes";
+                $data['data'] = $this->getCustomers();
+                $data['panelapp'] = "functions_customer.js";
                 $this->views->getView($this,"clientes",$data);
             }else{
                 header("location: ".base_url());

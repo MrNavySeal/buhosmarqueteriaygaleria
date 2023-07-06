@@ -1,5 +1,5 @@
 <?php 
-headerAdmin($data);
+headerPage($data);
 //dep($data['data']);exit;
 $purchase = $data['data'];
 $products = json_decode($purchase["products"],true);
@@ -7,12 +7,12 @@ $total = 0;
 $company = $data['company'];
 //dep($products);exit;
 ?>
-
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div id="modalItem"></div>
-    <div class="container-lg">
-        <div class="card">
-            <div class="card-body">
+<div id="modalItem"></div>
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <div id="orderInfo" class="position-relative overflow-hidden">
                     <div class="d-flex justify-content-between flex-wrap mb-3">
                         <div class="mb-3 d-flex flex-wrap align-items-center">
@@ -99,5 +99,5 @@ $company = $data['company'];
             </div>
         </div>
     </div>
-</div>
-<?php footerAdmin($data)?>        
+</main>
+<?php footerPage($data)?>        

@@ -16,8 +16,8 @@
                 $data['page_tag'] = "Molduras";
                 $data['page_title'] = "Molduras";
                 $data['page_name'] = "moldura";
-                $data['products'] = $this->getProducts();
-                $data['app'] = "functions_molding.js";
+                $data['data'] = $this->getProducts();
+                $data['panelapp'] = "functions_molding.js";
                 $this->views->getView($this,"molduras",$data);
             }else{
                 header("location: ".base_url());
@@ -29,8 +29,8 @@
                 $data['page_tag'] = "Colores";
                 $data['page_title'] = "Colores";
                 $data['page_name'] = "colores";
-                $data['colores'] = $this->getColors();
-                $data['app'] = "functions_colors.js";
+                $data['data'] = $this->getColors();
+                $data['panelapp'] = "functions_colors.js";
                 $this->views->getView($this,"colores",$data);
             }else{
                 header("location: ".base_url());
@@ -42,8 +42,8 @@
                 $data['page_tag'] = "Materiales";
                 $data['page_title'] = "Materiales";
                 $data['page_name'] = "materiales";
-                $data['colores'] = $this->getMaterials();
-                $data['app'] = "functions_materials.js";
+                $data['data'] = $this->getMaterials();
+                $data['panelapp'] = "functions_materials.js";
                 $this->views->getView($this,"materiales",$data);
             }else{
                 header("location: ".base_url());
@@ -55,8 +55,8 @@
                 $data['page_tag'] = "Categorias";
                 $data['page_title'] = "Categorias";
                 $data['page_name'] = "categorias";
-                $data['categorias'] = $this->getCategories();
-                $data['app'] = "functions_moldingcategory.js";
+                $data['data'] = $this->getCategories();
+                $data['panelapp'] = "functions_moldingcategory.js";
                 $this->views->getView($this,"categorias",$data);
             }else{
                 header("location: ".base_url());

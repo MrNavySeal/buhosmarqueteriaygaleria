@@ -15,41 +15,41 @@
             $params = strClean($params);
             $request = $this->model->selectTipo($params);
             if(!empty($request)){
-                $data['page_tag'] = $request['name'].' | '.$company['name'];
-                $data['page_title'] = $request['name'].' | '.$company['name'];
+                $data['page_tag'] = $request['name'];
+                $data['page_title'] = $request['name'];
                 $data['page_name'] = "personalizar";
                 $data['tipo'] = $request;
                 $data['molduras'] = $this->getProducts();
                 if($request['id'] == 1){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar.js?v=".rand();
+                    $data['panelapp'] = "functions_personalizar.js";
                     $data['option'] = getFile("Template/Enmarcar/pos_marcos",$data);
                 }elseif($request['id'] == 3){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_foto.js?v=".rand();
+                    $data['panelapp'] = "functions_personalizar_foto.js";
                     $data['option'] = getFile("Template/Enmarcar/pos_foto",$data);
                 }elseif($request['id']==4){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_lienzo.js?v=".rand();
+                    $data['panelapp'] = "functions_personalizar_lienzo.js";
                     $data['option'] = getFile("Template/Enmarcar/pos_lienzo",$data);
                 }elseif($request['id']==5){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_espejo.js?v=".rand();
+                    $data['panelapp'] = "functions_personalizar_espejo.js";
                     $data['option'] = getFile("Template/Enmarcar/pos_espejo",$data);
                 }elseif($request['id'] == 6){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_papiro.js";
+                    $data['panelapp'] = "functions_personalizar_papiro.js";
                     $data['option'] = getFile("Template/Enmarcar/papiro",$data);
                 }elseif($request['id'] == 7){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_directo.js";
+                    $data['panelapp'] = "functions_personalizar_directo.js";
                     $data['option'] = getFile("Template/Enmarcar/gobelino",$data);
                 }elseif($request['id'] == 8){
                     $data['colores'] = $this->model->selectColors();
-                    $data['app'] = "functions_personalizar_retablo.js";
+                    $data['panelapp'] = "functions_personalizar_retablo.js";
                     $data['option'] = getFile("Template/Enmarcar/retablo",$data);
                 }elseif($request['id'] == 9){
-                    $data['app'] = "functions_personalizar_marco.js";
+                    $data['panelapp'] = "functions_personalizar_marco.js";
                     $data['option'] = getFile("Template/Enmarcar/marco",$data);
                 }
                 $this->views->getView($this,"personalizar",$data);

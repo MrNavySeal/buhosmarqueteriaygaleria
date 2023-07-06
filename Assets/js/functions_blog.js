@@ -1,8 +1,5 @@
 'use strict';
 
-
-let search = document.querySelector("#search");
-let sort = document.querySelector("#sortBy");
 let element = document.querySelector("#listItem");
 
 if(document.querySelector("#btnNew")){

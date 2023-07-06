@@ -1,12 +1,12 @@
 'use strict';
 
 
-let search = document.querySelector("#search");
-let sort = document.querySelector("#sortBy");
+let searchPanel = document.querySelector("#search");
+let sortPanel = document.querySelector("#sortBy");
 let element = document.querySelector("#listItem");
 
-search.addEventListener('input',function() {
-    request(base_url+"/user/search/"+search.value,"","get").then(function(objData){
+searchPanel.addEventListener('input',function() {
+    request(base_url+"/usuarios/search/"+searchPanel.value,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{
@@ -15,8 +15,8 @@ search.addEventListener('input',function() {
     });
 })
 
-sort.addEventListener("change",function(){
-    request(base_url+"/user/sort/"+sort.value,"","get").then(function(objData){
+sortPanel.addEventListener("change",function(){
+    request(base_url+"/usuarios/sort/"+sortPanel.value,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{

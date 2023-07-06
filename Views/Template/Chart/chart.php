@@ -15,7 +15,8 @@
             text: 'Gráfico de <?=$ingresos['month']." ".$ingresos['year']?>'
         },
         subtitle: {
-            text: 'Total: <?=formatNum($resultadoMensual)?>'
+            text: `Ingresos: <?=formatNum($ingresos['total'])?> - Costos: <?=formatNum($costos['total'])?><br>
+                   Neto: <?=formatNum($resultadoMensual)?>`
         },
         xAxis: {
             categories: [
@@ -79,7 +80,8 @@
             text: 'Gráfico del año <?=$dataAnual[0]['year']?>'
         },
         subtitle: {
-            text: 'Ingresos netos: <?=formatNum($resultadoAnual)?>'
+            text: `Ingresos: <?=formatNum($ingresosAnual)?> - Costos: <?=formatNum($costosAnual)?><br>
+                   Neto: <?=formatNum($resultadoAnual)?>`
         },
         xAxis: {
             categories: [

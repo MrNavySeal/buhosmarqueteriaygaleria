@@ -19,10 +19,8 @@
                 $data['page_tag'] = "Pedidos";
                 $data['page_title'] = "Pedidos";
                 $data['page_name'] = "pedidos";
-                $data['orders'] = $this->getOrders();
-                $data['products'] = $this->getProducts();
-                $data['tipos'] = $this->model->selectCategories();
-                $data['app'] = "functions_orders.js?v=".rand();
+                $data['data'] = $this->getOrders();
+                $data['panelapp'] = "functions_orders.js";
                 $this->views->getView($this,"pedidos",$data);
             }else{
                 header("location: ".base_url());
@@ -36,7 +34,7 @@
                 $data['page_name'] = "punto de venta";
                 $data['products'] = $this->getProducts();
                 $data['tipos'] = $this->model->selectCategories();
-                $data['app'] = "functions_pos.js?v=".rand();
+                $data['panelapp'] = "functions_pos.js";
                 $this->views->getView($this,"pos",$data);
             }else{
                 header("location: ".base_url());
@@ -80,7 +78,7 @@
                 $data['page_tag'] = "Transacción";
                 $data['page_title'] = "Transacción";
                 $data['page_name'] = "transaccion";
-                $data['app'] = "functions_orders.js";
+                $data['panelapp'] = "functions_orders.js";
                 $this->views->getView($this,"transaccion",$data);
                 
             }else{

@@ -17,7 +17,7 @@
                 $data['page_title'] = "Opiniones";
                 $data['page_name'] = "opiniones";
                 $data['data'] = $this->getReviews();
-                $data['app'] = "functions_reviews.js";
+                $data['panelapp'] = "functions_reviews.js";
                 $this->views->getView($this,"opiniones",$data);
             }else{
                 header("location: ".base_url());

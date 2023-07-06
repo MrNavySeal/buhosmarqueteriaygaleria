@@ -1,12 +1,13 @@
 <?php 
-    headerAdmin($data);
+    headerPage($data);
 ?>
 <div id="modalItem"></div>
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div class="container-lg">
-        <div class="card">
-            <div class="card-body">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
+<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
+    <div class="row">
+        <?php require_once('Views/Template/nav_admin.php');?>
+        <div class="col-12 col-lg-9 col-md-12">
+            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
+            <ul class="nav nav-pills" id="product-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="free-tab" data-bs-toggle="tab" data-bs-target="#free" type="button" role="tab" aria-controls="free" aria-selected="true">Envio gratis</button>
                     </li>
@@ -17,7 +18,6 @@
                         <button class="nav-link" id="city-tab" data-bs-toggle="tab" data-bs-target="#city" type="button" role="tab" aria-controls="city" aria-selected="false">Por ciudad</button>
                     </li>
                 </ul>
-                
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane show active" id="free" role="tabpanel" aria-labelledby="free-tab">
                         <div class="mt-3 container">
@@ -117,5 +117,5 @@
             </div>
         </div>
     </div>
-</div>
-<?php footerAdmin($data)?>        
+</main>  
+<?php footerPage($data)?>        

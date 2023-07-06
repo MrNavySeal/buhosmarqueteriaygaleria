@@ -23,20 +23,23 @@
     background-color: $color1;
 }
 .form-select{
-    border:none; 
+    border:0.5px solid $color5; 
+    margin: 0 1px;
     &:focus{
         outline: none;
-        box-shadow: 0 .5rem 1rem rgba($color1,.15)!important;
-        border:none; 
+        box-shadow: 0 0 0 transparent!important; 
+        border:0.5px solid $color5; 
     }
 }
 .form-control{
-    border:none; 
+    border:0.5px solid $color5; 
+    margin: 0 1px;
     &:focus{
         outline: none;
-        box-shadow: 0 .5rem 1rem rgba($color1,.15)!important;
-        border:none; 
+        box-shadow: 0 0 0 transparent!important;
+        border:0.5px solid $color5; 
     }
+    
 }
 .toast-container{
     z-index: 9999;
