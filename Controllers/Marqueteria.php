@@ -694,6 +694,7 @@
                         $idCategory = intval($_POST['idCategory']);
                         $strName = ucwords(strClean($_POST['txtName']));
                         $strDescription = strClean($_POST['txtDescription']);
+                        $strButton = strClean($_POST['txtBtn']);
                         $intStatus = intval($_POST['statusList']);
                         $route = str_replace(" ","-",$strName);
                         $route = str_replace("?","",$route);
@@ -713,7 +714,7 @@
                                     $photoCategory = 'moldingcategory_'.bin2hex(random_bytes(6)).'.png';
                                 }
 
-                                $request= $this->model->insertCategory($photoCategory,$strName,$strDescription,$route,$intStatus);
+                                $request= $this->model->insertCategory($photoCategory,$strName,$strDescription,$route,$intStatus,$strButton);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
@@ -728,7 +729,7 @@
                                     $photo = $_FILES['txtImg'];
                                     $photoCategory = 'moldingcategory_'.bin2hex(random_bytes(6)).'.png';
                                 }
-                                $request = $this->model->updateCategory($idCategory,$photoCategory,$strName,$strDescription,$route,$intStatus);
+                                $request = $this->model->updateCategory($idCategory,$photoCategory,$strName,$strDescription,$route,$intStatus,$strButton);
                             }
                         }
                         if($request > 0 ){
