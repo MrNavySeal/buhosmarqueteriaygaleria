@@ -70,6 +70,10 @@ function addItem(){
                             <textarea class="form-control" id="txtDescription" name="txtDescription" rows="5"></textarea>
                         </div>
                         <div class="mb-3">
+                            <label for="txtBtn" class="form-label">Botón <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="txtBtn" name="txtBtn" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
                             <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
                                 <option value="1">Activo</option>
@@ -161,6 +165,10 @@ function editItem(id){
                             <div class="mb-3">
                                 <label for="txtDescription" class="form-label">Descripción </label>
                                 <textarea class="form-control" id="txtDescription" name="txtDescription" rows="5">${objData.data.description}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtBtn" class="form-label">Botón <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtBtn" name="txtBtn" required value="${objData.data.button}">
                             </div>
                             <div class="mb-3">
                                 <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
