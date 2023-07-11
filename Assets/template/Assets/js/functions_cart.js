@@ -116,9 +116,12 @@ function cartIncrement(element){
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
-    
+    let situ = "";
     if(params.get("cupon")){
         cupon = params.get("cupon");
+    }
+    if(params.get("situ")){
+        situ = params.get("situ");
     }
     let city = "";
     if(document.querySelector("#selectCity")){
@@ -134,6 +137,7 @@ function cartIncrement(element){
     formData.append("cupon",cupon);
     formData.append("city",city);
     formData.append("variant",variant);
+    formData.append("situ",situ);
     if(topic == 1){
         let height = parent.getAttribute("data-h");
         let width = parent.getAttribute("data-w");
@@ -184,7 +188,10 @@ function cartDecrement(element){
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
-    
+    let situ = "";
+    if(params.get("situ")){
+        situ = params.get("situ");
+    }
     if(params.get("cupon")){
         cupon = params.get("cupon");
     }
@@ -206,6 +213,7 @@ function cartDecrement(element){
     formData.append("cupon",cupon);
     formData.append("city",city);
     formData.append("variant",variant);
+    formData.append("situ",situ);
     if(topic == 1){
         let height = parent.getAttribute("data-h");
         let width = parent.getAttribute("data-w");
@@ -256,7 +264,10 @@ function cartInput(input){
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
-
+    let situ = "";
+    if(params.get("situ")){
+        situ = params.get("situ");
+    }
     if(input.value == "" || input.value == 0 || input.value < 0){
         input.value = 1
     }
@@ -276,6 +287,7 @@ function cartInput(input){
     formData.append("cupon",cupon);
     formData.append("city",city);
     formData.append("variant",variant);
+    formData.append("situ",situ);
     if(topic == 1){
         let height = parent.getAttribute("data-h");
         let width = parent.getAttribute("data-w");
@@ -331,10 +343,22 @@ function delCart(elements){
             let variant = data.getAttribute("data-variant") ? data.getAttribute("data-variant") : null ;
             let topic = data.getAttribute("data-topic");
             let id = data.getAttribute("data-id");
+            let city="";
+            if(params.get("situ")){
+                situ = params.get("situ");
+            }
+            if(params.get("cupon")){
+                cupon = params.get("cupon");
+            }
+            if(document.querySelector("#selectCity")){
+                city = document.querySelector("#selectCity").value;
+            }
             formData.append("variant",variant);
             formData.append("topic",topic);
             formData.append("id",id);
-            
+            formData.append("situ",situ);
+            formData.append("cupon",cupon);
+            formData.append("city",city);
             if(topic == 1){
                 let photo = data.getAttribute("data-f");
                 let height = data.getAttribute("data-h");
@@ -378,6 +402,9 @@ function delCart(elements){
                         situ = "?situ="+params.get("situ");
                     }else{
                         situ = "&situ="+params.get("situ");
+                    }
+                    if(document.querySelector("#cuponTotal")){
+                        document.querySelector("#cuponTotal").innerHTML = objData.cupon;
                     }
                     //window.location.href=base_url+"/carrito"+cupon+situ;
                     //updateCart();

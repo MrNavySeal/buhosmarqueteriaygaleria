@@ -185,6 +185,8 @@
                 $id = $_POST['id'];
                 $topic = intval($_POST['topic']);
                 $code = strClean($_POST['cupon']);
+                $situ = strtolower(strClean($_POST['situ']));
+                
                 $variant = $_POST['variant'] != null ? $_POST['variant'] : null;
                 if($topic == 1){
                     $height = floatval($_POST['height']);
@@ -248,7 +250,7 @@
                         }
                     }
                     $_SESSION['arrCart'] = $arrProducts;
-                    $shipping = $this->calcTotalCart($_SESSION['arrCart'],$code,$city);
+                    $shipping = $this->calcTotalCart($_SESSION['arrCart'],$code,$city,$situ);
                     $subtotal = $shipping['subtotal'];
                     $total = $shipping['total'];
                     $cupon = $shipping['cupon'];
@@ -268,9 +270,13 @@
             die();
         }
         public function delCart(){
+        //dep($_POST);exit;
             if($_POST){
                 $id = $_POST['id'];
                 $topic = intval($_POST['topic']);
+                $code = strClean($_POST['cupon']);
+                $situ = strtolower(strClean($_POST['situ']));
+                $city = intval($_POST['city']);
                 $total=0;
                 $qtyCart=0;
                 $arrCart = $_SESSION['arrCart'];
@@ -322,10 +328,17 @@
                 foreach ($_SESSION['arrCart'] as $quantity) {
                     $qtyCart += $quantity['qty'];
                 }
-                $shipping = $this->calcTotalCart($_SESSION['arrCart']);
+                $shipping = $this->calcTotalCart($_SESSION['arrCart'],$code,$city,$situ);
+                $cupon = $shipping['cupon'];
                 $subtotal = $shipping['subtotal'];
                 $total = $shipping['total'];
-                $arrResponse = array("status"=>true,"total" =>formatNum($total),"subtotal"=>formatNum($subtotal),"qty"=>$qtyCart);
+                $arrResponse = array(
+                    "status"=>true,
+                    "total" =>formatNum($total),
+                    "subtotal"=>formatNum($subtotal),
+                    "qty"=>$qtyCart,
+                    "cupon"=>formatNum($cupon)
+                );
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
@@ -425,7 +438,7 @@
             echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
-        public function calcTotalCart($arrProducts,$code=null,$city=null){
+        public function calcTotalCart($arrProducts,$code=null,$city=null,$situ=null){
             $arrShipping = $this->selectShippingMode();
             $total=0;
             $subtotal=0;
@@ -449,6 +462,7 @@
                 $shipping = $cityVal;
                 $_SESSION['shippingcity'] = $shipping;
             }
+            $shipping = $situ == "true" ? 0 : $shipping;
             $total = $subtotal + $shipping;
             if($code != ""){
                 $arrCupon = $this->selectCouponCode($code);

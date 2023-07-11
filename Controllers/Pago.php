@@ -86,7 +86,7 @@
             $data['page_name'] = "Error";
             $this->views->getView($this,"error",$data); 
         }
-        public function calcTotalCart($arrProducts,$code=null,$city=null){
+        public function calcTotalCart($arrProducts,$code=null,$city=null,$situ){
             $arrShipping = $this->selectShippingMode();
             $total=0;
             $subtotal=0;
@@ -108,6 +108,7 @@
             if($arrShipping['id'] != 3){
                 $shipping = $arrShipping['value'];
             }
+            $shipping = $situ == "true" ? 0 : $shipping;
             $total = $subtotal + $shipping;
             if($code != ""){
                 $arrCupon = $this->selectCouponCode($code);
@@ -157,7 +158,7 @@
                     $strPostal = strClean($_POST['txtPostCodeOrder']);
                     $strNote = strClean($_POST['txtNote']);
                     $strDocument = strClean($_POST['txtDocument']);
-                    $situ = strClean($_POST['situ']);
+                    $situ = strtolower(strClean($_POST['situ']));
                     $strAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
                     $strName = $strName." ".$strLastName;
 
@@ -195,7 +196,7 @@
             $envio = 0;
             $statusOrder ="confirmado";
             $arrProducts = $_SESSION['arrCart'];
-            $arrTotal = $this->calcTotalCart($arrProducts,$cupon);
+            $arrTotal = $this->calcTotalCart($arrProducts,$cupon,null,$situ);
             $total = $arrTotal['total'];
             if($arrTotal['status']){
                 $cupon ="";
@@ -206,14 +207,15 @@
             }
 
             $arrShipping = $this->selectShippingMode();
-            if($situ =="false" || $situ ==""){
-                if($arrShipping['id']<3){
-                    $envio = $arrShipping['value'];
-                }else if($arrShipping['id']==3){
-                    $envio = $_SESSION['shippingcity'];
-                    $total +=$envio;
-                }
+            if($arrShipping['id']<3){
+                $envio = $arrShipping['value'];
+            }else if($arrShipping['id']==3){
+                $envio = $_SESSION['shippingcity'];
             }
+            if($situ =="true"){
+                $envio = 0;
+            }
+            //$total +=$envio;
             $request = $this->insertOrder($idUser, $idTransaction,$strName,$strDocument,$strEmail,$strPhone,$strAddress,$strNote,$cupon,$envio,$total,$status,$type,$statusOrder);          
             if($request>0){
                 $arrOrder = array("idorder"=>$request,"iduser"=>$_SESSION['idUser'],"products"=>$_SESSION['arrCart']);

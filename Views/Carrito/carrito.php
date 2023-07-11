@@ -8,7 +8,7 @@
     $urlCupon="";
     $situ = isset($_GET['situ']) ? $_GET['situ'] : "";
     $urlSitu = $situ !="" ? "?situ=".$situ : "";
-    
+    $shipping = 0;
     if(isset($_GET['cupon'])){
         if($situ !=""){
             $urlCupon = "?cupon=".$_GET['cupon']."&situ=".$situ;
@@ -29,6 +29,7 @@
             </nav>
             <?php if(isset($_SESSION['arrCart']) && !empty($_SESSION['arrCart'])){ 
                     $arrProducts = $_SESSION['arrCart'];
+                    
                     $cupon = 0;
                     for ($i=0; $i < count($arrProducts) ; $i++) { 
                         if($arrProducts[$i]['topic'] == 2){
@@ -48,7 +49,10 @@
                         $total = $subtotal;
                     }
                     if($arrShipping['id'] != 3){
-                        $total+=$arrShipping['value'];
+                        $shipping+=$arrShipping['value'];
+                    }
+                    if($situ=="false"){
+                        $total+=$shipping;
                     }
             ?>
             <div class="row mb-5">
