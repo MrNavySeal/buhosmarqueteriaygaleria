@@ -4,12 +4,15 @@
     $orders = $data['orders'];
     $productos = $data['products'];
     $costos=$data['resumenMensual']['costos']['total'];
+    $gastos = $data['resumenMensual']['gastos']['total'];
     $ingresos = $data['resumenMensual']['ingresos']['total'];
 
     $ingresosAnual = $data['resumenAnual']['total'];
     $costosAnual = $data['resumenAnual']['costos'];
-    $resultadoAnual = $ingresosAnual-$costosAnual;
-    $resultadoMensual = $ingresos -$costos;
+    $gastosAnual = $data['resumenAnual']['gastos'];
+
+    $resultadoAnual = $ingresosAnual-($costosAnual+$gastosAnual);
+    $resultadoMensual = $ingresos -($costos+$gastos);
 
     $dataAnual = $data['resumenAnual']['data'];
 ?>
@@ -229,7 +232,7 @@
             text: 'Gráfico de <?=$data['resumenMensual']['ingresos']['month']." ".$data['resumenMensual']['ingresos']['year']?>'
         },
         subtitle: {
-            text: `Ingresos: <?=formatNum($ingresos)?> - Costos: <?=formatNum($costos)?><br>
+            text: `Ingresos: <?=formatNum($ingresos)?> - Costos: <?=formatNum($costos)?> - Gastos: <?=formatNum($gastos)?><br>
                    Neto: <?=formatNum($resultadoMensual)?>`
         },
         xAxis: {
@@ -275,6 +278,16 @@
                     }
                 ?>
             ]
+        },{
+            name: 'Gastos',
+            data: [
+                <?php
+                    
+                    for ($i=0; $i < count($data['resumenMensual']['gastos']['gastos']) ; $i++) { 
+                        echo $data['resumenMensual']['gastos']['gastos'][$i]['total'].",";
+                    }
+                ?>
+            ]
         }]
         
     });
@@ -286,7 +299,7 @@
             text: 'Gráfico del año <?=$dataAnual[0]['year']?>'
         },
         subtitle: {
-            text: `Ingresos: <?=formatNum($ingresosAnual)?> - Costos: <?=formatNum($costosAnual)?><br>
+            text: `Ingresos: <?=formatNum($ingresosAnual)?> - Costos: <?=formatNum($costosAnual)?> - Gastos: <?=formatNum($gastosAnual)?><br>
                    Neto: <?=formatNum($resultadoAnual)?>`
         },
         xAxis: {
@@ -351,6 +364,15 @@
                 <?php
                     for ($i=0; $i < count($dataAnual) ; $i++) { 
                         echo '["'.$dataAnual[$i]['month'].'"'.",".''.$dataAnual[$i]['costos'].'],';
+                    }    
+                ?>
+            ],
+        }, {
+            name: 'Gastos',
+            data: [
+                <?php
+                    for ($i=0; $i < count($dataAnual) ; $i++) { 
+                        echo '["'.$dataAnual[$i]['month'].'"'.",".''.$dataAnual[$i]['gastos'].'],';
                     }    
                 ?>
             ],

@@ -45,7 +45,8 @@
                     
                     $ingresos = $request['ingresos']['total'];
                     $costos = $request['costos']['total'];
-                    $neto = $ingresos-$costos;
+                    $gastos = $request['gastos']['total'];
+                    $neto = $ingresos-($costos+$gastos);
                     
                     $html ="";
                     if($neto < 0){
@@ -55,10 +56,12 @@
                     }
                     $request['dataingresos'] = $request['ingresos'];
                     $request['datacostos'] = $request['costos'];
+                    $request['datagastos'] = $request['gastos'];
                     $request['mes'] =$request['ingresos']['month'];
                     $request['anio'] = $request['ingresos']['year'];
                     $request['ingresos'] =formatNum($ingresos);
                     $request['costos'] =formatNum($costos);
+                    $request['gastos'] =formatNum($gastos);
                     $request['neto'] = $html;
                     $request['chart'] = "month";
                     $request['script'] = getFile("Template/Chart/chart",$request);
@@ -81,7 +84,8 @@
                         $request = $this->model->selectAccountYear($year);
                         $ingresos = $request['total'];
                         $costos = $request['costos'];
-                        $neto = $ingresos-$costos;
+                        $gastos = $request['gastos'];
+                        $neto = $ingresos-($costos+$gastos);
                         
                         $html ="";
                         if($neto < 0){

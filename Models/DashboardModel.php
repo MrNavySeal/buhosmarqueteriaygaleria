@@ -106,9 +106,11 @@
         public function selectAccountMonth(int $year, int $month){
             $totalPerMonth = 0;
             $totalCostos = 0;
+            $totalGastos = 0;
             //$month = 7;
             $arrSalesDay = array();
             $arrCostos = array();
+            $arrGastos = array();
             $days = cal_days_in_month(CAL_GREGORIAN,$month,$year);
             $day = 1;
             for ($i=0; $i < $days ; $i++) { 
@@ -117,9 +119,9 @@
                 //Ingresos
                 $sql ="SELECT 
                     DAY(date) AS day, 
-                    COUNT(idorder) AS quantity, 
-                    SUM(amount) AS total FROM orderdata 
-                    WHERE DATE(date) = '$date_format' AND status = 'approved'";
+                    COUNT(id) AS quantity, 
+                    SUM(amount) AS total FROM count_amount
+                    WHERE DATE(date) = '$date_format' AND status = 1 AND type_id = 3";
                 $request = $this->select($sql);
                 $request['day'] = $day;
                 $request['total'] = $request['total'] =="" ? 0 : $request['total'];
@@ -128,23 +130,35 @@
                 //Costos
                 $sqlCostos ="SELECT 
                     DAY(date) AS day, 
-                    COUNT(idpurchase) AS quantity, 
-                    SUM(total) AS total FROM purchase 
-                    WHERE DATE(date) = '$date_format'";
+                    COUNT(id) AS quantity, 
+                    SUM(amount) AS total FROM count_amount 
+                    WHERE DATE(date) = '$date_format' AND status = 1 AND type_id = 2";
                 $requestCostos = $this->select($sqlCostos);
                 $requestCostos['day'] = $day;
                 $requestCostos['total'] = $requestCostos['total'] =="" ? 0 : $requestCostos['total'];
                 $totalCostos+=$requestCostos['total'];
 
+                //Gastos
+                $sqlGastos ="SELECT 
+                    DAY(date) AS day, 
+                    COUNT(id) AS quantity, 
+                    SUM(amount) AS total FROM count_amount 
+                    WHERE DATE(date) = '$date_format' AND status = 1 AND type_id = 1";
+                $requestGastos = $this->select($sqlGastos);
+                $requestGastos['day'] = $day;
+                $requestGastos['total'] = $requestGastos['total'] =="" ? 0 : $requestGastos['total'];
+                $totalGastos+=$requestGastos['total'];
+
                 array_push($arrSalesDay,$request);
                 array_push($arrCostos,$requestCostos);
-
+                array_push($arrGastos,$requestGastos);
                 $day++;
             }
             $months = months();
             $arrData = array(
                 "ingresos"=>array("year"=>$year,"month"=>$months[$month-1],"total"=>$totalPerMonth,"sales"=>$arrSalesDay),
-                "costos"=>array("total"=>$totalCostos,"costos"=>$arrCostos)
+                "costos"=>array("total"=>$totalCostos,"costos"=>$arrCostos),
+                "gastos"=>array("total"=>$totalGastos,"gastos"=>$arrGastos)
             );
             return $arrData;
         }
@@ -153,24 +167,33 @@
             $months = months();
             $total =0;
             $costos=0;
+            $gastos=0;
             for ($i=1; $i <=12 ; $i++) { 
-                $arrData = array("year"=>"","month"=>"","nmonth"=>"","sale"=>"","costos"=>"");
+                $arrData = array("year"=>"","month"=>"","nmonth"=>"","sale"=>"","costos"=>"","gastos"=>"");
                 //Ingresos
                 $sql = "SELECT $year as year, 
                         $i as month, 
                         sum(amount) as sale 
-                        FROM orderdata
-                        WHERE MONTH(date) = $i AND YEAR(date) = $year AND status = 'approved' 
+                        FROM count_amount
+                        WHERE MONTH(date) = $i AND YEAR(date) = $year AND status = 1 AND type_id = 3 
                         GROUP BY MONTH(date)";
                 $request = $this->select($sql);
                 //Costos
                 $sqlCostos = "SELECT $year as year, 
                         $i as month, 
-                        sum(total) as total 
-                        FROM purchase
-                        WHERE MONTH(date) = $i AND YEAR(date) = $year 
+                        sum(amount) as total 
+                        FROM count_amount
+                        WHERE MONTH(date) = $i AND YEAR(date) = $year  AND status = 1 AND type_id = 2
                         GROUP BY MONTH(date)";
                 $requestCostos = $this->select($sqlCostos);
+                //Gastos
+                $sqlGastos = "SELECT $year as year, 
+                        $i as month, 
+                        sum(amount) as total 
+                        FROM count_amount
+                        WHERE MONTH(date) = $i AND YEAR(date) = $year  AND status = 1 AND type_id = 1
+                        GROUP BY MONTH(date)";
+                $requestGastos = $this->select($sqlGastos);
                 $arrData['month'] = $months[$i-1];
                 if(empty($request)){
                     $arrData['year'] = $year;
@@ -186,12 +209,18 @@
                 }else{
                     $arrData['costos'] = $requestCostos['total'];
                 }
+                if(empty($requestGastos)){
+                    $arrData['gastos'] = 0;
+                }else{
+                    $arrData['gastos'] = $requestGastos['total'];
+                }
                 $total+=$arrData['sale'];
                 $costos+=$arrData['costos'];
+                $gastos+=$arrData['gastos'];
                 array_push($arrSalesMonth,$arrData);
                 
             }
-            $arrData = array("data"=>$arrSalesMonth,"total"=>$total,"costos"=>$costos);
+            $arrData = array("data"=>$arrSalesMonth,"total"=>$total,"costos"=>$costos,"gastos"=>$gastos);
             //dep($arrData);exit;
             return $arrData;
         }

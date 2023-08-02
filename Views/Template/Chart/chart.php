@@ -3,8 +3,8 @@
     if($data['chart']=="month"){
     $ingresos = $data['dataingresos'];
     $costos = $data['datacostos'];
-
-    $resultadoMensual = $ingresos['total'] -$costos['total'];
+    $gastos = $data['datagastos'];
+    $resultadoMensual = $ingresos['total'] -($costos['total']+$gastos['total']);
 ?>
 <script>
     Highcharts.chart('monthChart', {
@@ -15,7 +15,7 @@
             text: 'Gráfico de <?=$ingresos['month']." ".$ingresos['year']?>'
         },
         subtitle: {
-            text: `Ingresos: <?=formatNum($ingresos['total'])?> - Costos: <?=formatNum($costos['total'])?><br>
+            text: `Ingresos: <?=formatNum($ingresos['total'])?> - Costos: <?=formatNum($costos['total'])?> - Gastos: <?=formatNum($gastos['total'])?><br>
                    Neto: <?=formatNum($resultadoMensual)?>`
         },
         xAxis: {
@@ -62,6 +62,17 @@
                     }
                 ?>
             ]
+        },
+        {
+            name: 'Gastos',
+            data: [
+                <?php
+                    
+                    for ($i=0; $i < count($gastos['gastos']) ; $i++) { 
+                        echo $gastos['gastos'][$i]['total'].",";
+                    }
+                ?>
+            ]
         }]
     });
 </script>
@@ -69,7 +80,8 @@
     $dataAnual = $data['data'];
     $ingresosAnual = $data['total'];
     $costosAnual = $data['costos'];
-    $resultadoAnual = $ingresosAnual-$costosAnual;
+    $gastosAnual = $data['gastos'];
+    $resultadoAnual = $ingresosAnual-($costosAnual+$gastosAnual);
 ?>
 <script>
     Highcharts.chart('yearChart', {
@@ -80,7 +92,7 @@
             text: 'Gráfico del año <?=$dataAnual[0]['year']?>'
         },
         subtitle: {
-            text: `Ingresos: <?=formatNum($ingresosAnual)?> - Costos: <?=formatNum($costosAnual)?><br>
+            text: `Ingresos: <?=formatNum($ingresosAnual)?> - Costos: <?=formatNum($costosAnual)?> - Gastos: <?=formatNum($gastosAnual)?><br>
                    Neto: <?=formatNum($resultadoAnual)?>`
         },
         xAxis: {
@@ -145,6 +157,15 @@
                 <?php
                     for ($i=0; $i < count($dataAnual) ; $i++) { 
                         echo '["'.$dataAnual[$i]['month'].'"'.",".''.$dataAnual[$i]['costos'].'],';
+                    }    
+                ?>
+            ],
+        }, {
+            name: 'Gastos',
+            data: [
+                <?php
+                    for ($i=0; $i < count($dataAnual) ; $i++) { 
+                        echo '["'.$dataAnual[$i]['month'].'"'.",".''.$dataAnual[$i]['gastos'].'],';
                     }    
                 ?>
             ],
