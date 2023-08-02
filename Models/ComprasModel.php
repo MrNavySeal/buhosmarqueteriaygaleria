@@ -108,11 +108,14 @@
             $sql = "INSERT INTO purchase(supplierid,products,total,date) VALUE(?,?,?,?)";
             $arrData = array($this->intId,$this->arrProducts,$this->intTotal,$dateFormat);
             $request = $this->insert($sql,$arrData);
+            if($request>0){
+                $this->insertEgress($request,2,2,"Compra de material",$this->intTotal,$strDate,1);
+            }
             return $request;
         }
         public function deletePurchase($id){
             $this->intId = $id;
-            $sql = "DELETE FROM purchase WHERE idpurchase = $this->intId";
+            $sql = "DELETE FROM purchase WHERE idpurchase = $this->intId;DELETE FROM count_amount WHERE purchase_id = $this->intId";
             $return = $this->delete($sql);
             return $return;
         }
@@ -172,5 +175,39 @@
             $request = $this->select_all($sql);
             return $request;
         }
+        public function insertEgress(int $idPurchase,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus){
+            $request="";
+            if($strDate){
+                $arrDate = explode("-",$strDate);
+                $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
+                $dateFormat = date_format($dateCreated,"Y-m-d");
+
+                $sql  = "INSERT INTO count_amount(purchase_id,type_id,category_id,name,amount,date,status) VALUES(?,?,?,?,?,?,?)";
+								  
+	        	$arrData = array(
+                    $idPurchase,
+                    $intType,
+                    $intTopic,
+                    $strName,
+                    $intAmount,
+                    $dateFormat,
+                    $intStatus
+                );
+	        	$request = $this->insert($sql,$arrData);
+            }else{
+                $sql  = "INSERT INTO count_amount(purchase_id,type_id,category_id,name,amount,status) VALUES(?,?,?,?,?,?)";
+								  
+	        	$arrData = array(
+                    $idPurchase,
+                    $intType,
+                    $intTopic,
+                    $strName,
+                    $intAmount,
+                    $intStatus
+                );
+	        	$request = $this->insert($sql,$arrData);
+            }
+	        return $request;
+		}
     }
 ?>

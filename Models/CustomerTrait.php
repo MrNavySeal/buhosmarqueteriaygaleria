@@ -101,7 +101,7 @@
         }
         public function insertOrder(int $idUser, string $idTransaction, string $strName,string $strCedula,string $strEmail,string $strPhone,string $strAddress,
         string $strNote,string $cupon,int $envio,int $total,string $status, string $type,string $statusOrder){
-
+            $request ="";
             $this->con = new Mysql();
             $this->strIdTransaction = $idTransaction;
             $this->intIdUser = $idUser;
@@ -110,25 +110,30 @@
             $this->strPhone = $strPhone;
             $this->strAddress = $strAddress;
             $this->strCedula = $strCedula;
-            
-            $sql ="INSERT INTO orderdata(personid,idtransaction,name,identification,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            $arrData = array(
-                $this->intIdUser, 
-                $this->strIdTransaction,
-                $this->strName,
-                $this->strCedula,
-                $this->strEmail,
-                $this->strPhone,
-                $this->strAddress,
-                $strNote,
-                $total,
-                $status,
-                $cupon,
-                $envio,
-                $type,
-                $statusOrder
-            );
-            $request = $this->con->insert($sql,$arrData);
+            $prov = $this->con->select_all("SELECT * FROM orderdata WHERE idtransaction = $this->strIdTransaction");
+            if(empty($prov)){
+                $sql ="INSERT INTO orderdata(personid,idtransaction,name,identification,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $arrData = array(
+                    $this->intIdUser, 
+                    $this->strIdTransaction,
+                    $this->strName,
+                    $this->strCedula,
+                    $this->strEmail,
+                    $this->strPhone,
+                    $this->strAddress,
+                    $strNote,
+                    $total,
+                    $status,
+                    $cupon,
+                    $envio,
+                    $type,
+                    $statusOrder
+                );
+                $request = $this->con->insert($sql,$arrData);
+                if($request>0){
+                    $this->insertIncome($request,3,1,"Venta de producto",$total,1);
+                }
+            }
             return $request;
         }
         public function insertOrderDetail(array $arrOrder){
@@ -293,6 +298,19 @@
             $request = $this->con->update($sql,$arrData);
             return $request;
         }
+        public function insertIncome(int $id, int $intType,int $intTopic,string $strName,int $intAmount,int $intStatus){
+            $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status) VALUES(?,?,?,?,?,?)";		  
+            $arrData = array(
+                $id,
+                $intType,
+                $intTopic,
+                $strName,
+                $intAmount,
+                $intStatus
+            );
+            $request = $this->con->insert($sql,$arrData);
+	        return $request;
+		}
     }
     
 ?>

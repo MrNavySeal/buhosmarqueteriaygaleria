@@ -168,6 +168,33 @@
             <?php 
                 }
             ?>
+            <?php  if($_SESSION['permit'][7]['r']){?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingC">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseC" aria-expanded="true" aria-controls="flush-collapseC">
+                    
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-file-invoice-dollar"></i> Contabilidad</a>
+                </h2>
+                <div id="flush-collapseC" class="accordion-collapse collapse" aria-labelledby="flush-headingC">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/contabilidad/categorias" class="w-100">Categorias</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/contabilidad/egreso" class="w-100">Cuenta egreso</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/contabilidad/ingreso" class="w-100">Cuenta ingreso</a>
+                            </li>    
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                }
+            ?>
             <?php 
                 if($_SESSION['permit'][5]['r']){
                     $emails = "";

@@ -318,6 +318,9 @@
                 );
                 $request = $this->insert($sql,$arrData);
             }
+            if($request>0){
+                $this->insertIncome($request,3,1,"Venta de producto",$total,$strDate,1);
+            }
             return $request;
         }
         public function insertOrderDetail(array $arrOrder){
@@ -413,8 +416,49 @@
                 $statusOrder
             );
             $request = $this->update($sql,$arrData);
+            if($request>0){
+                $statusC = 1;
+                if($status != "approved"){
+                    $statusC = 2;
+                }
+                $this->update("UPDATE count_amount SET status=? WHERE order_id = $idOrder",array($statusC));
+            }
             return $request;
         }
+        public function insertIncome(int $id, int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus){
+            $request="";
+            if($strDate !=""){
+                $arrDate = explode("-",$strDate);
+                $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
+                $dateFormat = date_format($dateCreated,"Y-m-d");
+
+                $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,date,status) VALUES(?,?,?,?,?,?,?)";
+								  
+	        	$arrData = array(
+                    $id,
+                    $intType,
+                    $intTopic,
+                    $strName,
+                    $intAmount,
+                    $dateFormat,
+                    $intStatus
+                );
+	        	$request = $this->insert($sql,$arrData);
+            }else{
+                $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status) VALUES(?,?,?,?,?,?)";
+								  
+	        	$arrData = array(
+                    $id,
+                    $intType,
+                    $intTopic,
+                    $strName,
+                    $intAmount,
+                    $intStatus
+                );
+	        	$request = $this->insert($sql,$arrData);
+            }
+	        return $request;
+		}
         /*************************Category methods*******************************/
         public function selectCategories(){
             $sql = "SELECT * FROM moldingcategory WHERE status != 3 ORDER BY id ASC";       
