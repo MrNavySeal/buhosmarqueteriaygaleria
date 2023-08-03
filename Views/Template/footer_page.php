@@ -149,7 +149,7 @@ for ($i=0; $i < count($social) ; $i++) {
         const SHAREDHASH ="<?=strtolower(str_replace(" ","",$company['name']))?>";
     </script>
     
-    <script src="<?=media();?>/js/functions.js"></script>
+    <script src="<?=media();?>/js/functions.js?v=<?=rand()?>"></script>
     <script src="<?=media();?>/template/Assets/js/functions_general.js?v=<?=rand()?>"></script>
     <?php if(isset($data['app'])){?>
     <script src="<?=media();?>/template/Assets/js/<?=$data['app']."?v=".rand()?>"></script>

@@ -92,6 +92,23 @@
     
       gtag('config', 'G-8MPBNE6BYH');
     </script>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '6405712082856467');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=6405712082856467&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -459,6 +476,31 @@
                                         </div>
                                     </div>
                                     <?php }?>
+                                    <?php  if($_SESSION['permit'][7]['r']){?>
+                                    <div class="accordion-item pt-1 pb-1 mt-2">
+                                        <h2 class="accordion-header" id="flush-headingC">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseC" aria-expanded="true" aria-controls="flush-collapseC">
+                                            
+                                        </button>
+                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-file-invoice-dollar"></i> Contabilidad</a>
+                                        </h2>
+                                        <div id="flush-collapseC" class="accordion-collapse collapse" aria-labelledby="flush-headingC">
+                                            <div class="accordion-body">
+                                                <ul class="list-group">
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <a href="<?=base_url()?>/contabilidad/categorias" class="w-100">Categorias</a>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <a href="<?=base_url()?>/contabilidad/egreso" class="w-100">Cuenta egreso</a>
+                                                    </li> 
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <a href="<?=base_url()?>/contabilidad/ingreso" class="w-100">Cuenta ingreso</a>
+                                                    </li>    
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php } ?>
                                     <?php if($_SESSION['permit'][5]['r']){ ?>
                                     <div class="accordion-item pt-1 pb-1 mt-2">
                                         <h2 class="accordion-header" id="flush-heading7">

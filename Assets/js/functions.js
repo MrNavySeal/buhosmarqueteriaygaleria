@@ -250,6 +250,19 @@ if(document.querySelector("#exportExcel")){
     })
 }
 window.addEventListener('load', function() {
+    if(document.querySelector("#filter")){
+        let filter = document.querySelector("#filter");
+        let filterOptions = document.querySelector(".filter-options");
+        let filterOverlay = document.querySelector(".filter-options-overlay");
+        filterOverlay.addEventListener("click",function(){
+            filterOverlay.style.display="none";
+            filterOptions.classList.remove("active");
+        });
+        filter.addEventListener("click",function(){
+            filterOptions.classList.add("active");
+            document.querySelector(".filter-options-overlay").style.display="block";
+        });
+    }
 	fntValidText();
 	fntValidEmail(); 
 	fntValidNumber();

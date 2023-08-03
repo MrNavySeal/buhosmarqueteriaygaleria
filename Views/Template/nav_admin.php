@@ -9,6 +9,7 @@
         <li class="breadcrumb-item active" aria-current="page"><?=$data['page_tag']?></li>
     </ol>
 </nav>
+<div class="mt-4 mb-4 c-p" id="filter"><i class="fas fa-cog"></i> Opciones</div>
 <div class="col-3 col-lg-3 col-md-12">
     <aside class="p-2 filter-options">
         <div class="accordion accordion-flush" id="accordionFlushExample">
