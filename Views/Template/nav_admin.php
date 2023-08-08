@@ -188,6 +188,9 @@
                             </li> 
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <a href="<?=base_url()?>/contabilidad/ingreso" class="w-100">Cuenta ingreso</a>
+                            </li>  
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/contabilidad/informe" class="w-100">Informe general</a>
                             </li>    
                         </ul>
                     </div>
