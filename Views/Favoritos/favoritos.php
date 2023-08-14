@@ -14,6 +14,7 @@
                         <thead class="position-relative af-b-line">
                             <tr>
                             <th scope="col">Producto</th>
+                            <th scope="col">Referencia</th>
                             <th scope="col">Descripción</th>
                             <th scope="col">Precio</th>
                             <th scope="col">Acciones</th>
@@ -52,6 +53,9 @@
                                     <div class="c-p position-absolute btn-del bg-color-2 rounded-circle ps-2 pe-2 top-0 start-0"><i class="fas fa-times"></i></div>
                                     <?=$discount?>
                                 </div>
+                            </td>
+                            <td>
+                                <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?= $reference?></a>
                             </td>
                             <td>
                                 <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?= $productos[$i]['name']?></a>
