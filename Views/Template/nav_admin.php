@@ -158,7 +158,10 @@
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <a href="<?=base_url()?>/compras/proveedores" class="w-100">Proveedores</a>
-                            </li>     
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/compras/almacen" class="w-100">Almacén</a>
+                            </li>        
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <a href="<?=base_url()?>/compras/compras" class="w-100">Compras</a>
                             </li> 

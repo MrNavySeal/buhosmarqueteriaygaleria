@@ -69,7 +69,7 @@
             return $return;
         }
         public function selectSuppliers(){
-            $sql = "SELECT * FROM suppliers ORDER BY idsupplier DESC";       
+            $sql = "SELECT * FROM suppliers ORDER BY name ASC";       
             $request = $this->select_all($sql);
             return $request;
         }
@@ -209,5 +209,130 @@
             }
 	        return $request;
 		}
+        /*************************Products methods*******************************/
+        public function selectProducts(){
+            $sql = "SELECT 
+            s.id_storage,
+            s.name, 
+            DATE_FORMAT(s.date, '%d/%m/%Y') as date,
+            s.import,
+            s.cost,
+            s.status,
+            s.reference,
+            sp.name as supplier 
+            FROM storage s 
+            INNER JOIN suppliers sp
+            WHERE sp.idsupplier = s.supplier_id ORDER BY s.id_storage DESC";
+
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                for ($i=0; $i < count($request) ; $i++) { 
+                    $impt = 0;
+                    if($request[$i]['import'] == 3){
+                        $impt = 0.19;
+                    }else if($request[$i]['import'] == 2){
+                        $impt = 0.05;
+                    }
+                    $request[$i]['cost'] = round(intval($request[$i]['cost'] * (1+$impt))/100)*100;
+                }
+            }
+            return $request;
+        }
+        public function selectProduct(int $id){
+            $sql = "SELECT 
+            s.id_storage,
+            s.name, 
+            DATE_FORMAT(s.date, '%d/%m/%Y') as date,
+            s.import,
+            s.cost,
+            s.status,
+            s.reference,
+            s.supplier_id,
+            sp.name as supplier 
+            FROM storage s 
+            INNER JOIN suppliers sp
+            WHERE sp.idsupplier = s.supplier_id AND id_storage = $id";
+
+            $request = $this->select($sql);
+            return $request;
+        }
+        public function insertProduct(string $strReference, string $strName,int $intSupp,int $intCost,int $intImport,int $intStatus){
+            $sql ="SELECT * FROM storage WHERE supplier_id = $intSupp AND name = '$strName'";
+            $request = $this->select_all($sql);
+            $return="";
+            if(empty($request)){
+
+                $sql = "INSERT INTO storage(reference,name,supplier_id,cost,import,status) VALUES(?,?,?,?,?,?)";
+                $arrData = array(
+                    $strReference,
+                    $strName,
+                    $intSupp,
+                    $intCost,
+                    $intImport,
+                    $intStatus
+                );
+                $return = $this->insert($sql,$arrData);
+            }else{
+                $return = "exists";
+            }
+            return $return;
+        }
+        public function updateProduct(int $id,string $strReference, string $strName,int $intSupp,int $intCost,int $intImport,int $intStatus){
+            $sql ="SELECT * FROM storage WHERE supplier_id = $intSupp AND name = '$strName' AND id_storage != $id";
+            $request = $this->select_all($sql);
+            $return="";
+            if(empty($request)){
+
+                $sql = "UPDATE storage SET reference=?,name=?,supplier_id=?,cost=?,import=?,status=? WHERE id_storage = $id";
+                $arrData = array(
+                    $strReference,
+                    $strName,
+                    $intSupp,
+                    $intCost,
+                    $intImport,
+                    $intStatus
+                );
+                $return = $this->update($sql,$arrData);
+            }else{
+                $return = "exists";
+            }
+            return $return;
+        }
+        public function searchS($search){
+            $sql = "SELECT 
+            s.id_storage,
+            s.name, 
+            DATE_FORMAT(s.date, '%d/%m/%Y') as date,
+            s.import,
+            s.cost,
+            s.status,
+            s.reference,
+            s.supplier_id,
+            sp.name as supplier 
+            FROM storage s 
+            INNER JOIN suppliers sp
+            WHERE s.supplier_id = sp.idsupplier 
+            AND (s.name LIKE '%$search%' || sp.name LIKE '%$search%' || s.reference LIKE '%$search%')
+            ORDER BY s.id_storage DESC";
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                for ($i=0; $i < count($request) ; $i++) { 
+                    $impt = 0;
+                    if($request[$i]['import'] == 3){
+                        $impt = 0.19;
+                    }else if($request[$i]['import'] == 2){
+                        $impt = 0.05;
+                    }
+                    $request[$i]['cost'] = round(intval($request[$i]['cost'] * (1+$impt))/100)*100;
+                }
+            }
+            return $request;
+        }
+        public function deleteProduct($id){
+            $this->intId = $id;
+            $sql = "DELETE FROM storage WHERE id_storage = $this->intId;";
+            $return = $this->delete($sql);
+            return $return;
+        }
     }
 ?>
