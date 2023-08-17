@@ -240,7 +240,7 @@
         public function setPurchase(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
-                    if(empty($_POST['arrProducts']) || empty($_POST['total']) || empty($_POST['date'])){
+                    if(empty($_POST['arrProducts']) || empty($_POST['total'])){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $idSupplier = intval($_POST['idSupplier']);
@@ -415,7 +415,10 @@
                                 <td data-label="Referencia: ">'.$request[$i]['reference'].'</td>
                                 <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
                                 <td data-label="Proveedor: ">'.$request[$i]['supplier'].'</td>
-                                <td data-label="Costo: ">'.formatNum($request[$i]['cost']).'</td>
+                                <td data-label="Precio: ">'.formatNum($request[$i]['cost']).'</td>
+                                <td data-label="IVA: ">'.$request[$i]['iva'].'</td>
+                                <td data-label="Precio IVA: ">'.formatNum($request[$i]['costiva']).'</td>
+                                <td data-label="Precio Total: ">'.formatNum($request[$i]['costtotal']).'</td>
                                 <td data-label="Estado: ">'.$status.'</td>
                                 <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
                             </tr>
@@ -482,6 +485,99 @@
                 $arrResponse = $this->getProducts(1,$params);
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
+            die();
+        }
+        public function getSelectProducts(){
+            if($_SESSION['permitsModule']['r']){
+                if($_POST){
+                    $id = intval($_POST['id']);
+                    $html ='<option value ="0">Seleccione</option>';
+                    $request = $this->model->selectProducts($id);
+                    if(!empty($request)){
+                        for ($i=0; $i < count($request); $i++) { 
+                            $html.='<option value="'.$request[$i]['id_storage'].'">'.$request[$i]['name'].'</option>';
+                        }
+                    }
+                    echo json_encode($html,JSON_UNESCAPED_UNICODE);
+                }
+            } 
+            die();
+        }
+        public function getSelectProduct(){
+            if($_SESSION['permitsModule']['r']){
+                if($_POST){
+                    $id="";
+                    $qty = intval($_POST['qty']);
+                    $type = intval($_POST['type']);
+                    $html ='';
+                    $ivaText = "0%";
+                    $iva = 0;
+                    $valueIva = 0;
+                    $subtotal = 0;
+                    $discount = 0;
+                    $total = 0;
+                    $request ="";
+                    $reference="";
+                    $name="";
+                    $cost = 0;
+                    if($type == 1){
+                        $id = intval($_POST['id']);
+                        $discount = intval($_POST['discount'])/100;
+                        $request = $this->model->selectProduct($id);
+                        if(!empty($request)){
+                            if($request['import'] == 2){
+                                $ivaText = "5%";
+                                $iva = 0.05;
+                            }else if($request['import'] == 3){
+                                $ivaText="19%";
+                                $iva = 0.19;
+                            }
+                            $cost = $request['cost'];
+                            $valueIva = round(intval($cost * $iva)/10)*10;
+                            $iva = round((intval($cost * $iva)*$qty));
+                            $subtotal = $cost*$qty;
+                            $discount = round((intval(($cost * $qty)*($discount)))/10)*10;
+                            $total = round((($subtotal-$discount)+$iva)/100)*100;
+                            $reference = $request['reference'];
+                            $name = $request['name'];
+                        }
+                    }else{
+                        $name = ucwords(strClean($_POST['name']));
+                        $cost = intval($_POST['price']);
+                        $subtotal = $cost*$qty;
+                        $total = $subtotal;
+                    }
+                    
+                    $html = '
+                    <td>'.$reference.'</td>
+                    <td>'.$name.'</td>
+                    <td>'.$qty.'</td>
+                    <td>'.formatNum($cost).'</td>
+                    <td>'.$ivaText.'</td>
+                    <td>'.formatNum($valueIva).'</td>
+                    <td>'.formatNum($subtotal).'</td>
+                    <td><button class="btn btn-danger m-1" type="button" title="Delete" onclick="delProduct(this.parentElement.parentElement)"><i class="fas fa-trash-alt"></i></button></td>
+                    ';
+
+                    $arrData = array(
+                        "reference"=>$reference,
+                        "name"=>$name,
+                        "qty"=>$qty,
+                        "cost"=>$cost,
+                        "ivatext"=>$ivaText,
+                        "valueiva"=>$valueIva,
+                        "type"=>$type,
+                        "id"=> $id != "" ? $id : "",
+                        "status"=>true,
+                        "data"=>$html,
+                        "subtotal"=>$subtotal,
+                        "total"=>$total,
+                        "discount"=>$discount,
+                        "iva"=>$iva
+                    );
+                    echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                }
+            } 
             die();
         }
 

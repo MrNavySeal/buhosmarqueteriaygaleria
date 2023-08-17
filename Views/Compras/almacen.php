@@ -34,7 +34,11 @@ getModal("modalStorage",$data['suppliers']);
                                 <th>Referencia</th>
                                 <th>Nombre</th>
                                 <th>Proveedor</th>
-                                <th>Costo</th>
+                                <th>Precio</th>
+                                <th>IVA</th>
+                                <th>Precio IVA</th>
+                                <th>Precio Total</th>
+                                <th>Estado</th>
                                 <th>Opciones</th>
                             </tr>
                         </thead>

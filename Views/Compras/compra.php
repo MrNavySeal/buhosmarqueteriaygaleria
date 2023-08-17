@@ -4,6 +4,9 @@ headerPage($data);
 $purchase = $data['data'];
 $products = json_decode($purchase["products"],true);
 $total = 0;
+$discount=0;
+$subtotal=0;
+$iva=0;
 $company = $data['company'];
 //dep($products);exit;
 ?>
@@ -42,50 +45,70 @@ $company = $data['company'];
                             <p class="m-0">Correo: <?=$purchase['email']?></p>
                         </div>
                     </div>
-                    <table class="table items align-middle">
-                        <thead>
-                            <tr>
-                                <th>Descripcion</th>
-                                <th>Precio</th>
-                                <th>Cantidad</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php 
-                            if(count($products) > 0){
-                                foreach ($products as $product) {
-                                    $total+= $product['qty']*$product['price'];
-                                    $totalPrice = $product['qty']*$product['price'];
-                        ?>
-                        <tr>
-                            <td class="text-start text-break">
-                                <?=$product['name']?>
-                            </td>
-                            <td data-label="Precio: " class="text-break">
-                                <?=formatNum($product['price'],false)?>
-                            </td>
-                            <td data-label="Cantidad: " class="text-break">
-                                <?=$product['qty']?>
-                            </td>
-                            <td data-label="Total" class="text-break">
-                                <?=formatNum($totalPrice,false)?>
-                            </td>
-                        </tr>   
-                        <?php } }?>        
-                    </tbody>
-                    <tfoot class="tdeskfoot">
-                        <tr>
-                            <th colspan="3" class="text-end">Total:</th>
-                            <td class="text-start"><?= formatNum($total,false)?></td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                    <div class="row tmobilefoot mb-4">
-                        <div class="col-12 mt-3 d-flex justify-content-between">
-                            <div class="fw-bold">Total:</div>
-                            <div><?= formatNum($total,false)?></div>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <tbody>
+                                <tr class="fw-bold">
+                                    <td>Referencia</td>
+                                    <td>Descripcion</td>
+                                    <td>Cantidad</td>
+                                    <td>Precio</td>
+                                    <td>IVA</td>
+                                    <td>Precio IVA</td>
+                                    <td>Subtotal</td>
+                                </tr>
+                                <?php 
+                                    if(count($products) > 0){
+                                        foreach ($products as $product) {
+                                            $total+= $product['total'];
+                                            $subtotal += $product['subtotal'];
+                                            $discount += $product['discount'];
+                                            $iva += $product['iva'];
+                                ?>
+                                <tr>
+                                    <td>
+                                        <?=$product['reference']?>
+                                    </td>
+                                    <td>
+                                        <?=$product['name']?>
+                                    </td>
+                                    <td>
+                                        <?=$product['qty']?>
+                                    </td>
+                                    <td>
+                                        <?=formatNum($product['cost'])?>
+                                    </td>
+                                    <td>
+                                        <?=$product['ivatext']?>
+                                    </td>
+                                    <td>
+                                        <?=formatNum($product['iva'])?>
+                                    </td>
+                                    <td>
+                                        <?=formatNum($product['subtotal'],false)?>
+                                    </td>
+                                </tr>   
+                                <?php } }?>        
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="6" class="text-end">Subtotal:</th>
+                                    <td class="text-start" id="txtSubtotal"><?=formatNum($subtotal)?></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="6" class="text-end">Descuento:</th>
+                                    <td class="text-start" id="txtDiscount"><?=formatNum($discount)?></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="6" class="text-end">IVA:</th>
+                                    <td class="text-start" id="txtIva"><?=formatNum($iva)?></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="6" class="text-end">Total:</th>
+                                    <td class="text-start" id="txtTotal"><?=formatNum($total)?></td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
                 <div class="row">

@@ -102,11 +102,19 @@
             $this->intId = $id;
             $this->arrProducts = $arrProducts;
             $this->intTotal = $total;
-            $arrDate = explode("-",$strDate);
-            $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
-            $dateFormat = date_format($dateCreated,"Y-m-d");
-            $sql = "INSERT INTO purchase(supplierid,products,total,date) VALUE(?,?,?,?)";
-            $arrData = array($this->intId,$this->arrProducts,$this->intTotal,$dateFormat);
+            $sql="";
+            $arrData ="";
+            if($strDate!=""){
+                $arrDate = explode("-",$strDate);
+                $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
+                $dateFormat = date_format($dateCreated,"Y-m-d");
+                $sql = "INSERT INTO purchase(supplierid,products,total,date) VALUE(?,?,?,?)";
+                $arrData = array($this->intId,$this->arrProducts,$this->intTotal,$dateFormat);
+                
+            }else{
+                $sql = "INSERT INTO purchase(supplierid,products,total) VALUE(?,?,?)";
+                $arrData = array($this->intId,$this->arrProducts,$this->intTotal);
+            }
             $request = $this->insert($sql,$arrData);
             if($request>0){
                 $this->insertEgress($request,2,2,"Compra de material",$this->intTotal,$strDate,1);
@@ -210,7 +218,11 @@
 	        return $request;
 		}
         /*************************Products methods*******************************/
-        public function selectProducts(){
+        public function selectProducts(int $id = null){
+            $selProducts ="";
+            if($id != null){
+                $selProducts = " AND s.supplier_id = $id AND s.status = 1";
+            }
             $sql = "SELECT 
             s.id_storage,
             s.name, 
@@ -222,18 +234,23 @@
             sp.name as supplier 
             FROM storage s 
             INNER JOIN suppliers sp
-            WHERE sp.idsupplier = s.supplier_id ORDER BY s.id_storage DESC";
+            WHERE sp.idsupplier = s.supplier_id $selProducts ORDER BY s.id_storage DESC";
 
             $request = $this->select_all($sql);
             if(!empty($request)){
                 for ($i=0; $i < count($request) ; $i++) { 
                     $impt = 0;
+                    $iva="0%";
                     if($request[$i]['import'] == 3){
                         $impt = 0.19;
+                        $iva="19%";
                     }else if($request[$i]['import'] == 2){
                         $impt = 0.05;
+                        $iva="5%";
                     }
-                    $request[$i]['cost'] = round(intval($request[$i]['cost'] * (1+$impt))/100)*100;
+                    $request[$i]['iva'] = $iva;
+                    $request[$i]['costiva'] = round(intval($request[$i]['cost'] * $impt)/10)*10;
+                    $request[$i]['costtotal'] = round(intval(($request[$i]['cost']+$request[$i]['costiva']))/100)*100;
                 }
             }
             return $request;

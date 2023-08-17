@@ -1,11 +1,28 @@
-const listProducts = document.querySelector("#buyProducts");
-const btnAdd = document.querySelector("#btnAddProduct");
+const listProducts = document.querySelector("#listProducts");
+const btnAdd = document.querySelector(".btnAdd");
 const btnPurchase = document.querySelector("#btnPurchase");
 const total = document.querySelector("#total");
 const selectSupplier = document.querySelector("#selectSupplier");
+const selectProduct = document.querySelector("#selectProduct");
 const searchPanel = document.querySelector("#search");
 const element = document.querySelector("#listItem");
+const setSimple = document.querySelector("#setSimple");
+const setCustom = document.querySelector("#setCustom");
+const selectType = document.querySelector("#selectType");
 
+
+
+selectType.addEventListener("change",function(){
+    if(selectType.value == 1){
+        setSimple.classList.remove("d-none");
+        setCustom.classList.add("d-none");
+        selectSupplier.value=0;
+        selectProduct.value=0;
+    }else{
+        setSimple.classList.add("d-none");
+        setCustom.classList.remove("d-none");
+    }
+});
 element.addEventListener("click",function(e) {
     let element = e.target;
     let id = element.getAttribute("data-id");
@@ -22,76 +39,125 @@ searchPanel.addEventListener('input',function() {
         }
     });
 });
+selectProduct.addEventListener("change",function(){
+    if(((selectProduct.value == 0 || selectSupplier.value == 0)&& selectType.value == 1)){
+        btnAdd.setAttribute("disabled","disabled");
+    }else{
+        btnAdd.removeAttribute("disabled");
+    }
+});
 selectSupplier.addEventListener("change",function(){
-    document.querySelector("#txtProduct").value ="";
+    let formData = new FormData();
+    formData.append("id",selectSupplier.value);
+
+    if(selectType.value == 1){
+        if(selectProduct.value == 0 || selectSupplier.value == 0){
+            btnAdd.setAttribute("disabled","disabled");
+        }else{
+            btnAdd.removeAttribute("disabled");
+        }
+        request(base_url+"/compras/getSelectProducts",formData,"post").then(function(objData){
+            selectProduct.innerHTML = objData;
+        });
+    }
+    
+    /*document.querySelector("#txtProduct").value ="";
     document.querySelector("#intQty").value ="";
     document.querySelector("#intPrice").value="";
     total.innerHTML = "$0";
-    listProducts.innerHTML="";
+    listProducts.innerHTML="";*/
 });
-btnAdd.addEventListener("click",function(){
-    let idSupplier = selectSupplier.value;
-    let strName = document.querySelector("#txtProduct").value;
-    let intQty = document.querySelector("#intQty").value;
-    let intPrice = document.querySelector("#intPrice").value;
+function addProduct(){
+    let id = selectProduct.value;
+    let formData = new FormData();
+    formData.append("type",selectType.value);
+    formData.append("id",id);
+    if(selectType.value==1){
+        
+        let intQty = document.querySelector("#intQty").value;
+        let discount = document.querySelector("#intDiscount").value;
+        if(intQty == "" || intQty < 0){
+            Swal.fire("Error","Por favor, ingrese una cantidad correcta","error");
+            document.querySelector("#intQty").value = "";
+            return false;
+        }
+        if(discount != "" && (discount <= 0 || discount>100)){
+            Swal.fire("Error","Por favor, ingrese un descuento correcto","error");
+            document.querySelector("#intDiscount").value="";
+            return false;
+        }
+        formData.append("discount",discount);
+        formData.append("qty",intQty);
+    }else{
+        let customProduct = document.querySelector("#customProduct").value;
+        let customQty = document.querySelector("#customQty").value;
+        let customPrice = document.querySelector("#customPrice").value;
+        formData.append("price",customPrice);
+        formData.append("name",customProduct);
+        formData.append("qty",customQty);
+    }
     
-    if(idSupplier == 0 || strName =="" || intQty=="" || intPrice ==""){
-        Swal.fire("Error","Por favor, todos los campos con (*) son obligatorios","error");
-        return false;
-    }
-    let totalProduct = parseInt(intPrice)*parseInt(intQty);
-    let div = document.createElement("div");
-    div.classList.add("position-relative","product-item");
-    div.setAttribute("data-name",strName);
-    div.setAttribute("data-qty",intQty);
-    div.setAttribute("data-price",intPrice);
-    div.innerHTML=`
-        <button class="btn text-danger p-0 rounded-circle position-absolute top-0 end-0 fs-5" onclick="delProduct(this)"><i class="fas fa-times-circle"></i></button>
-        <div class="p-1">
-            <div class="d-flex justify-content-between">
-                <div class="d-flex">
-                    <div class="text-start">
-                        <div style="height:25px" class="overflow-hidden"><p class="m-0" >${strName}</p></div>
-                        <p class="m-0 productData">
-                            <span class="qtyProduct">${intQty}</span> x $${formatNum(intPrice,".")}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex justify-content-end mt-1">
-                <input type="hidden" class="productTotal" value ="${totalProduct}">
-                <p class="m-0 mt-1 fw-bold text-end" >$${formatNum(totalProduct,".")}</p>
-            </div>
-        </div>`;
-    listProducts.appendChild(div);
-    let products = document.querySelectorAll(".productTotal");
-    let totalValue = 0;
-    for (let i = 0; i < products.length; i++) {
-        totalValue+=parseInt(products[i].value);
-    }
-    total.innerHTML = "$"+formatNum(totalValue,".");
-},false);
-
+    request(base_url+"/compras/getSelectProduct",formData,"post").then(function(objData){
+        if(objData.status){
+            let tr = document.createElement("tr");
+            tr.setAttribute("data-reference",objData.reference);
+            tr.setAttribute("data-id",objData.id);
+            tr.setAttribute("data-type",objData.type);
+            tr.setAttribute("data-name",objData.name);
+            tr.setAttribute("data-ivatext",objData.ivatext);
+            tr.setAttribute("data-subtotal",objData.subtotal);
+            tr.setAttribute("data-total",objData.total);
+            tr.setAttribute("data-iva",objData.iva);
+            tr.setAttribute("data-discount",objData.discount);
+            tr.setAttribute("data-cost",objData.cost);
+            tr.setAttribute("data-qty",objData.qty);
+            tr.classList.add("buyItem");
+            tr.innerHTML = objData.data;
+            listProducts.appendChild(tr);
+            let products = document.querySelectorAll(".buyItem");
+            let total = 0;
+            let iva = 0;
+            let subtotal = 0;
+            let discount=0;
+            for (let i = 0; i < products.length; i++) {
+                subtotal+=parseInt(products[i].getAttribute("data-subtotal"));
+                total+=parseInt(products[i].getAttribute("data-total"));
+                iva+=parseInt(products[i].getAttribute("data-iva"));
+                discount+=parseInt(products[i].getAttribute("data-discount"));
+            }
+            document.querySelector("#txtSubtotal").innerHTML = "$"+formatNum(subtotal,".");
+            document.querySelector("#txtTotal").innerHTML = "$"+formatNum(total,".");
+            document.querySelector("#txtIva").innerHTML = "$"+formatNum(iva,".");
+            document.querySelector("#txtDiscount").innerHTML = "$"+formatNum(discount,".");
+        }
+    });
+}
 btnPurchase.addEventListener("click",function(){
-    let products = document.querySelectorAll(".product-item");
+    let products = document.querySelectorAll(".buyItem");
     let arrProducts = [];
     let totalValue = 0;
     let strDate = document.querySelector("#txtDate").value;
+
     if(products.length == 0){
         Swal.fire("Error","No hay productos para procesar la compra.","error");
         return false;
     }
-    if(strDate ==""){
-        Swal.fire("Error","Por favor, ingresa la fecha de compra.","error");
-        return false;
-    }
+
     for (let i = 0; i < products.length; i++) {
         arr = {
+            "reference":products[i].getAttribute("data-reference"),
+            "id":products[i].getAttribute("data-id"),
+            "type":products[i].getAttribute("data-type"),
             "name":products[i].getAttribute("data-name"),
+            "ivatext":products[i].getAttribute("data-ivatext"),
             "qty":products[i].getAttribute("data-qty"),
-            "price":products[i].getAttribute("data-price")
+            "cost":products[i].getAttribute("data-cost"),
+            "discount":products[i].getAttribute("data-discount"),
+            "iva":products[i].getAttribute("data-iva"),
+            "subtotal":products[i].getAttribute("data-subtotal"),
+            "total":products[i].getAttribute("data-total"),
         };
-        totalValue += parseInt(document.querySelectorAll(".productTotal")[i].value);
+        totalValue += parseInt(products[i].getAttribute("data-total"));
         arrProducts.push(arr);
     }
     let formData = new FormData();
@@ -101,15 +167,7 @@ btnPurchase.addEventListener("click",function(){
     formData.append("total",totalValue);
     request(base_url+"/compras/setPurchase",formData,"post").then(function(objData){
         if(objData.status){
-            document.querySelector("#txtProduct").value ="";
-            document.querySelector("#intQty").value ="";
-            document.querySelector("#intPrice").value="";
-            document.querySelector("#txtDate").value="";
-            selectSupplier.value = 0;
-            total.innerHTML = "$0";
-            listProducts.innerHTML="";
-            element.innerHTML = objData.data;
-            Swal.fire("Agregado",objData.msg,"success");
+            window.location.reload();
         }else{
             Swal.fire("Error",objData.msg,"error");
         }
@@ -117,13 +175,22 @@ btnPurchase.addEventListener("click",function(){
 },false);
 
 function delProduct(element){
-    element.parentElement.remove();
-    let products = document.querySelectorAll(".productTotal");
-    let totalValue = 0;
+    element.remove();
+    let products = document.querySelectorAll(".buyItem");
+    let total = 0;
+    let iva = 0;
+    let subtotal = 0;
+    let discount=0;
     for (let i = 0; i < products.length; i++) {
-        totalValue+=parseInt(products[i].value);
+        subtotal+=parseInt(products[i].getAttribute("data-subtotal"));
+        total+=parseInt(products[i].getAttribute("data-total"));
+        iva+=parseInt(products[i].getAttribute("data-iva"));
+        discount+=parseInt(products[i].getAttribute("data-discount"));
     }
-    total.innerHTML = "$"+formatNum(totalValue,".");
+    document.querySelector("#txtSubtotal").innerHTML = "$"+formatNum(subtotal,".");
+    document.querySelector("#txtTotal").innerHTML = "$"+formatNum(total,".");
+    document.querySelector("#txtIva").innerHTML = "$"+formatNum(iva,".");
+    document.querySelector("#txtDiscount").innerHTML = "$"+formatNum(discount,".");
 }
 function deleteItem(id){
     Swal.fire({

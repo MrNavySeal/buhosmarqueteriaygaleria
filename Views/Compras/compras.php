@@ -16,49 +16,114 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="purchase">
-                        <div class="row mt-3">
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="selectSupplier" class="form-label">Proveedor <span class="text-danger">*</span></label>
-                                            <select class="form-control" aria-label="Default select example" id="selectSupplier" name="selectSupplier" required>
-                                                <?=$data['proveedores']?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="txtProduct" class="form-label">Producto <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="txtProduct" name="txtProduct">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="intQty" class="form-label">Cantidad <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="intQty" name="intQty">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="intPrice" class="form-label">Precio <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="intPrice" name="intPrice">
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn btn-primary" id="btnAddProduct">Agregar</button>
-                            </div>
+                        <div class="row">
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="" class="form-label">Fecha de compra <span class="text-danger">*</span></label>
+                                <div class="mt-4 mb-3">
+                                    <label for="txtDate" class="form-label">Fecha de compra</label>
                                     <input type="date" name="txtDate" id="txtDate" class="form-control">
                                 </div>
-                                <div class="scroll-y container mb-3 mt-3" id="buyProducts"></div>
-                                <p class="fw-bold text-center fs-5">Total: <span id="total"><?=formatNum(0,false)?></span></p>
-                                <button type="button" class="btn btn-primary w-100" id="btnPurchase">Procesar</button>
                             </div>
+                            <div class="col-md-4">
+                                <div class="mt-4 mb-3">
+                                    <label for="selectSupplier" class="form-label">Proveedor <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="selectSupplier" name="selectSupplier" required>
+                                        <?=$data['proveedores']?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mt-4 mb-3">
+                                    <label for="selectType" class="form-label">Tipo de producto <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="selectType" name="selectType" required>
+                                        <option value ="1" selected>Simple</option>
+                                        <option value ="2">Variante</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="setSimple">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="selectProduct" class="form-label">Producto <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="selectProduct" name="selectProduct" required>
+                                        <option value ="0">Seleccione</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="intQty" class="form-label">Cantidad <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="intQty" name="intQty" placeholder="Cantidad">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="intDiscount" class="form-label">Descuento (%)</label>
+                                    <input type="number" class="form-control" id="intDiscount" name="intDiscount">
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-center">
+                                <button type="button" class="btn btn-primary w-100 mt-3 btnAdd" disabled onclick="addProduct()">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="row d-none" id="setCustom">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="customProduct" class="form-label">Producto <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="customProduct" name="customProduct" placeholder="Nombre">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="customQty" class="form-label">Cantidad <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="customQty" name="customQty" placeholder="Cantidad">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="customPrice" class="form-label">Precio <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="customPrice" name="customPrice" placeholder="Precio">
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-center">
+                                <button type="button" class="btn btn-primary w-100 mt-3" onclick="addProduct()">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <tbody id="listProducts">
+                                    <tr class="fw-bold">
+                                        <td>Referencia</td>
+                                        <td>Descripcion</td>
+                                        <td>Cantidad</td>
+                                        <td>Precio</td>
+                                        <td>IVA</td>
+                                        <td>Precio IVA</td>
+                                        <td>Subtotal</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="6" class="text-end">Subtotal:</th>
+                                        <td class="text-start" id="txtSubtotal"></td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="6" class="text-end">Descuento:</th>
+                                        <td class="text-start" id="txtDiscount"></td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="6" class="text-end">IVA:</th>
+                                        <td class="text-start" id="txtIva"></td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="6" class="text-end">Total:</th>
+                                        <td class="text-start" id="txtTotal"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary me-2" id="btnPurchase"><i class="fas fa-save"></i> Guardar compra</button>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="navPurchase">
