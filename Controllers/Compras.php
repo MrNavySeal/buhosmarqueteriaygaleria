@@ -507,7 +507,7 @@
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     $id="";
-                    $qty = intval($_POST['qty']);
+                    $qty = floatval($_POST['qty']);
                     $type = intval($_POST['type']);
                     $html ='';
                     $ivaText = "0%";
