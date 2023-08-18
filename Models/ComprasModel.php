@@ -335,12 +335,17 @@
             if(!empty($request)){
                 for ($i=0; $i < count($request) ; $i++) { 
                     $impt = 0;
+                    $iva="0%";
                     if($request[$i]['import'] == 3){
                         $impt = 0.19;
+                        $iva="19%";
                     }else if($request[$i]['import'] == 2){
                         $impt = 0.05;
+                        $iva="5%";
                     }
-                    $request[$i]['cost'] = round(intval($request[$i]['cost'] * (1+$impt))/100)*100;
+                    $request[$i]['iva'] = $iva;
+                    $request[$i]['costiva'] = round(intval($request[$i]['cost'] * $impt)/10)*10;
+                    $request[$i]['costtotal'] = round(intval(($request[$i]['cost']+$request[$i]['costiva']))/100)*100;
                 }
             }
             return $request;
