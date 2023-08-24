@@ -51,9 +51,10 @@
                     if($arrShipping['id'] != 3){
                         $shipping+=$arrShipping['value'];
                     }
-                    if($situ=="false"){
-                        $total+=$shipping;
+                    if($situ=="true"){
+                        $shipping = 0;
                     }
+                    $total+=$shipping;
             ?>
             <div class="row mb-5">
                 <div class="col-lg-8 mt-5">

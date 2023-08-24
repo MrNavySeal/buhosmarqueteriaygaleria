@@ -93,6 +93,7 @@
             $shipping =0;
             $cupon = 0;
             $status = true;
+            $discount=0;
             $arrCupon = array();
             for ($i=0; $i < count($arrProducts) ; $i++) { 
                 if($arrProducts[$i]['topic'] == 2){
@@ -114,14 +115,15 @@
                 $arrCupon = $this->selectCouponCode($code);
                 $status = $this->checkCoupon($_SESSION['idUser'],$arrCupon['id']);
                 if(!$status){
-                    $cupon = $subtotal-($subtotal*($arrCupon['discount']/100));
+                    $discount=$subtotal*($arrCupon['discount']/100);
+                    $cupon = $subtotal-$discount;
                     $total =$cupon + $shipping;
                     $this->setCoupon($arrCupon['id'],$_SESSION['idUser'],$code);
                 }else{
                     $arrCupon = array();
                 }
             }
-            $arrData = array("total"=>$total,"cupon"=>$cupon,"arrcupon"=>$arrCupon,"subtotal"=>$subtotal,"status"=>$status);
+            $arrData = array("total"=>$total,"discount"=>$discount,"cupon"=>$cupon,"arrcupon"=>$arrCupon,"subtotal"=>$subtotal,"status"=>$status);
             return $arrData;
         }
         public function calculateShippingCity(){
@@ -197,10 +199,8 @@
             $statusOrder ="confirmado";
             $arrProducts = $_SESSION['arrCart'];
             $arrTotal = $this->calcTotalCart($arrProducts,$cupon,null,$situ);
+            $cupon = $arrTotal['discount'];
             $total = $arrTotal['total'];
-            if($arrTotal['status']){
-                $cupon ="";
-            }
 
             if($type==""){
                 $status = "approved";
@@ -221,9 +221,6 @@
                 $arrOrder = array("idorder"=>$request,"iduser"=>$_SESSION['idUser'],"products"=>$_SESSION['arrCart']);
                 $requestDetail = $this->insertOrderDetail($arrOrder);
                 $orderInfo = $this->getOrder($request);
-                if($orderInfo['order']['coupon']!=""){
-                    $orderInfo['order']['cupon'] = $this->selectCouponCode($orderInfo['order']['coupon']);
-                }
                 //$orderInfo['totaldetail'] = $arrTotal;
                 $company = getCompanyInfo();
                 $dataEmailOrden = array(

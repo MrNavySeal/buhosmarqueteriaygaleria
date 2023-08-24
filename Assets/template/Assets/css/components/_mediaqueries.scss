@@ -21,6 +21,11 @@
         left:0;
     }
 }
+@media screen and (min-width:992px){
+    .tmobilefoot{
+        display: none;
+    }
+}
 @media screen and (max-width: 992px){
     main{
         margin-top: 70px;
@@ -82,6 +87,7 @@
     }
 }
 @media screen and (max-width: 768px){
+    
     .card--product-img{
         img{
             height: 125px;
@@ -92,6 +98,7 @@
             height: 150px;
         }
     }
+    
     
 }
 @media screen and (max-width: 576px){ 

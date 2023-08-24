@@ -3,6 +3,7 @@
 $order = $data['order']['order'];
 $detail = $data['order']['detail'];
 $subtotal = 0;
+$discount = $order['coupon'];
  ?>
 
 <!DOCTYPE html>
@@ -107,7 +108,7 @@ $subtotal = 0;
 		      <th>Descripción</th>
 		      <th class="text-right">Precio</th>
 		      <th class="text-center">Cantidad</th>
-		      <th class="text-right">Total</th>
+		      <th class="text-right">Subtotal</th>
 		    </tr>
 		  </thead>
 		  <tbody id="detalleOrden">
@@ -211,20 +212,10 @@ $subtotal = 0;
 					<th colspan="4" class="text-end">Subtotal:</th>
 					<td class="text-right"><?= formatNum(floor($subtotal),false)?></td>
 				</tr>
-				<?php
-					if(isset($order['cupon'])){
-						$cupon = $order['cupon'];
-						$subtotal = $subtotal - ($subtotal*($cupon['discount']/100));
-				?>
 				<tr>
-					<th colspan="4" class="text-end">Cupon:</th>
-					<td class="text-right"><?= $cupon['code']." - ".$cupon['discount']?>%</td>
+					<th colspan="4" class="text-end">Descuento:</th>
+					<td class="text-right"><?= formatNum(floor($discount),false)?></td>
 				</tr>
-				<tr>
-					<th colspan="4" class="text-end">Subtotal:</th>
-					<td class="text-right"><?= formatNum(floor($subtotal),false)?></td>
-				</tr>
-				<?php }?>
 				<tr>
 					<th colspan="4" class="text-end">Envio:</th>
 					<td class="text-right"><?= formatNum($order['shipping'],false)?></td>

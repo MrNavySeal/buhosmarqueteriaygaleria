@@ -91,34 +91,20 @@
                 if($_POST){
                     $idOrder = intval($_POST['id']);
                     $data = $this->model->selectOrder($idOrder,"");
-                    $options ="";
+                    $suscription = !empty($data['suscription']) ? json_decode($data['suscription'],true) : "";
+                    $status="";
                     $statusOrder="";
                     $payments="";
-                    if($data['status'] == "pendent"){
-                        $options='
-                        <option value="1">aprobado</option>
-                        <option value="2" selected>pendiente</option>
-                        <option value="3">cancelado</option>
-                        ';
-                    }else if($data['status'] == "approved"){
-                        $options='
-                        <option value="1" selected>aprobado</option>
-                        <option value="2">pendiente</option>
-                        <option value="3">cancelado</option>
-                        ';
-                    }else{
-                        $options='
-                        <option value="1">aprobado</option>
-                        <option value="2">pendiente</option>
-                        <option value="3" selected>cancelado</option>
-                        ';
-                    }
+                    $pago ="";
+                    $subTotal = 0;
+                    $total = $data['amount'];
                     for ($i=0; $i < count(PAGO) ; $i++) { 
                         if($data['type'] == PAGO[$i]){
                             $payments.='<option value="'.$i.'" selected>'.PAGO[$i].'</option>';
                         }else{
                             $payments.='<option value="'.$i.'">'.PAGO[$i].'</option>';
                         }
+                        $pago .='<option value="'.$i.'">'.PAGO[$i].'</option>';
                     }
                     for ($i=0; $i < count(STATUS) ; $i++) { 
                         if($data['statusorder'] == STATUS[$i]){
@@ -127,9 +113,56 @@
                             $statusOrder.='<option value="'.$i.'">'.STATUS[$i].'</option>';
                         }
                     }
-                    $data['options'] = $options;
+                    $html='<tr>
+                                <td class="fw-bold">Fecha</td>
+                                <td class="fw-bold">Anticipo</td>
+                                <td class="fw-bold">Tipo de pago</td>
+                            </tr>
+                            <tr>
+                                <td><input type="date" class="form-control" id="subDate"></td>
+                                <td><input type="number" class="form-control" id="subDebt" placeholder="Abono"></td>
+                                <td><select class="form-control" aria-label="Default select example">'.$pago.'</select></td>
+                                <td><button class="btn btn-primary" type="button" title="add" onclick="addSuscription()"><i class="fas fa-plus"></i></button></td>
+                            </tr>';
+                    
+
+                    if($data['status'] == "pendent"){
+                        $status = 2;
+                    }else if($data['status'] == "approved"){
+                        $status = 1;
+                    }else{
+                        $status = 3;
+                    }
+
+                    if(!empty($suscription)){
+                        $accountSelect="";
+                        $date ="";
+                        for ($i=0; $i < count($suscription) ; $i++) { 
+                            for ($j=0; $j < count(PAGO) ; $j++) { 
+                                if($suscription[$i]['type'] == PAGO[$j]){
+                                    $accountSelect.='<option value="'.$j.'" selected>'.PAGO[$j].'</option>';
+                                }else{
+                                    $accountSelect.='<option value="'.$j.'">'.PAGO[$j].'</option>';
+                                }
+                            }
+                            $subTotal+= $suscription[$i]['debt'];
+                            $html.='<tr class="itemAccount" data-total="'.$suscription[$i]['debt'].'">
+                                        <td><input type="date" class="form-control" value="'.$suscription[$i]['date'].'"></td>
+                                        <td><input type="number" disabled class="form-control" value="'.$suscription[$i]['debt'].'" placeholder="Abono"></td>
+                                        <td><select class="form-control" aria-label="Default select example">'.$accountSelect.'</select></td>
+                                        <td><button class="btn btn-danger" type="button" title="Delete" onclick="delSuscription(this.parentElement.parentElement)"><i class="fas fa-trash-alt"></i></button></td>
+                                    </tr>';
+                        }
+                    }
+                    $totalSus = $total-$subTotal;
                     $data['statusorder'] = $statusOrder;
                     $data['payments'] = $payments;
+                    $data['status'] = $status;
+                    $data['suscription'] = $html;
+                    $data['totalDebt'] = '<tr data-total="'.$total.'">
+                        <td class="text-end fw-bold">Saldo total:</td>
+                        <td>'.formatNum($totalSus).'</td>
+                    </tr>';
                     $arrResponse = array("status"=>true,"data"=>$data);
                 }
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
@@ -302,7 +335,26 @@
             }
             die();
         }
-        
+        /*
+        public function addSuscription(){
+            if($_SESSION['permitsModule']['u']){
+                if($_POST){
+                    $id = intval($_POST['id']);
+                    $request = $this->model->selectOrder($idOrder,"");
+                    $suscription = $request['suscription'];
+                    $total = $request['amount'];
+                    $subTotal = 0;
+                    if(!empty($suscription)){
+                        $suscription = json_decode($suscription,true);
+                        for ($i=0; $i < count($suscription) ; $i++) { 
+                            $subtotal+= $suscription[$i]['debt'];
+                        }
+                        if($subTotal == $tot)
+                    }
+                }
+            }
+            die();
+        }*/
 
     /*************************POS methods*******************************/
         public function getProducts($option=null,$params=null){
@@ -895,8 +947,9 @@
                         $idOrder = intval($_POST['idOrder']);
                         $customInfo = $this->model->selectCustomer($idUser);
                         $status = intval($_POST['statusList']);
-                        $statusOrder = intval($_POST['statusOrder']);
-                        $received = empty($_POST['received']) ? 0 : intval($_POST['received']);
+                        
+                        $statusOrder = STATUS[intval($_POST['statusOrder'])];
+                        
                         $strNote = strClean($_POST['strNote']);
                         $strDate = $_POST['strDate'];
                         $strName = $customInfo['firstname']." ".$customInfo['lastname'];
@@ -904,23 +957,13 @@
                         $strPhone = $customInfo['phone'];
                         $strIdentification = $customInfo['identification'];
                         $strAddress = $customInfo['address']." ".$customInfo['city']."/".$customInfo['state']."/".$customInfo['country'];
-                        $cupon = "";
-                        $type =intval($_POST['paymentList']);
+                        $type = PAGO[intval($_POST['paymentList'])];
                         $envio = 0;
                         $option="";
                         $request="";
-                        for ($i=0; $i < count(PAGO) ; $i++) { 
-                            if($i == $type){
-                                $type = PAGO[$i];
-                                break;
-                            }
-                        }
-                        for ($i=0; $i < count(STATUS) ; $i++) { 
-                            if($i == $statusOrder){
-                                $statusOrder = STATUS[$i];
-                                break;
-                            }
-                        }
+                        $objSuscription="";
+                        $arrSuscription=array();
+
                         if($status == 1){
                             $status = "approved";
                         }else if($status == 2){
@@ -928,8 +971,9 @@
                         }else{
                             $status = "canceled";
                         }
-                        
                         if($idOrder == 0){
+                            $discount = intval($_POST['discount']);
+                            $suscription = intval($_POST['received']);
                             $option = 1;
                             foreach ($_SESSION['arrPOS'] as $pro) {
                                 if($pro['topic'] == 2){
@@ -942,20 +986,30 @@
                                     $total+=$pro['qty']*$pro['price'];
                                 }
                             }
-                            if($_POST['discount'] > 0 && $_POST['discount'] <=90){
+                            $total = $total-$discount;
                             
-                                $discount = intval($_POST['discount']);
-                                $strNote.="- Descuento del ".$discount."%";
-                                $total = $total -($total*($discount*0.01));
+                            if($suscription-$discount == $total){
+                                $arrSuscription = array(
+                                    [
+                                        "date"=>date("Y-m-d"),
+                                        "debt"=>$total,
+                                        "type"=>$type
+                                    ]
+                                );
+                            }else if( $suscription < $total && $suscription > 0){
+                                $arrSuscription = array(
+                                    [
+                                        "date"=>date("Y-m-d"),
+                                        "debt"=>$suscription,
+                                        "type"=>$type
+                                    ]
+                                );
                             }
-                            if($received < $total){
-                                $status = "pendent";
-                                $strNote .= " - abona ".formatNum($received,false).", debe ".formatNum($total-$received,false);
-                            }
-                            $request = $this->model->insertOrder($idUser,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strNote,$strDate,$cupon,$envio,$total,$status,$type,$statusOrder);          
+                            $request = $this->model->insertOrder($idUser,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strNote,$strDate,$discount,$envio,$arrSuscription,$total,$status,$type,$statusOrder);          
                         }else{
                             $option = 2;
-                            $request = $this->model->updateOrder($idOrder,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$type,$status,$statusOrder);          
+                            $arrSuscription = json_decode($_POST['suscription'],true);
+                            $request = $this->model->updateOrder($idOrder,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder);          
                         }
                         if($request>0){
                             if($option == 1){
@@ -966,6 +1020,8 @@
                             }else{
                                 $arrResponse = array("status"=>true,"msg"=>"Pedido actualizado");
                             }
+                        }else if(!$request){
+                            $arrResponse = array("status"=>false,"msg"=>"Error, los anticipos superan al monto total, inténtelo de nuevo.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"Error, no se ha podido realizar el pedido, inténtelo de nuevo.");
                         }

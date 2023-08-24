@@ -14,6 +14,7 @@
         private $strAddress;
         private $intTotal;
         private $intIdProduct;
+        private $suscription;
         public function __construct(){
             parent::__construct();
         }
@@ -268,8 +269,10 @@
             return $request;
         }
         public function insertOrder(int $idUser, string $strName,string $strIdentification,string $strEmail,string $strPhone,string $strAddress,
-        string $strNote,string $strDate,string $cupon,int $envio,int $total,string $status, string $type,string $statusOrder){
-
+        string $strNote,string $strDate,string $cupon,int $envio,array $arrSuscription,int $total,string $status, string $type,string $statusOrder){
+            
+            $suscription = json_encode($arrSuscription);
+            //dep($suscription);exit;
             $this->intIdUser = $idUser;
             $this->strName = $strName;
             $this->strEmail = $strEmail;
@@ -281,7 +284,7 @@
                 $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
                 $dateFormat = date_format($dateCreated,"Y-m-d");
                 
-                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,date,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,date,status,coupon,shipping,suscription,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $this->intIdUser, 
                     $this->strName,
@@ -295,12 +298,13 @@
                     $status,
                     $cupon,
                     $envio,
+                    $suscription,
                     $type,
                     $statusOrder,
                 );
                 $request = $this->insert($sql,$arrData);
             }else{
-                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,status,coupon,shipping,suscription,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $this->intIdUser, 
                     $this->strName,
@@ -313,13 +317,15 @@
                     $status,
                     $cupon,
                     $envio,
+                    $suscription,
                     $type,
                     $statusOrder
                 );
                 $request = $this->insert($sql,$arrData);
             }
             if($request>0){
-                $this->insertIncome($request,3,1,"Venta de producto",$total,$strDate,1);
+                $status = $status=="pendent" ? 2 : 1;
+                $this->insertIncome($request,3,1,"Venta de producto",$total,$strDate,$status);
             }
             return $request;
         }
@@ -395,14 +401,34 @@
             $request = $this->update($sql,$arrData);
             return $request;
         }
-        public function updateOrder($idOrder,string $strName,$strIdentification,string $strEmail,string $strPhone,string $strAddress,$strDate,$strNote,$type,$status,$statusOrder){
+        public function updateOrder($idOrder,string $strName,$strIdentification,string $strEmail,string $strPhone,string $strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder){
+            
             $this->intIdOrder = $idOrder;
             $this->strName = $strName;
             $this->strEmail = $strEmail;
             $this->strPhone = $strPhone;
             $this->strAddress = $strAddress;
             $this->strIdentification = $strIdentification;
-            $sql = "UPDATE orderdata SET name=?,identification=?,email=?,phone=?,address=?,note=?,type=?,status=?, date=?,statusorder=? WHERE idorder = $this->intIdOrder";
+            $order = $this->selectOrder($this->intIdOrder,"");
+            if(!empty($arrSuscription)){
+                $subtotal = 0;
+                for ($i=0; $i < count($arrSuscription) ; $i++) { 
+                    if($arrSuscription[$i]['date'] == ""){
+                        $arrSuscription[$i]['date'] = date("Y-m-d");
+                    }
+                    $subtotal+= $arrSuscription[$i]['debt'];
+                }
+                if($subtotal > $order['amount']){
+                    return false;
+                }
+                if($subtotal == $order['amount'] && $status == "pendent"){
+                    $status = "approved";
+                }else if($subtotal < $order['amount'] && $status != "canceled"){
+                    $status = "pendent";
+                }
+            }
+            $arrSuscription = json_encode($arrSuscription);
+            $sql = "UPDATE orderdata SET name=?,identification=?,email=?,phone=?,address=?,note=?,suscription=?,type=?,status=?, date=?,statusorder=? WHERE idorder = $this->intIdOrder";
             $arrData = array(
                 $this->strName,
                 $this->strIdentification,
@@ -410,6 +436,7 @@
                 $this->strPhone,
                 $this->strAddress,
                 $strNote,
+                $arrSuscription,
                 $type,
                 $status,
                 $strDate,

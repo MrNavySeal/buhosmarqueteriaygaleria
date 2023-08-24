@@ -2,9 +2,12 @@
 
 $order = $data['orderdata'];
 $detail = $data['orderdetail'];
+$discount = $order['coupon'];
 $total=0;
 $subtotal = 0;
 $status="";
+$rows =0;
+$arrAccount =!empty( $order['suscription']) ? json_decode($order['suscription'],true) : "";
 if($order['status'] =="pendent"){
     $status = 'pendiente';
 }else if($order['status'] =="approved"){
@@ -81,6 +84,9 @@ if($order['status'] =="pendent"){
 		.text-right{
             text-align: right;
         }
+        .fw-bold{
+            font-weight:bold;
+        }
 		@media screen and (max-width: 470px) {
 			.logo{width: 90px;}
 			p, table tr td, table tr th{
@@ -152,7 +158,7 @@ if($order['status'] =="pendent"){
             <th>Descripción</th>
             <th class="text-right">Precio</th>
             <th class="text-right">Cantidad</th>
-            <th class="text-right">Total</th>
+            <th class="text-right">Subtotal</th>
         </tr>
         </thead>
         <tbody id="detalleOrden">
@@ -260,35 +266,95 @@ if($order['status'] =="pendent"){
                 }
             } 
             ?>
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4" class="text-right">Subtotal:</th>
-                <td class="text-right"><?= formatNum(floor($subtotal),false)?></td>
-            </tr>
             <?php
-                if(isset($order['cupon'])){
-                    $cupon = $order['cupon'];
-                    $subtotal = $subtotal - ($subtotal*($cupon['discount']/100));
+                if($order['idtransaction']!= ""){
+
             ?>
             <tr>
-                <th colspan="4" class="text-right">Cupon:</th>
-                <td class="text-right"><?= $cupon['code']." - ".$cupon['discount']?>%</td>
+                <td colspan="4" class="text-right fw-bold">Subtotal:</td>
+                <td class="text-right"><?= formatNum($subtotal,false)?></td>
             </tr>
             <tr>
-                <th colspan="4" class="text-right">Subtotal:</th>
-                <td class="text-right"><?= formatNum(floor($subtotal),false)?></td>
+                <td colspan="4" class="text-right fw-bold">Descuento:</td>
+                <td class="text-right"><?= formatNum($discount)?></td>
             </tr>
-            <?php }?>
             <tr>
-                <th colspan="4" class="text-right">Envio:</th>
+                <td colspan="4" class="text-right fw-bold">Envio:</td>
                 <td class="text-right"><?= formatNum($order['shipping'],false)?></td>
             </tr>
             <tr>
-                <th colspan="4" class="text-right">Total:</th>
+                <td colspan="4" class="text-right fw-bold">Total:</td>
                 <td class="text-right"><?= formatNum($order['amount'],false)?></td>
             </tr>
-        </tfoot>
+            <?php } else{ if(!empty($arrAccount)){?>
+                
+                <tr>
+                    <td colspan="2" class="text-center fw-bold">Anticipos realizados</td>
+                    <td colspan="2" class="text-right fw-bold">Subtotal:</td>
+                    <td class="text-right"><?= formatNum($subtotal,false)?></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Fecha</td>
+                    <td class="fw-bold">Anticipo</td>
+                    <td colspan="2" class="text-right fw-bold">Descuento:</td>
+                    <td class="text-right"><?= formatNum($discount)?></td>
+                </tr>
+                <?php
+                    $abonoTotal = 0;
+                    for ($i=0; $i < count($arrAccount) ; $i++) { 
+                        $abonoTotal+= intval($arrAccount[$i]['debt']);
+                        $date = explode("-",$arrAccount[$i]['date']);
+                        $date = $date[2]."/".$date[1]."/".$date[0];
+                        $td="";
+                        $td1="";
+                        if($i == 0){
+                            $td = '
+                            <td colspan="2" class="text-right fw-bold">Envio:</td>
+                            <td class="text-right">'.formatNum($order['shipping'],false).'</td>
+                            ';
+                        }else if($i == 1){
+                            $td = '
+                            <td colspan="2" class="text-right fw-bold">Total:</td>
+                            <td class="text-right">'.formatNum($order['amount'],false).'</td>
+                            ';
+                        }
+                        if(count($arrAccount) == 1){
+                            $td1 = '
+                            <td colspan="2" class="text-right fw-bold">Total:</td>
+                            <td class="text-right">'.formatNum($order['amount'],false).'</td>
+                            ';
+                        }
+                ?>
+                <tr>
+                    <td><?=$date?></td>
+                    <td><?=formatNum($arrAccount[$i]['debt'])." (".$arrAccount[$i]['type'].")"?></td>
+                    <?=$td?>
+                </tr>
+                <?php }?>
+                <tr>
+                    <td class="fw-bold">Saldo total: </td>
+                    <td><?=formatNum($order['amount']-$abonoTotal)?></td>
+                     <?=$td1?>
+                </tr>
+                <?php }else{?>
+                    <tr>
+                    <td colspan="4" class="text-right fw-bold">Subtotal:</td>
+                    <td class="text-right"><?= formatNum($subtotal,false)?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right fw-bold">Descuento:</td>
+                    <td class="text-right"><?= formatNum($discount)?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right fw-bold">Envio:</td>
+                    <td class="text-right"><?= formatNum($order['shipping'],false)?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right fw-bold">Total:</td>
+                    <td class="text-right"><?= formatNum($order['amount'],false)?></td>
+                </tr>
+            <?php } }?>
+        </tbody>
     </table>
     <table class="text-center">
         <tbody>
