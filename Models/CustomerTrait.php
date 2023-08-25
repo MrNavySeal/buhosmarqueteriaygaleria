@@ -131,6 +131,7 @@
                 );
                 $request = $this->con->insert($sql,$arrData);
                 if($request>0){
+                    $this->updateDateBeat($request);
                     $this->insertIncome($request,3,1,"Venta de producto",$total,1);
                 }
             }
@@ -299,6 +300,7 @@
             return $request;
         }
         public function insertIncome(int $id, int $intType,int $intTopic,string $strName,int $intAmount,int $intStatus){
+            $this->con = new Mysql();
             $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status) VALUES(?,?,?,?,?,?)";		  
             $arrData = array(
                 $id,
@@ -311,6 +313,23 @@
             $request = $this->con->insert($sql,$arrData);
 	        return $request;
 		}
+        public function updateDateBeat($idOrder){
+            $this->con = new Mysql();
+            $request = $this->con->select("select DATE_FORMAT(date,'%Y-%m-%d') as date FROM orderdata WHERE idorder = $idOrder")['date'];
+            $dateObj = new DateTime($request);
+            $count = 0;
+            while ($count < 30) {
+                $dateObj->modify("+1 day");
+                $dayWeek = $dateObj->format("N");
+                
+                if($dayWeek < 7){
+                    $count++;
+                }
+            }
+            $dateBeat = $dateObj->format("Y-m-d");
+            $arrData = array($dateBeat);
+            $this->con->update("UPDATE orderdata SET date_beat=? WHERE idorder=$idOrder",$arrData);
+        }
     }
     
 ?>

@@ -32,7 +32,7 @@
             if($idPerson !=""){
                 $option =" AND personid = $this->intIdUser";
             }
-            $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date FROM orderdata WHERE idorder = $this->intIdOrder $option";
+            $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date,DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat FROM orderdata WHERE idorder = $this->intIdOrder $option";
             $request = $this->select($sql);
             return $request;
         }
@@ -269,7 +269,7 @@
             return $request;
         }
         public function insertOrder(int $idUser, string $strName,string $strIdentification,string $strEmail,string $strPhone,string $strAddress,
-        string $strNote,string $strDate,string $cupon,int $envio,array $arrSuscription,int $total,string $status, string $type,string $statusOrder){
+        string $strNote,string $strDate,string $cupon,int $envio,array $arrSuscription,int $total,string $status, string $type,string $statusOrder,$dateBeat){
             
             $suscription = json_encode($arrSuscription);
             //dep($suscription);exit;
@@ -284,7 +284,7 @@
                 $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
                 $dateFormat = date_format($dateCreated,"Y-m-d");
                 
-                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,date,status,coupon,shipping,suscription,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,date,status,coupon,shipping,suscription,type,statusorder,date_beat) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $this->intIdUser, 
                     $this->strName,
@@ -301,10 +301,11 @@
                     $suscription,
                     $type,
                     $statusOrder,
+                    $dateBeat,
                 );
                 $request = $this->insert($sql,$arrData);
             }else{
-                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,status,coupon,shipping,suscription,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,status,coupon,shipping,suscription,type,statusorder,date_beat) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $this->intIdUser, 
                     $this->strName,
@@ -319,7 +320,8 @@
                     $envio,
                     $suscription,
                     $type,
-                    $statusOrder
+                    $statusOrder,
+                    $dateBeat
                 );
                 $request = $this->insert($sql,$arrData);
             }
@@ -401,7 +403,7 @@
             $request = $this->update($sql,$arrData);
             return $request;
         }
-        public function updateOrder($idOrder,string $strName,$strIdentification,string $strEmail,string $strPhone,string $strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder){
+        public function updateOrder($idOrder,string $strName,$strIdentification,string $strEmail,string $strPhone,string $strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder,$dateBeat){
             
             $this->intIdOrder = $idOrder;
             $this->strName = $strName;
@@ -428,7 +430,7 @@
                 }
             }
             $arrSuscription = json_encode($arrSuscription);
-            $sql = "UPDATE orderdata SET name=?,identification=?,email=?,phone=?,address=?,note=?,suscription=?,type=?,status=?, date=?,statusorder=? WHERE idorder = $this->intIdOrder";
+            $sql = "UPDATE orderdata SET name=?,identification=?,email=?,phone=?,address=?,note=?,suscription=?,type=?,status=?, date=?,statusorder=?, date_beat=? WHERE idorder = $this->intIdOrder";
             $arrData = array(
                 $this->strName,
                 $this->strIdentification,
@@ -440,7 +442,8 @@
                 $type,
                 $status,
                 $strDate,
-                $statusOrder
+                $statusOrder,
+                $dateBeat
             );
             $request = $this->update($sql,$arrData);
             if($request>0){

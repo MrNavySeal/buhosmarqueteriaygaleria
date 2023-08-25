@@ -14,7 +14,7 @@
             if($idPerson !=""){
                 $option =" AND personid = $this->intIdUser";
             }
-            $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date FROM orderdata WHERE idorder = $this->intIdOrder $option";
+            $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date,DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat FROM orderdata WHERE idorder = $this->intIdOrder $option";
             $request = $this->select($sql);
             return $request;
         }

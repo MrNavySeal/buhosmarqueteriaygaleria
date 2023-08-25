@@ -4,7 +4,8 @@ const btnAddPos = document.querySelector("#btnAddPos");
 let searchCustomers = document.querySelector("#searchCustomers");
 const cupon = document.querySelector("#discount");
 let formPOS = document.querySelector("#formSetOrder");
-
+let element = document.querySelector("#listItem");
+let modal = document.querySelector("#modalPos") ? new bootstrap.Modal(document.querySelector("#modalPos")) :"";
 moneyReceived.addEventListener("input",function(){
     let total = document.querySelector("#total").getAttribute("data-value");
     let result = 0;
@@ -75,77 +76,78 @@ formPOS.addEventListener("submit",function(e){
     formData.append("txtTransaction",strTransaction);*/
     btnAddPos.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAddPos.setAttribute("disabled","");
+    //let modal = new bootstrap.Modal(document.querySelector("#modalPos"));
     request(base_url+"/pedidos/setOrder",formData,"post").then(function(objData){
         btnAddPos.removeAttribute("disabled");
         btnAddPos.innerHTML="Guardar";
+        modal.hide();
         if(objData.status){
-            location.reload();
+            Swal.fire("",objData.msg,"success");
+            
+            element.innerHTML = objData.data;
         }else{
             Swal.fire("Error",objData.msg,"error");
         }
     });
 
 });
-if(document.querySelector("#pedidos")){
-    let searchPanel = document.querySelector("#search");
-    let sortPanel = document.querySelector("#sortBy");
-    let element = document.querySelector("#listItem");
-    
-    searchPanel.addEventListener('input',function() {
-        request(base_url+"/pedidos/search/"+searchPanel.value,"","get").then(function(objData){
-            if(objData.status){
-                element.innerHTML = objData.data;
-            }else{
-                element.innerHTML = objData.msg;
-            }
-        });
-    });
-    
-    sortPanel.addEventListener("change",function(){
-        request(base_url+"/pedidos/sort/"+sortPanel.value,"","get").then(function(objData){
-            if(objData.status){
-                element.innerHTML = objData.data;
-            }else{
-                element.innerHTML = objData.msg;
-            }
-        });
-    });
-    element.addEventListener("click",function(e) {
-        let element = e.target;
-        let id = element.getAttribute("data-id");
-        if(element.name == "btnDelete"){
-            deleteItem(id);
+let searchPanel = document.querySelector("#search");
+let sortPanel = document.querySelector("#sortBy");
+
+searchPanel.addEventListener('input',function() {
+    request(base_url+"/pedidos/search/"+searchPanel.value,"","get").then(function(objData){
+        if(objData.status){
+            element.innerHTML = objData.data;
+        }else{
+            element.innerHTML = objData.msg;
         }
     });
-    function deleteItem(id){
-        Swal.fire({
-            title:"¿Estás seguro de eliminarlo?",
-            text:"Se eliminará para siempre...",
-            icon: 'warning',
-            showCancelButton:true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText:"Sí, eliminar",
-            cancelButtonText:"No, cancelar"
-        }).then(function(result){
-            if(result.isConfirmed){
-                let url = base_url+"/pedidos/delOrder"
-                let formData = new FormData();
-                formData.append("idOrder",id);
-                request(url,formData,"post").then(function(objData){
-                    if(objData.status){
-                        Swal.fire("Eliminado",objData.msg,"success");
-                        element.innerHTML = objData.data;
-                    }else{
-                        Swal.fire("Error",objData.msg,"error");
-                    }
-                });
-            }
-        });
+});
+
+sortPanel.addEventListener("change",function(){
+    request(base_url+"/pedidos/sort/"+sortPanel.value,"","get").then(function(objData){
+        if(objData.status){
+            element.innerHTML = objData.data;
+        }else{
+            element.innerHTML = objData.msg;
+        }
+    });
+});
+element.addEventListener("click",function(e) {
+    let element = e.target;
+    let id = element.getAttribute("data-id");
+    if(element.name == "btnDelete"){
+        deleteItem(id);
     }
+});
+function deleteItem(id){
+    Swal.fire({
+        title:"¿Estás seguro de eliminarlo?",
+        text:"Se eliminará para siempre...",
+        icon: 'warning',
+        showCancelButton:true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText:"Sí, eliminar",
+        cancelButtonText:"No, cancelar"
+    }).then(function(result){
+        if(result.isConfirmed){
+            let url = base_url+"/pedidos/delOrder"
+            let formData = new FormData();
+            formData.append("idOrder",id);
+            request(url,formData,"post").then(function(objData){
+                if(objData.status){
+                    Swal.fire("Eliminado",objData.msg,"success");
+                    element.innerHTML = objData.data;
+                }else{
+                    Swal.fire("Error",objData.msg,"error");
+                }
+            });
+        }
+    });
 }
 function openModalOrder(idOrder=null){
-    let modal = new bootstrap.Modal(document.querySelector("#modalPos"));
+    
     let formData = new FormData();
     formData.append("id",idOrder);
     request(base_url+"/pedidos/getOrder",formData,"post").then(function(objData){
@@ -161,7 +163,9 @@ function openModalOrder(idOrder=null){
         document.querySelector("#idOrder").value = idOrder;
         document.querySelector("#idCustomer").value=objData.data.personid;
         let arrDate = new String(objData.data.date).split("/");
+        let arrDateBeat = new String(objData.data.date_beat).split("/");
         document.querySelector("#txtDate").valueAsDate = new Date(arrDate[2]+"-"+arrDate[1]+"-"+arrDate[0]);
+        document.querySelector("#txtDateBeat").valueAsDate = new Date(arrDateBeat[2]+"-"+arrDateBeat[1]+"-"+arrDateBeat[0]);
         document.querySelector("#txtNotePos").value = objData.data.note;
         document.querySelector("#paymentList").innerHTML = objData.data.payments;
         document.querySelector("#statusList").value = objData.data.status;
@@ -238,6 +242,4 @@ function delSuscription(element){
     console.log(subtotal);
     let totalSus = total-subtotal;
     document.querySelector("#totalDebt").children[0].children[1].innerHTML = "$"+formatNum(totalSus,".");
-    
-    
 }

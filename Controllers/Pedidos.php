@@ -947,11 +947,8 @@
                         $idOrder = intval($_POST['idOrder']);
                         $customInfo = $this->model->selectCustomer($idUser);
                         $status = intval($_POST['statusList']);
-                        
                         $statusOrder = STATUS[intval($_POST['statusOrder'])];
-                        
                         $strNote = strClean($_POST['strNote']);
-                        $strDate = $_POST['strDate'];
                         $strName = $customInfo['firstname']." ".$customInfo['lastname'];
                         $strEmail = $customInfo['email'];
                         $strPhone = $customInfo['phone'];
@@ -963,6 +960,21 @@
                         $request="";
                         $objSuscription="";
                         $arrSuscription=array();
+
+                        $strDate = $_POST['strDate'];
+                        $dateObj = new DateTime($strDate);
+                        $dateCount = 0;
+                        //$dateBeat = date("Y-m-d",strtotime($strDate . " +30 days"));
+                        
+                        while ($dateCount < 30) {
+                            $dateObj->modify('+1 day');
+                            $dayWeek = $dateObj->format('N');
+
+                            if($dayWeek < 7){
+                                $dateCount++;
+                            }
+                        }
+                        $dateBeat = $dateObj->format("Y-m-d");
 
                         if($status == 1){
                             $status = "approved";
@@ -1005,11 +1017,11 @@
                                     ]
                                 );
                             }
-                            $request = $this->model->insertOrder($idUser,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strNote,$strDate,$discount,$envio,$arrSuscription,$total,$status,$type,$statusOrder);          
+                            $request = $this->model->insertOrder($idUser,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strNote,$strDate,$discount,$envio,$arrSuscription,$total,$status,$type,$statusOrder,$dateBeat);          
                         }else{
                             $option = 2;
                             $arrSuscription = json_decode($_POST['suscription'],true);
-                            $request = $this->model->updateOrder($idOrder,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder);          
+                            $request = $this->model->updateOrder($idOrder,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder,$dateBeat);          
                         }
                         if($request>0){
                             if($option == 1){
@@ -1018,7 +1030,10 @@
                                 unset($_SESSION['arrPOS']);
                                 $arrResponse = array("status"=>true,"msg"=>"Pedido realizado");
                             }else{
-                                $arrResponse = array("status"=>true,"msg"=>"Pedido actualizado");
+                                
+                                $arrResponse = $this->getOrders();
+                                //$arrResponse['status']=true;
+                                $arrResponse['msg'] = 'Pedido actualizado.';
                             }
                         }else if(!$request){
                             $arrResponse = array("status"=>false,"msg"=>"Error, los anticipos superan al monto total, inténtelo de nuevo.");

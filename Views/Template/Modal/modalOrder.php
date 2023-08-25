@@ -26,8 +26,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mt-3 mb-3">
-                                <label for="" class="form-label">Fecha</label>
+                                <label for="" class="form-label">Fecha de emisión</label>
                                 <input type="date" name="strDate" id="txtDate" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mt-3 mb-3">
+                                <label for="" class="form-label">Fecha de vencimiento</label>
+                                <input type="date" name="strDate" id="txtDateBeat" class="form-control" disabled>
                             </div>
                         </div>
                         <div class="col-12">
