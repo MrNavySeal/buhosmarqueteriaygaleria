@@ -98,19 +98,19 @@
     }
 }
 .t-color-1{
-    color:$color1;
+    color:$color1 !important;
 }
 .t-color-2{
-    color:$color2;
+    color:$color2 !important;
 }
 .t-color-3{
-    color:$color3;
+    color:$color3 !important;
 }
 .t-color-4{
-    color:$color4;
+    color:$color4 !important;
 }
 .t-color-5{
-    color:$color5;
+    color:$color5 !important;
 }
 .t-color-h-2{
     &:hover{
@@ -119,19 +119,19 @@
 }
 .bg-color-1{
     color:$color4;
-    background-color: $color1;
+    background-color: $color1 !important;
 }
 .bg-color-2{
     color:$color4;
-    background-color: $color2;
+    background-color: $color2 !important;
 }
 .bg-color-3{
     color:$color4;
-    background-color: $color3;
+    background-color: $color3 !important;
 }
 .bg-color-4{
     color:$color4;
-    background-color: $color2;
+    background-color: $color2 !important;
 }
 .c-p{
     cursor: pointer;

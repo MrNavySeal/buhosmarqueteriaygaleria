@@ -23,46 +23,71 @@
         <div class="col-12 col-lg-9 col-md-12">
             <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <div id="orderInfo" class="position-relative overflow-hidden"> 
-                    <div class="d-flex justify-content-between flex-wrap mb-3">
-                        <div class="mb-3 d-flex flex-wrap align-items-center">
-                            <img src="<?=media()."/images/uploads/".$company['logo']?>" class="me-2" style="width=170px;height:170px;" alt="">
-                            <div>
-                                <p class="m-0 fw-bold"><?=$company['name']?></p>
-                                <p class="m-0">Oswaldo Parrado Clavijo</p>
-                                <p class="m-0">NIT 17.344.806-8 No responsable de IVA</p>
-                                <p class="m-0"><?=$company['addressfull']?></p>
-                                <p class="m-0"><?=$company['phone']?> - <?=$company['phones']?></p>
-                                <p class="m-0"><?=$company['email']?></p>
-                                <p class="m-0"><?=BASE_URL?></p>
-                            </div>
-                        </div>
-                        <div class="text-start">
-                            <p class="m-0"><span class="fw-bold">Fecha: </span><?=$order['date']?></p>
-                            <p class="m-0"><span class="fw-bold">Factura de venta: </span>#<?=$order['idorder']?></p>
-                            <?php if($order['idtransaction'] != ""){?>
-                            <p class="m-0"><span class="fw-bold">Transacción: </span><?=$order['idtransaction']?></p>
-                            <?php }?>
-                            <p class="m-0"><span class="fw-bold">Tipo de pago: </span><?=$order['type']?></p>
-                            <p class="m-0"><span class="fw-bold">Estado de pago: </span><?=$status?></p>
-                            <p class="m-0"><span class="fw-bold">Estado de pedido: </span><?=$order['statusorder']?></p>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-12 mb-3">
-                            <p class="m-0 mb-2 fw-bold">Cliente</p>
-                            <p class="m-0">Nombre: <?=$order['name']?></p>
-                            <p class="m-0">CC/NIT: <?=$order['identification']?></p>
-                            <p class="m-0">Teléfono: <?=$order['phone']?></p>
-                            <p class="m-0">Email: <?=$order['email']?></p>
-                            <p class="m-0">Dirección: <?=$order['address']?></p>
-                            <p class="m-0 fw-bold mt-3">Notas:</p>
-                            <p class="m-0"><?=$order['note']?></p> 
-                        </div>
-                    </div>
                     <div class="table-responsive">
                         <table class="table table-bordered">
+                            <tr class="align-middle text-center">
+                                <td>
+                                    <img src="<?= media()."/images/uploads/".$data['company']['logo'];?>" alt="Logo" width="100" height="100">
+                                </td>
+                                <td class="text-center" colspan="4">
+                                    <h4><strong><?= $data['company']['name'] ?></strong></h4>
+                                    <p class="m-0">Oswaldo Parrado Clavijo</p>
+                                    <p class="m-0">NIT 17.344.806-8 No responsable de IVA</p>
+                                    <p class="m-0">
+                                        <?= $data['company']['addressfull']?> <br>
+                                        Teléfono: <?= $data['company']['phone'] ?> - <?=$data['company']['phones']?> <br>
+                                        Email: <?= $data['company']['email'] ?>
+                                    </p>
+                                </td>
+                                <td class="text-center" >
+                                    <p class="m-0"><span class="fw-bold">Factura de venta</span></p>
+                                    <p class="m-0"><span class="fs-4 fw-bold">No. <?=$order['idorder']?></span></p>
+                                    <?php if($order['idtransaction'] != ""){?>
+                                    <p class="m-0"><span class="fw-bold">Transacción</span></p>
+                                    <p class="m-0"><span class="fs-4 fw-bold"><?=$order['idtransaction']?></span></p>
+                                    <?php }?>
+                                </td>				
+                            </tr>
+                            <tr class="align-middle">
+                                <td class="fw-bold bg-color-3">Nombre</td>
+                                <td colspan="4"><?=$order['name']?></td>
+                                <td class="fw-bold text-center bg-color-3">Fecha de emisión</td>
+                            </tr>
+                            <tr class="align-middle">
+                                <td class="fw-bold bg-color-3">Dirección</td>
+                                <td colspan="4"><?=$order['address']?></td>
+                                <td class="text-center"><?=$order['date']?></td>
+                            </tr>
+                            <tr class="align-middle">
+                                <td class="fw-bold bg-color-3">Teléfono</td>
+                                <td colspan="4"><?=$order['phone']?></td>
+                                <td class="fw-bold text-center bg-color-3">Fecha de vencimiento</td>
+                            </tr>
+                            <tr class="align-middle">
+                                <td class="fw-bold bg-color-3">Correo</td>
+                                <td><?=$order['email']?></td>
+                                <td class="fw-bold bg-color-3">CC/NIT</td>
+                                <td colspan="2"><?=$order['identification']?></td>
+                                <td class="text-center"><?=$order['date_beat']?></td>
+                            </tr>
+                            <tr class="align-middle">
+                                <td class="fw-bold bg-color-3">Tipo de pago</td>
+                                <td><?=$order['type']?></td>
+                                <td class="fw-bold bg-color-3">Estado de pago</td>
+                                <td><?=$status?></td>
+                                <td class="fw-bold bg-color-3">Estado de pedido</td>
+                                <td><?=$order['statusorder']?></td>
+                            </tr>
+                            <tr class="align-middle">
+                                <td class="fw-bold bg-color-3">Notas</td>
+                                <td colspan="5"><?=$order['note']?></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered ">
                             <tbody class="text-start">
-                                <tr class="fw-bold ">
+                                <tr class="fw-bold bg-color-3">
                                     <td>Referencia</td>
                                     <td>Descripcion</td>
                                     <td>Precio</td>
@@ -200,11 +225,11 @@
                                 <?php } else{ ?>
                                     <tr>
                                         <td colspan="3" class="p-0">
-                                            <table class="table table-bordered">
+                                            <table class="table table-bordered align-middle">
                                                 <tr>
-                                                    <td colspan="2" class="text-center fw-bold">Anticipos realizados</td>
+                                                    <td colspan="2" class="text-center fw-bold bg-color-3">Anticipos realizados</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="bg-color-3">
                                                     <td class="fw-bold">Fecha</td>
                                                     <td class="fw-bold">Anticipo</td>
                                                 </tr>
@@ -223,28 +248,28 @@
                                                 </tr>
                                                 <?php }?>
                                                 <tr>
-                                                    <td class="text-end fw-bold">Saldo total: </td>
+                                                    <td class="text-end fw-bold bg-color-3">Saldo total: </td>
                                                     <td><?=formatNum($order['amount']-$abonoTotal)?></td>
                                                 </tr>
                                                 <?php }?>
                                             </table>
                                         </td>
                                         <td colspan="2" class="p-0">
-                                            <table class="table table-bordered">
+                                            <table class="table table-bordered align-middle">
                                                 <tr>
-                                                    <td class="text-end fw-bold">Subtotal:</td>
+                                                    <td class="text-end fw-bold bg-color-3">Subtotal:</td>
                                                     <td data-label="Subtotal:"><?= formatNum($subtotal,false)?></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-end fw-bold">Descuento:</td>
+                                                    <td class="text-end fw-bold bg-color-3">Descuento:</td>
                                                     <td data-label="Descuento"><?= formatNum($discount)?></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-end fw-bold">Envio:</td>
+                                                    <td class="text-end fw-bold bg-color-3">Envio:</td>
                                                     <td data-label="Envio"><?= formatNum($order['shipping'],false)?></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-end fw-bold">Total:</td>
+                                                    <td class="text-end fw-bold bg-color-3">Total:</td>
                                                     <td data-label="Total"><?= formatNum($order['amount'],false)?></td>
                                                 </tr>
                                             </table>
