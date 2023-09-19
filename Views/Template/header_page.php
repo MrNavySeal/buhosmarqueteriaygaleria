@@ -203,7 +203,7 @@
                 </li>
                 <?php
                         if(isset($_SESSION['login'])){
-                            getPermits(2);
+                            //getPermits(2);
                     ?>
                     <div class="nav-link dropdown">
                         <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">

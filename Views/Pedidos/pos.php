@@ -3,9 +3,11 @@ headerPage($data);
 $tipos = $data['tipos'];
 $total = 0;
 $active="d-none";
+
 if($_SESSION['permitsModule']['w']){
     getModal("modalOrder");
 }
+
 ?>
 <div id="modalItem"></div>
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -46,16 +48,15 @@ if($_SESSION['permitsModule']['w']){
                                         <?php
                                             for ($i=0; $i < count($tipos); $i++) { 
                                                 $url = base_url()."/marcos/personalizar/".$tipos[$i]['route'];
-                                                $img = media()."/images/uploads/".$tipos[$i]['image'];
+                                                //$img = media()."/images/uploads/".$tipos[$i]['image'];
                                         ?>
                                         <div class="col-6 col-lg-4">
                                             <div class="card--product">
-                                                <a href="<?=$url?>">
-                                                    <img class="img-fluid" src="<?=$img?>" alt="Cuadros decorativos <?=$tipo[$i]['name']?>">
+                                                <a href="<?=$url?>" class="t-color-2">
+                                                    <div class="card--product-info mt-3">
+                                                        <h2 class="enmarcar--title"><?=$tipos[$i]['name']?></h2>
+                                                    </div>
                                                 </a>
-                                                <div class="card--product-info mt-3">
-                                                    <h2 class="enmarcar--title"><?=$tipos[$i]['name']?></h2>
-                                                </div>
                                             </div>
                                         </div>
                                         <?php }?>

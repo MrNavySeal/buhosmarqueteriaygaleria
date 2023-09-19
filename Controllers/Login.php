@@ -1,5 +1,5 @@
 <?php 
-
+	
 	class Login extends Controllers{
 		public function __construct()
 		{
@@ -24,6 +24,7 @@
 				if(empty($_POST['txtEmail']) || empty($_POST['txtPassword'])){
 					$arrResponse = array('status' => false, 'msg' => 'Error de datos' );
 				}else{
+					require_once("Models/RolesModel.php");
 					$strUser  =  strtolower(strClean($_POST['txtEmail']));
 					$strPassword = hash("SHA256",$_POST['txtPassword']);
 					$requestUser = $this->model->loginUser($strUser, $strPassword);
@@ -36,6 +37,14 @@
 							$_SESSION['login'] = true;
 	
 							$arrData = $this->model->sessionLogin($_SESSION['idUser']);
+							$roleModel = new RolesModel();
+							$idrol = intval($_SESSION['userData']['roleid']);
+							$arrPermisos = $roleModel->permitsModule($idrol);
+							$permisos = '';
+							if(count($arrPermisos)>0){
+								$permisos = $arrPermisos;
+							}
+							$_SESSION['permit'] = $permisos;
 							sessionUser($_SESSION['idUser']);
 							setcookie("usercookie",$strUser,time()+365*24*60*60,'/');
 							setcookie("passwordcookie",$strPassword,time()+365*24*60*60,'/');
