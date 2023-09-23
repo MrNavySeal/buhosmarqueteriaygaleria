@@ -136,6 +136,7 @@
     }
     function sessionCookie(){
         if((isset($_COOKIE['usercookie'])&&isset($_COOKIE['passwordcookie'])) && !isset($_SESSION['login'])){
+            
             require_once("Models/LoginModel.php");
             require_once("Models/RolesModel.php");
             $objLogin = new LoginModel();
@@ -146,6 +147,7 @@
                 if($request['status'] == 1){
                     $_SESSION['idUser'] = $request['idperson'];
                     $_SESSION['login'] = true;
+                    $objLogin->sessionLogin($_SESSION['idUser']);
                     $roleModel = new RolesModel();
                     $idrol = intval($_SESSION['userData']['roleid']);
                     $arrPermisos = $roleModel->permitsModule($idrol);
@@ -154,7 +156,6 @@
                         $permisos = $arrPermisos;
                     }
                     $_SESSION['permit'] = $permisos;
-                    $arrData = $objLogin->sessionLogin($_SESSION['idUser']);
 					sessionUser($_SESSION['idUser']);
                 }else{
                     setcookie("usercookie",$_COOKIE['usercookie'],time()-60); 
