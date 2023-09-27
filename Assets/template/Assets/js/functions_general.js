@@ -165,22 +165,11 @@ window.addEventListener("load",function(){
                     let modalView = new bootstrap.Modal(document.querySelector("#modalSuscribe"));
                     modalView.show();
                     document.querySelector("#modalSuscribe").addEventListener("hidden.bs.modal",function(){
-                        if(document.querySelector("#delPopup").checked){
-                            window.clearTimeout(timer);
-                            modalView.hide();
-                            modalPopup.innerHTML = "";
-                            
-                            let key =COMPANY+"popup"; 
-                            localStorage.setItem(key,false);
-                        }else{
-                            window.clearTimeout(timer);
-                            const runTime = function(){
-                                timer=setInterval(function(){
-                                    modalView.show();
-                                },30000);
-                            }
-                            runTime();
-                        }
+                        window.clearTimeout(timer);
+                        modalView.hide();
+                        modalPopup.innerHTML = "";
+                        let key =COMPANY+"popup"; 
+                        localStorage.setItem(key,false);
                     });
                      let formModalSuscribe = document.querySelector("#formModalSuscribe");
                      formModalSuscribe.addEventListener("submit",function(e){
@@ -218,7 +207,7 @@ window.addEventListener("load",function(){
                         });
                         
                      });
-                },30000);
+                },1000);
             }
         });
         
