@@ -43,6 +43,7 @@ window.addEventListener("load",function(){
     selectColorFrame();
     resizeFrame(intWidth.value, intHeight.value);
     setDefaultConfig();
+    document.querySelectorAll(".orientation")[0].classList.add("element--active");
 })
 //----------------------------------------------
 //[Change Pages]
@@ -389,7 +390,7 @@ function setDefaultConfig(){
         layoutBorder.style.outlineColor="transparent";
         selectColorFrame();
     }
-    document.querySelectorAll(".orientation")[0].classList.add("element--active");
+    //document.querySelectorAll(".orientation")[0].classList.add("element--active");
     calcularMarco();
 }
 function selectOrientation(element){

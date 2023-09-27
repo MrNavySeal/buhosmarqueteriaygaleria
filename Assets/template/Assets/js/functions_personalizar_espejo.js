@@ -38,6 +38,7 @@ window.addEventListener("load",function(){
     layoutImg.style.background ="linear-gradient(transparent, rgba(0, 0, 0, 0.2))";
     resizeFrame(intWidth.value, intHeight.value);
     filterProducts();
+    document.querySelectorAll(".orientation")[0].classList.add("element--active");
 })
 //----------------------------------------------
 //[Change Pages]
@@ -320,7 +321,7 @@ function setDefaultConfig(){
         layoutBorder.style.outlineColor="transparent";
         selectColorFrame();
     }
-    document.querySelectorAll(".orientation")[0].classList.add("element--active");
+    //document.querySelectorAll(".orientation")[0].classList.add("element--active");
     calcularMarco();
 }
 function filterProducts(){
