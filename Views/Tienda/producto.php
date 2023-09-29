@@ -257,6 +257,7 @@
         <section class="mt-4">
             <h2 class="section--title">También te puede interesar</h2>
             <div class="row">
+                <div class="product-slider-cat owl-carousel owl-theme">
                 <?php
                     for ($i=0; $i < count($productos) ; $i++) { 
                         $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
@@ -278,31 +279,29 @@
                         }
 
                 ?>
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card--product">
-                        <div class="card--product-img">
-                            <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>">
-                                <?=$discount?>
-                                <img src="<?=$productos[$i]['url']?>" alt="Cuadros decorativos <?=$productos[$i]['subcategory']?>">
-                            </a>
+                <div class="card--product">
+                    <div class="card--product-img">
+                        <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>">
+                            <?=$discount?>
+                            <img src="<?=$productos[$i]['url']?>" alt="Cuadros decorativos <?=$productos[$i]['subcategory']?>">
+                        </a>
+                    </div>
+                    <div class="card--product-info">
+                        <h4><a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?=$productos[$i]['name']?></a></h4>
+                        <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
+                        <div class="card--price">
+                            <?=$price?>
                         </div>
-                        <div class="card--product-info">
-                            <h4><a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?=$productos[$i]['name']?></a></h4>
-                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
-                            <div class="card--price">
-                                <?=$price?>
-                            </div>
-                            
-                        </div>
-                        <div class="card--product-btns">
-                            <div class="d-flex">
-                                <?=$favorite?>
-                                <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
-                                <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
-                                <?php }else if($productos[$i]['product_type'] == 2){?>
-                                <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
-                                <?php }?>
-                            </div>
+                        
+                    </div>
+                    <div class="card--product-btns">
+                        <div class="d-flex">
+                            <?=$favorite?>
+                            <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
+                            <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
+                            <?php }else if($productos[$i]['product_type'] == 2){?>
+                            <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
+                            <?php }?>
                         </div>
                     </div>
                 </div>

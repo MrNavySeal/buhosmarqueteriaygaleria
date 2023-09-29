@@ -87,7 +87,7 @@
                     $company=getCompanyInfo();
                     $data['page_tag'] = $company['name'];
                     $data['page_name'] = "product";
-                    $data['products'] = $this->getProductsRelT($data['product']['idproduct'],$data['product']['categoryid'],$data['product']['subcategoryid'],4);
+                    $data['products'] = $this->getProductsRelT($data['product']['idproduct'],$data['product']['categoryid'],$data['product']['subcategoryid'],20);
                     $data['page_title'] =$data['product']['name']." | ".$company['name'];
                     $data['app'] = "functions_product.js";
                     $data['reviews'] = $this->getReviews($data['product']['idproduct']);

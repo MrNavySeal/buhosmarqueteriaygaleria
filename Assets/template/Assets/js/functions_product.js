@@ -6,12 +6,33 @@ let btnReview = document.querySelector("#btnReview");
 let modal = new bootstrap.Modal(document.querySelector("#modalReview"));
 
 /***************************Product Page Events****************************** */
+
 window.addEventListener("load",function(){
     rateProduct();
     if(document.querySelector("#showMore")){
         showMore(document.querySelectorAll(".comment-block"),4,document.querySelector("#showMore"));
     }
+    $(".product-slider-cat").owlCarousel({
+        autoplay:true,
+        autoplayTimeout:5000,
+        autoplayHoverPause:true,
+        loop:true,
+        margin:10,
+        nav:true,
+        responsive:{
+            0:{
+                items:2
+            },
+            600:{
+                items:3
+            },
+            1000:{
+                items:4
+            }
+        }
+    });
 })
+
 //Select image
 for (let i = 0; i < productImages.length; i++) {
     let productImage = productImages[i];
