@@ -132,7 +132,7 @@ for ($i=0; $i < count($social) ; $i++) {
     <!------------------------------Plugins--------------------------------->
     <script src="<?= media();?>/plugins/fontawesome/fontawesome.js"></script>
     <script src="<?= media();?>/plugins/sweetalert/sweetalert.js"></script>
-
+    <script src="<?= media();?>/plugins/owlcarousel/owl.carousel.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>

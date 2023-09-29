@@ -1,14 +1,9 @@
 <?php
+    //dep($data['categories']);exit;
     headerPage($data);
     $social = getSocialMedia();
     $company = getCompanyInfo();
     $links ="";
-
-    $categories = $data['categories'];
-    $categorie1 = $data['categorie1'];
-    $categorie2 = $data['categorie2'];
-    $categorie3 = $data['categorie3'];
-
     $posts = $data['posts'];
     for ($i=0; $i < count($social) ; $i++) { 
         if($social[$i]['link']!=""){
@@ -23,47 +18,52 @@
     $tipos = $data['tipos'];
     $productos = $data['productos'];
     $banners = $data['banners'];
-    //dep($productos);exit;
+    $proCant = 4;
+    $sliders = round(count($productos)/$proCant);
+    $activeSlider = "active";
+    $indexProduct=0;
+    $categories = $data['categories'];
+    
 ?>
     <div id="modalItem"></div>
     <div id="modalPoup"></div>
-    <main>
-        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <?php
-                    for ($i=0; $i < count($banners); $i++) { 
-                        $active="";
-                        $a= $banners[$i]['button'] != "" ? '<button class="m-1 btn btn-bg-1">'.$banners[$i]['button'].'</button>' : "";
-                        $p = $banners[$i]['description'] !="" ? '<p>'.$banners[$i]['description'].'</p>' : "";
-                        if($i == 0)$active="active";
-                        $img = media()."/images/uploads/".$banners[$i]['picture'];
-                ?>
-                <div class="carousel-item slider_item <?=$active?>">
-                    <a href="<?=$banners[$i]['link']?>" class="slider_description">
-                        <h2><?=$banners[$i]['name']?></h2>
-                        <?=$p?>
-                        <?=$a?>
-                    </a>
-                    <img src="<?=$img?>" class="d-block w-100" alt="<?=$banners[$i]['name']?>">
-                </div>
-                <?php }?>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
-    </main>
     <div class="container">
+        <main>
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <?php
+                        for ($i=0; $i < count($banners); $i++) { 
+                            $active="";
+                            $a= $banners[$i]['button'] != "" ? '<button class="m-1 btn btn-bg-1">'.$banners[$i]['button'].'</button>' : "";
+                            $p = $banners[$i]['description'] !="" ? '<p>'.$banners[$i]['description'].'</p>' : "";
+                            if($i == 0)$active="active";
+                            $img = media()."/images/uploads/".$banners[$i]['picture'];
+                    ?>
+                    <div class="carousel-item slider_item <?=$active?>">
+                        <a href="<?=$banners[$i]['link']?>" class="slider_description">
+                            <h2><?=$banners[$i]['name']?></h2>
+                            <?=$p?>
+                            <?=$a?>
+                        </a>
+                        <img src="<?=$img?>" class="d-block w-100" alt="<?=$banners[$i]['name']?>">
+                    </div>
+                    <?php }?>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </main>
         <section class="mt-5">
             <h2 class="section--title">Enmarcaciones modernas sin salir de casa ¿Cómo funciona?</h2>
             <div class="row">
-                <div class="col-md-6 how-img mb-3 d-flex align-items-center">
-                    <img src="<?=media()?>/images/uploads/cta2.jpg" class="d-block w-100" alt="Enmarcaciones en linea">
+                <div class="col-md-6 mb-3 d-flex align-items-center">
+                    <img src="<?=media()?>/images/uploads/cta2.jpg" class="d-block img-fluid" alt="Enmarcaciones en linea">
                 </div>
                 <div class="col-md-6 how-list mb-3 d-flex align-items-start flex-column">
                     <ol>
@@ -110,247 +110,137 @@
         <section class="mt-5">
             <h2 class="section--title">Nuestra tienda</h2>
             <div class="row mb-3">
-                <?php
-                    for ($i=0; $i < count($categories); $i++) { 
-                ?>
-                <div class="col-4 mb-3">
-                    <div class="card--category">
+                <h3>Lo más reciente</h3>
+                <div class="row">
+                    <div class="product-slider-cat owl-carousel owl-theme mb-5" data-bs-ride="carousel">
+                        <?php
+                            for ($i=0; $i < count($productos); $i++) { 
+                                $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
+                                $discount = "";
+                                
+                                $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
+                                $variant = $productos[$i]['product_type'] == 2? "Desde " : "";
+                                $price ='</span><span class="current">'.$variant.formatNum($productos[$i]['price']).'</span>';
+                                $favorite="";
+                                if($productos[$i]['favorite']== 0){
+                                    $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
+                                }else{
+                                    $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
+                                }
+                                if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
+                                    $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
+                                    $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['price']*(1-($productos[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($productos[$i]['price']).'</span>';
+                                }else if($productos[$i]['stock'] == 0){
+                                    $price = '<span class="current sale me-2">Agotado</span>';
+                                }
+                        ?>
+                        <div class="card--product">
+                            <div class="card--product-img">
+                                <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>">
+                                    <?=$discount?>
+                                    <img src="<?=$productos[$i]['url']?>" alt="Cuadros decorativos <?=$productos[$i]['subcategory']?>">
+                                </a>
+                            </div>
+                            <div class="card--product-info">
+                                <h4><a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?=$productos[$i]['name']?></a></h4>
+                                <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
+                                <div class="card--price">
+                                    <?=$price?>
+                                </div>
+                                
+                            </div>
+                            <div class="card--product-btns">
+                                <div class="d-flex">
+                                    <?=$favorite?>
+                                    <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
+                                    <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
+                                    <?php }else if($productos[$i]['product_type'] == 2){?>
+                                    <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
+                                    <?php }?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+                
+                for ($i=0; $i < count($categories) ; $i++) { 
+            ?>
+            <div class="row mb-5">
+                <h3 class="mb-3">
+                    <?=$categories[$i]['name']?>
+                </h3>
+                <div class="col-lg-4 col-md-12 ">
+                    <div class="card--category d-flex align-items-center">
                         <div class="card--category-img">
                             <a href="<?=base_url()."/tienda/categoria/".$categories[$i]['route']?>">
                                 <img src="<?=media()."/images/uploads/".$categories[$i]['picture']?>" alt="<?=$categories[$i]['name']?>">
                             </a>
-                        </div>
-                        <h3><a href="<?=base_url()."/tienda/categoria/".$categories[$i]['route']?>" class="fs-5 fw-bold text-black"><?=$categories[$i]['name']?></a></h3>
-                    </div>
-                    
-                </div>
-                <?php }?>
-            </div>
-            <div class="row mb-3">
-                <h2 class="section--title"><?=$categorie1[0]['category']?></h2>
-                <?php
-                    for ($i=0; $i < count($categorie1) ; $i++) { 
-                        $id = openssl_encrypt($categorie1[$i]['idproduct'],METHOD,KEY);
-                        $discount = "";
-                        $reference = $categorie1[$i]['reference']!="" ? "REF: ".$categorie1[$i]['reference'] : "";
-                        $variant = $categorie1[$i]['product_type'] == 2? "Desde " : "";
-                        $price ='</span><span class="current">'.$variant.formatNum($categorie1[$i]['price']).'</span>';
-                        $favorite="";
-                        if($categorie1[$i]['favorite']== 0){
-                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
-                        }else{
-                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
-                        }
-                        if($categorie1[$i]['discount'] > 0 && $categorie1[$i]['stock'] > 0){
-                            $discount = '<span class="discount">-'.$categorie1[$i]['discount'].'%</span>';
-                            $price ='<span class="current sale me-2">'.$variant.formatNum($categorie1[$i]['price']*(1-($categorie1[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($categorie1[$i]['price']).'</span>';
-                        }else if($categorie1[$i]['stock'] == 0){
-                            $price = '<span class="current sale me-2">Agotado</span>';
-                        }
-
-                ?>
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card--product">
-                        <div class="card--product-img">
-                            <a href="<?=base_url()."/tienda/producto/".$categorie1[$i]['route']?>">
-                                <?=$discount?>
-                                <img src="<?=$categorie1[$i]['url']?>" alt="Cuadros decorativos <?=$categorie1[$i]['subcategory']?>">
-                            </a>
-                        </div>
-                        <div class="card--product-info">
-                            <h4><a href="<?=base_url()."/tienda/producto/".$categorie1[$i]['route']?>"><?=$categorie1[$i]['name']?></a></h4>
-                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
-                            <div class="card--price">
-                                <?=$price?>
-                            </div>
-                            
-                        </div>
-                        <div class="card--product-btns">
-                            <div class="d-flex">
-                                <button type="button" class="btn btn-bg-3 btn-fav" data-id="<?=$id?>" onclick="addWishList(this)"><i class="far fa-heart"></i></button>
-                                <?php if($categorie1[$i]['product_type'] == 1 && $categorie1[$i]['stock'] > 0){?>
-                                <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
-                                <?php }else if($categorie1[$i]['product_type'] == 2){?>
-                                <a href="<?=base_url()."/tienda/producto/".$categorie1[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
-                                <?php }?>
-                            </div>
+                            <h3><a href="<?=base_url()."/tienda/categoria/".$categories[$i]['route']?>" class="text-white"><?=$categories[$i]['name']?></a></h3>
                         </div>
                     </div>
                 </div>
-                <?php } ?>
-                <div class="text-center mt-3">
-                    <a href="<?=base_url()."/tienda/categoria/".$categorie1[0]['routec']?>" class="btn btn-bg-2">Ver todo</a>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <h2 class="section--title"><?=$categorie2[0]['category']?></h2>
-                <?php
-                    for ($i=0; $i < count($categorie2) ; $i++) { 
-                        $id = openssl_encrypt($categorie2[$i]['idproduct'],METHOD,KEY);
-                        $discount = "";
-                        $reference = $categorie2[$i]['reference']!="" ? "REF: ".$categorie2[$i]['reference'] : "";
-                        $variant = $categorie2[$i]['product_type'] == 2? "Desde " : "";
-                        $price ='</span><span class="current">'.$variant.formatNum($categorie2[$i]['price']).'</span>';
-                        $favorite="";
-                        if($categorie2[$i]['favorite']== 0){
-                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
-                        }else{
-                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
-                        }
-                        if($categorie2[$i]['discount'] > 0 && $categorie2[$i]['stock'] > 0){
-                            $discount = '<span class="discount">-'.$categorie2[$i]['discount'].'%</span>';
-                            $price ='<span class="current sale me-2">'.$variant.formatNum($categorie2[$i]['price']*(1-($categorie2[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($categorie2[$i]['price']).'</span>';
-                        }else if($categorie2[$i]['stock'] == 0){
-                            $price = '<span class="current sale me-2">Agotado</span>';
-                        }
-
-                ?>
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card--product">
-                        <div class="card--product-img">
-                            <a href="<?=base_url()."/tienda/producto/".$categorie2[$i]['route']?>">
-                                <?=$discount?>
-                                <img src="<?=$categorie2[$i]['url']?>" alt="Cuadros decorativos <?=$categorie2[$i]['subcategory']?>">
-                            </a>
-                        </div>
-                        <div class="card--product-info">
-                            <h4><a href="<?=base_url()."/tienda/producto/".$categorie2[$i]['route']?>"><?=$categorie2[$i]['name']?></a></h4>
-                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
-                            <div class="card--price">
-                                <?=$price?>
+                <div class="col-lg-8 col-md-12">
+                    <?php
+                        $productos =$categories[$i]['products'];
+                    ?>
+                    <div class="row">
+                        <div class="product-slider-cat-1 owl-carousel owl-theme">
+                            <?php
+                                for ($j=0; $j < count($productos); $j++) { 
+                                    $id = openssl_encrypt($productos[$j]['idproduct'],METHOD,KEY);
+                                    $discount = "";
+                                    
+                                    $reference = $productos[$j]['reference']!="" ? "REF: ".$productos[$j]['reference'] : "";
+                                    $variant = $productos[$j]['product_type'] == 2? "Desde " : "";
+                                    $price ='</span><span class="current">'.$variant.formatNum($productos[$j]['price']).'</span>';
+                                    $favorite="";
+                                    if($productos[$j]['favorite']== 0){
+                                        $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
+                                    }else{
+                                        $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
+                                    }
+                                    if($productos[$j]['discount'] > 0 && $productos[$j]['stock'] > 0){
+                                        $discount = '<span class="discount">-'.$productos[$j]['discount'].'%</span>';
+                                        $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$j]['price']*(1-($productos[$j]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($productos[$j]['price']).'</span>';
+                                    }else if($productos[$j]['stock'] == 0){
+                                        $price = '<span class="current sale me-2">Agotado</span>';
+                                    }
+                            ?>
+                            <div class="card--product">
+                                <div class="card--product-img">
+                                    <a href="<?=base_url()."/tienda/producto/".$productos[$j]['route']?>">
+                                        <?=$discount?>
+                                        <img src="<?=$productos[$j]['url']?>" alt="Cuadros decorativos <?=$productos[$j]['subcategory']?>">
+                                    </a>
+                                </div>
+                                <div class="card--product-info">
+                                    <h4><a href="<?=base_url()."/tienda/producto/".$productos[$j]['route']?>"><?=$productos[$j]['name']?></a></h4>
+                                    <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
+                                    <div class="card--price">
+                                        <?=$price?>
+                                    </div>
+                                    
+                                </div>
+                                <div class="card--product-btns">
+                                    <div class="d-flex">
+                                        <?=$favorite?>
+                                        <?php if($productos[$j]['product_type'] == 1 && $productos[$j]['stock'] > 0){?>
+                                        <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
+                                        <?php }else if($productos[$j]['product_type'] == 2){?>
+                                        <a href="<?=base_url()."/tienda/producto/".$productos[$j]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
+                                        <?php }?>
+                                    </div>
+                                </div>
                             </div>
-                            
-                        </div>
-                        <div class="card--product-btns">
-                            <div class="d-flex">
-                                <button type="button" class="btn btn-bg-3 btn-fav" data-id="<?=$id?>" onclick="addWishList(this)"><i class="far fa-heart"></i></button>
-                                <?php if($categorie2[$i]['product_type'] == 1 && $categorie2[$i]['stock'] > 0){?>
-                                <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
-                                <?php }else if($categorie2[$i]['product_type'] == 2){?>
-                                <a href="<?=base_url()."/tienda/producto/".$categorie2[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
-                                <?php }?>
-                            </div>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
-                <?php } ?>
-                <div class="text-center mt-3">
-                    <a href="<?=base_url()."/tienda/categoria/".$categorie2[0]['routec']?>" class="btn btn-bg-2">Ver todo</a>
-                </div>
             </div>
-            <div class="row mb-3">
-                <h2 class="section--title"><?=$categorie3[0]['category']?></h2>
-                <?php
-                    for ($i=0; $i < count($categorie3) ; $i++) { 
-                        $id = openssl_encrypt($categorie3[$i]['idproduct'],METHOD,KEY);
-                        $discount = "";
-                        $reference = $categorie3[$i]['reference']!="" ? "REF: ".$categorie3[$i]['reference'] : "";
-                        $variant = $categorie3[$i]['product_type'] == 2? "Desde " : "";
-                        $price ='</span><span class="current">'.$variant.formatNum($categorie3[$i]['price']).'</span>';
-                        $favorite="";
-                        if($categorie3[$i]['favorite']== 0){
-                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
-                        }else{
-                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
-                        }
-                        if($categorie3[$i]['discount'] > 0 && $categorie3[$i]['stock'] > 0){
-                            $discount = '<span class="discount">-'.$categorie3[$i]['discount'].'%</span>';
-                            $price ='<span class="current sale me-2">'.$variant.formatNum($categorie3[$i]['price']*(1-($categorie3[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($categorie3[$i]['price']).'</span>';
-                        }else if($categorie3[$i]['stock'] == 0){
-                            $price = '<span class="current sale me-2">Agotado</span>';
-                        }
-
-                ?>
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card--product">
-                        <div class="card--product-img">
-                            <a href="<?=base_url()."/tienda/producto/".$categorie3[$i]['route']?>">
-                                <?=$discount?>
-                                <img src="<?=$categorie3[$i]['url']?>" alt="Cuadros decorativos <?=$categorie3[$i]['subcategory']?>">
-                            </a>
-                        </div>
-                        <div class="card--product-info">
-                            <h4><a href="<?=base_url()."/tienda/producto/".$categorie3[$i]['route']?>"><?=$categorie3[$i]['name']?></a></h4>
-                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
-                            <div class="card--price">
-                                <?=$price?>
-                            </div>
-                            
-                        </div>
-                        <div class="card--product-btns">
-                            <div class="d-flex">
-                                <?=$favorite?>
-                                <?php if($categorie3[$i]['product_type'] == 1 && $categorie3[$i]['stock'] > 0){?>
-                                <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
-                                <?php }else if($categorie3[$i]['product_type'] == 2){?>
-                                <a href="<?=base_url()."/tienda/producto/".$categorie3[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
-                                <?php }?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
-                <div class="text-center mt-3">
-                    <a href="<?=base_url()."/tienda/categoria/".$categorie3[0]['routec']?>" class="btn btn-bg-2">Ver todo</a>
-                </div>
-            </div>
-            <div class="row">
-                <h2 class="section--title">Lo más reciente</h2>
-                <?php
-                    for ($i=0; $i < count($productos) ; $i++) { 
-                        $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
-                        $discount = "";
-                        
-                        $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
-                        $variant = $productos[$i]['product_type'] == 2? "Desde " : "";
-                        $price ='</span><span class="current">'.$variant.formatNum($productos[$i]['price']).'</span>';
-                        $favorite="";
-                        if($productos[$i]['favorite']== 0){
-                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
-                        }else{
-                            $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
-                        }
-                        if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
-                            $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
-                            $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['price']*(1-($productos[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($productos[$i]['price']).'</span>';
-                        }else if($productos[$i]['stock'] == 0){
-                            $price = '<span class="current sale me-2">Agotado</span>';
-                        }
-
-                ?>
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card--product">
-                        <div class="card--product-img">
-                            <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>">
-                                <?=$discount?>
-                                <img src="<?=$productos[$i]['url']?>" alt="Cuadros decorativos <?=$productos[$i]['subcategory']?>">
-                            </a>
-                        </div>
-                        <div class="card--product-info">
-                            <h4><a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?=$productos[$i]['name']?></a></h4>
-                            <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
-                            <div class="card--price">
-                                <?=$price?>
-                            </div>
-                            
-                        </div>
-                        <div class="card--product-btns">
-                            <div class="d-flex">
-                                <?=$favorite?>
-                                <?php if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){?>
-                                <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
-                                <?php }else if($productos[$i]['product_type'] == 2){?>
-                                <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
-                                <?php }?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
-                <div class="text-center mt-3">
-                    <a href="<?=base_url()?>/tienda" class="btn btn-bg-2">Ver todo</a>
-                </div>
-            </div>
+            <?php }?>
         </section>
         <?php if(!empty($posts)){?>
         <section class="mt-5">
