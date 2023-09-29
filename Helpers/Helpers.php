@@ -461,10 +461,16 @@
         return $pass;
     }
 
-    function getCatFooter(){
-        require_once("Models/CategoriasModel.php");
-        $categoria = new CategoriasModel();
-        $request = $categoria->getCategoriasFooter();
+    function getNavCat(){
+        require_once("Models/CategoryTrait.php");
+        class getCat {
+            use CategoryTrait;
+            public function getCategories(){
+                return $this->getCategoriesT();
+            }
+        }
+        $categoria = new getCat();
+        $request = $categoria->getCategories();
         return $request;
     }
 

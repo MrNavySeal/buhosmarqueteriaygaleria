@@ -30,7 +30,6 @@ const navMask = document.querySelector(".navmobile--mask");
 const btnNav = document.querySelector("#btnNav");
 const closeNav = document.querySelector("#closeNav");
 const toastLive = document.getElementById('liveToast');
-
 /********************************Search******************************** */
 btnSearch.addEventListener("click",function(){
     search.classList.add("active");
@@ -56,8 +55,21 @@ cartMask.addEventListener("click",function(){
 })
 
 /********************************Aside nav******************************** */
+if(document.querySelector("#btnProfile")){
+    const btnProfile = document.querySelector("#btnProfile");
+    btnProfile.addEventListener("click",function(){
+        navBar.classList.add("active");
+        //document.querySelector("#mainNav").classList.add("d-none");
+        document.querySelector("#filterNav").classList.add("d-none");
+        document.querySelector("#navProfile").classList.remove("d-none");
+        document.querySelector("body").style.overflow="hidden";
+    });
+}
 btnNav.addEventListener("click",function(){
     navBar.classList.add("active");
+    //document.querySelector("#mainNav").classList.remove("d-none");
+    document.querySelector("#navProfile").classList.add("d-none");
+    document.querySelector("#filterNav").classList.remove("d-none");
     document.querySelector("body").style.overflow="hidden";
 });
 closeNav.addEventListener("click",function(){
@@ -115,13 +127,13 @@ if(document.querySelector("#myAccount")){
 
 /***************************General Shop Events****************************** */
 //Scroll top
-window.addEventListener("scroll",function(){
+/*window.addEventListener("scroll",function(){
     if(window.scrollY > document.querySelector(".nav--bar").clientHeight){
         document.querySelector(".back--top").classList.remove("d-none");
     }else{
         document.querySelector(".back--top").classList.add("d-none");
     }
-});
+});*/
 
 window.addEventListener("load",function(){
     if(document.querySelector("#modalPoup")){

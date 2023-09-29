@@ -15,6 +15,7 @@
             $data['page_title'] = "Enmarcar | ".$company['name'];
             $data['page_name'] = "enmarcar";
             $data['tipos'] = $this->selectTipos();
+            $data['app'] = "functions_home.js";
             $this->views->getView($this,"enmarcar",$data);
             
         }

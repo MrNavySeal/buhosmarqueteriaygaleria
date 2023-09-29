@@ -274,9 +274,9 @@
             if($_POST){
                 $id = $_POST['id'];
                 $topic = intval($_POST['topic']);
-                $code = strClean($_POST['cupon']);
-                $situ = strtolower(strClean($_POST['situ']));
-                $city = intval($_POST['city']);
+                $code = isset($_POST['cupon']) ? strClean($_POST['cupon']) : "";
+                $situ = isset($_POST['situ'])  ? strtolower(strClean($_POST['situ'])):"";
+                $city = isset($_POST['city']) ? intval($_POST['city']) : 0;
                 $total=0;
                 $qtyCart=0;
                 $arrCart = $_SESSION['arrCart'];

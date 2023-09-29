@@ -2,7 +2,7 @@
     $notification = emailNotification(); 
     $comments = commentNotification();
     $reviews = $comments['total'];
-    
+    $navCategories=getNavCat();
     $subLinks = navSubLinks();
     $company = getCompanyInfo();
     $qtyCart = 0;
@@ -240,7 +240,7 @@
                     <?php }else{ ?>
                     <li onclick="openLoginModal();" title="My account" class="btn btn-bg-1" >Iniciar sesión</li> 
                 <?php }?>
-                <li class="nav--icon" id="btnNav"><i class="fas fa-bars"></i></li>
+                <!--<li class="nav--icon" id="btnNav"><i class="fas fa-bars"></i></li>-->
             </ul>
         </nav>
     </header>
@@ -284,8 +284,8 @@
                 </div>
                 <span id="closeNav" class="t-color-2"><i class="fas fa-times"></i></span>
             </div>
-            <ul class="navmobile-links">
-                <li class="navmobile-link"><a href="<?=base_url()?>">Inicio</a></li>
+            <!--
+            <ul class="navmobile-links" id="mainNav">
                 <div class="navmobile-link accordion" id="accordionFraming">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingFraming">
@@ -311,313 +311,407 @@
                 </div>
                 <div class="navmobile-link accordion" id="accordionCategory">
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingCategory">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategory" aria-expanded="true" aria-controls="collapseCategory">
-                            Tienda
+                        <h2 class="accordion-header" id="flush-categories">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseCategories" aria-expanded="false" aria-controls="flush-collapseCategories">
+                            <strong class="fs-5">Tienda</strong>
                         </button>
                         </h2>
-                        <div id="collapseCategory" class="accordion-collapse collapse" aria-labelledby="headingCategory" data-bs-parent="#accordionCategory">
-                            <div class="accordion-body">
-                                <ul>
-                                    <?php 
-                                    for ($i=0; $i < count($subLinks['categories']); $i++) { 
-                                        $link = $subLinks['categories'][$i];
-                                        if($i <= 8){
-                                    ?>
-                                    <li class="navmobile-link"><a href="<?=base_url()."/tienda/categoria/".$link['route']?>"><?=$link['name']?></a></li>
-                                    <?php } }?>
-                                    <li class="navmobile-link"><a href="<?=base_url()?>/tienda">Ver todo</a></li>
-                                </ul>
+                        <div id="flush-collapseCategories" class="accordion-collapse collapse show" aria-labelledby="flush-categories" data-bs-parent="#accordionFlushCategories">
+                        <div class="accordion-body">
+                            <div class="accordion accordion-flush" id="accordionFlushCategorie">
+                                <?php
+                                    for ($i=0; $i < count($navCategories) ; $i++) { 
+                                        $routeC = base_url()."/tienda/categoria/".$navCategories[$i]['route'];
+                                ?>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="flush-categorie<?=$i?>">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseCategorie<?=$i?>" aria-expanded="false" aria-controls="flush-collapseCategorie<?=$i?>">
+                                    </button>
+                                    <a href="<?=$routeC?>" class="text-decoration-none"><?=$navCategories[$i]['name']?></a>
+                                    </h2>
+                                    <div id="flush-collapseCategorie<?=$i?>" class="accordion-collapse collapse" aria-labelledby="flush-categorie<?=$i?>" data-bs-parent="#accordionFlushCategorie<?=$i?>">
+                                    <div class="accordion-body">
+                                        <ul class="list-group">
+                                            <?php
+                                                for ($j=0; $j < count($navCategories[$i]['subcategories']) ; $j++) { 
+                                                    $navSubCategories = $navCategories[$i]['subcategories'][$j];
+                                                    if($navSubCategories['total'] >0){
+                                                        $routeS = base_url()."/tienda/categoria/".$navSubCategories['route'];
+                                                ?>
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <a href="<?=$routeS?>"><?=$navSubCategories['name']?></a>
+                                                            <span class="badge bg-color-2 rounded-pill"><?=$navSubCategories['total']?></span>
+                                                        </li>
+                                            <?php } }?>
+                                        </ul>
+                                    </div>
+                                    </div>
+                                </div>
+                                <?php }?>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>
-                <li class="navmobile-link"><a href="<?=base_url()?>/favoritos">Mis favoritos</a></li>
                 <li class="navmobile-link"><a href="<?=base_url()?>/blog">Blog</a></li>
-                
+            </ul>-->
+            <ul class="navmobile-links d-none" id="navProfile">                      
                 <?php
                     if(isset($_SESSION['login'])){
                 ?>
                 <div class="navmobile-link accordion" id="accordionPerfil">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingPerfil">
-                        <button class="accordion-button t-color-h-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerfil" aria-expanded="true" aria-controls="collapsePerfil">
-                            Mi cuenta
-                        </button>
-                        </h2>
-                        <div id="collapsePerfil" class="accordion-collapse collapse" aria-labelledby="headingPerfil" data-bs-parent="#accordionPerfil">
-                            <div class="accordion-body">
-                                <ul>
-                                    
-                                    <?php if($_SESSION['permit'][1]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/dashboard" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-chart-line"></i> Dashboard </a>
-                                        </h2>
-                                    </div>
-                                    <?php }?>
-                                    <?php  if($_SESSION['permit'][2]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-headingTwo">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="true" aria-controls="flush-collapseTwo">
-                                            
-                                        </button>
-                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-users"></i> Usuarios</a>
-                                        </h2>
-                                        <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/usuarios" class="w-100">Usuarios</a>
-                                                    </li> 
-                                                    <?php
-                                                        if($_SESSION['idUser'] == 1 && $_SESSION['permit'][2]['r']){
-                                                    ?>
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/roles" class="w-100">Roles</a>
-                                                    </li>   
-                                                    <?php 
-                                                        }
-                                                    ?>     
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][3]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/clientes" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-user"></i> Clientes </a>
-                                        </h2>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][4]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-heading4">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse4" aria-expanded="true" aria-controls="flush-collapse4"> 
-                                        </button>
-                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-crop-alt"></i> Marqueteria</a>
-                                        </h2>
-                                        <div id="flush-collapse4" class="accordion-collapse collapse" aria-labelledby="flush-heading4">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/marqueteria/molduras" class="w-100">Molduras</a>
-                                                    </li> 
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/marqueteria/materiales" class="w-100">Materiales</a>
-                                                    </li>      
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/marqueteria/colores" class="w-100">Colores</a>
-                                                    </li> 
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/marqueteria/categorias" class="w-100">Categorias</a>
-                                                    </li>   
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-heading5">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse5" aria-expanded="true" aria-controls="flush-collapse5"> 
-                                        </button>
-                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-archive"></i> Inventario</a>
-                                        </h2>
-                                        <div id="flush-collapse5" class="accordion-collapse collapse" aria-labelledby="flush-heading5">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/inventario/categorias" class="w-100">Categorias</a>
-                                                    </li> 
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/inventario/subcategorias" class="w-100">Subcategorias</a>
-                                                    </li>      
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/inventario/productos" class="w-100">Productos</a>
-                                                    </li> 
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][6]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/pedidos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-coins"></i> Pedidos </a>
-                                        </h2>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][6]['w']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/pedidos/pos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-cash-register"></i> Punto de venta </a>
-                                        </h2>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][8]['r']){?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-heading6">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse6" aria-expanded="true" aria-controls="flush-collapse6"> 
-                                        </button>
-                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-shopping-basket"></i> Compras</a>
-                                        </h2>
-                                        <div id="flush-collapse6" class="accordion-collapse collapse" aria-labelledby="flush-heading6">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/compras/proveedores" class="w-100">Proveedores</a>
-                                                    </li>     
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/compras/compras" class="w-100">Compras</a>
-                                                    </li> 
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php }?>
-                                    <?php  if($_SESSION['permit'][7]['r']){?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-headingC">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseC" aria-expanded="true" aria-controls="flush-collapseC">
-                                            
-                                        </button>
-                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-file-invoice-dollar"></i> Contabilidad</a>
-                                        </h2>
-                                        <div id="flush-collapseC" class="accordion-collapse collapse" aria-labelledby="flush-headingC">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/contabilidad/categorias" class="w-100">Categorias</a>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/contabilidad/egreso" class="w-100">Cuenta egreso</a>
-                                                    </li> 
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/contabilidad/ingreso" class="w-100">Cuenta ingreso</a>
-                                                    </li>    
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php } ?>
-                                    <?php if($_SESSION['permit'][5]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-heading7">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse7" aria-expanded="true" aria-controls="flush-collapse7"> 
-                                        </button>
-                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-tools"></i> Administración</a>
-                                        </h2>
-                                        <div id="flush-collapse7" class="accordion-collapse collapse" aria-labelledby="flush-heading7">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/administracion/correo" class="w-100">Correo <?=$emails?></a>
-                                                    </li>     
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/administracion/suscriptores" class="w-100">Suscriptores</a>
-                                                    </li> 
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/administracion/envios" class="w-100">Envio</a>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/paginas" class="w-100">Paginas</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][5]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-heading8">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse8" aria-expanded="true" aria-controls="flush-collapse8"> 
-                                        </button>
-                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-dollar-sign"></i> Descuentos</a>
-                                        </h2>
-                                        <div id="flush-collapse8" class="accordion-collapse collapse" aria-labelledby="flush-heading8">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/descuentos/cupones" class="w-100">Cupones</a>
-                                                    </li>     
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/descuentos/descuentos" class="w-100">Descuentos</a>
-                                                    </li> 
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][5]['r']){?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/banners" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-tags"></i> Banners </a>
-                                        </h2>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][9]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-heading9">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse9" aria-expanded="true" aria-controls="flush-collapse9"> 
-                                        </button>
-                                        <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-comments"></i> Comentarios <?=$notifyReview?></a>
-                                        </h2>
-                                        <div id="flush-collapse9" class="accordion-collapse collapse" aria-labelledby="flush-heading9">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <a href="<?=base_url()?>/comentarios/opiniones" class="w-100">Opiniones <?=$notifyReview?></a>
-                                                    </li>     
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['permit'][10]['r']){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/articulos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="far fa-newspaper"></i> Blog</a>
-                                        </h2>
-                                    </div>
-                                    <?php }?>
-                                    <?php if($_SESSION['idUser']==1){ ?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/empresa" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-briefcase"></i> Empresa </a>
-                                        </h2>
-                                    </div>
-                                    <?php }?>
-                                    <div class="accordion-item pt-1 pb-1 mt-2 mt-3">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/usuarios/perfil" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-id-card-alt"></i> Perfil </a>
-                                        </h2>
-                                    </div>
-                                    <div class="accordion-item pt-1 pb-1 mt-2">
-                                        <h2 class="accordion-header" id="flush-categorie">
-                                            <button class="btn" type="button"></button>
-                                            <a href="<?=base_url()?>/logout" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-sign-out-alt"></i> Cerrar sesión </a>
-                                        </h2>
-                                    </div>
-                                </ul>
-                            </div>
+                <?php if($_SESSION['permit'][1]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/dashboard" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-chart-line"></i> Dashboard </a>
+                    </h2>
+                </div>
+                <?php }?>
+                <?php  if($_SESSION['permit'][2]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="true" aria-controls="flush-collapseTwo">
+                        
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-users"></i> Usuarios</a>
+                    </h2>
+                    <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/usuarios" class="w-100">Usuarios</a>
+                                </li> 
+                                <?php
+                                    if($_SESSION['idUser'] == 1 && $_SESSION['permit'][2]['r']){
+                                ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/roles" class="w-100">Roles</a>
+                                </li>   
+                                <?php 
+                                    }
+                                ?>     
+                            </ul>
                         </div>
                     </div>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][3]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/clientes" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-user"></i> Clientes </a>
+                    </h2>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][4]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-heading4">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse4" aria-expanded="true" aria-controls="flush-collapse4"> 
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-crop-alt"></i> Marqueteria</a>
+                    </h2>
+                    <div id="flush-collapse4" class="accordion-collapse collapse" aria-labelledby="flush-heading4">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/marqueteria/molduras" class="w-100">Molduras</a>
+                                </li> 
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/marqueteria/materiales" class="w-100">Materiales</a>
+                                </li>      
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/marqueteria/colores" class="w-100">Colores</a>
+                                </li> 
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/marqueteria/categorias" class="w-100">Categorias</a>
+                                </li>   
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-heading5">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse5" aria-expanded="true" aria-controls="flush-collapse5"> 
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-archive"></i> Inventario</a>
+                    </h2>
+                    <div id="flush-collapse5" class="accordion-collapse collapse" aria-labelledby="flush-heading5">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/inventario/categorias" class="w-100">Categorias</a>
+                                </li> 
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/inventario/subcategorias" class="w-100">Subcategorias</a>
+                                </li>      
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/inventario/productos" class="w-100">Productos</a>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][6]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/pedidos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-coins"></i> Pedidos </a>
+                    </h2>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][6]['w']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/pedidos/pos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-cash-register"></i> Punto de venta </a>
+                    </h2>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][8]['r']){?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-heading6">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse6" aria-expanded="true" aria-controls="flush-collapse6"> 
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-shopping-basket"></i> Compras</a>
+                    </h2>
+                    <div id="flush-collapse6" class="accordion-collapse collapse" aria-labelledby="flush-heading6">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/compras/proveedores" class="w-100">Proveedores</a>
+                                </li>     
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/compras/compras" class="w-100">Compras</a>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php }?>
+                <?php  if($_SESSION['permit'][7]['r']){?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-headingC">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseC" aria-expanded="true" aria-controls="flush-collapseC">
+                        
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-file-invoice-dollar"></i> Contabilidad</a>
+                    </h2>
+                    <div id="flush-collapseC" class="accordion-collapse collapse" aria-labelledby="flush-headingC">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/contabilidad/categorias" class="w-100">Categorias</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/contabilidad/egreso" class="w-100">Cuenta egreso</a>
+                                </li> 
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/contabilidad/ingreso" class="w-100">Cuenta ingreso</a>
+                                </li>    
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+                <?php if($_SESSION['permit'][5]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-heading7">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse7" aria-expanded="true" aria-controls="flush-collapse7"> 
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-tools"></i> Administración</a>
+                    </h2>
+                    <div id="flush-collapse7" class="accordion-collapse collapse" aria-labelledby="flush-heading7">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/administracion/correo" class="w-100">Correo <?=$emails?></a>
+                                </li>     
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/administracion/suscriptores" class="w-100">Suscriptores</a>
+                                </li> 
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/administracion/envios" class="w-100">Envio</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/paginas" class="w-100">Paginas</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][5]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-heading8">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse8" aria-expanded="true" aria-controls="flush-collapse8"> 
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-dollar-sign"></i> Descuentos</a>
+                    </h2>
+                    <div id="flush-collapse8" class="accordion-collapse collapse" aria-labelledby="flush-heading8">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/descuentos/cupones" class="w-100">Cupones</a>
+                                </li>     
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/descuentos/descuentos" class="w-100">Descuentos</a>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][5]['r']){?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/banners" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-tags"></i> Banners </a>
+                    </h2>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][9]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-heading9">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse9" aria-expanded="true" aria-controls="flush-collapse9"> 
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fas fa-comments"></i> Comentarios <?=$notifyReview?></a>
+                    </h2>
+                    <div id="flush-collapse9" class="accordion-collapse collapse" aria-labelledby="flush-heading9">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/comentarios/opiniones" class="w-100">Opiniones <?=$notifyReview?></a>
+                                </li>     
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['permit'][10]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/articulos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="far fa-newspaper"></i> Blog</a>
+                    </h2>
+                </div>
+                <?php }?>
+                <?php if($_SESSION['idUser']==1){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/empresa" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-briefcase"></i> Empresa </a>
+                    </h2>
+                </div>
+                <?php }?>
+                <div class="accordion-item pt-1 pb-1 mt-2 mt-3">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/usuarios/perfil" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-id-card-alt"></i> Perfil </a>
+                    </h2>
+                </div>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-categorie">
+                        <button class="btn" type="button"></button>
+                        <a href="<?=base_url()?>/logout" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-sign-out-alt"></i> Cerrar sesión </a>
+                    </h2>
+                </div>
                 </div>
                 <?php }else{ ?>
                 <li class="navmobile-link" onclick="openLoginModal();"><a href="#">Iniciar sesión</a></li>
                 <?php }?>
             </ul>
+            <ul class="navmobile-links d-none" id="filterNav">
+                <div class="navmobile-link accordion" id="accordionFraming">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFraming">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFraming" aria-expanded="true" aria-controls="collapseFraming">
+                            <strong class="fs-5">Enmarcar aquí</strong>
+                        </button>
+                        </h2>
+                        <div id="collapseFraming" class="accordion-collapse collapse show" aria-labelledby="headingFraming" data-bs-parent="#accordionFraming">
+                            <div class="accordion-body">
+                                <ul>
+                                    <?php 
+                                    for ($i=0; $i < count($subLinks['framing']); $i++) { 
+                                        $link = $subLinks['framing'][$i];
+                                        if($i <= 8){
+                                    ?>
+                                    <li class="navmobile-link"><a href="<?=base_url()."/enmarcar/personalizar/".$link['route']?>"><?=$link['name']?></a></li>
+                                    <?php } }?>
+                                    <li class="navmobile-link"><a href="<?=base_url()?>/enmarcar">Ver todo</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="navmobile-link accordion" id="accordionCategory">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-categories">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseCategories" aria-expanded="false" aria-controls="flush-collapseCategories">
+                            <strong class="fs-5">Tienda</strong>
+                        </button>
+                        </h2>
+                        <div id="flush-collapseCategories" class="accordion-collapse collapse show" aria-labelledby="flush-categories" data-bs-parent="#accordionFlushCategories">
+                        <div class="accordion-body">
+                            <div class="accordion accordion-flush" id="accordionFlushCategorie">
+                                <?php
+                                    for ($i=0; $i < count($navCategories) ; $i++) { 
+                                        $routeC = base_url()."/tienda/categoria/".$navCategories[$i]['route'];
+                                ?>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="flush-categorie<?=$i?>">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseCategorie<?=$i?>" aria-expanded="false" aria-controls="flush-collapseCategorie<?=$i?>">
+                                    </button>
+                                    <a href="<?=$routeC?>" class="text-decoration-none"><?=$navCategories[$i]['name']?></a>
+                                    </h2>
+                                    <div id="flush-collapseCategorie<?=$i?>" class="accordion-collapse collapse" aria-labelledby="flush-categorie<?=$i?>" data-bs-parent="#accordionFlushCategorie<?=$i?>">
+                                    <div class="accordion-body">
+                                        <ul class="list-group">
+                                            <?php
+                                                for ($j=0; $j < count($navCategories[$i]['subcategories']) ; $j++) { 
+                                                    $navSubCategories = $navCategories[$i]['subcategories'][$j];
+                                                    if($navSubCategories['total'] >0){
+                                                        $routeS = base_url()."/tienda/categoria/".$navSubCategories['route'];
+                                                ?>
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <a href="<?=$routeS?>"><?=$navSubCategories['name']?></a>
+                                                            <span class="badge bg-color-2 rounded-pill"><?=$navSubCategories['total']?></span>
+                                                        </li>
+                                            <?php } }?>
+                                        </ul>
+                                    </div>
+                                    </div>
+                                </div>
+                                <?php }?>
+                                <li class="navmobile-link"><a href="<?=base_url()?>/tienda">Ver todo</a></li>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <li class="navmobile-link"><a href="<?=base_url()?>/blog"><strong class="fs-5">Blog</strong></a></li>
+            </ul>
         </div>
     </div>
-    <a id="btnWhatsapp" href="<?="https://wa.me/".$company['phonecode'].$company['phone']?>" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <div class="mobileOptions container">
+        <ul>
+            <li><a class="text-black" href="<?="https://wa.me/".$company['phonecode'].$company['phone']?>" target="_blank"><i class="fab fa-whatsapp"></i></a></li>
+            <li><a class="text-black" href="<?=base_url()?>"><i class="fas fa-home"></i></a></li>
+            <li class="c-p" id="btnNav"><i class="fas fa-exchange-alt filter"></i></li>
+            <?php
+                if(isset($_SESSION['login'])){
+            ?>
+            <li><a class="text-black" href="<?=base_url()?>/favoritos"><i class="fas fa-heart"></i></a></li>
+            <li><i class="fas fa-user c-p" id="btnProfile"></i></li>
+            <?php }else{ ?>
+            <li onclick="openLoginModal();" class="c-p"><i class="fas fa-heart"></i></li>
+            <li onclick="openLoginModal();" class="c-p"><i class="fas fa-user"></i></li>
+            <?php }?>
+        </ul>
+    </div>
+    <!--<a href="#" class="back--top d-none"><i class="fas fa-backward"></i></a><a id="btnWhatsapp" href="<?="https://wa.me/".$company['phonecode'].$company['phone']?>" target="_blank"><i class="fab fa-whatsapp"></i></a>-->
     <div id="modalLogin"></div>
-    <a href="#" class="back--top d-none"><i class="fas fa-backward"></i></a>
+    
     
