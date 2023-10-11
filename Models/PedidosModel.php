@@ -133,7 +133,6 @@
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['idproduct'];
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
                     if(count($requestImg)>0){
@@ -145,13 +144,9 @@
                         $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
                         $sqlVariants = "SELECT * FROM product_variant WHERE productid = $idProduct ORDER BY price ASC";
-                        $request[$i]['price'] = round((($this->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['price'] = $this->select($sqlV)['minimo'];
                         $request[$i]['stock'] = $this->select($sqlTotal)['total'];
-                        $variants = $this->select_all($sqlVariants);
-                        for ($j=0; $j < count($variants); $j++) { 
-                            $variants[$j]['price'] = round((($variants[$j]['price']*COMISION)+TASA)/1000)*1000;
-                        }
-                        $request[$i]['variants'] = $variants;
+                        $request[$i]['variants'] = $this->select_all($sqlVariants);
                     }
                 }
             }
@@ -167,7 +162,7 @@
             if($request['product_type'] == 2){
                 $sqlV = "SELECT * FROM product_variant WHERE id_product_variant = $variant";
                 $request['variant'] = $this->select($sqlV);
-                $request['variant']['price'] = round((($request['variant']['price']*COMISION)+TASA)/1000)*1000;
+                //$request['variant']['price'] = round((($request['variant']['price']*COMISION)+TASA)/1000)*1000;
             }
             return $request;
         }
@@ -201,7 +196,7 @@
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['idproduct'];
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
+                    //$request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
                     if(count($requestImg)>0){
@@ -213,13 +208,15 @@
                         $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
                         $sqlVariants = "SELECT * FROM product_variant WHERE productid = $idProduct ORDER BY price ASC";
-                        $request[$i]['price'] = round((($this->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        //$request[$i]['price'] = round((($this->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
+                        $request[$i]['price'] = $this->select($sqlV)['minimo'];
                         $request[$i]['stock'] = $this->select($sqlTotal)['total'];
-                        $variants = $this->select_all($sqlVariants);
+                        /*$variants = $this->select_all($sqlVariants);
                         for ($j=0; $j < count($variants); $j++) { 
                             $variants[$j]['price'] = round((($variants[$j]['price']*COMISION)+TASA)/1000)*1000;
                         }
-                        $request[$i]['variants'] = $variants;
+                        $request[$i]['variants'] = $variants;*/
+                        $request[$i]['variants'] = $this->select_all($sqlVariants);
                     }
                 }
             }
