@@ -3,7 +3,6 @@
     $categories = $data['categories'];
     $productos = $data['products']['productos'];
     $paginas = $data['products']['paginas'];
-
     $urlCategory = "/".$data['ruta'];
 
     $nextPage = 2;
@@ -68,7 +67,7 @@
                                                         for ($j=0; $j < count($categories[$i]['subcategories']) ; $j++) { 
                                                             $subcategories = $categories[$i]['subcategories'][$j];
                                                             if($subcategories['total'] >0){
-                                                                $routeS = base_url()."/tienda/categoria/".$subcategories['route'];
+                                                                $routeS = base_url()."/tienda/categoria/".$categories[$i]['route']."/".$subcategories['route'];
                                                         ?>
                                                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                                                     <a href="<?=$routeS?>"><?=$subcategories['name']?></a>

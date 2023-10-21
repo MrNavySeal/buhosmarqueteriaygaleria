@@ -38,13 +38,15 @@
             $pageNow = isset($_GET['p']) ? intval(strClean($_GET['p'])) : 1;
             $sort = isset($_GET['s']) ? intval(strClean($_GET['s'])) : 1;
             $params = strClean($params);
-            $title = ucwords(str_replace("-"," ",$params));
+            $arrParams = explode(",",$params);
+            $title = count($arrParams) > 1 ? ucwords(str_replace("-"," ",$arrParams[1])): ucwords(str_replace("-"," ",$arrParams[0]));
+            //dep($title);exit;
             $company=getCompanyInfo();
             $data['page_tag'] = $company['name'];
             $data['page_name'] = "categoria";
             $data['categories'] = $this->getCategoriesT();
-            $data['ruta'] = $params;
-            $productsPage =  $this->getProductsCategoryT($params,$pageNow,$sort);
+            $data['ruta'] = count($arrParams) > 1 ? $arrParams[0]."/".$arrParams[1] : $arrParams[0];
+            $productsPage =  $this->getProductsCategoryT($arrParams,$pageNow,$sort);
             $productsPage['productos'] = $this->bubbleSortPrice($productsPage['productos'],$sort);
             if($pageNow <= $productsPage['paginas']){
                 $data['products'] = $productsPage;

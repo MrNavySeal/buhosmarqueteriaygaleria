@@ -412,7 +412,11 @@
             //dep($request);exit;
             return $request;
         }
-        public function getProductsCategoryT(string $category,int $pageNow,int $sort){
+        public function getProductsCategoryT(array $arrParams,int $pageNow,int $sort){
+            $category = $arrParams[0];
+            $subcategory = count($arrParams)>1 ? $arrParams[1] : "";
+            $routes ="AND c.route = '$category'";
+            if($subcategory !="")$routes="AND (c.route = '$category' AND s.route = '$subcategory')";
             $this->con=new Mysql();
             $perPage = PERPAGE;
             $option ="ORDER BY p.idproduct DESC";
@@ -425,10 +429,9 @@
             FROM product p 
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
-            AND p.status = 1 AND (c.route = '$category' || s.route = '$category')";
+            AND p.status = 1 $routes";
              
             $totalProducts =$this->con->select($sqlTotal)['total'];
-
             $totalPages = ceil($totalProducts/$perPage);
             $start = ($pageNow - 1) * $perPage;
             $start = $start < 0 ? 0 : $start;
@@ -459,7 +462,7 @@
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
             AND c.status = 1 AND s.status = 1 
-            AND (c.route = '$category' || s.route = '$category') $option 
+            $routes $option 
             LIMIT $start,$perPage";
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
