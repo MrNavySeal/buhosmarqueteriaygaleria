@@ -960,7 +960,7 @@
                         $request="";
                         $objSuscription="";
                         $arrSuscription=array();
-
+                        $updateCustomer=intval($_POST['updateCustomer']);
                         $strDate = $_POST['strDate'];
                         $dateObj = new DateTime($strDate);
                         $dateCount = 0;
@@ -1021,7 +1021,7 @@
                         }else{
                             $option = 2;
                             $arrSuscription = json_decode($_POST['suscription'],true);
-                            $request = $this->model->updateOrder($idOrder,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder,$dateBeat);          
+                            $request = $this->model->updateOrder($idOrder,$strName,$strIdentification,$strEmail,$strPhone,$strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder,$dateBeat,$updateCustomer);          
                         }
                         if($request>0){
                             if($option == 1){

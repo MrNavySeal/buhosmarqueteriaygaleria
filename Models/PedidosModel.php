@@ -400,8 +400,9 @@
             $request = $this->update($sql,$arrData);
             return $request;
         }
-        public function updateOrder($idOrder,string $strName,$strIdentification,string $strEmail,string $strPhone,string $strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder,$dateBeat){
-            
+        public function updateOrder($idOrder,string $strName,$strIdentification,string $strEmail,string $strPhone,string $strAddress,$strDate,$strNote,$arrSuscription,$type,$status,$statusOrder,$dateBeat,$updateCustomer){
+            $sql="";
+            $arrData="";
             $this->intIdOrder = $idOrder;
             $this->strName = $strName;
             $this->strEmail = $strEmail;
@@ -427,21 +428,33 @@
                 }
             }
             $arrSuscription = json_encode($arrSuscription);
-            $sql = "UPDATE orderdata SET name=?,identification=?,email=?,phone=?,address=?,note=?,suscription=?,type=?,status=?, date=?,statusorder=?, date_beat=? WHERE idorder = $this->intIdOrder";
-            $arrData = array(
-                $this->strName,
-                $this->strIdentification,
-                $this->strEmail,
-                $this->strPhone,
-                $this->strAddress,
-                $strNote,
-                $arrSuscription,
-                $type,
-                $status,
-                $strDate,
-                $statusOrder,
-                $dateBeat
-            );
+            if($updateCustomer==2){
+                $sql = "UPDATE orderdata SET name=?,identification=?,email=?,phone=?,address=?,note=?,suscription=?,type=?,status=?, date=?,statusorder=?, date_beat=? WHERE idorder = $this->intIdOrder";
+                $arrData = array(
+                    $this->strName,
+                    $this->strIdentification,
+                    $this->strEmail,
+                    $this->strPhone,
+                    $this->strAddress,
+                    $strNote,
+                    $arrSuscription,
+                    $type,
+                    $status,
+                    $strDate,
+                    $statusOrder,
+                    $dateBeat
+                );
+            }else{
+                $sql = "UPDATE orderdata SET suscription=?,type=?,status=?, date=?,statusorder=?, date_beat=? WHERE idorder = $this->intIdOrder";
+                $arrData = array(
+                    $arrSuscription,
+                    $type,
+                    $status,
+                    $strDate,
+                    $statusOrder,
+                    $dateBeat
+                );
+            }
             $request = $this->update($sql,$arrData);
             if($request>0){
                 $statusC = 1;

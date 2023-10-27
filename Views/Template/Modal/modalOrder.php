@@ -42,7 +42,7 @@
                                 <textarea rows="3" name="strNote" id="txtNotePos" class="form-control"></textarea>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="mt-3 mb-3">
                                 <label for="" class="form-label">Tipo de pago <span class="text-danger">*</span></label>
                                 <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required>
@@ -50,7 +50,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="mt-3 mb-3">
                                 <label for="typeList" class="form-label">Estado de pago <span class="text-danger">*</span></label>
                                 <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
@@ -60,7 +60,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="mt-3 mb-3">
                                 <label for="typeList" class="form-label">Estado de pedido <span class="text-danger">*</span></label>
                                 <select class="form-control" aria-label="Default select example" id="statusOrder" name="statusOrder" required>
@@ -71,6 +71,15 @@
                                         }
                                     ?>
                                     <?=$status?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mt-3 mb-3">
+                                <label for="updateCustomer" class="form-label">Actualizar datos cliente</label>
+                                <select class="form-control" aria-label="Default select example" id="updateCustomer" name="updateCustomer">
+                                    <option value="1" selected>No</option>
+                                    <option value="2">Si</option>
                                 </select>
                             </div>
                         </div>
