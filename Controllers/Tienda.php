@@ -243,13 +243,30 @@
                         $request = $this->setCustomerT($strName,$strPicture,$strEmail,$strPassword,$rolid);
                         
                         if($request > 0){
+                            require_once("Models/RolesModel.php");
                             $_SESSION['idUser'] = $request;
                             $_SESSION['login'] = true;
-                            
+							
                             $arrData = $this->login->sessionLogin($_SESSION['idUser']);
+                            $roleModel = new RolesModel();
+							$idrol = intval($_SESSION['userData']['roleid']);
+							$arrPermisos = $roleModel->permitsModule($idrol);
+							$permisos = '';
+							if(count($arrPermisos)>0){
+								$permisos = $arrPermisos;
+							}
+							$_SESSION['permit'] = $permisos;
+                            $company = getCompanyInfo();
+						    
                             sessionUser($_SESSION['idUser']);
-    
                             $arrResponse = array("status" => true,"msg"=>"Se ha registrado con éxito.");
+                            $data = array(
+                                'nombreUsuario'=> $strName, 
+                                'email_remitente' => $company['email'], 
+                                'email_usuario'=>$strEmail, 
+                                'company'=>$company,
+                                'asunto' =>"¡Registración exitosa! Bienvenido a ".$company['name']);
+                            sendEmail($data,"email_welcome");
                         }else if($request =="exist"){
                             $arrResponse = array("status" => false,"msg"=>"El usuario ya existe, por favor inicie sesión.");
                         }else{
