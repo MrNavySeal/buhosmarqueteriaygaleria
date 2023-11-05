@@ -738,6 +738,11 @@
             }
             die();
         }
+        /*
+        public function changePriceFrames(){
+            $request = $this->model->selectChangePrice(25);
+            die();
+        }*/
     }
 
 ?>

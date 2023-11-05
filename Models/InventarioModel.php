@@ -622,5 +622,32 @@
             $request = $this->select_all($sql);
             return $request;
         }
+        /*
+        public function selectChangePrice($category){
+            $request = $this->select_all("SELECT * FROM product WHERE product_type = 2 AND categoryid = $category");
+            if(count($request)> 0){
+                for ($i=0; $i < count($request) ; $i++) { 
+                    $idProduct = $request[$i]['idproduct'];
+                    $sqlV = "SELECT * FROM product_variant WHERE productid = $idProduct ORDER BY price ASC";
+                    $requestV = $this->select_all($sqlV);
+                    for ($j=0; $j < count($requestV); $j++) { 
+                        $idVariant = $requestV[$j]['id_product_variant'];
+                        
+                        $price = round(($requestV[$j]['price']*1.22)/1000)*1000;
+                        $arrData= array($price);
+                        $this->update("UPDATE product_variant SET price=? WHERE id_product_variant = $idVariant",$arrData);
+                        
+                        $request[$i]['variants'][$j] = array(
+                            "width"=>$requestV[$j]['width'],
+                            "height"=>$requestV[$j]['height'],
+                            "stock"=>$requestV[$j]['stock'],
+                            "price"=>$requestV[$j]['price']
+                        );
+                        
+                    }
+                }
+            }
+            return $request;
+        }*/
     }
 ?>
