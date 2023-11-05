@@ -34,6 +34,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.categoryid = $id AND p.status = 1
+            AND c.status = 1 AND s.status = 1
             ORDER BY RAND() $cant";
             
             $request = $this->con->select_all($sql);
@@ -99,6 +100,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            AND c.status = 1 AND s.status = 1
             ORDER BY p.idproduct DESC $cant";
             
             $request = $this->con->select_all($sql);
@@ -461,7 +463,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
-            AND c.status = 1 AND s.status = 1 
+            AND c.status = 1 AND s.status = 1
             $routes $option 
             LIMIT $start,$perPage";
             $request = $this->con->select_all($sql);
@@ -520,6 +522,7 @@
             FROM product p
             INNER JOIN category c, subcategory s, wishlist w
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            AND c.status = 1 AND s.status = 1 AND
             AND p.idproduct = w.productid AND w.personid = $id AND w.status = 1";
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
@@ -578,7 +581,8 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
-            AND p.idproduct = $this->intIdProduct";
+            AND p.idproduct = $this->intIdProduct AND p.status = 1
+            AND c.status = 1 AND s.status = 1";
             $request = $this->con->select($sql);
             if(!empty($request)){
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
@@ -641,6 +645,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            AND c.status = 1 AND s.status = 1
             AND p.route = '$route'";
             $request = $this->con->select($sql);
             $this->intIdProduct = $request['idproduct'];
