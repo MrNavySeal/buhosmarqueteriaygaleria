@@ -192,39 +192,6 @@
             font-size: 0.8rem;
         }
     }
-    .tmobilefoot{
-        display: block;
-    }
-    .tdeskfoot{
-        display: none;
-    }
-    thead{
-        display: none;
-    }
-    .items{
-        td{
-            ul{
-                list-style: none;
-                padding: 0;
-                
-            }
-            text-align: end;
-            display: block;
-            position: relative;
-            &::after{
-                position: absolute;
-                left: 0;
-                top: 50%;
-                transform: translate(0,-50%);
-                content:attr(data-label);
-                color: #000;
-            }
-            
-        }
-        td.item-btn{
-            text-align: center;
-        }
-    }
 }
 @media screen and (max-width: 540px){ 
 

@@ -94,12 +94,13 @@ src="https://www.facebook.com/tr?id=1407018373490206&ev=PageView&noscript=1"
 
     <!------------------------------Frameworks--------------------------------->
     <link rel="stylesheet" href="<?=media();?>/frameworks/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="<?=media();?>/plugins/owlcarousel/owl.carousel.min.css">
-    <link rel="stylesheet" href="<?=media();?>/plugins/owlcarousel/owl.theme.default.min.css">
+    
     <!------------------------------Plugins--------------------------------->
     <link href="<?= media();?>/plugins/datepicker/jquery-ui.min.css" rel="stylesheet">
     <link href="<?=media();?>/plugins/fontawesome/font-awesome.min.css">
-    
+    <link rel="stylesheet" href="<?=media();?>/plugins/owlcarousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="<?=media();?>/plugins/owlcarousel/owl.theme.default.min.css">
+    <link rel="stylesheet" href="<?=media();?>/plugins/datatables/datatables.min.css">
     <!------------------------------------Styles--------------------------->
     <link rel="stylesheet" href="<?=media()?>/template/Assets/css/normalize.css">
     <link rel="stylesheet" href="<?=media()."/template/Assets/css/style.css?v=".rand()?>">

@@ -1,4 +1,5 @@
 'use strict';
+
 const moneyReceived = document.querySelector("#moneyReceived");
 const btnAddPos = document.querySelector("#btnAddPos");
 let searchCustomers = document.querySelector("#searchCustomers");
@@ -6,6 +7,49 @@ const cupon = document.querySelector("#discount");
 let formPOS = document.querySelector("#formSetOrder");
 let element = document.querySelector("#listItem");
 let modal = document.querySelector("#modalPos") ? new bootstrap.Modal(document.querySelector("#modalPos")) :"";
+let table = new DataTable("#tableData",{
+    
+    //ajax: " "+base_url+"/pedidos/getOrders",
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/pedidos/getOrders",
+        "dataSrc":""
+    },
+    columns: [
+        { data: 'idorder' },
+        { data: 'idtransaction' },
+        { data: 'date' },
+        { data: 'name' },
+        { data: 'email' },
+        { data: 'phone'},
+        { data: 'identification' },
+        { data: 'amount' },
+        { data: 'type' },
+        { data: 'status' },
+        { data: 'statusorder' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    dom: 'Bfrtip',
+    buttons: [
+        {
+            "extend": "excelHtml5",
+            "text": "<i class='fas fa-file-excel'></i> Excel",
+            "titleAttr":"Exportar a Excel",
+            "className": "btn btn-success"
+        }
+    ],
+    order: [[1, 'asc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10
+});
+
 moneyReceived.addEventListener("input",function(){
     let total = document.querySelector("#total").getAttribute("data-value");
     let result = 0;
@@ -83,43 +127,21 @@ formPOS.addEventListener("submit",function(e){
         modal.hide();
         if(objData.status){
             Swal.fire("",objData.msg,"success");
-            
-            element.innerHTML = objData.data;
+            table.ajax.reload();
         }else{
             Swal.fire("Error",objData.msg,"error");
         }
     });
 
 });
-let searchPanel = document.querySelector("#search");
-let sortPanel = document.querySelector("#sortBy");
-
-searchPanel.addEventListener('input',function() {
-    request(base_url+"/pedidos/search/"+searchPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.msg;
-        }
-    });
-});
-
-sortPanel.addEventListener("change",function(){
-    request(base_url+"/pedidos/sort/"+sortPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.msg;
-        }
-    });
-});
+/*
 element.addEventListener("click",function(e) {
     let element = e.target;
     let id = element.getAttribute("data-id");
     if(element.name == "btnDelete"){
         deleteItem(id);
     }
-});
+});*/
 function deleteItem(id){
     Swal.fire({
         title:"¿Estás seguro de eliminarlo?",
@@ -238,8 +260,6 @@ function delSuscription(element){
     document.querySelectorAll(".itemAccount").forEach(element => {
         subtotal += parseInt(element.getAttribute("data-total"));
     });
-    console.log(total);
-    console.log(subtotal);
     let totalSus = total-subtotal;
     document.querySelector("#totalDebt").children[0].children[1].innerHTML = "$"+formatNum(totalSus,".");
 }

@@ -20,8 +20,22 @@
         }
         /*************************Category methods*******************************/
 
-        public function selectOrders(){
-            $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date FROM orderdata ORDER BY idorder DESC";       
+        public function selectOrders($idPerson){
+            $whre="";
+            if($idPerson!="")$whre=" WHERE personid=$idPerson";
+            $sql = "SELECT 
+            idorder,
+            idtransaction,
+            name,
+            identification,
+            email,
+            phone,
+            amount,
+            status,
+            type,
+            statusorder,
+            DATE_FORMAT(date, '%d/%m/%Y') as date 
+            FROM orderdata $whre ORDER BY idorder DESC";       
             $request = $this->select_all($sql);
             return $request;
         }

@@ -19,7 +19,7 @@
                 $data['page_tag'] = "Pedidos";
                 $data['page_title'] = "Pedidos";
                 $data['page_name'] = "pedidos";
-                $data['data'] = $this->getOrders();
+                //$data['data'] = $this->getOrders();
                 $data['panelapp'] = "functions_orders.js";
                 $this->views->getView($this,"pedidos",$data);
             }else{
@@ -171,15 +171,11 @@
         }
         public function getOrders($option=null,$params=null){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->search($params);
-                }else if($option == 2){
-                    $request = $this->model->sort($params);
-                }else{
-                    $request = $this->model->selectOrders();
+                $idPersona = "";
+                if($_SESSION['userData']['roleid'] == 2){
+                    $idPersona = $_SESSION['idUser'];
                 }
+                $request = $this->model->selectOrders($idPersona);
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -212,53 +208,25 @@
                         }else if($request[$i]['statusorder'] =="cancelado"){
                             $statusOrder = '<span class="badge bg-danger text-white">cancelado</span>';
                         }
+                        
                         /*if($_SESSION['permitsModule']['d'] && $_SESSION['userData']['roleid'] == 1){
                             $btnDelete = '<button class="btn btn-danger text-white m-1" type="button" title="Delete" data-id="'.$request[$i]['idorder'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
                         }*/
                         if($_SESSION['permitsModule']['u']){
-                            $btnWpp='<a href="https://wa.me/57'.$request[$i]['phone'].'?text=Buen%20dia%20'.$request[$i]['name'].'" class="btn btn-success text-white m-1" type="button" title="Whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>';
                             $btnEdit = '<button class="btn btn-success text-white m-1" type="button" title="Edit" data-id="'.$request[$i]['idorder'].'" onclick="openModalOrder('.$request[$i]['idorder'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['userData']['roleid'] == 1 || $_SESSION['userData']['roleid'] == 3){
-
-                            $html.='
-                                <tr class="item">
-                                    <td data-label="Id: ">'.$request[$i]['idorder'].'</td>
-                                    <td data-label="Transacción: ">'.$request[$i]['idtransaction'].'</td>
-                                    <td data-label="Fecha: ">'.$request[$i]['date'].'</td>
-                                    <td data-label="Monto: ">'.formatNum($request[$i]['amount'],false).'</td>
-                                    <td data-label="Tipo de pago: ">'.$request[$i]['type'].'</td>
-                                    <td data-label="Estado de pago: ">'.$status.'</td>
-                                    <td data-label="Estado de pedido: ">'.$statusOrder.'</td>
-                                    <td class="item-btn">'.$btnView.$btnWpp.$btnPdf.$btnPaypal.$btnEdit.'</td>
-                                </tr>
-                            ';
-
-                        }elseif($_SESSION['idUser'] == $request[$i]['personid']){
-                            $html.='
-                            <tr class="item">
-                                <td data-label="Id: ">'.$request[$i]['idorder'].'</td>
-                                <td data-label="Transacción: ">'.$request[$i]['idtransaction'].'</td>
-                                <td data-label="Fecha: ">'.$request[$i]['date'].'</td>
-                                <td data-label="Monto: ">'.formatNum($request[$i]['amount'],false).'</td>
-                                <td data-label="Tipo de pago: ">'.$request[$i]['type'].'</td>
-                                <td data-label="Estado de pago: ">'.$status.'</td>
-                                <td data-label="Estado de pedido: ">'.$statusOrder.'</td>
-                                <td class="item-btn">'.$btnView.$btnWpp.$btnPdf.$btnPaypal.'</td>
-                            </tr>
-                        ';
+                            $btnWpp='<a href="https://wa.me/57'.$request[$i]['phone'].'?text=Buen%20dia%20'.$request[$i]['name'].'" class="btn btn-success text-white m-1" type="button" title="Whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>';
                         }
+                        $request[$i]['amount'] = formatNum($request[$i]['amount']);
+                        $request[$i]['status'] = $status;
+                        $request[$i]['statusorder'] = $statusOrder;
+                        $request[$i]['options'] = $btnView.$btnWpp.$btnPdf.$btnPaypal.$btnEdit;
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="20">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            return $arrResponse;
+            die();
         }
         public function getTransaction(string $idTransaction){
             if($_SESSION['permitsModule']['r'] && $_SESSION['userData']['roleid'] !=2){
@@ -294,22 +262,6 @@
             }else{
                 header("location: ".base_url());
                 die();
-            }
-            die();
-        }
-        public function search($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getOrders(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function sort($params){
-            if($_SESSION['permitsModule']['r']){
-                $params = intval($params);
-                $arrResponse = $this->getOrders(2,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
@@ -1030,10 +982,7 @@
                                 unset($_SESSION['arrPOS']);
                                 $arrResponse = array("status"=>true,"msg"=>"Pedido realizado");
                             }else{
-                                
-                                $arrResponse = $this->getOrders();
-                                //$arrResponse['status']=true;
-                                $arrResponse['msg'] = 'Pedido actualizado.';
+                                $arrResponse = array("status"=>true,"msg"=>"Pedido actualizado");
                             }
                         }else if(!$request){
                             $arrResponse = array("status"=>false,"msg"=>"Error, los anticipos superan al monto total, inténtelo de nuevo.");
