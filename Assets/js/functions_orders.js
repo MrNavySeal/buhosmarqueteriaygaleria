@@ -32,7 +32,6 @@ let table = new DataTable("#tableData",{
         { data: 'options' },
     ],
     responsive: true,
-    dom: 'Bfrtip',
     buttons: [
         {
             "extend": "excelHtml5",
@@ -47,7 +46,8 @@ let table = new DataTable("#tableData",{
     //scrollX: true,
     "aProcessing":true,
     "aServerSide":true,
-    "iDisplayLength": 10
+    "iDisplayLength": 10,
+    "lengthMenu": [ 10,25, 50, 75, "All" ]
 });
 
 moneyReceived.addEventListener("input",function(){
