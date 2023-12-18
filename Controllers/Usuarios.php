@@ -49,7 +49,6 @@
                         $request[$i]['fullname'] = $request[$i]['firstname']." ".$request[$i]['lastname'];
                     }
                 }
-                dep($request);
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
             die();
