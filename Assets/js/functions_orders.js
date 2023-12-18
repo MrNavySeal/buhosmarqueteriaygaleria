@@ -8,8 +8,7 @@ let formPOS = document.querySelector("#formSetOrder");
 let element = document.querySelector("#listItem");
 let modal = document.querySelector("#modalPos") ? new bootstrap.Modal(document.querySelector("#modalPos")) :"";
 let table = new DataTable("#tableData",{
-    
-    //ajax: " "+base_url+"/pedidos/getOrders",
+    "dom": 'lBrtip',
     "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
@@ -37,7 +36,7 @@ let table = new DataTable("#tableData",{
             "extend": "excelHtml5",
             "text": "<i class='fas fa-file-excel'></i> Excel",
             "titleAttr":"Exportar a Excel",
-            "className": "btn btn-success"
+            "className": "btn btn-success mt-2"
         }
     ],
     order: [[1, 'asc']],
@@ -47,7 +46,6 @@ let table = new DataTable("#tableData",{
     "aProcessing":true,
     "aServerSide":true,
     "iDisplayLength": 10,
-    "lengthMenu": [ 10,25, 50, 75, "All" ]
 });
 
 moneyReceived.addEventListener("input",function(){
