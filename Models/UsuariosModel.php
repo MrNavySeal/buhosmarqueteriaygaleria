@@ -128,12 +128,13 @@
                     p.roleid,
                     DATE_FORMAT(p.date, '%d/%m/%Y') as date,
                     p.status,
+                    p.identification,
                     r.idrole,
                     r.name as role
                     FROM person p
                     INNER JOIN role r
                     ON r.idrole = p.roleid 
-                    ORDER BY idperson DESC";
+                    WHERE idperson != 1 AND p.roleid !=2 ORDER BY p.idperson DESC";
             $request = $this->select_all($sql);
             if(count($request)>0){
                 for ($i=0; $i < count($request) ; $i++) { 
