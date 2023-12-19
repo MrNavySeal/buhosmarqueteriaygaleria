@@ -5,7 +5,7 @@ let element = document.querySelector("#listItem");
 let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
 let modalView = new bootstrap.Modal(document.querySelector("#modalViewElement"));
 let table = new DataTable("#tableData",{
-    "dom": 'lBrtip',
+    "dom": 'lfBrtip',
     "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
