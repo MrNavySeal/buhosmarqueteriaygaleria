@@ -1,306 +1,119 @@
 'use strict';
 
 
-let searchPanel = document.querySelector("#search");
-let sortPanel = document.querySelector("#sortBy");
-let element = document.querySelector("#listItem");
 
-searchPanel.addEventListener('input',function() {
-    request(base_url+"/roles/search/"+searchPanel.value,"","get").then(function(objData){
+let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
+let form = document.querySelector("#formItem");
+let table = new DataTable("#tableData",{
+    "dom": 'lfBrtip',
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/roles/getRoles",
+        "dataSrc":""
+    },
+    columns: [
+        { data: 'idrole'},
+        { data: 'name' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    buttons: [
+        {
+            "extend": "excelHtml5",
+            "text": "<i class='fas fa-file-excel'></i> Excel",
+            "titleAttr":"Exportar a Excel",
+            "className": "btn btn-success mt-2"
+        }
+    ],
+    order: [[1, 'asc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
+});
+
+form.addEventListener("submit",function(e){
+    e.preventDefault();
+    let strName = document.querySelector("#txtName").value;
+
+    if(strName ==""){
+        Swal.fire("Error","Los campos no pueden estar vacíos","error");
+        return false;
+    }
+    
+    let url = base_url+"/roles/setRole";
+    let formData = new FormData(form);
+    let btnAdd = document.querySelector("#btnAdd");
+    btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnAdd.setAttribute("disabled","");
+    request(url,formData,"post").then(function(objData){
+        btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
+        btnAdd.removeAttribute("disabled");
         if(objData.status){
-            element.innerHTML = objData.data;
+            Swal.fire("Guardado",objData.msg,"success");
+            table.ajax.reload();
+            modal.hide();
+            form.reset();
+            document.querySelector("#idRol").value ="";
         }else{
-            element.innerHTML = objData.data;
+            Swal.fire("Error",objData.msg,"error");
         }
     });
 })
-sortPanel.addEventListener("change",function(){
-    request(base_url+"/roles/sort/"+sortPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
-        }
-    });
-});
 
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
-        addItem();
-    });
-}
-
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
-    }else if(element.name == "btnPermit"){
-        permitItem(id);
-    }else if(element.name == "btnEdit"){
-        editItem(id);
-    }
-});
-
-function addItem(){
-    let modalItem = document.querySelector("#modalItem");
-    let modal= `
-    <div class="modal fade" id="modalElement">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Nuevo rol</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formItem" name="formItem" class="mb-4">
-                        <input type="hidden" id="idRol" name="idRol" value="">
-                        <div class="mb-3">
-                            <label for="txtName" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="txtName" name="txtName">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" id="btnAdd"><i class="fas fa-plus-circle"></i> Agregar</button>
-                            <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    `;
-
-    modalItem.innerHTML = modal;
-    let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-    modalView.show();
-
-    let form = document.querySelector("#formItem");
-    form.addEventListener("submit",function(e){
-        e.preventDefault();
-        let strName = document.querySelector("#txtName").value;
-
-        if(strName ==""){
-            Swal.fire("Error","Los campos no pueden estar vacíos","error");
-            return false;
-        }
-        
-        let url = base_url+"/roles/setRole";
-        let formData = new FormData(form);
-        let btnAdd = document.querySelector("#btnAdd");
-        btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-        btnAdd.setAttribute("disabled","");
-        request(url,formData,"post").then(function(objData){
-            btnAdd.innerHTML=`<i class="fas fa-plus-circle"></i> Agregar`;
-            btnAdd.removeAttribute("disabled");
-            if(objData.status){
-                Swal.fire("Agregado",objData.msg,"success");
-                modalView.hide();
-                element.innerHTML = objData.data;
-            }else{
-                Swal.fire("Error",objData.msg,"error");
-            }
-        });
-    })
-}
-function permitItem(id){
-    let url = base_url+"/roles/getPermits";
-    let formData = new FormData();
-    formData.append("idRol",id);
-    request(url,formData,"post").then(function(objData){
-        let module = objData.module;
-        let permit = objData.permit;
-        let htmlModule = "";
-        for (let i = 0; i < module.length; i++) {
-            htmlModule+=`
-            <tr>
-                <td class="text-start" >
-                    <div>
-                        <input type="hidden" value ="${module[i]['idmodule']}">
-                        ${module[i]['name']}
-                    </div>
-                </td>
-                <td>
-                    <div class="form-check form-switch d-flex justify-content-center" style="width:100px;">
-                        <input class="form-check-input" type="checkbox" role="switch" id="r${module[i]['idmodule']}">
-                    </div>
-                </td>
-                <td>
-                    <div class="form-check form-switch d-flex justify-content-center" style="width:100px;">
-                        <input class="form-check-input" type="checkbox" role="switch" id="w${module[i]['idmodule']}">
-                    </div>
-                </td>
-                <td>
-                    <div class="form-check form-switch d-flex justify-content-center" style="width:100px;">
-                        <input class="form-check-input" type="checkbox" role="switch" id="u${module[i]['idmodule']}">
-                    </div>
-                </td>
-                <td>
-                    <div class="form-check form-switch d-flex justify-content-center" style="width:100px;">
-                        <input class="form-check-input" type="checkbox" role="switch" id="d${module[i]['idmodule']}">
-                    </div>
-                </td>
-            </tr>
-            `;
-        }
-        let modalItem = document.querySelector("#modalItem");
-        let modal= `
-        <div class="modal fade" id="modalElement">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Permits</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="table-responsive">
-                            <table class="table text-center align-middle">
-                                <thead>
-                                    <tr>
-                                        <th class="text-start">Modulo</th>
-                                        <th>Leer</th>
-                                        <th>Crear</th>
-                                        <th>Actualizar</th>
-                                        <th>Eliminar</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="modules">
-                                    ${htmlModule}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="btnAdd">Guardar</button>
-                            <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        `;
-        modalItem.innerHTML = modal;
-        let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-        for (let i = 0; i < module.length; i++) {
-            if(permit.length > 0){
-                for (let j = 0; j < permit.length; j++) {
-                    if(module[i]['idmodule'] == permit[j]['moduleid']){
-                        document.querySelector("#r"+(i+1)).checked=permit[j]['r'];
-                        document.querySelector("#w"+(i+1)).checked=permit[j]['w'];
-                        document.querySelector("#u"+(i+1)).checked=permit[j]['u'];
-                        document.querySelector("#d"+(i+1)).checked=permit[j]['d'];
-                    }
-                }
-            }
-        }
-
-        modalView.show();
-        let btnAdd = document.querySelector("#btnAdd");
-        btnAdd.addEventListener("click",function(){
-            let row = document.querySelectorAll("#modules tr");
-            let data = new Array();
-            for (let i = 0; i < row.length; i++) {
-                let col = row[i].children;
-                data[i] = new Array();
-                for (let j = 0; j < col.length; j++) {
-                    if(j == 0){
-                        data[i][j] = (col[j].children[0].children[0].value);
-                    }else{
-                        data[i][j] = col[j].children[0].children[0].checked;
-                    }
-                }
-            }
-            btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
-            btnAdd.setAttribute("disabled","");
-
-            url = base_url+"/roles/setPermits";
-            let permits = new FormData();
-            permits.append("permits",JSON.stringify(data));
-            permits.append("idRol",id);
-            request(url,permits,"post").then(function(objData){
-                btnAdd.innerHTML=`Guardar`;
-                btnAdd.removeAttribute("disabled");
-                if(objData.status){
-                    modalView.hide();
-                    Swal.fire("Permisos",objData.msg,"success");
-                }else{
-                    Swal.fire("Permisos",objData.msg,"error");
-                }
-            });
-        })
-
+        document.querySelector(".modal-title").innerHTML = "Nuevo rol";
+        document.querySelector("#idRol").value = "";
+        document.querySelector("#txtName").value = "";
+        modal.show();
     });
 }
 function editItem(id){
-    let url = base_url+"/roles/getrole";
     let formData = new FormData();
-    
     formData.append("idRol",id);
-    request(url,formData,"post").then(function(objData){
+    request(base_url+"/roles/getRole",formData,"post").then(function(objData){
+        console.log(objData);
         if(objData.status){
-            let modalItem = document.querySelector("#modalItem");
-            let modal= `
-            <div class="modal fade" id="modalElement">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Actualizar rol</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formItem" name="formItem" class="mb-4">
-                                <input type="hidden" id="idRol" name="idRol" value="${objData.data.idrole}">
-                                <div class="mb-3">
-                                    <label for="txtName" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" id="txtName" name="txtName" value="${objData.data.name}">
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-info text-white" id="btnAdd">Actualizar</button>
-                                    <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            `;
-
-            modalItem.innerHTML = modal;
-            let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-            modalView.show();
-
-            let form = document.querySelector("#formItem");
-            form.addEventListener("submit",function(e){
-                e.preventDefault();
-                let strName = document.querySelector("#txtName").value;
-
-                if(strName ==""){
-                    Swal.fire("Error","Los campos no pueden estar vacíos","error");
-                    return false;
-                }
-
-                let url = base_url+"/roles/setRole";
-                let formData = new FormData(form);
-                let btnAdd = document.querySelector("#btnAdd");
-                btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-                btnAdd.setAttribute("disabled","");
-                request(url,formData,"post").then(function(objData){
-                    btnAdd.innerHTML=`Actualizar`;
-                    btnAdd.removeAttribute("disabled");
-                    if(objData.status){
-                        Swal.fire("Actualizado",objData.msg,"success");
-                        modalView.hide();
-                        element.innerHTML = objData.data;
-                    }else{
-                        Swal.fire("Error",objData.msg,"error");
-                    }
-                });
-            })
+            document.querySelector("#txtName").value = objData.data.name;
+            document.querySelector("#idRol").value = objData.data.idrole;
+            document.querySelector(".modal-title").innerHTML = "Actualizar rol";
+            modal.show();
         }else{
             Swal.fire("Error",objData.msg,"error");
+        }
+    });
+}
+function permitItem(id){
+    let formData = new FormData();
+    formData.append("idRol",id);
+    requestText(base_url+"/roles/getPermits",formData,"post").then(function(objData){
+        document.querySelector("#contentResponse").innerHTML =objData;
+        let modalPermits = new bootstrap.Modal(document.querySelector("#modalPermits"));
+        modalPermits.show();
+        document.querySelector("#modalPermits").addEventListener("submit",editPermits,false);
+
+    });
+}
+function editPermits(e){
+    e.preventDefault();
+    let formData = new FormData(document.querySelector("#formPermits"));
+    document.querySelector("#btnPermit").innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    document.querySelector("#btnPermit").setAttribute("disabled","");
+    request(base_url+"/roles/setPermits",formData,"post").then(function(objData){
+        if(objData.status){
+            document.querySelector("#btnPermit").innerHTML=`<i class="fas fa-save"></i> Guardar`;
+            document.querySelector("#btnPermit").removeAttribute("disabled");
+            Swal.fire("Permisos",objData.msg,"success");
+
+        }else{
+            Swal.fire("Permisos",objData.msg,"error");
         }
     });
 }
@@ -321,7 +134,7 @@ function deleteItem(id){
             formData.append("idRol",id);
             request(url,formData,"post").then(function(objData){
                 Swal.fire("Eliminado",objData.msg,"success");
-                element.innerHTML = objData.data;
+                table.ajax.reload();
             });
         }
     });

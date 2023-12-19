@@ -172,6 +172,30 @@ async function request(url,requestData,option){
         console.log("There was a problem with the request: "+error.message);
     }
 }
+async function requestText(url,requestData,option){
+    let data ="";
+    option.toLowerCase();
+    if(option=='post'){
+        option = {
+            cors: 'same-origin',
+            method: 'post',
+            body:requestData,
+            cache: 'no-cache'
+        }
+    }else{
+        option = {
+            method: 'get',
+            cache: 'no-cache'
+        }
+    }
+    try {
+        let request = await fetch(url,option);
+        data = await request.text();
+        return data;
+    } catch (error) {
+        console.log("There was a problem with the request: "+error.message);
+    }
+}
 function controlTag(e) {
     tecla = (document.all) ? e.keyCode : e.which;
     if (tecla==8) return true; 

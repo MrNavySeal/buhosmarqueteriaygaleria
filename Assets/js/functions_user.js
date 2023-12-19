@@ -88,7 +88,7 @@ if(document.querySelector("#formItem")){
         
         btnAdd.setAttribute("disabled","");
         request(base_url+"/Usuarios/setUser",formData,"post").then(function(objData){
-            btnAdd.innerHTML=`<i class="fas fa-plus-circle"></i> Agregar`;
+            btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
                 Swal.fire("Guardado",objData.msg,"success");
