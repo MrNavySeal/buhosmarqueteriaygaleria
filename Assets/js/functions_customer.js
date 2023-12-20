@@ -1,157 +1,72 @@
 'use strict';
 
 
-let searchPanel = document.querySelector("#search");
-let sortPanel = document.querySelector("#sortBy");
-let element = document.querySelector("#listItem");
-
-searchPanel.addEventListener('input',function() {
-    request(base_url+"/clientes/search/"+searchPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
+let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
+let modalView = new bootstrap.Modal(document.querySelector("#modalViewElement"));
+let table = new DataTable("#tableData",{
+    "dom": 'lfBrtip',
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/clientes/getCustomers",
+        "dataSrc":""
+    },
+    columns: [
+        { 
+            data: 'image',
+            render: function (data, type, full, meta) {
+                return '<img src="'+data+'" class="rounded" height="50" width="50">';
+            }
+        },
+        { data: 'fullname'},
+        { data: 'identification' },
+        { data: 'email' },
+        { data: 'phone'},
+        { data: 'date' },
+        { data: 'status' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    buttons: [
+        {
+            "extend": "excelHtml5",
+            "text": "<i class='fas fa-file-excel'></i> Excel",
+            "titleAttr":"Exportar a Excel",
+            "className": "btn btn-success mt-2"
         }
-    });
-})
-sortPanel.addEventListener("change",function(){
-    request(base_url+"/clientes/sort/"+sortPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
-        }
-    });
+    ],
+    order: [[1, 'asc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
 });
 
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
-       addItem();
+        document.querySelector(".modal-title").innerHTML = "Nuevo cliente";
+        document.querySelector("#txtFirstName").value = "";
+        document.querySelector("#txtLastName").value = "";
+        document.querySelector("#txtEmail").value ="";
+        document.querySelector("#txtDocument").value = "";
+        document.querySelector("#txtPhone").value = "";
+        document.querySelector("#txtAddress").value = "";
+        document.querySelector("#listCountry").value = 0;
+        document.querySelector("#listState").value = "";
+        document.querySelector("#listCity").value = "";
+        document.querySelector("#statusList").value = 1;
+        document.querySelector("#idUser").value ="";
+        modal.show();
     });
 }
 
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
-    }else if(element.name == "btnView"){
-        viewItem(id);
-    }else if(element.name == "btnEdit"){
-        editItem(id);
-    }
-});
-
-function addItem(){
-    let modalItem = document.querySelector("#modalItem");
-    let modal= `
-    <div class="modal fade" id="modalElement">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Nuevo cliente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formItem" name="formItem" class="mb-4">
-                        <input type="hidden" id="idUser" name="idUser">
-                        <div class="mb-3 uploadImg">
-                            <img src="${base_url}/Assets/images/uploads/user.jpg">
-                            <label for="txtImg"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
-                            <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="txtFirstName" class="form-label">Nombres <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="txtFirstName" name="txtFirstName" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="txtLastName" class="form-label">Apellidos <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="txtLastName" name="txtLastName" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="txtDocument" class="form-label">CC/NIT</label>
-                                    <input type="text" class="form-control" id="txtDocument" name="txtDocument">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="txtEmail" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="txtEmail" name="txtEmail">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="txtPhone" class="form-label">Teléfono <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="txtPhone" name="txtPhone" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="txtAddress" class="form-label">Dirección</label>
-                                    <input type="text" class="form-control" id="txtAddress" name="txtAddress">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="listCountry" class="form-label">País</label>
-                                    <select class="form-control" aria-label="Default select example" id="listCountry" name="listCountry"></select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="listState" class="form-label">Estado/departamento</label>
-                                    <select class="form-control" aria-label="Default select example" id="listState" name="listState"></select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="listCity" class="form-label">Ciudad</label>
-                                    <select class="form-control" aria-label="Default select example" id="listCity" name="listCity"></select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="txtPassword" class="form-label">Contraseña</label>
-                                    <input type="password" class="form-control" id="txtPassword" name="txtPassword">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
-                                    <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                        <option value="1">Activo</option>
-                                        <option value="2">Inactivo</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" id="btnAdd"><i class="fas fa-plus-circle"></i> Agregar</button>
-                            <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    `;
-
-    modalItem.innerHTML = modal;
-    let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-    modalView.show();
-
+if(document.querySelector("#formItem")){
+    let form = document.querySelector("#formItem");
     let intCountry = document.querySelector("#listCountry");
     let intState = document.querySelector("#listState");
     let intCity = document.querySelector("#listCity");
@@ -178,7 +93,7 @@ function addItem(){
         uploadImg(img,imgLocation);
     });
 
-    let form = document.querySelector("#formItem");
+    
     form.addEventListener("submit",function(e){
         e.preventDefault();
         let strFirstName = document.querySelector("#txtFirstName").value;
@@ -218,13 +133,13 @@ function addItem(){
         btnAdd.setAttribute("disabled","");
 
         request(base_url+"/clientes/setCustomer",formData,"post").then(function(objData){
-            btnAdd.innerHTML=`<i class="fas fa-plus-circle"></i> Agregar`;
+            btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
-                Swal.fire("Agregado",objData.msg,"success");
-                //modalView.hide();
+                Swal.fire("Guardado",objData.msg,"success");
+                table.ajax.reload();
+                modal.hide();
                 form.reset();
-                element.innerHTML = objData.data;
             }else{
                 Swal.fire("Error",objData.msg,"error");
             }
@@ -232,11 +147,9 @@ function addItem(){
     })
 }
 function viewItem(id){
-    let url = base_url+"/clientes/getCustomer";
     let formData = new FormData();
-    
     formData.append("idUser",id);
-    request(url,formData,"post").then(function(objData){
+    request(base_url+"/clientes/getCustomer",formData,"post").then(function(objData){
         if(objData.status){
             let status = objData.data.status;
             if(status==1){
@@ -244,74 +157,17 @@ function viewItem(id){
             }else{
                 status='<span class="badge me-1 bg-danger">Inactivo</span>';
             }
-            let modalItem = document.querySelector("#modalItem");
-            let modal= `
-            <div class="modal fade" id="modalElement">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Datos de cliente</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <table class="table align-middle text-break">
-                                <tbody id="listItem">
-                                    <tr>
-                                        <td><img src="${objData.data.image}" class="rounded-circle" style="height:100px;width:100px;"></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Nombres: </strong></td>
-                                        <td>${objData.data.firstname}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Apellidos: </strong></td>
-                                        <td>${objData.data.lastname}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>CC/NIT: </strong></td>
-                                        <td>${objData.data.identification}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Email: </strong></td>
-                                        <td>${objData.data.email}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Teléfono: </strong></td>
-                                        <td>${objData.data.phone}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>País: </strong></td>
-                                        <td>${objData.data.country}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Estado/departamento: </strong></td>
-                                        <td>${objData.data.state}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Ciudad: </strong></td>
-                                        <td>${objData.data.city}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Fecha: </strong></td>
-                                        <td>${objData.data.date}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Estado: </strong></td>
-                                        <td>${status}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            `;
-            modalItem.innerHTML = modal;
-            let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
+            document.querySelector("#strImg").setAttribute("src",objData.data.image);
+            document.querySelector("#strName").innerHTML = objData.data.firstname;
+            document.querySelector("#strLastname").innerHTML = objData.data.lastname;
+            document.querySelector("#strEmail").innerHTML =objData.data.email;
+            document.querySelector("#strCC").innerHTML = objData.data.identification;
+            document.querySelector("#strPhone").innerHTML = objData.data.phone;
+            document.querySelector("#strCountry").innerHTML = objData.data.country;
+            document.querySelector("#strState").innerHTML = objData.data.state;
+            document.querySelector("#strCity").innerHTML = objData.data.city;
+            document.querySelector("#strDate").innerHTML = objData.data.date;
+            document.querySelector("#strStatus").innerHTML = status;
             modalView.show();
         }else{
             Swal.fire("Error",objData.msg,"error");
@@ -319,204 +175,28 @@ function viewItem(id){
     });
 }
 function editItem(id){
-    let url = base_url+"/clientes/getCustomer";
     let formData = new FormData();
     formData.append("idUser",id);
-    request(url,formData,"post").then(function(objData){
-        let modalItem = document.querySelector("#modalItem");
-        let modal= `
-        <div class="modal fade" id="modalElement">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Actualizar usuario</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="formItem" name="formItem" class="mb-4">
-                            <input type="hidden" id="idUser" name="idUser" value="${objData.data.idperson}">
-                            <div class="mb-3 uploadImg">
-                                <img src="${objData.data.image}">
-                                <label for="txtImg"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
-                                <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="txtFirstName" class="form-label">Nombres <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="txtFirstName" name="txtFirstName" value="${objData.data.firstname}" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="txtLastName" class="form-label">Apellidos <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="txtLastName" name="txtLastName" value="${objData.data.lastname}" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="txtDocument" class="form-label">CC/NIT</label>
-                                        <input type="text" class="form-control" id="txtDocument" name="txtDocument" value="${objData.data.identification}">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="txtEmail" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="txtEmail" name="txtEmail" value="${objData.data.email}">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="txtPhone" class="form-label">Teléfono <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="txtPhone" name="txtPhone" value="${objData.data.phone}" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="txtAddress" class="form-label">Dirección</label>
-                                        <input type="text" class="form-control" id="txtAddress" name="txtAddress" value="${objData.data.address}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="listCountry" class="form-label">País</label>
-                                        <select class="form-control" aria-label="Default select example" id="listCountry" name="listCountry"></select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="listState" class="form-label">Estado/departamento</label>
-                                        <select class="form-control" aria-label="Default select example" id="listState" name="listState"></select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="listCity" class="form-label">Ciudad</label>
-                                        <select class="form-control" aria-label="Default select example" id="listCity" name="listCity"></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="txtPassword" class="form-label">Contraseña</label>
-                                        <input type="password" class="form-control" id="txtPassword" name="txtPassword">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
-                                        <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                            <option value="1">Activo</option>
-                                            <option value="2">Inactivo</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary" id="btnAdd">Actualizar</button>
-                                <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
-
-        modalItem.innerHTML = modal;
-        let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-        let status = document.querySelectorAll("#statusList option");
-        for (let i = 0; i < status.length; i++) {
-            if(status[i].value == objData.data.status){
-                status[i].setAttribute("selected",true);
-            }
+    request(base_url+"/clientes/getCustomer",formData,"post").then(function(objData){
+        if(objData.status){
+            document.querySelector("#idUser").value = objData.data.idperson;
+            document.querySelector(".uploadImg img").setAttribute("src",objData.data.image);
+            document.querySelector("#txtFirstName").value = objData.data.firstname;
+            document.querySelector("#txtLastName").value = objData.data.lastname;
+            document.querySelector("#txtEmail").value =objData.data.email;
+            document.querySelector("#txtDocument").value = objData.data.identification;
+            document.querySelector("#txtPhone").value = objData.data.phone;
+            document.querySelector("#txtAddress").value = objData.data.address;
+            document.querySelector("#listCountry").innerHTML = objData.countries;
+            document.querySelector("#listState").innerHTML = objData.states;
+            document.querySelector("#listCity").innerHTML = objData.cities;
+            document.querySelector("#statusList").value = objData.data.status;
+            document.querySelector(".modal-title").innerHTML = "Actualizar cliente";
+            modal.show();
+        }else{
+            Swal.fire("Error",objData.msg,"error");
         }
-        let intCountry = document.querySelector("#listCountry");
-        let intState = document.querySelector("#listState");
-        let intCity = document.querySelector("#listCity");
-
-        intCountry.innerHTML = objData.countries;
-        intState.innerHTML = objData.states;
-        intCity.innerHTML = objData.cities;
-
-        intCountry.addEventListener("change",function(){
-            request(base_url+"/clientes/getSelectCountry/"+intCountry.value,"","get").then(function(objData){
-                intState.innerHTML = objData;
-            });
-            intCity.innerHTML = "";
-        });
-        intState.addEventListener("change",function(){
-            request(base_url+"/clientes/getSelectState/"+intState.value,"","get").then(function(objData){
-                intCity.innerHTML = objData;
-            });
-        });
-
-        modalView.show();
-
-        let img = document.querySelector("#txtImg");
-        let imgLocation = ".uploadImg img";
-        img.addEventListener("change",function(){
-            uploadImg(img,imgLocation);
-        });
-
-        let form = document.querySelector("#formItem");
-        form.addEventListener("submit",function(e){
-            e.preventDefault();
-            let strFirstName = document.querySelector("#txtFirstName").value;
-            let strLastName = document.querySelector("#txtLastName").value;
-            let strEmail = document.querySelector("#txtEmail").value;
-            let strPhone = document.querySelector("#txtPhone").value;
-            let statusList = document.querySelector("#statusList").value;
-            let strPassword = document.querySelector("#txtPassword").value;
-            let idUser = document.querySelector("#idUser").value;
-            let strDocument = document.querySelector("#txtDocument").value;
-            if(strFirstName == "" || strLastName == "" || strPhone == "" || statusList == ""){
-                Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
-                return false;
-            }
-            if(strPassword.length < 8 && strPassword!=""){
-                Swal.fire("Error","La contraseña debe tener al menos 8 caracteres","error");
-                return false;
-            }
-            if(!fntEmailValidate(strEmail) && strEmail!=""){
-                Swal.fire("Error","El email es invalido","error");
-                return false;
-            }
-            if(strPhone.length < 9){
-                Swal.fire("Error","El número de teléfono debe tener al menos 9 dígitos","error");
-                return false;
-            }
-            if(strDocument!=""){
-                if(strDocument.length < 8 || strDocument.length > 10){
-                    Swal.fire("Error","El número de cédula debe tener de 8 a 10 dígitos","error");
-                    return false;
-                }
-            }
-            
-            url = base_url+"/clientes/setCustomer";
-            let formData = new FormData(form);
-            let btnAdd = document.querySelector("#btnAdd");
-
-            btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            btnAdd.setAttribute("disabled","");
-
-            request(url,formData,"post").then(function(objData){
-                btnAdd.innerHTML=`Actualizar`;
-                btnAdd.removeAttribute("disabled");
-                if(objData.status){
-                    Swal.fire("Actualizado",objData.msg,"success");
-                    modalView.hide();
-                    element.innerHTML = objData.data;
-                }else{
-                    Swal.fire("Error",objData.msg,"error");
-                }
-            });
-        })
     });
-    
 }
 function deleteItem(id){
     Swal.fire({
@@ -536,7 +216,7 @@ function deleteItem(id){
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
-                    element.innerHTML = objData.data;
+                    table.ajax.reload();
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }
