@@ -16,7 +16,6 @@
                 $data['page_tag'] = "Molduras";
                 $data['page_title'] = "Molduras";
                 $data['page_name'] = "moldura";
-                $data['data'] = $this->getProducts();
                 $data['panelapp'] = "functions_molding.js";
                 $this->views->getView($this,"molduras",$data);
             }else{
@@ -29,7 +28,6 @@
                 $data['page_tag'] = "Colores";
                 $data['page_title'] = "Colores";
                 $data['page_name'] = "colores";
-                $data['data'] = $this->getColors();
                 $data['panelapp'] = "functions_colors.js";
                 $this->views->getView($this,"colores",$data);
             }else{
@@ -42,7 +40,6 @@
                 $data['page_tag'] = "Materiales";
                 $data['page_title'] = "Materiales";
                 $data['page_name'] = "materiales";
-                $data['data'] = $this->getMaterials();
                 $data['panelapp'] = "functions_materials.js";
                 $this->views->getView($this,"materiales",$data);
             }else{
@@ -55,7 +52,6 @@
                 $data['page_tag'] = "Categorias";
                 $data['page_title'] = "Categorias";
                 $data['page_name'] = "categorias";
-                $data['data'] = $this->getCategories();
                 $data['panelapp'] = "functions_moldingcategory.js";
                 $this->views->getView($this,"categorias",$data);
             }else{
@@ -66,21 +62,13 @@
         /*************************Product methods*******************************/
         public function getProducts($option=null,$params=null){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchm($params);
-                }else if($option == 2){
-                    $request = $this->model->sortm($params);
-                }else{
-                    $request = $this->model->selectProducts();
-                }
+                $request = $this->model->selectProducts();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
                         $status="";
                         $type="";
-                        $btnView = '<button class="btn btn-info m-1" type="button" title="Watch" data-id="'.$request[$i]['id'].'" name="btnView"><i class="fas fa-eye"></i></button>';
+                        $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['id'].')" ><i class="fas fa-eye"></i></button>';
                         $btnEdit="";
                         $btnDelete="";
                         $price = formatNum($request[$i]['price'],false);
@@ -90,10 +78,10 @@
                             $discount = '<span class="text-danger">0%</span>';
                         }
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['id'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1 text-white" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')" ><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['id'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id'].')" ><i class="fas fa-trash-alt"></i></button>';
                         }
                         if($request[$i]['status']==1){
                             $status='<span class="badge me-1 bg-success">Activo</span>';
@@ -107,35 +95,18 @@
                         }else{
                             $type='Madera diseño unico';
                         }
-                        $html.='
-                            <tr class="item">
-                                <td class="text-center">
-                                    <img src="'.$request[$i]['image'].'" class="rounded">
-                                </td>
-                                <td data-label="Referencia: ">'.$request[$i]['reference'].'</td>
-                                <td data-label="Tipo: ">'.$type.'</td>
-                                <td data-label="Desperdicio: ">'.$request[$i]['waste'].' cm</td>
-                                <td data-label="Costo: ">'.$price.' x cm</td>
-                                <td data-label="Descuento: ">'.$discount.'</td>
-                                <td data-label="Estado: ">'.$status.'</td>
-                                <td class="item-btn">'.$btnView.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['status'] = $status;
+                        $request[$i]['discount'] = $discount;
+                        $request[$i]['price'] = $price;
+                        $request[$i]['type'] = $type;
+                        $request[$i]['options'] = $btnView.$btnEdit.$btnDelete;
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="20">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getProduct(){
-            //dep($_POST);exit;
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     if(empty($_POST)){
@@ -157,9 +128,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
@@ -218,11 +186,9 @@
                                 uploadImage($imgInfo,$imgName);
                             }
                             if($option == 1){
-                                $arrResponse = $this->getProducts();
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados");
                             }else{
-                                $arrResponse = $this->getProducts();
-                                $arrResponse['msg'] = 'Datos actualizados';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados");
                             }
                         }else if($request == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => '¡Atención! La moldura ya existe, pruebe con otra referencia.');		
@@ -232,9 +198,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
 			die();
 		}
@@ -252,16 +215,13 @@
                         $request = $this->model->deleteProduct($id);
                         if($request=="ok"){
                             $this->model->deleteTmpImage();
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getProducts()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar, inténta de nuevo.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
@@ -288,34 +248,10 @@
             echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
-        public function searchm($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getProducts(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function sortm($params){
-            if($_SESSION['permitsModule']['r']){
-                $params = intval($params);
-                $arrResponse = $this->getProducts(2,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
         /*************************Color methods*******************************/
         public function getColors($option=null,$params=null){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchc($params);
-                }else if($option == 2){
-                    $request = $this->model->sortc($params);
-                }else{
-                    $request = $this->model->selectColors();
-                }
+                $request = $this->model->selectColors();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -324,37 +260,23 @@
                         $status="";
                         
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['id'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['id'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
                         if($request[$i]['status']==1){
                             $status='<span class="badge me-1 bg-success">Activo</span>';
                         }else{
-                            $status='<span class="badge me-1 bg-warning">Inactivo</span>';
+                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
                         }
-                        $html.='
-                            <tr class="item" data-name="'.$request[$i]['name'].'">
-                                <td class="d-flex justify-content-center"><div style="height: 50px;width: 50px; border:1px solid #000;background-color:#'.$request[$i]['color'].'"></div></td>
-                                <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
-                                <td data-label="Código hexadecimal: ">#'.$request[$i]['color'].'</td>
-                                <td data-label="Estado: ">'.$status.'</td>
-                                <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['status'] = $status;
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="20">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getColor(){
             if($_SESSION['permitsModule']['r']){
@@ -373,14 +295,11 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
         public function setColor(){
-            if($_SESSION['permitsModule']['r']){
+            if($_SESSION['permitsModule']['w']){
                 if($_POST){
                     if(empty($_POST['txtName']) || empty($_POST['txtColor']) || empty($_POST['statusList'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
@@ -404,11 +323,9 @@
                         }
                         if($request > 0 ){
                             if($option == 1){
-                                $arrResponse = $this->getColors();
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse = array("status"=>true,"Datos guardados");
                             }else{
-                                $arrResponse = $this->getColors();
-                                $arrResponse['msg'] = 'Datos actualizados.';
+                                $arrResponse = array("status"=>true,"Datos actualizados");
                             }
                         }else if($request == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => 'El color ya existe, prueba con otro nombre.');		
@@ -418,9 +335,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
 			die();
 		}
@@ -435,45 +349,20 @@
                         $request = $this->model->deleteColor($id);
 
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getColors()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            die();
-        }
-        public function searchc($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getColors(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function sortc($params){
-            if($_SESSION['permitsModule']['r']){
-                $params = intval($params);
-                $arrResponse = $this->getColors(2,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
         /*************************Materials methods*******************************/
         public function getMaterials($option=null,$params=null){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchma($params);
-                }else{
-                    $request = $this->model->selectMaterials();
-                }
+                $request = $this->model->selectMaterials();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -481,30 +370,18 @@
                         $btnDelete="";
                         
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['id'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')" ><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['id'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id'].')" ><i class="fas fa-trash-alt"></i></button>';
                         }
-                        $html.='
-                            <tr class="item" data-name="'.$request[$i]['name'].'">
-                                <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
-                                <td data-label="Costo: ">'.formatNum($request[$i]['price']).' X '.$request[$i]['unit'].'</td>
-                                <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['price'] = formatNum($request[$i]['price']).' X '.$request[$i]['unit'];
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="20">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getMaterial(){
             if($_SESSION['permitsModule']['r']){
@@ -523,9 +400,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
@@ -554,11 +428,9 @@
                         }
                         if($request > 0 ){
                             if($option == 1){
-                                $arrResponse = $this->getMaterials();
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse = array('status' => true, 'msg' => 'Datos guardados.');
                             }else{
-                                $arrResponse = $this->getMaterials();
-                                $arrResponse['msg'] = 'Datos actualizados.';
+                                $arrResponse = array('status' => true, 'msg' => 'Datos actualizados.');
                             }
                         }else if($request == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => 'El material ya existe, prueba con otro nombre.');		
@@ -568,9 +440,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
 			die();
 		}
@@ -585,39 +454,20 @@
                         $request = $this->model->deleteMaterial($id);
 
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getMaterials()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            die();
-        }
-        public function searchma($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getMaterials(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
         /*************************Category methods*******************************/
         public function getCategories($option=null,$params=null){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchca($params);
-                }else if($option == 2){
-                    $request = $this->model->sortca($params);
-                }else{
-                    $request = $this->model->selectCategories();
-                }
+                $request = $this->model->selectCategories();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
                         
@@ -626,10 +476,10 @@
                         $btnDelete="";
                         $status="";
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['id'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['id'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
                         if($request[$i]['status']==1){
                             $status='<span class="badge me-1 bg-success">Activo</span>';
@@ -638,32 +488,17 @@
                         }else{
                             $status='<span class="badge me-1 bg-danger">Inactivo</span>';
                         }
-                        $html.='
-                            <tr class="item" data-name="'.$request[$i]['name'].'">
-                                <td class="text-center">
-                                    <img src="'.$image.'" class="rounded">
-                                </td>
-                                <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
-                                <td data-label="Estado: ">'.$status.'</td>
-                                <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['image'] = $image;
+                        $request[$i]['status'] = $status;
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="20">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getCategory(){
             if($_SESSION['permitsModule']['r']){
-
                 if($_POST){
                     if(empty($_POST)){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
@@ -679,9 +514,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
@@ -737,11 +569,9 @@
                                 uploadImage($photo,$photoCategory);
                             }
                             if($option == 1){
-                                $arrResponse = $this->getCategories();
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
                             }else{
-                                $arrResponse = $this->getCategories();
-                                $arrResponse['msg'] = 'Datos actualizados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
                             }
                         }else if($request == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => 'La categoría ya existe, prueba con otro nombre.');		
@@ -751,55 +581,29 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
 			die();
 		}
         public function delCategory(){
             if($_SESSION['permitsModule']['d']){
-
                 if($_POST){
                     if(empty($_POST['idCategory'])){
                         $arrResponse=array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $id = intval($_POST['idCategory']);
-
                         $request = $this->model->selectCategory($id);
                         if($request['image']!="category.jpg"){
                             deleteFile($request['image']);
                         }
-                        
                         $request = $this->model->deleteCategory($id);
-
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getCategories()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            die();
-        }
-        public function searchca($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getCategories(1,$search);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function sortca($params){
-            if($_SESSION['permitsModule']['r']){
-                $sort = intval($params);
-                $arrResponse = $this->getCategories(2,$sort);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }

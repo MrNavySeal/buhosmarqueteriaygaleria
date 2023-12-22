@@ -1,108 +1,65 @@
 'use strict';
 
+let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
+let table = new DataTable("#tableData",{
+    "dom": 'lfBrtip',
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/Marqueteria/getCategories",
+        "dataSrc":""
+    },
+    columns: [
+        { 
+            data: 'image',
+            render: function (data, type, full, meta) {
+                return '<img src="'+data+'" class="rounded" height="50" width="50">';
+            }
+        },
+        { data: 'name'},
 
-let searchPanel = document.querySelector("#search");
-let sortPanel = document.querySelector("#sortBy");
-let element = document.querySelector("#listItem");
-
-searchPanel.addEventListener('input',function() {
-    request(base_url+"/marqueteria/searchca/"+searchPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
+        { data: 'status' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    buttons: [
+        {
+            "extend": "excelHtml5",
+            "text": "<i class='fas fa-file-excel'></i> Excel",
+            "titleAttr":"Exportar a Excel",
+            "className": "btn btn-success mt-2"
         }
-    });
+    ],
+    order: [[1, 'asc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
 });
-
-sortPanel.addEventListener("change",function(){
-    request(base_url+"/marqueteria/sortca/"+sortPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
-        }
-    });
-});
-
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
-        addItem();
+        document.querySelector(".uploadImg img").setAttribute("src",base_url+"/Assets/images/uploads/category.jpg");
+        document.querySelector(".modal-title").innerHTML = "Nueva categoría";
+        document.querySelector("#idCategory").value = "";
+        document.querySelector("#txtName").value = "";
+        document.querySelector("#txtDescription").value = "";
+        document.querySelector("#txtBtn").value = "";
+        document.querySelector("#statusList").value = 1;
+        modal.show();
     });
 }
-
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
-    }else if(element.name == "btnEdit"){
-        editItem(id);
-    }
-});
-    
-function addItem(){
-    let modalItem = document.querySelector("#modalItem");
-    let modal= `
-    <div class="modal fade" id="modalElement">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Nueva categoría</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formItem" name="formItem" class="mb-4">
-                        <input type="hidden" id="idCategory" name="idCategory">
-                        <div class="mb-3 uploadImg">
-                            <img src="${base_url}/Assets/images/uploads/category.jpg">
-                            <label for="txtImg"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
-                            <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
-                        </div>
-                        <div class="mb-3">
-                            <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="txtName" name="txtName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="txtDescription" class="form-label">Descripción </label>
-                            <textarea class="form-control" id="txtDescription" name="txtDescription" rows="5"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="txtBtn" class="form-label">Botón <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="txtBtn" name="txtBtn" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
-                            <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                <option value="1">Activo</option>
-                                <option value="2">Inactivo</option>
-                                <option value="3">En proceso</option>
-                            </select>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" id="btnAdd"><i class="fas fa-plus-circle"></i> Agregar</button>
-                            <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    `;
-
-    modalItem.innerHTML = modal;
-    let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-    modalView.show();
-
+if(document.querySelector("#formItem")){
+    let form = document.querySelector("#formItem");
     let img = document.querySelector("#txtImg");
     let imgLocation = ".uploadImg img";
     img.addEventListener("change",function(){
         uploadImg(img,imgLocation);
     });
-
-    let form = document.querySelector("#formItem");
     form.addEventListener("submit",function(e){
         e.preventDefault();
 
@@ -116,130 +73,39 @@ function addItem(){
             return false;
         }
         
-        let url = base_url+"/marqueteria/setCategory";
+        let url = base_url+"/Marqueteria/setCategory";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             
         btnAdd.setAttribute("disabled","");
         request(url,formData,"post").then(function(objData){
-            btnAdd.innerHTML=`<i class="fas fa-plus-circle"></i> Agregar`;
+            btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
-                Swal.fire("Agregado",objData.msg,"success");
-                element.innerHTML = objData.data;
+                Swal.fire("Guardado",objData.msg,"success");
+                table.ajax.reload();
                 form.reset();
-                modalView.hide();
+                modal.hide();
             }else{
                 Swal.fire("Error",objData.msg,"error");
             }
         });
     })
 }
+    
 function editItem(id){
-    let url = base_url+"/marqueteria/getCategory";
     let formData = new FormData();
     formData.append("idCategory",id);
-    request(url,formData,"post").then(function(objData){
-        let modalItem = document.querySelector("#modalItem");
-        let modal= `
-        <div class="modal fade" id="modalElement">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Actualizar categoría</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="formItem" name="formItem" class="mb-4">
-                            <input type="hidden" id="idCategory" name="idCategory" value="${objData.data.id}">
-                            <div class="mb-3 uploadImg">
-                                <img src="${objData.data.image}">
-                                <label for="txtImg"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
-                                <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
-                            </div>
-                            <div class="mb-3">
-                                <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="txtName" name="txtName" required value="${objData.data.name}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="txtDescription" class="form-label">Descripción </label>
-                                <textarea class="form-control" id="txtDescription" name="txtDescription" rows="5">${objData.data.description}</textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="txtBtn" class="form-label">Botón <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="txtBtn" name="txtBtn" required value="${objData.data.button}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
-                                <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                    <option value="1">Activo</option>
-                                    <option value="2">Inactivo</option>
-                                    <option value="3">En proceso</option>
-                                </select>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary" id="btnAdd">Actualizar</button>
-                                <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
-
-        modalItem.innerHTML = modal;
-        let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-        let status = document.querySelectorAll("#statusList option");
-        for (let i = 0; i < status.length; i++) {
-            if(status[i].value == objData.data.status){
-                status[i].setAttribute("selected",true);
-                break;
-            }
-        }
-
-        modalView.show();
-
-        let img = document.querySelector("#txtImg");
-        let imgLocation = ".uploadImg img";
-        img.addEventListener("change",function(){
-            uploadImg(img,imgLocation);
-        });
-
-        let form = document.querySelector("#formItem");
-        form.addEventListener("submit",function(e){
-            e.preventDefault();
-    
-            let strName = document.querySelector("#txtName").value;
-            let strDescription = document.querySelector("#txtDescription").value;
-            let intStatus = document.querySelector("#statusList").value;
-            let idCategory = document.querySelector("#idCategory").value;
-    
-            if(strName == "" || strDescription =="" || intStatus ==""){
-                Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
-                return false;
-            }
-            
-            let url = base_url+"/marqueteria/setCategory";
-            let formData = new FormData(form);
-            let btnAdd = document.querySelector("#btnAdd");
-            btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-                
-            btnAdd.setAttribute("disabled","");
-            request(url,formData,"post").then(function(objData){
-                btnAdd.innerHTML=`Actualizar`;
-                btnAdd.removeAttribute("disabled");
-                if(objData.status){
-                    Swal.fire("Actualizado",objData.msg,"success");
-                    element.innerHTML = objData.data;
-                    form.reset();
-                    modalView.hide();
-                }else{
-                    Swal.fire("Error",objData.msg,"error");
-                }
-            });
-        })
+    request(base_url+"/Marqueteria/getCategory",formData,"post").then(function(objData){
+        document.querySelector("#idCategory").value = objData.data.id;
+        document.querySelector(".uploadImg img").setAttribute("src",objData.data.image);
+        document.querySelector("#txtName").value = objData.data.name;
+        document.querySelector("#txtDescription").value = objData.data.description;
+        document.querySelector("#txtBtn").value = objData.data.button;
+        document.querySelector("#statusList").value = objData.data.status;
+        document.querySelector(".modal-title").innerHTML = "Actualizar categoría";
+        modal.show();
     });
 }
 function deleteItem(id){
@@ -260,7 +126,7 @@ function deleteItem(id){
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
-                    element.innerHTML = objData.data;
+                    table.ajax.reload();
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }
