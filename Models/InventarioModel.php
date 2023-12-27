@@ -299,98 +299,6 @@
             $request = $this->delete($sql);
             return $request;
         }
-        public function search($search){
-            $sql = "SELECT 
-                p.idproduct,
-                p.categoryid,
-                p.subcategoryid,
-                p.reference,
-                p.name,
-                p.description,
-                p.price,
-                p.discount,
-                p.description,
-                p.stock,
-                p.status,
-                p.product_type,
-                p.route,
-                c.idcategory,
-                c.name as category,
-                s.idsubcategory,
-                s.categoryid,
-                s.name as subcategory,
-                DATE_FORMAT(p.date, '%d/%m/%Y') as date
-            FROM product p
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
-            AND (p.name LIKE  '%$search%' || c.name LIKE  '%$search%' || s.name LIKE '%$search%' || p.reference LIKE  '%$search%')
-            ORDER BY p.idproduct DESC";
-            $request = $this->select_all($sql);
-            if(count($request)> 0){
-                for ($i=0; $i < count($request); $i++) { 
-                    $idProduct = $request[$i]['idproduct'];
-                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg = $this->select_all($sqlImg);
-                    if(count($requestImg)>0){
-                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
-                    }else{
-                        $request[$i]['image'] = media()."/images/uploads/image.png";
-                    }
-                    if($request[$i]['product_type'] == 2){
-                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
-                        $request[$i]['price'] = $this->select($sqlV)['minimo'];
-                        $request[$i]['stock'] = $this->select($sqlTotal)['total'];
-                    }
-                }
-            }
-            return $request;
-        }
-        public function sort($sort){
-            $option=" ORDER BY p.idproduct DESC";
-            if($sort == 2){
-                $option = " ORDER BY p.idproduct ASC"; 
-            }else if( $sort == 3){
-                $option = " ORDER BY p.stock ASC"; 
-            }
-            $sql="SELECT 
-                p.idproduct,
-                p.categoryid,
-                p.subcategoryid,
-                p.reference,
-                p.name,
-                p.description,
-                p.price,
-                p.discount,
-                p.description,
-                p.stock,
-                p.status,
-                p.route,
-                c.idcategory,
-                c.name as category,
-                c.route as routec,
-                s.idsubcategory,
-                s.categoryid,
-                s.name as subcategory,
-                DATE_FORMAT(p.date, '%d/%m/%Y') as date
-            FROM product p
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory $option";
-            $request = $this->select_all($sql);
-            if(count($request)> 0){
-                for ($i=0; $i < count($request); $i++) { 
-                    $idProduct = $request[$i]['idproduct'];
-                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg = $this->select_all($sqlImg);
-                    if(count($requestImg)>0){
-                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
-                    }else{
-                        $request[$i]['image'] = media()."/images/uploads/image.png";
-                    }
-                }
-            }
-            return $request;
-        }
         public function getSelectSubcategories(int $intIdCategory){
             $this->intIdCategory = $intIdCategory;
             $sql = "SELECT  
@@ -491,20 +399,6 @@
             $request = $this->select($sql);
             return $request;
         }
-        public function searchc($search){
-            $sql = "SELECT * FROM category WHERE name LIKE '%$search%'";
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function sortc($sort){
-            $option="DESC";
-            if($sort == 2){
-                $option = " ASC"; 
-            }
-            $sql = "SELECT * FROM category ORDER BY idcategory $option ";
-            $request = $this->select_all($sql);
-            return $request;
-        }
         /*************************SubCategory methods*******************************/
         public function insertSubCategory(int $intIdCategory ,string $strName,int $status,string $strRoute){
             $this->intIdCategory = $intIdCategory;
@@ -586,40 +480,6 @@
             $this->intIdSubCategory = $id;
             $sql = "SELECT * FROM subcategory WHERE idsubcategory = $this->intIdSubCategory";
             $request = $this->select($sql);
-            return $request;
-        }
-        public function searchs($search){
-            $sql = "SELECT  
-                    s.idsubcategory,
-                    s.name,
-                    s.categoryid,
-                    c.idcategory,
-                    c.name as category
-                    FROM subcategory s
-                    INNER JOIN category c
-                    ON c.idcategory = s.categoryid
-                    WHERE s.name LIKE '%$search%' || c.name LIKE '%$search%'
-                    ORDER BY idsubcategory DESC
-                    ";
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function sorts($sort){
-            $option="DESC";
-            if($sort == 2){
-                $option = " ASC"; 
-            }
-            $sql = "SELECT  
-                    s.idsubcategory,
-                    s.name,
-                    s.categoryid,
-                    c.idcategory,
-                    c.name as category
-                    FROM subcategory s
-                    INNER JOIN category c
-                    ON c.idcategory = s.categoryid 
-                    ORDER BY idsubcategory $option ";
-            $request = $this->select_all($sql);
             return $request;
         }
         /*

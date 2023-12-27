@@ -16,7 +16,6 @@
                 $data['page_tag'] = "Productos";
                 $data['page_title'] = "Productos";
                 $data['page_name'] = "productos";
-                $data['data'] = $this->getProducts();
                 $data['panelapp'] = "functions_products.js";
                 $this->views->getView($this,"productos",$data);
             }else{
@@ -47,7 +46,6 @@
                 $data['page_tag'] = "Categorías";
                 $data['page_title'] = "Categorias";
                 $data['page_name'] = "categorias";
-                $data['data'] = $this->getCategories();
                 $data['panelapp'] = "functions_productcategory.js";
                 $this->views->getView($this,"categorias",$data);
             }else{
@@ -60,7 +58,6 @@
                 $data['page_tag'] = "Subcategorias";
                 $data['page_title'] = "Subcategorias";
                 $data['page_name'] = "subcategorias";
-                $data['data'] = $this->getSubCategories();
                 $data['panelapp'] = "functions_productsubcategory.js";
                 $this->views->getView($this,"subcategorias",$data);
             }else{
@@ -69,17 +66,9 @@
             }
         }
         /*************************Product methods*******************************/
-        public function getProducts($option=null,$params=null){
+        public function getProducts(){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->search($params);
-                }else if($option == 2){
-                    $request = $this->model->sort($params);
-                }else{
-                    $request = $this->model->selectProducts();
-                }
+                $request = $this->model->selectProducts();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -97,10 +86,10 @@
                             $discount = "0%";
                         }
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<a href="'.base_url().'/inventario/producto/'.$request[$i]['idproduct'].'" class="btn btn-success m-1 text-white" title="Editar" name="btnEdit"><i class="fas fa-pencil-alt"></i></a>';
+                            $btnEdit = '<a href="'.base_url().'/inventario/producto/'.$request[$i]['idproduct'].'" class="btn btn-success m-1 text-white" title="Editar"><i class="fas fa-pencil-alt"></i></a>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['idproduct'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idproduct'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
                         if($request[$i]['status']==1 && $request[$i]['stock']>0){
                             $status='<span class="badge me-1 bg-success">Activo</span>';
@@ -109,35 +98,15 @@
                         }else{
                             $status='<span class="badge me-1 bg-warning">Agotado</span>';
                         }
-                        $html.='
-                            <tr class="item">
-                                <td class="text-center">
-                                    <img src="'.$request[$i]['image'].'" class="rounded">
-                                </td>
-                                <td class="text-center">'.$request[$i]['name'].'</td>
-                                <td data-label="Referencia: ">'.$request[$i]['reference'].'</td>
-                                <td data-label="Categoría: ">'.$request[$i]['category'].'</td>
-                                <td data-label="Subcategoría: ">'.$request[$i]['subcategory'].'</td>
-                                <td data-label="Descuento: ">'.$discount.'</td>
-                                <td data-label="Precio: ">'.$price.'</td>
-                                <td data-label="Cantidad: ">'.$request[$i]['stock'].'</td>
-                                <td data-label="Fecha: ">'.$request[$i]['date'].'</td>
-                                <td data-label="Estado: ">'.$status.'</td>
-                                <td class="item-btn">'.$btnView.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['status'] = $status;
+                        $request[$i]['options'] = $btnView.$btnEdit.$btnDelete;
+                        $request[$i]['discount'] = $discount;
+                        $request[$i]['price'] = $price;
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="11">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getProduct($id){
             if($_SESSION['permitsModule']['r']){
@@ -255,11 +224,9 @@
                                 uploadImage($imgFraming,$photoFraming);
                             }
                             if($option == 1){
-                                $arrResponse = $this->getProducts();
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse = array("status" => true,"msg"=>"Datos guardados.");
                             }else{
-                                $arrResponse = $this->getProducts();
-                                $arrResponse['msg'] = 'Datos actualizados';
+                                $arrResponse = array("status" => true,"msg"=>"Datos actualizados.");
                             }
                         }else if($request == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => '¡Atención! El producto ya existe, pruebe con otro nombre y referencia.');		
@@ -269,9 +236,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
 			die();
 		}
@@ -284,16 +248,13 @@
                         $id = intval($_POST['idProduct']);
                         $request = $this->model->deleteProduct($id);
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getProducts()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar, inténta de nuevo.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
@@ -351,34 +312,10 @@
             echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
-        public function search($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getProducts(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function sort($params){
-            if($_SESSION['permitsModule']['r']){
-                $params = intval($params);
-                $arrResponse = $this->getProducts(2,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
         /*************************Category methods*******************************/
-        public function getCategories($option=null,$params=null){
+        public function getCategories(){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchc($params);
-                }else if($option == 2){
-                    $request = $this->model->sortc($params);
-                }else{
-                    $request = $this->model->selectCategories();
-                }
+                $request = $this->model->selectCategories();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -392,35 +329,21 @@
                         }
 
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['idcategory'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['idcategory'].')" ><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['idcategory'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idcategory'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
-                        $html.='
-                            <tr class="item">
-                                <td data-label="ID: ">'.$request[$i]['idcategory'].'</td>
-                                <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
-                                <td data-label="Estado: ">'.$status.'</td>
-                                <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
-                    }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="11">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
+                        $request[$i]['status'] = $status;
+                    }   
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getCategory(){
             if($_SESSION['permitsModule']['r']){
-
                 if($_POST){
                     if(empty($_POST)){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
@@ -436,14 +359,11 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
         public function setCategory(){
-            if($_SESSION['permitsModule']['r']){
+            if($_SESSION['permitsModule']['w']){
                 if($_POST){
                     if(empty($_POST['txtName'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
@@ -506,11 +426,9 @@
                                 uploadImage($photo,$photoCategory);
                             }
                             if($option == 1){
-                                $arrResponse = $this->getCategories();
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
                             }else{
-                                $arrResponse = $this->getCategories();
-                                $arrResponse['msg'] = 'Datos actualizados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
                             }
                         }else if($request == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => 'La categoría ya existe, prueba con otro nombre.');		
@@ -520,9 +438,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
 			die();
 		}
@@ -543,7 +458,7 @@
                         $request = $this->model->deleteCategory($id);
 
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getCategories()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else if($request =="exist"){
                             $arrResponse = array("status"=>false,"msg"=>"La categoría tiene al menos una subcategoría asignada, no puede ser eliminada.");
                         }else{
@@ -552,40 +467,13 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            die();
-        }
-        public function searchc($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getCategories(1,$search);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function sortc($params){
-            if($_SESSION['permitsModule']['r']){
-                $sort = intval($params);
-                $arrResponse = $this->getCategories(2,$sort);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
         /*************************SubCategory methods*******************************/
-        public function getSubCategories($option=null,$params=null){
+        public function getSubCategories(){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchs($params);
-                }else if($option == 2){
-                    $request = $this->model->sorts($params);
-                }else{
-                    $request = $this->model->selectSubCategories();
-                }
+                $request = $this->model->selectSubCategories();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -598,31 +486,18 @@
                             $status='<span class="badge me-1 bg-danger">Inactivo</span>';
                         }
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['idsubcategory'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['idsubcategory'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['idsubcategory'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idsubcategory'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
-                        $html.='
-                            <tr class="item">
-                                <td data-label="ID: ">'.$request[$i]['idsubcategory'].'</td>
-                                <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
-                                <td data-label="Categoría: ">'.$request[$i]['category'].'</td>
-                                <td data-label="Estado: ">'.$status.'</td>
-                                <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
+                        $request[$i]['status'] = $status;
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="11">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            return $arrResponse;
+            die();
         }
         public function getSubCategory(){
             if($_SESSION['permitsModule']['r']){
@@ -641,14 +516,11 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
         public function setSubCategory(){
-            if($_SESSION['permitsModule']['r']){
+            if($_SESSION['permitsModule']['w']){
                 if($_POST){
                     if(empty($_POST['txtName']) ||empty($_POST['categoryList'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos.');
@@ -676,11 +548,9 @@
                         }
                         if($request > 0 ){
                             if($option == 1){
-                                $arrResponse = $this->getSubCategories();
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse=array("status"=>true,"msg"=>"Datos guardados");
                             }else{
-                                $arrResponse = $this->getSubCategories();
-                                $arrResponse['msg'] = 'Datos actualizados.';
+                                $arrResponse=array("status"=>true,"msg"=>"Datos actualizados");
                             }
                         }else if($request == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => 'La subcategoría ya existe, intenta con otro nombre.');		
@@ -690,9 +560,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
 			die();
 		}
@@ -705,36 +572,16 @@
                         $id = intval($_POST['idSubCategory']);
                         $request = $this->model->deleteSubCategory($id);
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getSubCategories()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else if($request=="exist"){
                             $arrResponse = array("status"=>false,"msg"=>"La subcategoría tiene al menos un producto asignado, no puede ser eliminado.");
                         }
                         else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
-                        
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            die();
-        }
-        public function searchs($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getSubCategories(1,$search);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function sorts($params){
-            if($_SESSION['permitsModule']['r']){
-                $sort = intval($params);
-                $arrResponse = $this->getSubCategories(2,$sort);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }

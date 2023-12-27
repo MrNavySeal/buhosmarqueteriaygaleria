@@ -1,45 +1,56 @@
 'use strict';
 
 
-let searchPanel = document.querySelector("#search");
-let sortPanel = document.querySelector("#sortBy");
-let element = document.querySelector("#listItem");
-
-searchPanel.addEventListener('input',function() {
-    request(base_url+"/inventario/search/"+searchPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
+let table = new DataTable("#tableData",{
+    "dom": 'lfBrtip',
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/Inventario/getProducts",
+        "dataSrc":""
+    },
+    columns: [
+        { data: 'idproduct' },
+        { 
+            data: 'image',
+            render: function (data, type, full, meta) {
+                return '<img src="'+data+'" class="rounded" height="50" width="50">';
+            }
+        },
+        { data: 'name' },
+        { data: 'reference' },
+        { data: 'category' },
+        { data: 'subcategory' },
+        { data: 'discount' },
+        { data: 'price' },
+        { data: 'stock' },
+        { data: 'date' },
+        { data: 'status' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    buttons: [
+        {
+            "extend": "excelHtml5",
+            "text": "<i class='fas fa-file-excel'></i> Excel",
+            "titleAttr":"Exportar a Excel",
+            "className": "btn btn-success mt-2"
         }
-    });
-});
-
-sortPanel.addEventListener("change",function(){
-    request(base_url+"/inventario/sort/"+sortPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
-        }
-    });
+    ],
+    order: [[1, 'asc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
 });
 
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        window.location.href=base_url+"/inventario/producto";
-    });
 }
 
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
-    }
-});
 function deleteItem(id){
     Swal.fire({
         title:"¿Estás seguro de eliminarlo?",
@@ -57,7 +68,7 @@ function deleteItem(id){
             request(base_url+"/inventario/delProduct",formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
-                    element.innerHTML = objData.data;
+                    table.ajax.reload();
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }

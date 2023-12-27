@@ -1,106 +1,60 @@
 'use strict';
 
-let searchPanel = document.querySelector("#search");
-let sortPanel = document.querySelector("#sortBy");
-let element = document.querySelector("#listItem");
-
-searchPanel.addEventListener('input',function() {
-    request(base_url+"/inventario/searchs/"+searchPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
+let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
+let table = new DataTable("#tableData",{
+    "dom": 'lfBrtip',
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/Inventario/getSubCategories",
+        "dataSrc":""
+    },
+    columns: [
+        { data: 'idsubcategory'},
+        { data: 'name' },
+        { data: 'category' },
+        { data: 'status' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    buttons: [
+        {
+            "extend": "excelHtml5",
+            "text": "<i class='fas fa-file-excel'></i> Excel",
+            "titleAttr":"Exportar a Excel",
+            "className": "btn btn-success mt-2"
         }
-    });
+    ],
+    order: [[1, 'asc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
 });
-
-sortPanel.addEventListener("change",function(){
-    request(base_url+"/inventario/sorts/"+sortPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
-        }
-    });
-});
-
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
-        addItem();
+        document.querySelector(".modal-title").innerHTML="Nueva subcategoria";
+        document.querySelector("#idSubCategory").value = "";
+        document.querySelector("#txtName").value = "";
+        document.querySelector("#statusList").value = 1;
+        document.querySelector("#categoryList").value = 0;
+        modal.show();
     });
 }
-
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
-    }else if(element.name == "btnEdit"){
-        editItem(id);
-    }
-});
-
-function addItem(){
-    let modalItem = document.querySelector("#modalItem");
-    let modal= `
-    <div class="modal fade" id="modalElement">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Nueva subcategoría</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formItem" name="formItem" class="mb-4">
-                        <input type="hidden" id="idSubCategory" name="idSubCategory">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="txtName" name="txtName" required>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label for="categoryList" class="form-label">Categoría <span class="text-dange/Category/r">*</span></label>
-                                    <select class="form-control" aria-label="Default select example" id="categoryList" name="categoryList" required></select>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
-                                <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                    <option value="1">Activo</option>
-                                    <option value="2">Inactivo</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" id="btnAdd"><i class="fas fa-plus-circle"></i> Agregar</button>
-                            <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    `;
-
-    modalItem.innerHTML = modal;
-    let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-    let url = base_url+"/inventario/getSelectCategories"
-    request(url,"","get").then(function(objData){
+if(document.querySelector("#formItem")){
+    request(base_url+"/inventario/getSelectCategories","","get").then(function(objData){
         document.querySelector("#categoryList").innerHTML = objData.data;
     });
-    modalView.show();
-
     let form = document.querySelector("#formItem");
     form.addEventListener("submit",function(e){
         e.preventDefault();
 
         let strName = document.querySelector("#txtName").value;
-        let idSubCategory = document.querySelector("#idSubCategory").value;
         let idCategory = document.querySelector("#categoryList").value;
 
         if(strName == "" || idCategory == ""){
@@ -108,124 +62,41 @@ function addItem(){
             return false;
         }
         
-        url = base_url+"/inventario/setSubCategory";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
 
-        request(url,formData,"post").then(function(objData){
-            btnAdd.innerHTML=`<i class="fas fa-plus-circle"></i> Agregar`;
+        request(base_url+"/inventario/setSubCategory",formData,"post").then(function(objData){
+            btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
-                Swal.fire("Agregado",objData.msg,"success");
+                Swal.fire("Guardado",objData.msg,"success");
                 form.reset();
-                element.innerHTML = objData.data;
+                modal.hide();
+                table.ajax.reload();
             }else{
                 Swal.fire("Error",objData.msg,"error");
             }
         });
     })
 }
+
 function editItem(id){
     let url = base_url+"/inventario/getSubCategory";
     let formData = new FormData();
     formData.append("idSubCategory",id);
     request(url,formData,"post").then(function(objData){
-        let modalItem = document.querySelector("#modalItem");
-        let modal= `
-        <div class="modal fade" id="modalElement">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Actualizar subcategoria</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="formItem" name="formItem" class="mb-4">
-                            <input type="hidden" id="idSubCategory" name="idSubCategory" value="${objData.data.idsubcategory}">
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="txtName" name="txtName" value="${objData.data.name}" required>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label for="categoryList" class="form-label">Categoria <span class="text-danger">*</span></label>
-                                    <select class="form-control" aria-label="Default select example" id="categoryList" name="categoryList" required></select>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
-                                <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                    <option value="1">Activo</option>
-                                    <option value="2">Inactivo</option>
-                                </select>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary" id="btnAdd">Actualizar</button>
-                                <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Cerrar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
-
-        modalItem.innerHTML = modal;
-        let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-
-        url = base_url+"/inventario/getSelectCategories";
-        request(url,"","get").then(function(html){
-            document.querySelector("#categoryList").innerHTML = html.data;
-            let categories = document.querySelectorAll("#categoryList option");
-            for (let i = 0; i < categories.length; i++) {
-                if(categories[i].value == objData.data.categoryid){
-                    categories[i].setAttribute("selected",true);
-                }
-            }
-        });
-        let status = document.querySelectorAll("#statusList option");
-        for (let i = 0; i < status.length; i++) {
-            if(status[i].value == objData.data.status){
-                status[i].setAttribute("selected",true);
-            }
+        if(objData.status){
+            document.querySelector(".modal-title").innerHTML="Actualizar subcategoria";
+            document.querySelector("#idSubCategory").value = objData.data.idsubcategory;
+            document.querySelector("#txtName").value = objData.data.name;
+            document.querySelector("#statusList").value = objData.data.status;
+            document.querySelector("#categoryList").value = objData.data.categoryid;
+            modal.show();
+        }else{
+            Swal.fire("Error",objData.msg,"error");
         }
-        modalView.show();
-
-        let form = document.querySelector("#formItem");
-        form.addEventListener("submit",function(e){
-            e.preventDefault();
-
-            let strName = document.querySelector("#txtName").value;
-            let idSubCategory = document.querySelector("#idSubCategory").value;
-            let idCategory = document.querySelector("#categoryList").value;
-
-            if(strName == "" || idCategory == ""){
-                Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
-                return false;
-            }
-            
-            url = base_url+"/inventario/setSubCategory";
-            let formData = new FormData(form);
-            let btnAdd = document.querySelector("#btnAdd");
-            btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            btnAdd.setAttribute("disabled","");
-
-            request(url,formData,"post").then(function(objData){
-                btnAdd.innerHTML=`Actualizar`;
-                btnAdd.removeAttribute("disabled");
-                if(objData.status){
-                    Swal.fire("Actualizado",objData.msg,"success");
-                    modalView.hide();
-                    element.innerHTML = objData.data;
-                }else{
-                    Swal.fire("Error",objData.msg,"error");
-                }
-            });
-        })
     });
 }
 function deleteItem(id){
@@ -246,7 +117,7 @@ function deleteItem(id){
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
-                    element.innerHTML = objData.data;
+                    table.ajax.reload();
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }
