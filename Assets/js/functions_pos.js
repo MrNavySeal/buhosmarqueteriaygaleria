@@ -2,8 +2,6 @@
 
 const moneyReceived = document.querySelector("#moneyReceived");
 const btnAddPos = document.querySelector("#btnAddPos");
-let searchProducts = document.querySelector("#searchProducts");
-let searchCustomers = document.querySelector("#searchCustomers");
 const cupon = document.querySelector("#discount");
 /*cupon.addEventListener("input",function(){
     if(cupon.value <= 0){
@@ -20,7 +18,37 @@ moneyReceived.addEventListener("input",function(){
     }
     document.querySelector("#moneyBack").innerHTML = "Dinero a devolver: $"+formatNum(result,".");
 });
-
+let table = new DataTable("#tableData",{
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/pedidos/getProducts",
+        "dataSrc":""
+    },
+    columns: [
+        { 
+            data: 'image',
+            render: function (data, type, full, meta) {
+                return '<img src="'+data+'" class="rounded" height="50" width="50">';
+            }
+        },
+        { data: 'reference' },
+        { data: 'name' },
+        { data: 'category' },
+        { data: 'subcategory' },
+        { data: 'discount' },
+        { data: 'price' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
+});
 let formPOS = document.querySelector("#formSetOrder");
 formPOS.addEventListener("submit",function(e){
     
@@ -111,7 +139,7 @@ function addProduct(type,id=null, element){
     element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     element.setAttribute("disabled","");
     request(base_url+"/pedidos/addCart",formData,"post").then(function(objData){
-        element.innerHTML=`<i class="fas fa-plus"></i>`;
+        element.innerHTML=`<i class="fas fa-plus"></i> Agregar`;
         element.removeAttribute("disabled");
         document.querySelector(".toast-header img").src=objData.data.image;
         document.querySelector(".toast-header img").alt=objData.data.name;

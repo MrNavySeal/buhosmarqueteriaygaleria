@@ -88,35 +88,6 @@
             $request = $this->delete($sql);
             return $request;
         }
-        public function search($search){
-            $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date FROM orderdata 
-                    WHERE idtransaction 
-                    LIKE '%$search%' || idorder 
-                    LIKE '%$search%' || name 
-                    LIKE '%$search%' || email 
-                    LIKE '%$search%' || phone 
-                    LIKE '%$search%' || status 
-                    LIKE '%$search%' || statusorder 
-                    LIKE '%$search%'
-                    ORDER BY idorder DESC";
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function sort($sort){
-            $option="ORDER BY idorder DESC";
-            if($sort == 2){
-                $option = " ORDER BY status DESC"; 
-            }else if($sort == 3){
-                $option = " ORDER BY status ASC"; 
-            }else if($sort == 4){
-                $option = " ORDER BY statusorder DESC"; 
-            }else if($sort == 5){
-                $option = " ORDER BY statusorder ASC"; 
-            }
-            $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date FROM orderdata $option ";
-            $request = $this->select_all($sql);
-            return $request;
-        }
         public function selectProducts(){
             $sql = "SELECT 
                 p.idproduct,
@@ -141,7 +112,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
-            ORDER BY p.idproduct DESC
+            ORDER BY p.idproduct ASC
             ";
             $request = $this->select_all($sql);
             if(count($request)> 0){
@@ -177,62 +148,6 @@
                 $sqlV = "SELECT * FROM product_variant WHERE id_product_variant = $variant";
                 $request['variant'] = $this->select($sqlV);
                 //$request['variant']['price'] = round((($request['variant']['price']*COMISION)+TASA)/1000)*1000;
-            }
-            return $request;
-        }
-        public function searchProducts($search){
-            $sql = "SELECT 
-                p.idproduct,
-                p.categoryid,
-                p.subcategoryid,
-                p.reference,
-                p.name,
-                p.description,
-                p.price,
-                p.discount,
-                p.description,
-                p.stock,
-                p.status,
-                p.product_type,
-                p.route,
-                c.idcategory,
-                c.name as category,
-                s.idsubcategory,
-                s.categoryid,
-                s.name as subcategory,
-                DATE_FORMAT(p.date, '%d/%m/%Y') as date
-            FROM product p
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
-            AND (p.name LIKE  '%$search%' || c.name LIKE  '%$search%' || s.name LIKE '%$search%' || p.reference LIKE  '%$search%')
-            ORDER BY p.idproduct DESC";
-            $request = $this->select_all($sql);
-            if(count($request)> 0){
-                for ($i=0; $i < count($request); $i++) { 
-                    $idProduct = $request[$i]['idproduct'];
-                    //$request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
-                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg = $this->select_all($sqlImg);
-                    if(count($requestImg)>0){
-                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
-                    }else{
-                        $request[$i]['image'] = media()."/images/uploads/image.png";
-                    }
-                    if($request[$i]['product_type'] == 2){
-                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
-                        $sqlVariants = "SELECT * FROM product_variant WHERE productid = $idProduct ORDER BY price ASC";
-                        //$request[$i]['price'] = round((($this->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
-                        $request[$i]['price'] = $this->select($sqlV)['minimo'];
-                        $request[$i]['stock'] = $this->select($sqlTotal)['total'];
-                        /*$variants = $this->select_all($sqlVariants);
-                        for ($j=0; $j < count($variants); $j++) { 
-                            $variants[$j]['price'] = round((($variants[$j]['price']*COMISION)+TASA)/1000)*1000;
-                        }
-                        $request[$i]['variants'] = $variants;*/
-                        $request[$i]['variants'] = $this->select_all($sqlVariants);
-                    }
-                }
             }
             return $request;
         }

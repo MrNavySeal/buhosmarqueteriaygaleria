@@ -63,26 +63,21 @@ if($_SESSION['permitsModule']['w']){
                                     </div>
                                 </div>
                                 <div class="tab-pane fade " id="navTienda">
-                                    <form autocomplete="off">
-                                        <input class="form-control" type="search" placeholder="Buscar" aria-label="Search" id="searchProducts" name="searchProducts">
-                                    </form>
-                                    <div class="scroll-y">
-                                        <table class="table items align-middle">
-                                            <thead>
-                                                <tr>
-                                                    <th>Portada</th>
-                                                    <th>Referencia</th>
-                                                    <th>Nombre</th>
-                                                    <th>Precio</th>
-                                                    <th>Descuento</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="listProducts">
-                                                <?=$data['products']['data']?>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <table class="table" id="tableData">
+                                        <thead>
+                                            <tr>
+                                                <th>Portada</th>
+                                                <th>Referencia</th>
+                                                <th>Nombre</th>
+                                                <th>Categoría</th>
+                                                <th>Subcategoría</th>
+                                                <th>Descuento</th>
+                                                <th>Precio</th>
+                                                <th>Opciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
                                 </div>
                                 <div class="tab-pane fade" id="navOtros">
                                     <div class="mt-3">
@@ -104,13 +99,13 @@ if($_SESSION['permitsModule']['w']){
                                                 </div>
                                             </div>
                                         </div>
-                                        <button type="button" class="btn btn-primary" onclick="addProduct(null,null,this)"><i class="fas fa-plus"></i></button>
+                                        <button type="button" class="btn btn-primary" onclick="addProduct(null,null,this)"><i class="fas fa-plus"></i> Agregar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-center mb-3"><i class="fs-4 text-primary fas fa-store"></i> <div class="fs-4 d-inline">Punto de venta</div>
+                            <div class="text-center mb-3"><i class="fs-4 text-primary  fas fa-store"></i> <div class="fs-4 fw-bold d-inline">Resumen de pedido</div>
                             <div class="scroll-y container mb-3 mt-3" id="posProducts">
                                 <?php 
                                     if(isset($_SESSION['arrPOS']) && !empty($_SESSION['arrPOS'])){
@@ -234,7 +229,7 @@ if($_SESSION['permitsModule']['w']){
                                 <?php } }?>
                             </div>
                             <p class="fw-bold text-center fs-5">Total: <span id="total" data-value="<?=floor($total)?>"><?=formatNum($total)?></span></p>
-                            <button type="button" class="btn btn-primary <?=$active?>" id="btnPos" onclick="openModalOrder()">Continuar</button>
+                            <button type="button" class="btn btn-primary <?=$active?>" id="btnPos" onclick="openModalOrder()">Guardar pedido</button>
                         </div>
                     </div> 
                 <?php }?>

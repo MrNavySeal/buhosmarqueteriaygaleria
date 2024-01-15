@@ -106,9 +106,9 @@
             </div>
             <?php }?>
                 <div class="card mb-4">
-                    <div class="card-body">
+                    <div class="card-body overflow-auto">
                         <h4 class="mb-4">Últimos pedidos</h4>
-                        <table class="table items">
+                        <table class="table">
                             <thead>
                                 <tr>
                                 <th scope="col">#</th>

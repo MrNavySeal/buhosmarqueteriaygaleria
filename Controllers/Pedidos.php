@@ -32,7 +32,6 @@
                 $data['page_tag'] = "Punto de venta";
                 $data['page_title'] = "Punto de venta";
                 $data['page_name'] = "punto de venta";
-                $data['products'] = $this->getProducts();
                 $data['tipos'] = $this->model->selectCategories();
                 $data['panelapp'] = "functions_pos.js";
                 $this->views->getView($this,"pos",$data);
@@ -214,10 +213,9 @@
                         }*/
                         if($_SESSION['permitsModule']['u']){
                             $btnEdit = '<button class="btn btn-success text-white m-1" type="button" title="Edit" data-id="'.$request[$i]['idorder'].'" onclick="openModalOrder('.$request[$i]['idorder'].')"><i class="fas fa-pencil-alt"></i></button>';
-                        }
-                        if($_SESSION['userData']['roleid'] == 1 || $_SESSION['userData']['roleid'] == 3){
                             $btnWpp='<a href="https://wa.me/57'.$request[$i]['phone'].'?text=Buen%20dia%20'.$request[$i]['name'].'" class="btn btn-success text-white m-1" type="button" title="Whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>';
                         }
+
                         $request[$i]['amount'] = formatNum($request[$i]['amount']);
                         $request[$i]['status'] = $status;
                         $request[$i]['statusorder'] = $statusOrder;
@@ -309,15 +307,9 @@
         }*/
 
     /*************************POS methods*******************************/
-        public function getProducts($option=null,$params=null){
+        public function getProducts(){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchProducts($params);
-                }else{
-                    $request = $this->model->selectProducts();
-                }
+                $request = $this->model->selectProducts();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -358,41 +350,17 @@
                         }else{
                             $status='<span class="badge me-1 bg-warning">Agotado</span>';
                         }
-                        $html.='
-                            <tr class="item">
-                                <td class="text-center">
-                                    <img src="'.$request[$i]['image'].'" class="rounded">
-                                </td>
-                                <td data-label="Referencia: ">'.$request[$i]['reference'].'</td>
-                                <td class="text-center">'.$request[$i]['name'].'</td>
-                                <td data-label="Precio: ">'.$price.'</td>
-                                <td data-label="Descuento: ">'.$discount.'</td>
-                                <td class="text-center">
-                                    <div class="d-flex justify-content-start align-items-center">
-                                        '.$selectVariant.'
-                                        <button type="button" class="btn btn-primary" onclick="addProduct('.$request[$i]['product_type'].','.$request[$i]['idproduct'].',this)"><i class="fas fa-plus"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ';
+                        $request[$i]['price'] = $price;
+                        $request[$i]['discount'] = $discount;
+                        $request[$i]['status'] = $status;
+                        $request[$i]['options'] = '
+                        <div class="d-flex justify-content-start align-items-center">
+                            '.$selectVariant.'
+                            <button type="button" class="btn btn-primary m-2" onclick="addProduct('.$request[$i]['product_type'].','.$request[$i]['idproduct'].',this)"><i class="fas fa-plus"></i> Agregar</button>
+                        </div>';
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="5">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-            
-            return $arrResponse;
-        }
-        public function searchProducts($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getProducts(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
