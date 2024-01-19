@@ -7,13 +7,13 @@
     $subtotal = 0;
     $status="";
     $discount=$order['coupon'];
-    $arrAccount =!empty( $order['suscription']) ? json_decode($order['suscription'],true) : "";
+    $arrAccount =$order['advance'];
     if($order['status'] =="pendent"){
         $status = 'pendiente';
     }else if($order['status'] =="approved"){
-        $status = 'aprobado';
+        $status = 'pagado';
     }else if($order['status'] =="canceled"){
-        $status = 'cancelado';
+        $status = 'rechazado';
     }
 ?>
 <div id="modalItem"></div>
@@ -238,13 +238,11 @@
                                                     if(!empty($arrAccount)){
                                                     $abonoTotal = 0;
                                                     foreach ($arrAccount as $acc) {
-                                                        $abonoTotal+= intval($acc['debt']);
-                                                        $date = explode("-",$acc['date']);
-                                                        $date = $date[2]."/".$date[1]."/".$date[0];
+                                                        $abonoTotal+= intval($acc['advance']);
                                                 ?>
                                                 <tr>
-                                                    <td><?=$date?></td>
-                                                    <td><?=formatNum($acc['debt'])." (".$acc['type'].")"?></td>
+                                                    <td><?=$acc['date']?></td>
+                                                    <td><?=formatNum($acc['advance'])." (".$acc['type'].")"?></td>
                                                 </tr>
                                                 <?php }?>
                                                 <tr>

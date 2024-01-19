@@ -16,6 +16,7 @@
             }
             $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date,DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat FROM orderdata WHERE idorder = $this->intIdOrder $option";
             $request = $this->select($sql);
+            $request['advance'] = $this->select_all("SELECT *,DATE_FORMAT(date, '%d/%m/%Y') as date  FROM order_advance WHERE order_id = $this->intIdOrder");
             return $request;
         }
         public function selectOrderDetail($id){

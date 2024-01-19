@@ -90,7 +90,7 @@
                 if($_POST){
                     $idOrder = intval($_POST['id']);
                     $data = $this->model->selectOrder($idOrder,"");
-                    $suscription = !empty($data['suscription']) ? json_decode($data['suscription'],true) : "";
+                    $suscription = $data['advance'];
                     $status="";
                     $statusOrder="";
                     $payments="";
@@ -144,10 +144,10 @@
                                     $accountSelect.='<option value="'.$j.'">'.PAGO[$j].'</option>';
                                 }
                             }
-                            $subTotal+= $suscription[$i]['debt'];
-                            $html.='<tr class="itemAccount" data-total="'.$suscription[$i]['debt'].'">
+                            $subTotal+= $suscription[$i]['advance'];
+                            $html.='<tr class="itemAccount" data-total="'.$suscription[$i]['advance'].'">
                                         <td><input type="date" class="form-control" value="'.$suscription[$i]['date'].'"></td>
-                                        <td><input type="number" disabled class="form-control" value="'.$suscription[$i]['debt'].'" placeholder="Abono"></td>
+                                        <td><input type="number" disabled class="form-control" value="'.$suscription[$i]['advance'].'" placeholder="Abono"></td>
                                         <td><select class="form-control" aria-label="Default select example">'.$accountSelect.'</select></td>
                                         <td><button class="btn btn-danger" type="button" title="Delete" onclick="delSuscription(this.parentElement.parentElement)"><i class="fas fa-trash-alt"></i></button></td>
                                     </tr>';
@@ -192,9 +192,9 @@
                         if($request[$i]['status'] =="pendent"){
                             $status = '<span class="badge bg-warning text-white">pendiente</span>';
                         }else if($request[$i]['status'] =="approved"){
-                            $status = '<span class="badge bg-success text-white">aprobado</span>';
+                            $status = '<span class="badge bg-success text-white">pagado</span>';
                         }else if($request[$i]['status'] =="canceled"){
-                            $status = '<span class="badge bg-danger text-white">cancelado</span>';
+                            $status = '<span class="badge bg-danger text-white">rechazado</span>';
                         }
                         if($request[$i]['statusorder'] =="confirmado"){
                             $statusOrder = '<span class="badge bg-dark text-white">confirmado</span>';
@@ -878,7 +878,6 @@
                         $envio = 0;
                         $option="";
                         $request="";
-                        $objSuscription="";
                         $arrSuscription=array();
                         $updateCustomer=intval($_POST['updateCustomer']);
                         $strDate = $_POST['strDate'];
@@ -933,6 +932,14 @@
                                     [
                                         "date"=>date("Y-m-d"),
                                         "debt"=>$suscription,
+                                        "type"=>$type
+                                    ]
+                                );
+                            }else{
+                                $arrSuscription = array(
+                                    [
+                                        "date"=>date("Y-m-d"),
+                                        "debt"=>0,
                                         "type"=>$type
                                     ]
                                 );

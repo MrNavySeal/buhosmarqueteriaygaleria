@@ -19,7 +19,21 @@
             parent::__construct();
         }
         /*************************Category methods*******************************/
-
+        public function selectAdvances(){
+            $request = $this->select_all("SELECT *,DATE_FORMAT(date, '%Y-%m-%d') as date FROM order_advance");
+            return $request;
+        }
+        public function insertAdvance($order_id,$type,$advance,$date){
+            $sql ="INSERT INTO order_advance(order_id,type,advance,date) VALUE(?,?,?,?)";
+            $arrData = array(
+                $order_id,
+                $type,
+                $advance,
+                $date
+            );
+            $request = $this->insert($sql,$arrData);
+            return $request;
+        }
         public function selectOrders($idPerson){
             $whre="";
             if($idPerson!="")$whre=" WHERE personid=$idPerson";
@@ -48,6 +62,7 @@
             }
             $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date,DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat FROM orderdata WHERE idorder = $this->intIdOrder $option";
             $request = $this->select($sql);
+            $request['advance'] = $this->select_all("SELECT *,DATE_FORMAT(date, '%Y-%m-%d') as date  FROM order_advance WHERE order_id = $this->intIdOrder");
             return $request;
         }
         public function selectOrderDetail($id){
@@ -196,8 +211,6 @@
         }
         public function insertOrder(int $idUser, string $strName,string $strIdentification,string $strEmail,string $strPhone,string $strAddress,
         string $strNote,string $strDate,string $cupon,int $envio,array $arrSuscription,int $total,string $status, string $type,string $statusOrder,$dateBeat){
-            
-            $suscription = json_encode($arrSuscription);
             //dep($suscription);exit;
             $this->intIdUser = $idUser;
             $this->strName = $strName;
@@ -205,12 +218,15 @@
             $this->strPhone = $strPhone;
             $this->strAddress = $strAddress;
             $this->strIdentification = $strIdentification;
+            if($arrSuscription[0]['debt']  <  $total){
+                $status ="pendent";
+            }
             if($strDate !=""){
                 $arrDate = explode("-",$strDate);
                 $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
                 $dateFormat = date_format($dateCreated,"Y-m-d");
                 
-                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,date,status,coupon,shipping,suscription,type,statusorder,date_beat) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,date,status,coupon,shipping,type,statusorder,date_beat) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $this->intIdUser, 
                     $this->strName,
@@ -224,14 +240,13 @@
                     $status,
                     $cupon,
                     $envio,
-                    $suscription,
                     $type,
                     $statusOrder,
                     $dateBeat,
                 );
                 $request = $this->insert($sql,$arrData);
             }else{
-                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,status,coupon,shipping,suscription,type,statusorder,date_beat) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $sql ="INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,status,coupon,shipping,type,statusorder,date_beat) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $this->intIdUser, 
                     $this->strName,
@@ -244,7 +259,6 @@
                     $status,
                     $cupon,
                     $envio,
-                    $suscription,
                     $type,
                     $statusOrder,
                     $dateBeat
@@ -252,8 +266,19 @@
                 $request = $this->insert($sql,$arrData);
             }
             if($request>0){
-                $status = $status=="pendent" ? 2 : 1;
-                $this->insertIncome($request,3,1,"Venta de producto",$total,$strDate,$status);
+                $income=3;
+                $typeIncome = 1;
+                
+                if($arrSuscription[0]['debt'] < $total){
+                    $typeIncome = 3;
+                    $this->insertAdvance($request,$arrSuscription[0]['type'],$arrSuscription[0]['debt'],$arrSuscription[0]['date']);
+                    if($arrSuscription[0]['debt']> 0){
+                        $this->insertIncome($request,$income,$typeIncome,"Anticipo de cliente",$arrSuscription[0]['debt'],$strDate,1);
+                    }
+                }else if($status=="approved" && $total >= $arrSuscription[0]['debt'] && $arrSuscription[0]['debt']> 0){
+                    $this->insertIncome($request,$income,$typeIncome,"Venta de producto",$total,$strDate,1);
+                }
+                
             }
             return $request;
         }
@@ -356,9 +381,8 @@
                     $status = "pendent";
                 }
             }
-            $arrSuscription = json_encode($arrSuscription);
             if($updateCustomer==2){
-                $sql = "UPDATE orderdata SET name=?,identification=?,email=?,phone=?,address=?,note=?,suscription=?,type=?,status=?, date=?,statusorder=?, date_beat=? WHERE idorder = $this->intIdOrder";
+                $sql = "UPDATE orderdata SET name=?,identification=?,email=?,phone=?,address=?,note=?,type=?,status=?, date=?,statusorder=?, date_beat=? WHERE idorder = $this->intIdOrder";
                 $arrData = array(
                     $this->strName,
                     $this->strIdentification,
@@ -366,7 +390,6 @@
                     $this->strPhone,
                     $this->strAddress,
                     $strNote,
-                    $arrSuscription,
                     $type,
                     $status,
                     $strDate,
@@ -374,9 +397,8 @@
                     $dateBeat
                 );
             }else{
-                $sql = "UPDATE orderdata SET suscription=?,type=?,status=?, date=?,statusorder=?, date_beat=? WHERE idorder = $this->intIdOrder";
+                $sql = "UPDATE orderdata SET type=?,status=?, date=?,statusorder=?, date_beat=? WHERE idorder = $this->intIdOrder";
                 $arrData = array(
-                    $arrSuscription,
                     $type,
                     $status,
                     $strDate,
@@ -386,11 +408,13 @@
             }
             $request = $this->update($sql,$arrData);
             if($request>0){
-                $statusC = 1;
-                if($status != "approved"){
-                    $statusC = 2;
+                $this->delete("DELETE FROM order_advance WHERE order_id = $this->intIdOrder;DELETE FROM count_amount WHERE order_id = $this->intIdOrder");
+                foreach ($arrSuscription as $advance) {
+                    $this->insertAdvance($this->intIdOrder,$advance['type'],$advance['debt'],$advance['date']);
+                    if($advance['debt'] > 0){
+                        $this->insertIncome($this->intIdOrder,3,3,"Anticipo de cliente",$advance['debt'],$advance['date'],1);
+                    }
                 }
-                $this->update("UPDATE count_amount SET status=? WHERE order_id = $idOrder",array($statusC));
             }
             return $request;
         }

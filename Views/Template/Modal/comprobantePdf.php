@@ -7,13 +7,13 @@ $total=0;
 $subtotal = 0;
 $status="";
 $rows =0;
-$arrAccount =!empty( $order['suscription']) ? json_decode($order['suscription'],true) : "";
+$arrAccount =$order['advance'];
 if($order['status'] =="pendent"){
     $status = 'pendiente';
 }else if($order['status'] =="approved"){
-    $status = 'aprobado';
+    $status = 'pagado';
 }else if($order['status'] =="canceled"){
-    $status = 'cancelado';
+    $status = 'rechazado';
 }
  ?>
 
@@ -327,9 +327,8 @@ if($order['status'] =="pendent"){
                 <?php
                     $abonoTotal = 0;
                     for ($i=0; $i < count($arrAccount) ; $i++) { 
-                        $abonoTotal+= intval($arrAccount[$i]['debt']);
-                        $date = explode("-",$arrAccount[$i]['date']);
-                        $date = $date[2]."/".$date[1]."/".$date[0];
+                        $abonoTotal+= intval($arrAccount[$i]['advance']);
+
                         $td="";
                         $td1="";
                         if($i == 0){
@@ -351,8 +350,8 @@ if($order['status'] =="pendent"){
                         }
                 ?>
                 <tr>
-                    <td><?=$date?></td>
-                    <td><?=formatNum($arrAccount[$i]['debt'])." (".$arrAccount[$i]['type'].")"?></td>
+                    <td><?=$arrAccount[$i]['date']?></td>
+                    <td><?=formatNum($arrAccount[$i]['advance'])." (".$arrAccount[$i]['type'].")"?></td>
                     <?=$td?>
                 </tr>
                 <?php }?>

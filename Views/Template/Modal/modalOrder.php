@@ -54,9 +54,9 @@
                             <div class="mt-3 mb-3">
                                 <label for="typeList" class="form-label">Estado de pago <span class="text-danger">*</span></label>
                                 <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                                    <option value="1">aprobado</option>
+                                    <option value="1">pagado</option>
                                     <option value="2" selected>pendiente</option>
-                                    <option value="3">cancelado</option>
+                                    <option value="3">rechazado</option>
                                 </select>
                             </div>
                         </div>

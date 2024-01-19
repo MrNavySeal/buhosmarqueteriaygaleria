@@ -83,15 +83,6 @@ formPOS.addEventListener("submit",function(e){
     });
 
 });
-searchProducts.addEventListener('input',function() {
-    request(base_url+"/pedidos/searchProducts/"+searchProducts.value,"","get").then(function(objData){
-        if(objData.status){
-            document.querySelector("#listProducts").innerHTML = objData.data;
-        }else{
-            document.querySelector("#listProducts").innerHTML = objData.data;
-        }
-    });
-});
 searchCustomers.addEventListener('input',function() {
     if(searchCustomers.value !=""){
         request(base_url+"/pedidos/searchCustomers/"+searchCustomers.value,"","get").then(function(objData){
