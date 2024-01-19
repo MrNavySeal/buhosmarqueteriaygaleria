@@ -204,8 +204,8 @@
                             $statusOrder = '<span class="badge bg-info text-white">preparado</span>';
                         }else if($request[$i]['statusorder'] =="entregado"){
                             $statusOrder = '<span class="badge bg-success text-white">entregado</span>';
-                        }else if($request[$i]['statusorder'] =="cancelado"){
-                            $statusOrder = '<span class="badge bg-danger text-white">cancelado</span>';
+                        }else if($request[$i]['statusorder'] =="rechazado"){
+                            $statusOrder = '<span class="badge bg-danger text-white">rechazado</span>';
                         }
                         
                         /*if($_SESSION['permitsModule']['d'] && $_SESSION['userData']['roleid'] == 1){
