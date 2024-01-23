@@ -505,7 +505,7 @@ function openLoginModal(){
                     }
                 });
             }else{
-                swal("Error",objData.msg,"error");
+                Swal.fire("Error",objData.msg,"error");
             }
         });
     });

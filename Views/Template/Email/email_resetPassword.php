@@ -230,7 +230,7 @@ a[x-apple-data-detectors] {
                        </table></td>
                      </tr>
                      <tr>
-                      <td align="left" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><h2 style="Margin:0;line-height:34px;mso-line-height-rule:exactly;font-family:'Barlow Condensed', Arial, sans-serif;font-size:28px;font-style:normal;font-weight:normal;color:#03071e">Hola <?= $data['nombreUsuario']; ?>,</h2><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Barlow, sans-serif;line-height:24px;color:#03071e;font-size:16px"><br></p><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Barlow, sans-serif;line-height:24px;color:#03071e;font-size:16px">Solicitud de acceso del usuario: <strong><?= $data['email_usuario']; ?></strong>. Has solicitado recuperar su contraseña, acceda al siguiente enlace para continuar</p></td>
+                      <td align="left" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><h2 style="Margin:0;line-height:34px;mso-line-height-rule:exactly;font-family:'Barlow Condensed', Arial, sans-serif;font-size:28px;font-style:normal;font-weight:normal;color:#03071e">Hola <?= $data['nombreUsuario']; ?>,</h2><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Barlow, sans-serif;line-height:24px;color:#03071e;font-size:16px"><br></p><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Barlow, sans-serif;line-height:24px;color:#03071e;font-size:16px">Solicitud de acceso del usuario: <strong><?= $data['email_usuario']; ?></strong>. Has solicitado recuperar su contraseña, haz click al botón, para continuar</p></td>
                      </tr>
 					 <tr>
                       <td align="center" style="padding:0;Margin:0;padding-bottom:20px"><!--[if mso]><a href="https://buhosmarqueteriaygaleria.co/" target="_blank" hidden>
@@ -240,6 +240,9 @@ a[x-apple-data-detectors] {
 		<center style='color:#ffffff; font-family:Barlow, sans-serif; font-size:15px; font-weight:400; line-height:15px;  mso-text-raise:1px'>Inicia sesión en tu cuenta</center>
 	</v:roundrect></a>
 <![endif]--><!--[if !mso]><!-- --><span class="msohide es-button-border" style="border-style:solid;border-color:#2CB543;background:#e05a10;border-width:0px;display:inline-block;border-radius:0px;width:auto;mso-hide:all"><a href="<?= $data['url_recovery']; ?>" class="es-button" target="_blank" style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;color:#FFFFFF;font-size:18px;padding:10px 20px 10px 20px;display:inline-block;background:#e05a10;border-radius:0px;font-family:Barlow, sans-serif;font-weight:normal;font-style:normal;line-height:22px;width:auto;text-align:center;mso-padding-alt:0;mso-border-alt:10px solid #E05A10">Recuperar contraseña</a></span><!--<![endif]--></td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Barlow, sans-serif;line-height:24px;color:#03071e;font-size:16px">Si el botón no funciona, copia y pega el siguiente enlace en tu navegador web: <strong><?= $data['url_recovery']; ?></strong></p></td>
                      </tr>
                    </table></td>
                  </tr>
