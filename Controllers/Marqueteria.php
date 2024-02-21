@@ -59,6 +59,286 @@
                 die();
             }
         }
+        public function calculadora(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "Calculadora de costos";
+                $data['page_title'] = "Calculadora de costos";
+                $data['page_name'] = "calculadora";
+                $data['tipos'] = $this->model->selectCategories(true);
+                $data['panelapp'] = "functions_calculadora.js";
+                $this->views->getView($this,"calculadora",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+        public function personalizar($params){
+            $company = getCompanyInfo();
+            $params = strClean($params);
+            $request = $this->model->selectTipo($params);
+            if(!empty($request)){
+                $data['page_tag'] = 'Calculadora de costos '.$request['name'].' | '.$company['name'];
+                $data['page_title'] = 'Calculadora de costos '.$request['name'].' | '.$company['name'];
+                $data['page_name'] = "personalizar";
+                
+                $data['tipo'] = $request;
+                $data['molduras'] = $this->getMolduras();
+                if($request['id'] == 1){
+                    $data['colores'] = $this->model->selectColors();
+                    $data['panelapp'] = "marqueteria/functions_personalizar.js";
+                    $data['option'] = getFile("Template/Enmarcar/marqueteria/marcos",$data);
+                }elseif($request['id'] == 3){
+                    $data['colores'] = $this->model->selectColors();
+                    $data['panelapp'] = "marqueteria/functions_personalizar_foto.js";
+                    $data['option'] = getFile("Template/Enmarcar/marqueteria/foto",$data);
+                }elseif($request['id']==4){
+                    $data['colores'] = $this->model->selectColors();
+                    $data['panelapp'] = "marqueteria/functions_personalizar_lienzo.js";
+                    $data['option'] = getFile("Template/Enmarcar/marqueteria/lienzo",$data);
+                }elseif($request['id']==5){
+                    $data['colores'] = $this->model->selectColors();
+                    $data['panelapp'] = "marqueteria/functions_personalizar_espejo.js";
+                    $data['option'] = getFile("Template/Enmarcar/marqueteria/espejo",$data);
+                }elseif($request['id'] == 6){
+                    $data['colores'] = $this->model->selectColors();
+                    $data['panelapp'] = "marqueteria/functions_personalizar_papiro.js";
+                    $data['option'] = getFile("Template/Enmarcar/papiro",$data);
+                }elseif($request['id'] == 7){
+                    $data['colores'] = $this->model->selectColors();
+                    $data['panelapp'] = "marqueteria/functions_personalizar_directo.js";
+                    $data['option'] = getFile("Template/Enmarcar/gobelino",$data);
+                }elseif($request['id'] == 8){
+                    $data['colores'] = $this->model->selectColors();
+                    $data['panelapp'] = "marqueteria/functions_personalizar_retablo.js";
+                    $data['option'] = getFile("Template/Enmarcar/marqueteria/retablo",$data);
+                }elseif($request['id'] == 9){
+                    $data['panelapp'] = "marqueteria/functions_personalizar_marco.js";
+                    $data['option'] = getFile("Template/Enmarcar/marco",$data);
+                }
+                $this->views->getView($this,"personalizar",$data);
+            }else{
+                header("location: ".base_url()."/marqueteria/calculadora");
+            }
+            
+        }
+        /*************************Calc methods*******************************/
+        public function calcularMarcoInterno($estilo,$margin,$altura,$ancho,$datos,$option=true){
+            $total =0;
+            $altura = ceil($margin+$altura);
+            $ancho = ceil($margin +$ancho);
+            $area = $altura * $ancho;
+            $perimetro = 0;
+            $desperdicio = 0;
+            if($option){
+                $desperdicio = $datos['waste'];
+                if($datos['type'] != 2){
+                    $varas = ceil((2*($altura+$ancho))/(300-$datos['waste']));
+                    $desperdicio = $datos['waste']*$varas;
+                }
+                $perimetro = (2*($altura+$ancho))+$desperdicio;
+                if($datos['discount']>0){
+                    $total = ($datos['price'] - ($datos['price']*($datos['discount']/100)))*$perimetro;
+                }else{
+                    $total = $datos['price']*$perimetro;
+                }
+            }
+            $total = ceil($total/100)*100;
+            $arrDatos = array("perimetro"=>$perimetro,"area"=>$area,"total"=>$total);
+            return $arrDatos;
+        }
+        public function calcularMarcoEstilos($estilo,$perimetro,$area,$tipo,$vidrio){
+            $material = $this->model->selectMaterials();
+            $bastidor = 0;
+            if($vidrio == 1){
+                $vidrio = $material[12]['price'];
+                $bastidor = $material[4]['price'];
+            }elseif($vidrio == 2){
+                $vidrio = $material[3]['price'];
+            }else{
+                $vidrio = 0;
+                $bastidor = 0;
+            }
+            $paspartu = $material[0]['price'];
+            $hijillo = $material[1]['price'];
+            $bocel = $material[2]['price'];
+            $triplex = $material[5]['price'];
+            $espuma = $material[6]['price'];
+            $espejo3mm =$material[7]['price'];
+            $impresion =$material[8]['price'];
+            $retablo =$material[9]['price'];
+            $carton = $material[10]['price'];
+            $espejo4mm =$material[11]['price'];
+            $lienzo = $material[13]['price'];   
+            
+            $costoCarton = ceil(intval($area*$carton)/1000)*1000;
+            $costoVidrio = ceil(intval($area*$vidrio)/1000)*1000;
+            $costoBocel = ceil(intval($perimetro*$bocel)/1000)*1000;
+            $costoPaspartu = ceil(intval($area*$paspartu)/1000)*1000;
+            $costoImpresion = ceil(intval($area * $impresion)/1000)*1000;
+            $costoEspejo3mm = ceil(intval($area*$espejo3mm)/1000)*1000;
+            $costoEspejo4mm = ceil(intval($area*$espejo4mm)/1000)*1000;
+            $costoTriplex = ceil(intval($area*$triplex)/1000)*1000;
+            $costoHijillo = ceil(intval($perimetro*$hijillo)/1000)*1000;
+            $costoBastidor = ceil(intval($perimetro*$bastidor)/1000)*1000;
+            $costoRetablo = ceil(intval($area*$retablo)/1000)*1000;
+
+            $total = 0;
+            if($tipo==1){
+                if($estilo == 1){
+                    $total = $costoVidrio+$costoCarton;
+                }else if($estilo == 2){
+                    $total = $costoPaspartu+$costoBocel+$costoVidrio+$costoCarton;
+                }else if($estilo == 3){
+                    $total = $costoPaspartu+$costoVidrio+$costoCarton;
+                }else if($estilo == 4){
+                    $total = $costoTriplex+$costoHijillo+$costoVidrio+$costoImpresion+$costoCarton;
+                }
+            }else if($tipo == 3){
+                if($estilo == 1){
+                    $total = $costoVidrio+$costoImpresion+$costoCarton;
+                }else if($estilo == 2){
+                    $total = $costoPaspartu+$costoBocel+$costoVidrio+$costoImpresion+$costoCarton;
+                }else if($estilo == 3){
+                    $total = $costoPaspartu+$costoVidrio+$costoImpresion+$costoCarton;
+                }else if($estilo == 4){
+                    $total = $costoTriplex+$costoHijillo+$costoVidrio+$costoImpresion+$costoCarton;
+                }
+                
+            }else if($tipo == 4){
+                if($estilo == 1){
+                    $total = $costoBastidor+$costoTriplex+$costoCarton;
+                }else if($estilo == 2){
+                    $total = $costoTriplex+$costoHijillo+$costoBastidor+$costoCarton;
+                }else if($estilo == 3){
+                    $total = $costoTriplex+$costoBastidor+$costoCarton;
+                }
+            }else if($tipo == 5){
+                if($estilo == 1){
+                    $total = $costoTriplex + $costoEspejo3mm;
+                }else if($estilo == 2){
+                    $total = $costoTriplex + $costoEspejo4mm;
+                }
+            }else if($tipo == 6){
+                $total = $costoVidrio + $costoTriplex;
+            }else if($tipo == 7){
+                $total = ($area * $espuma) + $costoTriplex;
+            }else if($tipo == 8){
+                if($estilo == 1){
+                    $total = $costoRetablo+$costoImpresion;
+                }else if($estilo == 2){
+                    $total = $costoRetablo;
+                }
+            }else if($tipo == 9){
+                if($estilo == 1){
+                    $total = 0;
+                }else if($estilo == 2){
+                    $total = $costoVidrio + $costoCarton;
+                }
+            }
+            $arrData = array(
+                "total"=>$total,
+                "costos"=>array(
+                    "vidrio"=>formatNum($costoVidrio),
+                    "paspartu"=>formatNum($costoPaspartu),
+                    "hijillo"=>formatNum($costoHijillo),
+                    "bocel"=>formatNum($costoBocel),
+                    "bastidor"=>formatNum($costoBastidor),
+                    "mdf"=>formatNum($costoCarton),
+                    "espejo4mm"=>formatNum($costoEspejo4mm),
+                    "espejo3mm"=>formatNum($costoEspejo3mm),
+                    "impresion"=>formatNum($costoImpresion),
+                    "retablo"=>formatNum($costoRetablo),
+                    "triplex"=>formatNum($costoTriplex)
+                )
+            );
+            return $arrData;
+        }
+        public function calcularMarcoTotal($datos=null){
+            
+            if($_POST){
+                $id = intval(openssl_decrypt($_POST['id'],METHOD,KEY));
+                if(is_numeric($id)){
+                    $request=array();
+                    $option = false;
+                    if($id != 0){
+                        $request = $this->model->selectMoldura($id);
+                        $option = true;
+                    }
+                    
+                    $margin = intval($_POST['margin'])*2;
+                    $altura = floatval($_POST['height']);
+                    $ancho = floatval($_POST['width']);
+                    $estilo = intval($_POST['style']);
+                    $tipo = intval($_POST['type']);
+                    $vidrio = intval($_POST['glass']);
+                    
+    
+                    $marcoTotal = $this->calcularMarcoInterno($estilo,$margin,$altura,$ancho,$request,$option);
+                    $marcoEstilos = $this->calcularMarcoEstilos($estilo,$marcoTotal['perimetro'],$marcoTotal['area'],$tipo,$vidrio);
+                    
+                    $total = ceil((intval($marcoEstilos['total']+$marcoTotal['total']))/1000)*1000;
+                    $precio = ceil((intval(UTILIDAD*((($marcoEstilos['total']+$marcoTotal['total'])*COMISION)+TASA)))/1000)*1000;
+                    $marcoEstilos['costos']['marco'] = formatNum(ceil($marcoTotal['total']/1000)*1000);
+                    $request['total'] = array("total"=>$total,"price"=>formatNum($precio),"utilidad"=>formatNum($precio-$total),"format"=>formatNum($total));
+                    $request['costo'] = $marcoEstilos['costos'];
+                    $arrResponse = array("status"=>true,"data"=>$request);
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"Error de datos"); 
+                }
+                //$request['total'] = $this->calcularMarco(floatval($_POST['height']),floatval($_POST['width']),$id);
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getMolduras($option=null,$search=null,$sort=null,$perimetro=""){
+            $html="";
+            $request="";
+            if($option == 1){
+                //$request = $this->searchT($search,$sort,$perimetro);
+            }else if($option == 2){
+                $request = $this->model->sort($search,$sort,$perimetro);
+            }else{
+                $request = $this->model->selectMolduras($perimetro);
+            }
+            if(count($request)>0){
+                for ($i=0; $i < count($request); $i++) { 
+
+                    $type="";
+                    $discount="";
+                    $price = formatNum($request[$i]['price']);
+                    $id = openssl_encrypt($request[$i]['id'],METHOD,KEY);
+                    if($request[$i]['discount']>0){
+                        $discount = '<span class="discount">'.$request[$i]['discount'].'%</span>';
+                    }
+                    if($request[$i]['type']==1){
+                        $type='Moldura en madera';
+                    }else{
+                        $type='Moldura importada';
+                    }
+                    $html.='
+                        <div class="mb-3 frame--container" data-r="'.$request[$i]['reference'].'">
+                            <div class="frame--item frame-main element--hover" data-id="'.$id.'" onclick="selectActive(this,`.frame-main`)">
+                                '.$discount.'
+                                <img src="'.$request[$i]['image'].'" alt="'.$type.'">
+                                <p>REF: '.$request[$i]['reference'].'</p>
+                            </div>
+                        </div>
+                    ';
+                }
+                $arrResponse = array("status"=>true,"data"=>$html);
+            }else{
+                $arrResponse = array("status"=>false,"data"=>"No hay resultados");
+            }
+            return $arrResponse;
+        }
+        public function sort(){
+            if($_POST){
+                $perimetro = (floatval($_POST['height'])+floatval($_POST['width']))*2;
+                $arrResponse = $this->getMolduras(2,null,intval($_POST['sort']),null);
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
         /*************************Product methods*******************************/
         public function getProducts($option=null,$params=null){
             if($_SESSION['permitsModule']['r']){

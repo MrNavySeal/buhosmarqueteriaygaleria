@@ -438,7 +438,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 </li> 
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <a href="<?=base_url()?>/marqueteria/categorias" class="w-100">Categorias</a>
-                                </li>   
+                                </li> 
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/marqueteria/calculadora" class="w-100">Calculadora de costos</a>
+                                </li>     
                             </ul>
                         </div>
                     </div>

@@ -360,7 +360,7 @@
             return $return;
         }
         public function selectMaterials(){
-            $sql = "SELECT * FROM moldingmaterial ORDER BY id DESC";       
+            $sql = "SELECT * FROM moldingmaterial";       
             $request = $this->select_all($sql);
             return $request;
         }
@@ -431,8 +431,9 @@
             $return = $this->delete($sql);
             return $return;
         }
-        public function selectCategories(){
-            $sql = "SELECT * FROM moldingcategory ORDER BY id DESC";       
+        public function selectCategories($flag=false){
+            if($flag)$status = " WHERE status != 3";
+            $sql = "SELECT * FROM moldingcategory $status ORDER BY id DESC";       
             $request = $this->select_all($sql);
             return $request;
         }
@@ -454,6 +455,84 @@
             }
             $sql = "SELECT * FROM moldingcategory ORDER BY id $option ";
             $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectTipo($route){
+            $sql = "SELECT * FROM moldingcategory WHERE route = '$route'";
+            $request = $this->select($sql);
+            return $request;
+        }
+        /*************************Calc methods*******************************/
+
+        public function selectMolduras($dimensions=""){
+            $this->con = new Mysql();
+            $sql = "SELECT * FROM molding WHERE status = 1 AND type = 1 ORDER BY waste ASC";
+            $request = $this->select_all($sql);
+            if(count($request)> 0){
+                for ($i=0; $i < count($request); $i++) { 
+                    $idProduct = $request[$i]['id'];
+                    $sqlImg = "SELECT * FROM moldingimage WHERE moldingid = $idProduct";
+                    $requestImg = $this->select_all($sqlImg);
+                    if(count($requestImg)>0){
+                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
+                    }else{
+                        $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                }
+            }
+            return $request;
+        }
+        public function selectMoldura($id){
+            $this->intIdProduct = $id;
+            $sql = "SELECT * FROM molding WHERE id = $this->intIdProduct AND status = 1";
+            $request = $this->select($sql);
+            if(!empty($request)){
+                $sqlImg = "SELECT * FROM moldingimage WHERE moldingid = $this->intIdProduct";
+                $requestImg = $this->select_all($sqlImg);
+                if(count($requestImg)){
+                    for ($i=0; $i < count($requestImg); $i++) { 
+                        $request['image'][$i] = media()."/images/uploads/".$requestImg[$i]['name'];
+                    }
+                }
+            }
+            return $request;
+        }
+        public function sort($search,$sort,$dimensions = ""){
+            $option="";
+            if($sort == 1){
+                $option=" AND type = 1 ORDER BY waste ASC";
+                if($dimensions > 340){
+                    $option=" AND type = 1 AND waste > 20 ORDER BY waste ASC";
+                }
+            }else if($sort == 2){
+                if($dimensions < 200){
+                    $option=" AND type = 2 ORDER BY waste ASC";
+                }else if($dimensions >= 200 && $dimensions < 400){
+                    $option = " AND type = 2 AND waste > 33 ORDER BY waste ASC";
+                }else if($dimensions >= 400){
+                    $option = " AND type = 2 AND waste > 49 ORDER BY waste ASC";
+                }
+            }else if($sort == 3){
+                $option=" AND type = 3 ORDER BY waste ASC";
+                if($dimensions > 340){
+                    $option=" AND type = 3 AND waste > 20 ORDER BY waste ASC";
+                }
+                
+            }
+            $sql = "SELECT * FROM molding WHERE status = 1 AND reference LIKE '%$search%' $option";
+            $request = $this->select_all($sql);
+            if(count($request)> 0){
+                for ($i=0; $i < count($request); $i++) { 
+                    $idProduct = $request[$i]['id'];
+                    $sqlImg = "SELECT * FROM moldingimage WHERE moldingid = $idProduct";
+                    $requestImg = $this->select_all($sqlImg);
+                    if(count($requestImg)>0){
+                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
+                    }else{
+                        $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                }
+            }
             return $request;
         }
     }
