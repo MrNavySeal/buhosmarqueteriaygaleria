@@ -1,0 +1,13 @@
+#Habilito los bots de los navegadores para que rastreen mi web
+user-agent: *
+
+#Paginas inhabilitadas para los rastreadores
+disallow:/politicas/terminos
+disallow:/politicas/privacidad
+disallow:/correo/
+disallow:/correo/mensaje
+disallow:/dashboard/
+disallow:/usuarios/
+disallow:/carrito/
+disallow:/marcos/
+
