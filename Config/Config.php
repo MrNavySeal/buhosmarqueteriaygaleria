@@ -2,25 +2,18 @@
 	/*Local host */
 	
 	const DB_HOST = "localhost";
-	const BASE_URL = "http://localhost/buhosmarqueteriaygaleria";
-	const DB_NAME = "db_buhos";
-	const DB_USER = "root";
-	const DB_PASSWORD = "";
+	const BASE_URL = "https://buhosmarqueteriaygaleria.co";
+	const DB_NAME = "u209003010_buhosmyg";
+	const DB_USER = "u209003010_buhos";
+	const DB_PASSWORD = "kt+Tm~6aS";
 	const DB_CHARSET = "utf8";
 
-	/*000Web host */
-	/*
-	const DB_HOST = "localhost";
-	const BASE_URL = "https://mediastorecommerce.000webhostapp.com";
-	const DB_NAME = "id19411014_db_mediastore";
-	const DB_USER = "id19411014_db_davidparrado";
-	const DB_PASSWORD = "b&Y=^7mO%0ecI*[I";
-	const DB_CHARSET = "utf8";*/
 	
 	date_default_timezone_set('America/Bogota');
 
 	const DEC = ","; // Decimales;
 	const MIL = ".";//Millares;
+
 	
 	//Encriptado
 	const KEY = "ecommerce";
@@ -28,8 +21,15 @@
 	//Estados
 	const STATUS = ["rechazado","confirmado","en preparacion","preparado","entregado"];
 	const PAGO = ["mercadopago","nequi","daviplata","transferencia","tarjeta","efectivo"];
+	/*
 	const COMISION = 1.04;
-	const TASA = 900;
+	const TASA = 950;
+	const PERPAGE = 12;
+	const BUTTONS = 3;
+	const UTILIDAD = 1.7;*/
+	
+	const COMISION = 1;
+	const TASA = 0;
 	const PERPAGE = 12;
 	const BUTTONS = 3;
 	const UTILIDAD = 1.7;
