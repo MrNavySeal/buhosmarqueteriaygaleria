@@ -115,6 +115,10 @@
                     $data['panelapp'] = "marqueteria/functions_personalizar_marco.js";
                     $data['option'] = getFile("Template/Enmarcar/marco",$data);
                 }
+                elseif($request['id'] == 9){
+                    $data['panelapp'] = "marqueteria/functions_personalizar_marco.js";
+                    $data['option'] = getFile("Template/Enmarcar/marco",$data);
+                }
                 $this->views->getView($this,"personalizar",$data);
             }else{
                 header("location: ".base_url()."/marqueteria/calculadora");
