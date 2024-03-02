@@ -231,7 +231,7 @@
                         <?php if((isset($_GET['situ']) && $_GET['situ']=="false") || !isset($_GET['situ'])){?>
                             <?php if($arrShipping['id']!= 3){?>
                             <div class="d-flex justify-content-between mb-3">
-                                <p class="m-0 fw-bold">Envio:</p>
+                                <p class="m-0 fw-bold">Envio <?= $arrShipping['id'] == 4 ? "contra entrega": ""?>:</p>
                                 <p class="m-0"><?=formatNum($arrShipping['value'])?></p>
                             </div>
                             <?php }else{?>

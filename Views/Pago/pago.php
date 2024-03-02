@@ -204,7 +204,7 @@
                     </form>
                     <?php }?>
                     <div class="d-flex justify-content-between mb-3 position-relative af-b-line">
-                        <p class="m-0 fw-bold">Envio</p>
+                        <p class="m-0 fw-bold">Envio <?= $arrShipping['id'] == 4 ? "contra entrega": ""?>:</p>
                         <p class="m-0 fw-bold"><?=formatNum($envio)?></p>
                     </div>
                     <div class="d-flex justify-content-between mb-3 position-relative af-b-line">
