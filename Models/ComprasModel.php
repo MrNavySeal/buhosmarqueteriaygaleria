@@ -69,7 +69,7 @@
             return $return;
         }
         public function selectSuppliers(){
-            $sql = "SELECT * FROM suppliers ORDER BY name ASC";       
+            $sql = "SELECT * FROM suppliers ORDER BY idsupplier DESC";       
             $request = $this->select_all($sql);
             return $request;
         }
