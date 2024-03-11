@@ -14,7 +14,6 @@
                 $data['page_title'] = "Compras";
                 $data['page_name'] = "compras";
                 $data['proveedores'] = $this->getSelectSuppliers();
-                $data['data'] = $this->getPurchases();
                 $data['panelapp'] = "functions_compras.js";
                 $this->views->getView($this,"compras",$data);
             }else{
@@ -48,7 +47,6 @@
                 $data['page_tag'] = "Proveedores";
                 $data['page_title'] = "Proveedores";
                 $data['page_name'] = "proveedores";
-                $data['data'] = $this->getSuppliers();
                 $data['panelapp'] = "functions_proveedores.js";
                 $this->views->getView($this,"proveedores",$data);
             }else{
@@ -61,7 +59,6 @@
                 $data['page_tag'] = "Compras | Almacén";
                 $data['page_title'] = "Compras | Almacén";
                 $data['page_name'] = "producto";
-                $data['data'] = $this->getProducts();
                 $data['suppliers'] = $this->model->selectSuppliers();
                 $data['panelapp'] = "functions_storage.js";
                 $this->views->getView($this,"almacen",$data);
@@ -71,50 +68,26 @@
             }
         }
         /*******************Suppliers**************************** */
-        public function getSuppliers($option=null,$params=null){
+        public function getSuppliers(){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->search($params);
-                }else if($option == 2){
-                    $request = $this->model->sort($params);
-                }else{
-                    $request = $this->model->selectSuppliers();
-                }
+                $request = $this->model->selectSuppliers();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
                         $btnEdit="";
                         $btnDelete="";
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['idsupplier'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['idsupplier'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['idsupplier'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idsupplier'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
-                        $html.='
-                            <tr class="item"">
-                                <td data-label="NIT: ">'.$request[$i]['nit'].'</td>
-                                <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
-                                <td data-label="Correo: ">'.$request[$i]['email'].'</td>
-                                <td data-label="Teléfono: ">'.$request[$i]['phone'].'</td>
-                                <td data-label="Dirección: ">'.$request[$i]['address'].'</td>
-                                <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="20">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getSupplier(){
             if($_SESSION['permitsModule']['r']){
@@ -132,16 +105,13 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
         public function setSupplier(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
-                    if(empty($_POST['txtName']) || empty($_POST['txtEmail']) || empty($_POST['txtPhone'])){
+                    if(empty($_POST['txtName']) || empty($_POST['txtPhone'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $id = intval($_POST['idSupplier']);
@@ -163,11 +133,9 @@
                         }
                         if($request > 0 ){
                             if($option == 1){
-                                $arrResponse = $this->getSuppliers();
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados");
                             }else{
-                                $arrResponse = $this->getSuppliers();
-                                $arrResponse['msg'] = 'Datos actualizados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados");
                             }
                         }else if($request =="exists"){
                             $arrResponse = array('status' => false, 'msg' => '¡Atención! el proveedor ya está registrado, pruebe con otro.');
@@ -192,18 +160,15 @@
                     }else{
                         $id = intval($_POST['idSupplier']);
                         $request = $this->model->deleteSupplier($id);
-
+                        
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getSuppliers()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
@@ -218,22 +183,6 @@
                 }
                 return $html;
             } 
-            die();
-        }
-        public function search($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getSuppliers(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function sort($params){
-            if($_SESSION['permitsModule']['r']){
-                $params = intval($params);
-                $arrResponse = $this->getSuppliers(2,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
             die();
         }
         /*******************Purchases**************************** */
@@ -259,44 +208,23 @@
             }
             die();
         }
-        public function getPurchases($option=null,$params=null){
+        public function getPurchases(){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchP($params);
-                }else{
-                    $request = $this->model->selectPurchases();
-                }
+                $request = $this->model->selectPurchases();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
-
                         $btnView = '<a href="'.base_url().'/compras/compra/'.$request[$i]['idpurchase'].'"class="btn btn-info m-1 text-white" type="button" title="Watch" name="btnView"><i class="fas fa-eye"></i></a>';
                         $btnDelete="";
                         if($_SESSION['permitsModule']['d']){
                             $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Delete" data-id="'.$request[$i]['idpurchase'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
                         }
-                        $html.='
-                            <tr class="item"">
-                                <td data-label="Id: ">'.$request[$i]['idpurchase'].'</td>
-                                <td data-label="Proveedor: ">'.$request[$i]['name'].'</td>
-                                <td data-label="Total: ">'.formatNum($request[$i]['total'],false).'</td>
-                                <td data-label="Fecha: ">'.$request[$i]['date'].'</td>
-                                <td class="item-btn">'.$btnView.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['options'] = $btnView.$btnDelete;
+                        $request[$i]['total'] = formatNum($request[$i]['total'],false);
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="20">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getPurchase($id){
             if($_SESSION['permitsModule']['r']){
@@ -304,13 +232,6 @@
                 return $request;
             }
             die();
-        }
-        public function searchPurchase($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getPurchases(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
         }
         public function delPurchase(){
             if($_SESSION['permitsModule']['d']){
@@ -361,13 +282,9 @@
                         }
                         if($request > 0 ){
                             if($option == 1){
-                                $arrResponse = $this->getProducts();
-                                $arrResponse['status']=true;
-                                $arrResponse['msg'] = 'Datos guardados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
                             }else{
-                                $arrResponse['status']=true;
-                                $arrResponse = $this->getProducts();
-                                $arrResponse['msg'] = 'Datos actualizados.';
+                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
                             }
                         }else if($request ="exists"){
                             $arrResponse = array("status" => false, "msg" => 'El producto ya existe para este proveedor, intente con otro.');
@@ -377,64 +294,38 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
             }
 			die();
         }
-        public function getProducts($option=null,$params=null){
+        public function getProducts(){
             if($_SESSION['permitsModule']['r']){
-                $html="";
-                $request="";
-                if($option == 1){
-                    $request = $this->model->searchS($params);
-                }else{
-                    $request = $this->model->selectProducts();
-                }
+                $request = $this->model->selectProducts();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
-                        
                         $btnEdit="";
                         $btnDelete="";
                         $status="";
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" data-id="'.$request[$i]['id_storage'].'" name="btnEdit"><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" onclick="editItem('.$request[$i]['id_storage'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" data-id="'.$request[$i]['id_storage'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" onclick="deleteItem('.$request[$i]['id_storage'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
                         if($request[$i]['status']==1){
                             $status='<span class="badge me-1 bg-success">Activo</span>';
                         }else{
                             $status='<span class="badge me-1 bg-danger">Inactivo</span>';
                         }
-
-                        $html.='
-                            <tr class="item">
-                                <td data-label="ID: ">'.$request[$i]['id_storage'].'</td>
-                                <td data-label="Referencia: ">'.$request[$i]['reference'].'</td>
-                                <td data-label="Nombre: ">'.$request[$i]['name'].'</td>
-                                <td data-label="Proveedor: ">'.$request[$i]['supplier'].'</td>
-                                <td data-label="Precio: ">'.formatNum($request[$i]['cost']).'</td>
-                                <td data-label="IVA: ">'.$request[$i]['iva'].'</td>
-                                <td data-label="Precio IVA: ">'.formatNum($request[$i]['costiva']).'</td>
-                                <td data-label="Precio Total: ">'.formatNum($request[$i]['costtotal']).'</td>
-                                <td data-label="Estado: ">'.$status.'</td>
-                                <td class="item-btn">'.$btnEdit.$btnDelete.'</td>
-                            </tr>
-                        ';
+                        $request[$i]['status'] = $status;
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
+                        $request[$i]['cost'] = formatNum($request[$i]['cost']);
+                        $request[$i]['costiva'] = formatNum($request[$i]['costiva']);
+                        $request[$i]['costtotal'] = formatNum($request[$i]['costtotal']);
                     }
-                    $arrResponse = array("status"=>true,"data"=>$html);
-                }else{
-                    $html = '<tr><td colspan="20">No hay datos</td></tr>';
-                    $arrResponse = array("status"=>false,"data"=>$html);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
-            
-            return $arrResponse;
+            die();
         }
         public function getProduct(){
             if($_SESSION['permitsModule']['r']){
@@ -452,8 +343,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
             }
             die();
         }
@@ -465,25 +354,14 @@
                     }else{
                         $id = intval($_POST['id']);
                         $request = $this->model->deleteProduct($id);
-
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getProducts()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-            }
-            die();
-        }
-        public function searchS($params){
-            if($_SESSION['permitsModule']['r']){
-                $search = strClean($params);
-                $arrResponse = $this->getProducts(1,$params);
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }

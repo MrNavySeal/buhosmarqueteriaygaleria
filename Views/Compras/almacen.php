@@ -9,44 +9,32 @@ getModal("modalStorage",$data['suppliers']);
         <div class="col-12 col-lg-9 col-md-12">
             <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <h2 class="text-center"><?=$data['page_title']?></h2>
-                <div class="d-flex justify-content-between">
-                    <button type="button" class="btn btn-success text-white" id="exportExcel" data-name="table<?=$data['page_name']?>" title="Export to excel" ><i class="fas fa-file-excel"></i></button>
+                <div class="d-flex justify-content-end mb-3">
                     <?php
                         if($_SESSION['permitsModule']['w']){
                     ?>
-                    <button class="btn btn-primary d-none" type="button" id="btnNew">Agregar <?= $data['page_name']?> <i class="fas fa-plus"></i></button>
+                    <button class="btn btn-primary d-none" type="button" id="btnNew">Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></button>
                     <?php
                     }
                     ?>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-12 mt-3">
-                        <form autocomplete="off">
-                            <input class="form-control" type="search" placeholder="Search" aria-label="Search" id="search" name="search">
-                        </form>
-                    </div>
-                </div>
-                <div class="scroll-y">
-                    <table class="table items align-middle" id="table<?=$data['page_name']?>">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Referencia</th>
-                                <th>Nombre</th>
-                                <th>Proveedor</th>
-                                <th>Precio</th>
-                                <th>IVA</th>
-                                <th>Precio IVA</th>
-                                <th>Precio Total</th>
-                                <th>Estado</th>
-                                <th>Opciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listItem">
-                            <?=$data['data']['data']?>
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table align-middle" id="tableData">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Referencia</th>
+                            <th>Nombre</th>
+                            <th>Proveedor</th>
+                            <th>Precio</th>
+                            <th>IVA</th>
+                            <th>Precio IVA</th>
+                            <th>Precio Total</th>
+                            <th>Estado</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </div>

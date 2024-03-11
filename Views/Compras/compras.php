@@ -127,28 +127,18 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="navPurchase">
-                        <button type="button" class="mt-3 btn btn-success text-white" id="exportExcel" data-name="table<?=$data['page_title']?>" title="Export to excel" ><i class="fas fa-file-excel"></i></button>
-                        <div class="row mb-3">
-                            <div class="col-md-12 mt-3">
-                                <input class="form-control" type="search" placeholder="Search" aria-label="Search" id="search" name="search">
-                            </div>
-                        </div>
-                        <div class="scroll-y">
-                            <table class="table items align-middle" id="table<?=$data['page_title']?>">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Proveedor</th>
-                                        <th>Total</th>
-                                        <th>Fecha</th>
-                                        <th>Opciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="listItem">
-                                    <?=$data['data']['data']?>
-                                </tbody>
-                            </table>
-                        </div>
+                        <table class="table align-middle" id="tableData">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Proveedor</th>
+                                    <th>Total</th>
+                                    <th>Fecha</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>

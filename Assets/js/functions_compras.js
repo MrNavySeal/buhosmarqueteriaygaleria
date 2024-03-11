@@ -4,13 +4,45 @@ const btnPurchase = document.querySelector("#btnPurchase");
 const total = document.querySelector("#total");
 const selectSupplier = document.querySelector("#selectSupplier");
 const selectProduct = document.querySelector("#selectProduct");
-const searchPanel = document.querySelector("#search");
 const element = document.querySelector("#listItem");
 const setSimple = document.querySelector("#setSimple");
 const setCustom = document.querySelector("#setCustom");
 const selectType = document.querySelector("#selectType");
 
 
+let table = new DataTable("#tableData",{
+    "dom": 'lfBrtip',
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/compras/getPurchases",
+        "dataSrc":""
+    },
+    columns: [
+        { data: 'idpurchase'},
+        { data: 'name' },
+        { data: 'total'},
+        { data: 'date' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    buttons: [
+        {
+            "extend": "excelHtml5",
+            "text": "<i class='fas fa-file-excel'></i> Excel",
+            "titleAttr":"Exportar a Excel",
+            "className": "btn btn-success mt-2"
+        }
+    ],
+    order: [[1, 'desc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
+});
 
 selectType.addEventListener("change",function(){
     if(selectType.value == 1){
@@ -29,15 +61,6 @@ element.addEventListener("click",function(e) {
     if(element.name == "btnDelete"){
         deleteItem(id);
     }
-});
-searchPanel.addEventListener('input',function() {
-    request(base_url+"/compras/searchPurchase/"+searchPanel.value,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.data;
-        }
-    });
 });
 selectProduct.addEventListener("change",function(){
     if(((selectProduct.value == 0 || selectSupplier.value == 0)&& selectType.value == 1)){
