@@ -79,24 +79,7 @@
             $request = $this->select($sql);
             return $request;
         }
-        public function search($search){
-            $sql = "SELECT * FROM suppliers 
-            WHERE name LIKE '%$search%' || nit LIKE '%$search%' || phone LIKE '%$search%' || email LIKE '%$search%'
-            ORDER BY idsupplier DESC";
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function sort($sort){
-            $option=" ORDER BY idsupplier DESC";
-            if($sort == 2){
-                $option = " ORDER BY idsupplier ASC"; 
-            }else if( $sort == 3){
-                $option = " ORDER BY name ASC"; 
-            }
-            $sql = "SELECT * FROM suppliers $option";
-            $request = $this->select_all($sql);
-            return $request;
-        }
+
         /*******************Purchases**************************** */
         public function insertPurchase(int $id,string $arrProducts,int $total, string $strDate){
             $this->intId = $id;
@@ -163,24 +146,6 @@
                     ORDER BY p.idpurchase DESC
             ";
             $request = $this->select($sql);
-            return $request;
-        }
-        public function searchP($search){
-            $sql = "SELECT 
-            p.idpurchase,
-            p.supplierid,
-            p.total,
-            DATE_FORMAT(p.date, '%d/%m/%Y') as date,
-            s.idsupplier,
-            s.name,
-            s.phone,
-            s.email
-            FROM purchase p
-            INNER JOIN suppliers s
-            WHERE p.supplierid = s.idsupplier 
-            AND (s.name LIKE '%$search%' || s.phone LIKE '%$search%' || s.email LIKE '%$search%')
-            ORDER BY p.idpurchase DESC";
-            $request = $this->select_all($sql);
             return $request;
         }
         public function insertEgress(int $idPurchase,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus){
@@ -314,41 +279,6 @@
                 $return = "exists";
             }
             return $return;
-        }
-        public function searchS($search){
-            $sql = "SELECT 
-            s.id_storage,
-            s.name, 
-            DATE_FORMAT(s.date, '%d/%m/%Y') as date,
-            s.import,
-            s.cost,
-            s.status,
-            s.reference,
-            s.supplier_id,
-            sp.name as supplier 
-            FROM storage s 
-            INNER JOIN suppliers sp
-            WHERE s.supplier_id = sp.idsupplier 
-            AND (s.name LIKE '%$search%' || sp.name LIKE '%$search%' || s.reference LIKE '%$search%')
-            ORDER BY s.id_storage DESC";
-            $request = $this->select_all($sql);
-            if(!empty($request)){
-                for ($i=0; $i < count($request) ; $i++) { 
-                    $impt = 0;
-                    $iva="0%";
-                    if($request[$i]['import'] == 3){
-                        $impt = 0.19;
-                        $iva="19%";
-                    }else if($request[$i]['import'] == 2){
-                        $impt = 0.05;
-                        $iva="5%";
-                    }
-                    $request[$i]['iva'] = $iva;
-                    $request[$i]['costiva'] = round(intval($request[$i]['cost'] * $impt)/10)*10;
-                    $request[$i]['costtotal'] = round(intval(($request[$i]['cost']+$request[$i]['costiva']))/100)*100;
-                }
-            }
-            return $request;
         }
         public function deleteProduct($id){
             $this->intId = $id;

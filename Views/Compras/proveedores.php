@@ -8,7 +8,7 @@
         <div class="col-12 col-lg-9 col-md-12">
             <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
                 <h2 class="text-center"><?=$data['page_title']?></h2>
-                <div class="d-flex justify-content-end">
+                <div class="d-flex justify-content-end mb-3">
                     <?php
                         if($_SESSION['permitsModule']['w']){
                     ?>
