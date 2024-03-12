@@ -181,10 +181,20 @@ btnPurchase.addEventListener("click",function(){
     formData.append("idSupplier",selectSupplier.value);
     formData.append("arrProducts",JSON.stringify(arrProducts));
     formData.append("total",totalValue);
+    let btnAdd = document.querySelector("#btnPurchase");
+    btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnAdd.setAttribute("disabled","");
     request(base_url+"/compras/setPurchase",formData,"post").then(function(objData){
+        btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar compra`;
+        btnAdd.removeAttribute("disabled");
         if(objData.status){
             table.ajax.reload();
-            window.location.reload();
+            document.querySelector("#txtSubtotal").innerHTML = "$0";
+            document.querySelector("#txtTotal").innerHTML = "$0";
+            document.querySelector("#txtIva").innerHTML = "$0";
+            document.querySelector("#txtDiscount").innerHTML = "$0";
+            document.querySelector("#listProducts").innerHTML="";
+            Swal.fire("Guardado",objData.msg,"success");
         }else{
             Swal.fire("Error",objData.msg,"error");
         }

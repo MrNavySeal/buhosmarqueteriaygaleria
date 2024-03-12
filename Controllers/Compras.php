@@ -145,9 +145,6 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
 			die();
 		}
@@ -198,7 +195,6 @@
                         $total = intval($_POST['total']);
                         $strDate = strClean($_POST['date']);
                         $request = $this->model->insertPurchase($idSupplier,$arrProducts,$total,$strDate);
-                        dep($request);exit;
                         if($request > 0){
                             $arrResponse = array("status"=>true,"msg"=>"La compra se ha registrado con éxito");
                         }else{
