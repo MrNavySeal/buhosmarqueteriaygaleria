@@ -187,6 +187,7 @@
         }
         /*******************Purchases**************************** */
         public function setPurchase(){
+            
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
                     if(empty($_POST['arrProducts']) || empty($_POST['total'])){
@@ -197,8 +198,9 @@
                         $total = intval($_POST['total']);
                         $strDate = strClean($_POST['date']);
                         $request = $this->model->insertPurchase($idSupplier,$arrProducts,$total,$strDate);
+                        dep($request);exit;
                         if($request > 0){
-                            $arrResponse = array("status"=>true,"msg"=>"La compra se ha registrado con éxito","data"=>$this->getPurchases()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"La compra se ha registrado con éxito");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"Ha ocurrido un error, inténtelo de nuevo");
                         }
@@ -216,7 +218,7 @@
                         $btnView = '<a href="'.base_url().'/compras/compra/'.$request[$i]['idpurchase'].'"class="btn btn-info m-1 text-white" type="button" title="Watch" name="btnView"><i class="fas fa-eye"></i></a>';
                         $btnDelete="";
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Delete" data-id="'.$request[$i]['idpurchase'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Delete" onclick="deleteItem('.$request[$i]['idpurchase'].')" ><i class="fas fa-trash-alt"></i></button>';
                         }
                         $request[$i]['options'] = $btnView.$btnDelete;
                         $request[$i]['total'] = formatNum($request[$i]['total'],false);
@@ -242,16 +244,13 @@
                         $id = intval($_POST['idPurchase']);
                         $request = $this->model->deletePurchase($id);
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.","data"=>$this->getPurchases()['data']);
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-            }else{
-                header("location: ".base_url());
-                die();
             }
             die();
         }
