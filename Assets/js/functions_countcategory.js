@@ -1,6 +1,39 @@
-let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
+let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
 let formItem = document.querySelector("#formItem");
-let element = document.querySelector("#listItem");
+
+let table = new DataTable("#tableData",{
+    "dom": 'lfBrtip',
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/contabilidad/getCategories",
+        "dataSrc":""
+    },
+    columns: [
+        { data: 'id'},
+        { data: 'name' },
+        { data: 'type'},
+        { data: 'status' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    buttons: [
+        {
+            "extend": "excelHtml5",
+            "text": "<i class='fas fa-file-excel'></i> Excel",
+            "titleAttr":"Exportar a Excel",
+            "className": "btn btn-success mt-2"
+        }
+    ],
+    order: [[0, 'desc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
+});
 
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
@@ -9,18 +42,10 @@ if(document.querySelector("#btnNew")){
         document.querySelector("#idCategory").value ="";
         document.querySelector(".modal-title").innerHTML ="Nueva categoría";
         formItem.reset();
-        openModal();
+        modal.show();
     });
 }
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
-    }else if(element.name == "btnEdit"){
-        editItem(id);
-    }
-});
+
 window.addEventListener("load",function(){
     formItem.addEventListener("submit",function(e){
         e.preventDefault();
@@ -42,8 +67,8 @@ window.addEventListener("load",function(){
             btnAdd.removeAttribute("disabled");
             if(objData.status){
                 Swal.fire("Guardado",objData.msg,"success");
-                element.innerHTML = objData.data;
-                modalView.hide();
+                table.ajax.reload();
+                modal.hide();
             }else{
                 Swal.fire("Error",objData.msg,"error");
             }
@@ -60,7 +85,7 @@ function editItem(id){
         document.querySelector("#typeList").value = objData.data.type;
         document.querySelector("#txtName").value = objData.data.name;
         document.querySelector("#idCategory").value = objData.data.id;
-        modalView.show();
+        modal.show();
     });
 }
 function deleteItem(id){
@@ -81,14 +106,11 @@ function deleteItem(id){
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
-                    element.innerHTML = objData.data;
+                    table.ajax.reload();
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }
             });
         }
     });
-}
-function openModal(){
-    modalView.show();
 }

@@ -194,10 +194,11 @@
             a.name as concepto,
             a.status as estado,
             c.name as categoria,
-            DATE_FORMAT(a.date, '%d/%m/%Y') as date
+            DATE_FORMAT(a.date, '%d/%m/%Y') as date,
+            DATE(a.date) as dateorder
             FROM count_amount a
             INNER JOIN count_category c
-            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 ORDER BY a.id DESC";
+            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 ORDER BY dateorder ASC";
             $request = $this->select_all($sql);
             return $request;
         }
