@@ -35,7 +35,7 @@ let table = new DataTable("#tableData",{
             "className": "btn btn-success mt-2"
         }
     ],
-    order: [[1, 'desc']],
+    order: [[0, 'desc']],
     pagingType: 'full',
     scrollY:'400px',
     //scrollX: true,
@@ -53,13 +53,6 @@ selectType.addEventListener("change",function(){
     }else{
         setSimple.classList.add("d-none");
         setCustom.classList.remove("d-none");
-    }
-});
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
     }
 });
 selectProduct.addEventListener("change",function(){
@@ -190,6 +183,7 @@ btnPurchase.addEventListener("click",function(){
     formData.append("total",totalValue);
     request(base_url+"/compras/setPurchase",formData,"post").then(function(objData){
         if(objData.status){
+            table.ajax.reload();
             window.location.reload();
         }else{
             Swal.fire("Error",objData.msg,"error");
@@ -233,7 +227,7 @@ function deleteItem(id){
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
-                    element.innerHTML = objData.data;
+                    table.ajax.reload();
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }
