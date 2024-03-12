@@ -91,17 +91,18 @@
                         </div>
                         <div class="table-responsive">
                             <table class="table align-middle">
-                                <tbody id="listProducts">
+                                <thead>
                                     <tr class="fw-bold">
-                                        <td>Referencia</td>
-                                        <td>Descripcion</td>
-                                        <td>Cantidad</td>
-                                        <td>Precio</td>
-                                        <td>IVA</td>
-                                        <td>Precio IVA</td>
-                                        <td>Subtotal</td>
+                                        <th>Referencia</th>
+                                        <th>Descripcion</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio</th>
+                                        <th>IVA</th>
+                                        <th>Precio IVA</th>
+                                        <th>Subtotal</th>
                                     </tr>
-                                </tbody>
+                                </thead>
+                                <tbody id="listProducts"></tbody>
                                 <tfoot>
                                     <tr>
                                         <th colspan="6" class="text-end">Subtotal:</th>
