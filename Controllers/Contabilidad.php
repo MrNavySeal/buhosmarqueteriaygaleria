@@ -50,7 +50,6 @@
                 $data['page_tag'] = "Informe";
                 $data['page_title'] = "Contabilidad | Informe";
                 $data['page_name'] = "informe";
-                $data['data'] = $this->getOutgoings();
                 $data['categories'] = $this->model->selectCatIncome(1);
                 $data['panelapp'] = "functions_countinfo.js";
                 $year = date('Y');
