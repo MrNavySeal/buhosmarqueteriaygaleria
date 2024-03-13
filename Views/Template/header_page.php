@@ -469,6 +469,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 </div>
                 <?php }?>
+                <?php if($_SESSION['permit'][11]['r']){ ?>
+                <div class="accordion-item pt-1 pb-1 mt-2">
+                    <h2 class="accordion-header" id="flush-heading20">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse20" aria-expanded="true" aria-controls="flush-collapse20"> 
+                    </button>
+                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fa fa-truck"></i> Proveedores</a>
+                    </h2>
+                    <div id="flush-collapse20" class="accordion-collapse collapse" aria-labelledby="flush-heading20">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/proveedores/categorias" class="w-100">Categorias</a>
+                                </li> 
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/proveedores/proveedores" class="w-100">Proveedores</a>
+                                </li>   
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/proveedores/articulos" class="w-100">Artículos</a>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <?php }?>
                 <?php if($_SESSION['permit'][6]['r']){ ?>
                 <div class="accordion-item pt-1 pb-1 mt-2">
                     <h2 class="accordion-header" id="flush-categorie">
