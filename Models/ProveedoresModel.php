@@ -50,15 +50,24 @@
             $request = $this->delete($sql);
             return $request;
         }
-        public function selectCategories(){
-            $sql = "SELECT * FROM supplier_categories ORDER BY id_categories DESC";       
+        public function selectCategories($flag=false){
+            $status ="";
+            if($flag)$status = "WHERE status = 1";
+            $sql = "SELECT * FROM supplier_categories $status ORDER BY id_categories DESC";     
             $request = $this->select_all($sql);
             return $request;
         }
-        public function selectCategory($id){
-            $this->intIdCategory = $id;
-            $sql = "SELECT * FROM supplier_categories WHERE id_categories = $this->intIdCategory";
+        public function selectCountries(){
+            $sql = "SELECT * FROM countries WHERE id = 47";
             $request = $this->select($sql);
+            return $request;
+        }
+        public function selectStates($country){
+            $request = $this->select_all("SELECT * FROM states WHERE country_id = $country");
+            return $request;
+        }
+        public function selectCities($state){
+            $request = $this->select_all("SELECT * FROM cities WHERE state_id = $state");
             return $request;
         }
     }

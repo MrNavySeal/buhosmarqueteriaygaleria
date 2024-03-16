@@ -10,7 +10,19 @@
             sessionCookie();
             getPermits(11);
         }
-
+        public function proveedores(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "proveedor";
+                $data['page_title'] = "Proveedores";
+                $data['page_name'] = "proveedor";
+                $data['panelapp'] = "functions_supplier.js";
+                $data['initial_data'] = array("categories"=>$this->getSelectCategories(),"countries"=>$this->getCountries());
+                $this->views->getView($this,"proveedores",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
         public function categorias(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "categoria";
@@ -22,6 +34,36 @@
                 header("location: ".base_url());
                 die();
             }
+        }
+        /*************************Suppliers methods*******************************/
+        public function getSuppliers(){
+            if($_SESSION['permitsModule']['r']){
+                $request = $this->model->selectCategories();
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+
+                        $btnEdit="";
+                        $btnDelete="";
+                        $status="";
+                        if($request[$i]['status']==1){
+                            $status='<span class="badge me-1 bg-success">Activo</span>';
+                        }else{
+                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
+                        }
+
+                        if($_SESSION['permitsModule']['u']){
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id_categories'].')" ><i class="fas fa-pencil-alt"></i></button>';
+                        }
+                        if($_SESSION['permitsModule']['d']){
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id_categories'].')"><i class="fas fa-trash-alt"></i></button>';
+                        }
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
+                        $request[$i]['status'] = $status;
+                    }   
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
         }
         /*************************Category methods*******************************/
         public function getCategories(){
@@ -129,6 +171,38 @@
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
             }
+            die();
+        }
+        public function getSelectCategories(){
+            $request = $this->model->selectCategories(true);
+            $html = "";
+            foreach ($request as $key) {
+                $html.='<option value="'.$key['id_categories'].'">'.$key['name'].'</option>';
+            }
+            return $html;
+        }
+        /*************************Others methods*******************************/
+        public function getCountries(){
+            $request = $this->model->selectCountries();
+            $html='
+            <option value="'.$request['id'].'">'.$request['name'].'</option>
+            ';
+            return $html;
+        }
+        public function getSelectCountry($id){
+            $request = $this->model->selectStates($id);
+            for ($i=0; $i < count($request) ; $i++) { 
+                $html.='<option value="'.$request[$i]['id'].'">'.$request[$i]['name'].'</option>';
+            }
+            echo json_encode($html,JSON_UNESCAPED_UNICODE);
+            die();
+        }
+        public function getSelectState($id){
+            $request = $this->model->selectCities($id);
+            for ($i=0; $i < count($request) ; $i++) { 
+                $html.='<option value="'.$request[$i]['id'].'">'.$request[$i]['name'].'</option>';
+            }
+            echo json_encode($html,JSON_UNESCAPED_UNICODE);
             die();
         }
     }
