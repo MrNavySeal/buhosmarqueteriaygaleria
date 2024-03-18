@@ -9,43 +9,48 @@
                 <form id="formItem" name="formItem" class="mb-4">
                     <input type="hidden" id="id" name="id">
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                             <h5 class="modal-title mb-3">Información inicial</h5>
+                            <div class="mb-3 uploadImg">
+                                <img src="<?= BASE_URL?>/Assets/images/uploads/category.jpg">
+                                <label for="txtImg"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
+                                <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
+                            </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="categoryList" class="form-label">Categoría <span class="text-danger">*</span></label>
                                         <select class="form-control" aria-label="Default select example" id="categoryList" name="categoryList" required>
                                             <option selected disabled>Seleccione</option>
-                                            <?=$data['categories']?>
+                                            <?=$data?>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="txtName" class="form-label">Nombre proveedor<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="txtName" name="txtName" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="txtNit" class="form-label">NIT </label>
                                         <input type="text" class="form-control" id="txtNit" name="txtNit">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="txtName" class="form-label">Nombre proveedor<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="txtName" name="txtName" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="txtEmail" class="form-label">Correo</label>
                                         <input type="email" class="form-control" id="txtEmail" name="txtEmail">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="txtPhone" class="form-label">Teléfono <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="txtPhone" name="txtPhone" required>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="txtWeb" class="form-label">Sitio web </label>
                                         <input type="text" class="form-control" id="txtWeb" name="txtWeb">
@@ -55,25 +60,24 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label for="countriesList" class="form-label">Pais<span class="text-danger">*</span></label>
-                                        <select class="form-control" aria-label="Default select example" id="countriesList" name="countriesList" required>
-                                            <option selected disabled>Seleccione</option>
-                                            <?=$data['countries']?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="stateList" class="form-label">Departamento<span class="text-danger">*</span></label>
-                                        <select class="form-control" aria-label="Default select example" id="stateList" name="stateList" required>
+                                        <label for="listCountry" class="form-label">Pais<span class="text-danger">*</span></label>
+                                        <select class="form-control" aria-label="Default select example" id="listCountry" name="listCountry" required>
                                             <option selected disabled>Seleccione</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label for="cityList" class="form-label">Ciudad<span class="text-danger">*</span></label>
-                                        <select class="form-control" aria-label="Default select example" id="cityList" name="cityList" required>
+                                        <label for="listState" class="form-label">Departamento<span class="text-danger">*</span></label>
+                                        <select class="form-control" aria-label="Default select example" id="listState" name="listState" required>
+                                            <option selected disabled>Seleccione</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="listCity" class="form-label">Ciudad<span class="text-danger">*</span></label>
+                                        <select class="form-control" aria-label="Default select example" id="listCity" name="listCity" required>
                                             <option selected disabled>Seleccione</option>
                                         </select>
                                     </div>
@@ -97,7 +101,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <h5 class="modal-title mb-3">Datos de contacto adicionales</h5>
                             <div class="d-flex align-items-center">
                                 <div>
@@ -119,7 +123,7 @@
                                         <th>Teléfono</th>
                                         <th></th>
                                     </thead>
-                                    <tbody id="tableData"></tbody>
+                                    <tbody id="tableContacts"></tbody>
                                 </table>
                             </div>
                         </div>
