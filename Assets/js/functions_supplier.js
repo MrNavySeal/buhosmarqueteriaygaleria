@@ -149,28 +149,43 @@ if(document.querySelector("#formItem")){
 function addContact(){
     const name = document.querySelector("#txtContact").value;
     const phone = document.querySelector("#txtPhoneContact").value;
-
     if(name=="" || phone==""){
         Swal.fire("Error","Para agregar datos de contacto adicionales, ambos campos deben estar llenos.","error");
         return false;
     }
+    if(arrContacts.length > 0){
+        let flag = false;
+        arrContacts.forEach(el=>{if(el.phone == phone)flag=true});
+        if(flag){
+            Swal.fire("Error","El contacto ya fue agregado con este número","error");
+            return false;
+        }
+    }
     const html = `
     <td>${name}</td>
-    <td>${phone}<td>
-    <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteContact(this)"><i class="fas fa-trash-alt"></i></button></td>`;
+    <td>${phone}</td>
+    <td>
+        <button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteContact(this)"><i class="fas fa-trash-alt"></i></button>
+    </td>`;
     let tr = document.createElement("tr");
     tr.setAttribute("data-id",arrContacts.length);
+    tr.classList.add("contact-item");
     tr.innerHTML = html;
     tableData.appendChild(tr);
-    arrContacts.push({name:name,phone:phone});
-    //document.querySelector("#txtContact").value ="";
-    //document.querySelector("#txtPhoneContact").value ="";
+    arrContacts.unshift({name:name,phone:phone});
+    document.querySelector("#txtContact").value ="";
+    document.querySelector("#txtPhoneContact").value ="";
 }
 function deleteContact(item){
     const element = item.parentElement.parentElement;
     const id = element.getAttribute("data-id");
     arrContacts.splice(id,1);
     element.remove();
+    const elements = document.querySelectorAll(".contact-item");
+    if(elements.length > 0){
+        let index = 0;
+        elements.forEach(el=>{el.setAttribute("data-id",index);index++});
+    }
 }
 function viewItem(id){
     let formData = new FormData();
@@ -272,7 +287,7 @@ function editItem(id){
             arrContacts = objData.data.contacts;
             for (let i = 0; i < arrContacts.length; i++) {
                 html+=`
-                    <tr data-id="${i}">
+                    <tr data-id="${i}" class="contact-item">
                         <td>${arrContacts[i]['name']}</td>
                         <td>${arrContacts[i]['phone']}</td>
                         <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteContact(this)"><i class="fas fa-trash-alt"></i></button></td>

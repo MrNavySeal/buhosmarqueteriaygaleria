@@ -200,6 +200,10 @@
                         $arrResponse=array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $id = intval($_POST['id']);
+                        $image = $this->model->selectSupplier($id)['image'];
+                        if($image != "category.jpg"){
+                            deleteFile($image);
+                        }
                         $request = $this->model->deleteSupplier($id);
                         if($request=="ok"){
                             $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
