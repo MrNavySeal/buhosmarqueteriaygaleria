@@ -363,5 +363,19 @@
             echo json_encode($html,JSON_UNESCAPED_UNICODE);
             die();
         }
+        public function getOldSuppliers(){
+            $request = $this->model->selectOldSuppliers();
+            for ($i=0; $i < count($request) ; $i++) { 
+                $this->model->insertOldSuppliers(
+                    $request[$i]['idsupplier'],
+                    $request[$i]['nit'],
+                    $request[$i]['name'],
+                    $request[$i]['email'],
+                    $request[$i]['phone'],
+                    $request[$i]['address']
+                );
+            }
+            die();
+        }
     }
 ?>
