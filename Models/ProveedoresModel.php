@@ -59,6 +59,12 @@
             $request = $this->select_all($sql);
             return $request;
         }
+        public function selectCategory($id){
+            $this->intIdCategory = $id;
+            $sql = "SELECT * FROM supplier_categories WHERE id_categories = $this->intIdCategory";
+            $request = $this->select($sql);
+            return $request;
+        }
         /*************************Suppliers methods*******************************/
         public function insertSupplier(array $arrData){
             $this->arrData = $arrData;
