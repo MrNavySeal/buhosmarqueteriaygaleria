@@ -215,29 +215,5 @@
             $request = $this->select_all("SELECT * FROM cities WHERE state_id = $state");
             return $request;
         }
-        public function selectOldSuppliers(){
-            $request = $this->select_all("SELECT * FROM suppliers");
-            return $request;
-        }
-        public function insertOldSuppliers($idSupplier,$nit,$name,$email,$phone,$address){
-            $sql = "INSERT INTO supplier(id_supplier,categories_id,name,nit,email,phone,address,status,img,country_id,state_id,city_id) 
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
-            $arrData = array(
-                $idSupplier,
-                1,
-                $name,
-                $nit,
-                $email,
-                $phone,
-                $address,
-                1,
-                "category.jpg",
-                47,
-                775,
-                12531
-            );
-            $request = $this->insert($sql,$arrData);
-            return $request;
-        }
     }
 ?>
