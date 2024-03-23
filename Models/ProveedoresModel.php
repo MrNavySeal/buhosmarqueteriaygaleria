@@ -4,21 +4,25 @@
         private $intStatus;
         private $intIdCategory;
         private $intIdSupplier;
+        private $intIdMeasure;
         private $arrData;
         public function __construct(){
             parent::__construct();
         }
-        /*************************Category methods*******************************/
-        public function insertCategory(string $strName,int $status){
-			$this->strName = $strName;
-            $this->intStatus = $status;
+        /*************************Measures methods*******************************/
+        public function insertMeasure(array $arrData){
+            $this->arrData = $arrData;
 			$return = 0;
-			$sql = "SELECT * FROM supplier_categories WHERE name = '{$this->strName}'";
+			$sql = "SELECT * FROM measures WHERE name = '{$this->arrData['name']}'";
 			$request = $this->select_all($sql);
 
 			if(empty($request)){ 
-				$query_insert  = "INSERT INTO supplier_categories(name,status)  VALUES(?,?)";
-	        	$arrData = array($this->strName,$this->intStatus);
+				$query_insert  = "INSERT INTO measures(name,initials,status)  VALUES(?,?,?)";
+	        	$arrData = array(
+                    $this->arrData['name'],
+                    $this->arrData['initials'],
+                    $this->arrData['status']
+                );
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
 			}else{
@@ -26,18 +30,21 @@
 			}
 	        return $return;
 		}
-        public function updateCategory(int $intIdCategory,string $strName,int $status){
-            $this->intIdCategory = $intIdCategory;
-            $this->strName = $strName;
-            $this->intStatus = $status;
+        public function updateMeasure(int $intIdMeasure,array $arrData){
+            $this->intIdMeasure = $intIdMeasure;
+            $this->arrData = $arrData;
 
-			$sql = "SELECT * FROM supplier_categories WHERE name = '{$this->strName}' AND id_categories != $this->intIdCategory";
+			$sql = "SELECT * FROM measures WHERE name = '{$this->arrData['name']}' AND id_measure != $this->intIdMeasure";
 			$request = $this->select_all($sql);
             $return = 0;
 			if(empty($request)){
                 
-                $sql = "UPDATE supplier_categories SET name=?,status=? WHERE id_categories = $this->intIdCategory";
-                $arrData = array($this->strName,$this->intStatus);
+                $sql = "UPDATE measures SET name=?,initials=?,status=? WHERE id_measure = $this->intIdMeasure";
+                $arrData = array(
+                    $this->arrData['name'],
+                    $this->arrData['initials'],
+                    $this->arrData['status']
+                );
 				$request = $this->update($sql,$arrData);
                 $return = intval($request);
 			}else{
@@ -46,25 +53,24 @@
 			return $return;
 		
 		}
-        public function deleteCategory($id){
-            $this->intIdCategory = $id;
-            $sql = "DELETE FROM supplier_categories WHERE id_categories = $this->intIdCategory";
+        public function deleteMeasure($id){
+            $this->intIdMeasure = $id;
+            $sql = "DELETE FROM measures WHERE id_measure = $this->intIdMeasure";
             $request = $this->delete($sql);
             return $request;
         }
-        public function selectCategories($flag=false){
-            $status ="";
-            if($flag)$status = "WHERE status = 1";
-            $sql = "SELECT * FROM supplier_categories $status ORDER BY id_categories DESC";     
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function selectCategory($id){
-            $this->intIdCategory = $id;
-            $sql = "SELECT * FROM supplier_categories WHERE id_categories = $this->intIdCategory";
+        public function selectMeasure($id){
+            $this->intIdMeasure = $id;
+            $sql = "SELECT * FROM measures WHERE id_measure = $this->intIdMeasure";
             $request = $this->select($sql);
             return $request;
         }
+        public function selectMeasures(){
+            $sql = "SELECT * FROM measures";
+            $request = $this->select_all($sql);
+            return $request;
+        }
+
         /*************************Suppliers methods*******************************/
         public function insertSupplier(array $arrData){
             $this->arrData = $arrData;
@@ -73,10 +79,9 @@
             $return = "";
             if(empty($request)){
                 $sql="INSERT 
-                INTO supplier(categories_id,name,nit,email,website,phone,address,country_id,state_id,city_id,status,img,contacts) 
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                INTO supplier(name,nit,email,website,phone,address,country_id,state_id,city_id,status,img,contacts) 
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
-                    $this->arrData['category'],
                     $this->arrData['name'],
                     $this->arrData['nit'],
                     $this->arrData['email'],
@@ -105,11 +110,11 @@
             $request = $this->select_all($sql);
             $return = "";
             if(empty($request)){
-                $sql="UPDATE supplier SET categories_id=?,name=?,nit=?,email=?,
-                website=?,phone=?,address=?,country_id=?,state_id=?,city_id=?,status=?,img=?,contacts=? 
+                $sql="UPDATE supplier SET dateupdated=NOW(),name=?,nit=?,email=?,
+                website=?,phone=?,address=?,country_id=?,
+                state_id=?,city_id=?,status=?,img=?,contacts=? 
                 WHERE id_supplier = $this->intIdSupplier";
                 $arrData = array(
-                    $this->arrData['category'],
                     $this->arrData['name'],
                     $this->arrData['nit'],
                     $this->arrData['email'],
@@ -133,7 +138,6 @@
         public function selectSuppliers(){
             $sql = "SELECT 
                 s.id_supplier,
-                c.name as category,
                 s.name,
                 s.nit,
                 s.email,
@@ -148,7 +152,6 @@
                 DATE_FORMAT(s.dateupdated,'%d/%m/%Y') as dateupdated,
                 s.img
                 FROM supplier s
-                INNER JOIN supplier_categories c ON s.categories_id = c.id_categories
                 INNER JOIN countries co ON s.country_id = co.id
                 INNER JOIN cities ci ON s.city_id = ci.id
                 INNER JOIN states st on s.state_id = st.id
@@ -168,8 +171,6 @@
             $this->intIdSupplier = $id;
             $sql = "SELECT 
                 s.id_supplier,
-                s.categories_id,
-                c.name as category,
                 s.name,
                 s.nit,
                 s.email,
@@ -188,7 +189,6 @@
                 DATE_FORMAT(s.dateupdated,'%d/%m/%Y') as dateupdated,
                 s.img
                 FROM supplier s
-                INNER JOIN supplier_categories c ON s.categories_id = c.id_categories
                 INNER JOIN countries co ON s.country_id = co.id
                 INNER JOIN cities ci ON s.city_id = ci.id
                 INNER JOIN states st on s.state_id = st.id

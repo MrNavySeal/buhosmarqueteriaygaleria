@@ -13,10 +13,6 @@
                             <tbody>
                                 <tr><td><img id="strImage" class="rounded-circle" style="height:100px;width:100px;"></td></tr>
                                 <tr>
-                                    <td><strong>Categoría: </strong></td>
-                                    <td id="strCategory"></td>
-                                </tr>
-                                <tr>
                                     <td><strong>NIT: </strong></td>
                                     <td id="strNit"></td>
                                 </tr>

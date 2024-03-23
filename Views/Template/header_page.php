@@ -464,29 +464,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <a href="<?=base_url()?>/inventario/productos" class="w-100">Productos</a>
                                 </li> 
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <?php }?>
-                <?php if($_SESSION['permit'][11]['r']){ ?>
-                <div class="accordion-item pt-1 pb-1 mt-2">
-                    <h2 class="accordion-header" id="flush-heading20">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse20" aria-expanded="true" aria-controls="flush-collapse20"> 
-                    </button>
-                    <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fa fa-truck"></i> Proveedores</a>
-                    </h2>
-                    <div id="flush-collapse20" class="accordion-collapse collapse" aria-labelledby="flush-heading20">
-                        <div class="accordion-body">
-                            <ul class="list-group">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <a href="<?=base_url()?>/proveedores/categorias" class="w-100">Categorias</a>
-                                </li> 
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <a href="<?=base_url()?>/proveedores/proveedores" class="w-100">Proveedores</a>
-                                </li>   
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <a href="<?=base_url()?>/proveedores/articulos" class="w-100">Artículos</a>
                                 </li> 
                             </ul>
                         </div>
@@ -571,6 +550,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div id="flush-collapse7" class="accordion-collapse collapse" aria-labelledby="flush-heading7">
                         <div class="accordion-body">
                             <ul class="list-group">
+                                <?php 
+                                    if($_SESSION['idUser']==1){
+                                ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/empresa" class="w-100">Parámetros de empresa</a>
+                                </li>
+                                <?php 
+                                    }
+                                ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="<?=base_url()?>/proveedores/unidades" class="w-100">Unidades de medida</a>
+                                </li> 
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <a href="<?=base_url()?>/administracion/correo" class="w-100">Correo <?=$emails?></a>
                                 </li>     
@@ -640,14 +631,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <h2 class="accordion-header" id="flush-categorie">
                         <button class="btn" type="button"></button>
                         <a href="<?=base_url()?>/articulos" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="far fa-newspaper"></i> Blog</a>
-                    </h2>
-                </div>
-                <?php }?>
-                <?php if($_SESSION['idUser']==1){ ?>
-                <div class="accordion-item pt-1 pb-1 mt-2">
-                    <h2 class="accordion-header" id="flush-categorie">
-                        <button class="btn" type="button"></button>
-                        <a href="<?=base_url()?>/empresa" class="text-decoration-none t-color-2 t-color-h-2 w-100"><i class="fas fa-briefcase"></i> Empresa </a>
                     </h2>
                 </div>
                 <?php }?>

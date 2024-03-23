@@ -23,7 +23,6 @@ let table = new DataTable("#tableData",{
                 return '<img src="'+data+'" class="rounded" height="50" width="50">';
             }
         },
-        { data: 'category'},
         { data: 'nit' },
         { data: 'name' },
         { data: 'phone' },
@@ -103,10 +102,10 @@ if(document.querySelector("#formItem")){
         e.preventDefault();
         const strName = document.querySelector("#txtName").value;
         const strNit = document.querySelector("#txtNit").value;
-        const categoryList = document.querySelector("#categoryList").value;
         const strPhone = document.querySelector("#txtPhone").value;
         const strEmail = document.querySelector("#txtEmail").value;
-        if(strName == "" || categoryList <= 0 || strPhone == "" || intCity.value <=0 
+        const strAddress = document.querySelector("#txtAddress").value;
+        if(strName == "" || strPhone == "" || intCity.value <=0 
         || intState.value <=0 || intCountry.value <=0   ){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
@@ -254,7 +253,6 @@ function viewItem(id){
             document.querySelector("#strCreated").innerHTML = objData.data.datecreated;
             document.querySelector("#strUpdated").innerHTML = objData.data.datecreated;
             document.querySelector("#strStatus").innerHTML = status;
-            document.querySelector("#strCategory").innerHTML = objData.data.category;
             document.querySelector("#strNit").innerHTML = objData.data.nit;
             document.querySelector("#dataContacts").innerHTML = html;
             modalView.show();
@@ -278,7 +276,6 @@ function editItem(id){
             document.querySelector("#txtWeb").value = objData.data.website;
             document.querySelector("#txtAddress").value = objData.data.address;
             document.querySelector("#statusList").value =objData.data.status;
-            document.querySelector("#categoryList").value = objData.data.categories_id;
             document.querySelector("#listCountry").innerHTML = objData.countries;
             document.querySelector("#listState").innerHTML =objData.states;
             document.querySelector("#listCity").innerHTML =objData.cities;

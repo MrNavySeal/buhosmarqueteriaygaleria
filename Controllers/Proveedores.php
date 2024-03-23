@@ -16,7 +16,6 @@
                 $data['page_title'] = "Proveedores";
                 $data['page_name'] = "proveedor";
                 $data['panelapp'] = "functions_supplier.js";
-                $data['initial_data'] =$this->getSelectCategories();
                 $this->views->getView($this,"proveedores",$data);
             }else{
                 header("location: ".base_url());
@@ -30,6 +29,18 @@
                 $data['page_name'] = "categoria";
                 $data['panelapp'] = "functions_supplier_category.js";
                 $this->views->getView($this,"categoria",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+        public function unidades(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "unidad";
+                $data['page_title'] = "Administración | Unidades de medida";
+                $data['page_name'] = "unidad";
+                $data['panelapp'] = "functions_supplier_measures.js";
+                $this->views->getView($this,"unidades",$data);
             }else{
                 header("location: ".base_url());
                 die();
@@ -120,7 +131,7 @@
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
                     if(empty($_POST['txtName']) || empty($_POST['txtPhone']) || $_POST['listCountry'] <= 0 
-                    || $_POST['listState'] <= 0 || $_POST['listCity'] <= 0){
+                    || $_POST['listState'] <= 0 || $_POST['listCity'] <= 0 || empty($_POST['txtAddress'])){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $intId = intval($_POST['id']);
@@ -129,7 +140,6 @@
                             "state"=>intval($_POST['listState']),
                             "city"=>intval($_POST['listCity']),
                             "status"=>intval($_POST['statusList']),
-                            "category"=>intval($_POST['categoryList']),
                             "name"=>ucwords(strClean($_POST['txtName'])),
                             "nit"=>strClean($_POST['txtNit']),
                             "phone"=>strClean($_POST['txtPhone']),
@@ -216,10 +226,10 @@
             }
             die();
         }
-        /*************************Category methods*******************************/
-        public function getCategories(){
+        /*************************Measures methods*******************************/
+        public function getMeasures(){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectCategories();
+                $request = $this->model->selectMeasures();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -233,10 +243,10 @@
                         }
 
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id_categories'].')" ><i class="fas fa-pencil-alt"></i></button>';
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id_measure'].')" ><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id_categories'].')"><i class="fas fa-trash-alt"></i></button>';
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id_measure'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
                         $request[$i]['options'] = $btnEdit.$btnDelete;
                         $request[$i]['status'] = $status;
@@ -246,14 +256,14 @@
             }
             die();
         }
-        public function getCategory(){
+        public function getMeasure(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     if(empty($_POST)){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
-                        $idCategory = intval($_POST['id']);
-                        $request = $this->model->selectCategory($idCategory);
+                        $id = intval($_POST['id']);
+                        $request = $this->model->selectMeasure($id);
                         if(!empty($request)){
                             $arrResponse = array("status"=>true,"data"=>$request);
                         }else{
@@ -265,24 +275,27 @@
             }
             die();
         }
-        public function setCategory(){
+        public function setMeasure(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
-                    if(empty($_POST['txtName'])){
+                    if(empty($_POST['txtName']) || empty($_POST['txtInitials'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $id = intval($_POST['id']);
-                        $strName = ucwords(strClean($_POST['txtName']));
-                        $status = intval($_POST['statusList']);
+                        $arrData = array(
+                            "name"=>ucwords(strClean($_POST['txtName'])),
+                            "initials"=>strtoupper(strClean($_POST['txtInitials'])),
+                            "status"=>intval($_POST['statusList'])
+                        );
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                $request= $this->model->insertCategory($strName,$status);
+                                $request= $this->model->insertMeasure($arrData);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->updateCategory($id,$strName,$status);
+                                $request = $this->model->updateMeasure($id,$arrData);
                             }
                         }
                         if(is_numeric($request) && $request > 0){
@@ -292,7 +305,7 @@
                                 $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
                             }
                         }else if($request == "exist"){
-                            $arrResponse = array('status' => false, 'msg' => 'La categoría ya existe, prueba con otro nombre.');		
+                            $arrResponse = array('status' => false, 'msg' => 'La unidad de medida ya existe, prueba con otro nombre.');		
                         }else{
                             $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
                         }
@@ -302,7 +315,7 @@
             }
 			die();
 		}
-        public function delCategory(){
+        public function delMeasure(){
             if($_SESSION['permitsModule']['d']){
 
                 if($_POST){
@@ -310,11 +323,9 @@
                         $arrResponse=array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $id = intval($_POST['id']);
-                        $request = $this->model->deleteCategory($id);
+                        $request = $this->model->deleteMeasure($id);
                         if($request=="ok"){
                             $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
-                        }else if($request =="exist"){
-                            $arrResponse = array("status"=>false,"msg"=>"La categoría tiene al menos una subcategoría asignada, no puede ser eliminada.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
@@ -323,14 +334,6 @@
                 }
             }
             die();
-        }
-        public function getSelectCategories(){
-            $request = $this->model->selectCategories(true);
-            $html = "";
-            foreach ($request as $key) {
-                $html.='<option value="'.$key['id_categories'].'">'.$key['name'].'</option>';
-            }
-            return $html;
         }
         /*************************Others methods*******************************/
         public function getCountries(){

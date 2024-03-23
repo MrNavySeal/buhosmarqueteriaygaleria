@@ -1,6 +1,6 @@
 <?php 
     headerPage($data);
-    getModal("modalSupplierCategory");
+    getModal("modalMeasure");
 ?>
 <main class="addFilter container mb-3" id="<?=$data['page_name']?>">
     <div class="row">
@@ -22,6 +22,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
+                            <th>Sigla</th>
                             <th>Estado</th>
                             <th>Opciones</th>
                         </tr>
