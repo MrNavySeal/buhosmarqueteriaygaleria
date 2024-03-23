@@ -8,13 +8,12 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/Proveedores/getMeasures",
+        "url": " "+base_url+"/ProductosCategorias/getCategories",
         "dataSrc":""
     },
     columns: [
-        { data: 'id_measure'},
+        { data: 'idcategory'},
         { data: 'name' },
-        { data: 'initials' },
         { data: 'status' },
         { data: 'options' },
     ],
@@ -39,30 +38,39 @@ if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML = "Nueva unidad de medida";
+        document.querySelector(".modal-title").innerHTML = "Nueva categoría";
         document.querySelector("#txtName").value = "";
-        document.querySelector("#txtInitials").value = "";
-        document.querySelector("#statusList").value = 1;
-        document.querySelector("#id").value ="";
+        document.querySelector("#txtDescription").value = "";
+        document.querySelector("#statusList").value =1;
+        document.querySelector("#idCategory").value ="";
+        document.querySelector(".uploadImg img").setAttribute("src",base_url+"/Assets/images/uploads/category.jpg");
         modal.show();
     });
 }
 if(document.querySelector("#formItem")){
     let form = document.querySelector("#formItem");
+    let img = document.querySelector("#txtImg");
+    let imgLocation = ".uploadImg img";
+    img.addEventListener("change",function(){
+        uploadImg(img,imgLocation);
+    });
+
     form.addEventListener("submit",function(e){
         e.preventDefault();
+
         let strName = document.querySelector("#txtName").value;
-        let strInitial = document.querySelector("#txtInitials").value;
-        if(strName == "" || strInitial == ""){
+        if(strName == ""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
         
+        let url = base_url+"/ProductosCategorias/setCategory";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+            
         btnAdd.setAttribute("disabled","");
-        request(base_url+"/proveedores/setMeasure",formData,"post").then(function(objData){
+        request(url,formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -78,16 +86,17 @@ if(document.querySelector("#formItem")){
 }
      
 function editItem(id){
-    let url = base_url+"/proveedores/getMeasure";
+    let url = base_url+"/ProductosCategorias/getCategory";
     let formData = new FormData();
-    formData.append("id",id);
+    formData.append("idCategory",id);
     request(url,formData,"post").then(function(objData){
         if(objData.status){
             document.querySelector("#txtName").value = objData.data.name;
-            document.querySelector("#txtInitials").value = objData.data.initials;
             document.querySelector("#statusList").value = objData.data.status;
-            document.querySelector("#id").value = objData.data.id_measure;
-            document.querySelector(".modal-title").innerHTML = "Actualizar unidad de medida";
+            document.querySelector("#txtDescription").value = objData.data.description;
+            document.querySelector("#idCategory").value = objData.data.idcategory;
+            document.querySelector(".uploadImg img").setAttribute("src",objData.data.picture);
+            document.querySelector(".modal-title").innerHTML = "Actualizar categoría";
             modal.show();
         }else{
             Swal.fire("Error",objData.msg,"error");
@@ -106,9 +115,9 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/proveedores/delMeasure"
+            let url = base_url+"/ProductosCategorias/delCategory"
             let formData = new FormData();
-            formData.append("id",id);
+            formData.append("idCategory",id);
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");

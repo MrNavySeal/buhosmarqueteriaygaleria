@@ -8,11 +8,11 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/Inventario/getCategories",
+        "url": " "+base_url+"/productos/getSpecs",
         "dataSrc":""
     },
     columns: [
-        { data: 'idcategory'},
+        { data: 'id_specification'},
         { data: 'name' },
         { data: 'status' },
         { data: 'options' },
@@ -26,7 +26,7 @@ let table = new DataTable("#tableData",{
             "className": "btn btn-success mt-2"
         }
     ],
-    order: [[1, 'asc']],
+    order: [[0, 'desc']],
     pagingType: 'full',
     scrollY:'400px',
     //scrollX: true,
@@ -38,39 +38,30 @@ if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML = "Nueva categoría";
+        document.querySelector(".modal-title").innerHTML = "Nueva característica";
         document.querySelector("#txtName").value = "";
-        document.querySelector("#txtDescription").value = "";
-        document.querySelector("#statusList").value =1;
-        document.querySelector("#idCategory").value ="";
-        document.querySelector(".uploadImg img").setAttribute("src",base_url+"/Assets/images/uploads/category.jpg");
+        document.querySelector("#txtInitials").value = "";
+        document.querySelector("#statusList").value = 1;
+        document.querySelector("#id").value ="";
         modal.show();
     });
 }
 if(document.querySelector("#formItem")){
     let form = document.querySelector("#formItem");
-    let img = document.querySelector("#txtImg");
-    let imgLocation = ".uploadImg img";
-    img.addEventListener("change",function(){
-        uploadImg(img,imgLocation);
-    });
-
     form.addEventListener("submit",function(e){
         e.preventDefault();
-
         let strName = document.querySelector("#txtName").value;
-        if(strName == ""){
+        let strInitial = document.querySelector("#txtInitials").value;
+        if(strName == "" || strInitial == ""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
         
-        let url = base_url+"/inventario/setCategory";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            
         btnAdd.setAttribute("disabled","");
-        request(url,formData,"post").then(function(objData){
+        request(base_url+"/productos/setSpecs",formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -86,17 +77,15 @@ if(document.querySelector("#formItem")){
 }
      
 function editItem(id){
-    let url = base_url+"/inventario/getCategory";
+    let url = base_url+"/productos/getSpec";
     let formData = new FormData();
-    formData.append("idCategory",id);
+    formData.append("id",id);
     request(url,formData,"post").then(function(objData){
         if(objData.status){
             document.querySelector("#txtName").value = objData.data.name;
             document.querySelector("#statusList").value = objData.data.status;
-            document.querySelector("#txtDescription").value = objData.data.description;
-            document.querySelector("#idCategory").value = objData.data.idcategory;
-            document.querySelector(".uploadImg img").setAttribute("src",objData.data.picture);
-            document.querySelector(".modal-title").innerHTML = "Actualizar categoría";
+            document.querySelector("#id").value = objData.data.id_measure;
+            document.querySelector(".modal-title").innerHTML = "Actualizar característica";
             modal.show();
         }else{
             Swal.fire("Error",objData.msg,"error");
@@ -115,9 +104,9 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/inventario/delCategory"
+            let url = base_url+"/productos/delSpec"
             let formData = new FormData();
-            formData.append("idCategory",id);
+            formData.append("id",id);
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");

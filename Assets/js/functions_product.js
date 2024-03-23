@@ -14,7 +14,7 @@ window.addEventListener("load",function(){
     let btnSpc = document.querySelector("#btnSpc");
     let selectFramingMode = document.querySelector("#framingMode");
     if(id == 0){
-        request(base_url+"/inventario/getSelectCategories","","get").then(function(objData){
+        request(base_url+"/ProductosCategorias/getSelectCategories","","get").then(function(objData){
             categoryList.innerHTML = objData.data;
         });
     }
@@ -52,7 +52,7 @@ window.addEventListener("load",function(){
     categoryList.addEventListener("change",function(){
         let formData = new FormData();
         formData.append("idCategory",categoryList.value);
-        request(base_url+"/inventario/getSelectSubcategories",formData,"post").then(function(objData){
+        request(base_url+"/ProductosCategorias/getSelectSubcategories",formData,"post").then(function(objData){
             document.querySelector("#subcategoryList").innerHTML = objData.data;
         });
     });
@@ -140,7 +140,7 @@ window.addEventListener("load",function(){
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
         
-        request(base_url+"/inventario/setProduct",data,"post").then(function(objData){
+        request(base_url+"/productos/setProduct",data,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -152,7 +152,7 @@ window.addEventListener("load",function(){
                     divImg[i].remove();
                 }*/
                 if (id == 0) {
-                    window.location.href=base_url+"/inventario/productos";
+                    window.location.href=base_url+"/productos";
                 } else {
                     window.location.reload();
                 }

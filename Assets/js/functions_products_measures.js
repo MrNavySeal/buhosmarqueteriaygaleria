@@ -1,5 +1,6 @@
 'use strict';
 
+
 let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
 let table = new DataTable("#tableData",{
     "dom": 'lfBrtip',
@@ -7,13 +8,13 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/Inventario/getSubCategories",
+        "url": " "+base_url+"/ProductosOpciones/getMeasures",
         "dataSrc":""
     },
     columns: [
-        { data: 'idsubcategory'},
+        { data: 'id_measure'},
         { data: 'name' },
-        { data: 'category' },
+        { data: 'initials' },
         { data: 'status' },
         { data: 'options' },
     ],
@@ -26,7 +27,7 @@ let table = new DataTable("#tableData",{
             "className": "btn btn-success mt-2"
         }
     ],
-    order: [[1, 'asc']],
+    order: [[0, 'desc']],
     pagingType: 'full',
     scrollY:'400px',
     //scrollX: true,
@@ -38,26 +39,21 @@ if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML="Nueva subcategoria";
-        document.querySelector("#idSubCategory").value = "";
+        document.querySelector(".modal-title").innerHTML = "Nueva unidad de medida";
         document.querySelector("#txtName").value = "";
+        document.querySelector("#txtInitials").value = "";
         document.querySelector("#statusList").value = 1;
-        document.querySelector("#categoryList").value = 0;
+        document.querySelector("#id").value ="";
         modal.show();
     });
 }
 if(document.querySelector("#formItem")){
-    request(base_url+"/inventario/getSelectCategories","","get").then(function(objData){
-        document.querySelector("#categoryList").innerHTML = objData.data;
-    });
     let form = document.querySelector("#formItem");
     form.addEventListener("submit",function(e){
         e.preventDefault();
-
         let strName = document.querySelector("#txtName").value;
-        let idCategory = document.querySelector("#categoryList").value;
-
-        if(strName == "" || idCategory == ""){
+        let strInitial = document.querySelector("#txtInitials").value;
+        if(strName == "" || strInitial == ""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
@@ -66,33 +62,32 @@ if(document.querySelector("#formItem")){
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
-
-        request(base_url+"/inventario/setSubCategory",formData,"post").then(function(objData){
+        request(base_url+"/ProductosOpciones/setMeasure",formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
                 Swal.fire("Guardado",objData.msg,"success");
+                table.ajax.reload();
                 form.reset();
                 modal.hide();
-                table.ajax.reload();
             }else{
                 Swal.fire("Error",objData.msg,"error");
             }
         });
     })
 }
-
+     
 function editItem(id){
-    let url = base_url+"/inventario/getSubCategory";
+    let url = base_url+"/ProductosOpciones/getMeasure";
     let formData = new FormData();
-    formData.append("idSubCategory",id);
+    formData.append("id",id);
     request(url,formData,"post").then(function(objData){
         if(objData.status){
-            document.querySelector(".modal-title").innerHTML="Actualizar subcategoria";
-            document.querySelector("#idSubCategory").value = objData.data.idsubcategory;
             document.querySelector("#txtName").value = objData.data.name;
+            document.querySelector("#txtInitials").value = objData.data.initials;
             document.querySelector("#statusList").value = objData.data.status;
-            document.querySelector("#categoryList").value = objData.data.categoryid;
+            document.querySelector("#id").value = objData.data.id_measure;
+            document.querySelector(".modal-title").innerHTML = "Actualizar unidad de medida";
             modal.show();
         }else{
             Swal.fire("Error",objData.msg,"error");
@@ -111,9 +106,9 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/inventario/delSubCategory"
+            let url = base_url+"/ProductosOpciones/delMeasure"
             let formData = new FormData();
-            formData.append("idSubCategory",id);
+            formData.append("id",id);
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");

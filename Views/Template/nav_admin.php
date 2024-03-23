@@ -68,7 +68,44 @@
                 }
             ?>
             <?php 
-                if($_SESSION['permit'][4]['r']){
+                if($_SESSION['permit'][11]['r']){
+            ?>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-heading20">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse20" aria-expanded="true" aria-controls="flush-collapse5"> 
+                </button>
+                <a href="#" class="text-decoration-none t-color-2 t-color-h-2"><i class="fa fa-shopping-bag" aria-hidden="true"></i> Productos</a>
+                </h2>
+                <div id="flush-collapse20" class="accordion-collapse collapse" aria-labelledby="flush-heading20">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/ProductosCategorias/categorias" class="w-100">Categorias</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/ProductosCategorias/subcategorias" class="w-100">Subcategorias</a>
+                            </li>      
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/productos/productos" class="w-100">Productos</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/ProductosOpciones/caracteristicas" class="w-100">Variantes de producto</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/ProductosOpciones/unidades" class="w-100">Unidades de medida</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/ProductosOpciones/caracteristicas" class="w-100">Características de producto</a>
+                            </li> 
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][11]['r']){
             ?>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="flush-heading4">
@@ -98,6 +135,12 @@
                     </div>
                 </div>
             </div>
+            <?php 
+                }
+            ?>
+            <?php 
+                if($_SESSION['permit'][4]['r']){
+            ?>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="flush-heading5">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse5" aria-expanded="true" aria-controls="flush-collapse5"> 
@@ -108,25 +151,25 @@
                     <div class="accordion-body">
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="<?=base_url()?>/inventario/categorias" class="w-100">Categorias</a>
+                                <a href="<?=base_url()?>/inventario" class="w-100">Inventario</a>
                             </li> 
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="<?=base_url()?>/inventario/subcategorias" class="w-100">Subcategorias</a>
+                                <a href="<?=base_url()?>/inventario/entradas" class="w-100">Entradas</a>
                             </li>      
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="<?=base_url()?>/inventario/productos" class="w-100">Productos</a>
+                                <a href="<?=base_url()?>/inventario/salidas" class="w-100">Salidas</a>
                             </li> 
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="<?=base_url()?>/proveedores/proveedores" class="w-100">Proveedores</a>
-                            </li>
+                                <a href="<?=base_url()?>/inventario/kardex" class="w-100">Kardex</a>
+                            </li> 
                         </ul>
                     </div>
                 </div>
             </div>
-            
             <?php 
                 }
             ?>
+            
             <?php 
                 if($_SESSION['permit'][6]['r']){
             ?>
@@ -162,16 +205,22 @@
                 </h2>
                 <div id="flush-collapse6" class="accordion-collapse collapse" aria-labelledby="flush-heading6">
                     <div class="accordion-body">
-                        <ul class="list-group">
+                        <ul class="list-group">      
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="<?=base_url()?>/compras/proveedores" class="w-100">Proveedores</a>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="<?=base_url()?>/compras/almacen" class="w-100">Almacén</a>
-                            </li>        
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="<?=base_url()?>/compras/compras" class="w-100">Compras</a>
+                                <a href="<?=base_url()?>/compras/compras" class="w-100">Nueva compra</a>
                             </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/compras/compras" class="w-100">Compras por crédito</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/compras/compras" class="w-100">Historial de Compras</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/compras/compras" class="w-100">Detalle de Compras</a>
+                            </li> 
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="<?=base_url()?>/proveedores/proveedores" class="w-100">Proveedores</a>
+                            </li>  
                         </ul>
                     </div>
                 </div>
@@ -236,9 +285,6 @@
                             <?php 
                                 }
                             ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="<?=base_url()?>/proveedores/unidades" class="w-100">Unidades de medida</a>
-                            </li> 
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <a href="<?=base_url()?>/administracion/correo" class="w-100">Correo <?=$emails?></a>
                             </li>     
