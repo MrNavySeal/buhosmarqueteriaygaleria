@@ -196,7 +196,7 @@
         public function setSpec(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
-                    if(empty($_POST['txtName']) || empty($_POST['txtInitials'])){
+                    if(empty($_POST['txtName'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $id = intval($_POST['id']);

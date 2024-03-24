@@ -8,7 +8,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/productos/getSpecs",
+        "url": " "+base_url+"/ProductosOpciones/getSpecs",
         "dataSrc":""
     },
     columns: [
@@ -40,7 +40,6 @@ if(document.querySelector("#btnNew")){
     btnNew.addEventListener("click",function(){
         document.querySelector(".modal-title").innerHTML = "Nueva característica";
         document.querySelector("#txtName").value = "";
-        document.querySelector("#txtInitials").value = "";
         document.querySelector("#statusList").value = 1;
         document.querySelector("#id").value ="";
         modal.show();
@@ -51,8 +50,7 @@ if(document.querySelector("#formItem")){
     form.addEventListener("submit",function(e){
         e.preventDefault();
         let strName = document.querySelector("#txtName").value;
-        let strInitial = document.querySelector("#txtInitials").value;
-        if(strName == "" || strInitial == ""){
+        if(strName == ""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
@@ -61,7 +59,7 @@ if(document.querySelector("#formItem")){
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
-        request(base_url+"/productos/setSpecs",formData,"post").then(function(objData){
+        request(base_url+"/ProductosOpciones/setSpec",formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -77,14 +75,14 @@ if(document.querySelector("#formItem")){
 }
      
 function editItem(id){
-    let url = base_url+"/productos/getSpec";
+    let url = base_url+"/ProductosOpciones/getSpec";
     let formData = new FormData();
     formData.append("id",id);
     request(url,formData,"post").then(function(objData){
         if(objData.status){
             document.querySelector("#txtName").value = objData.data.name;
             document.querySelector("#statusList").value = objData.data.status;
-            document.querySelector("#id").value = objData.data.id_measure;
+            document.querySelector("#id").value = objData.data.id_specification;
             document.querySelector(".modal-title").innerHTML = "Actualizar característica";
             modal.show();
         }else{
@@ -104,7 +102,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/productos/delSpec"
+            let url = base_url+"/ProductosOpciones/delSpec"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){
