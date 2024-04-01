@@ -9,7 +9,7 @@
                     <?php
                         if($_SESSION['permitsModule']['w']){
                     ?>
-                    <a href="<?=BASE_URL."/Inventario/producto"?>" class="btn btn-primary d-none" id="btnNew" >Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></a>
+                    <a href="<?=BASE_URL."/productos/producto"?>" class="btn btn-primary d-none" id="btnNew" >Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></a>
                     <?php
                     }
                     ?>

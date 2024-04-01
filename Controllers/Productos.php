@@ -26,7 +26,7 @@
         public function producto($params){
             if($_SESSION['permitsModule']['w']){
                 $data['page_tag'] = "Productos";
-                $data['page_title'] = "Productos";
+                $data['page_title'] = "Nuevo Producto";
                 $data['page_name'] = "productos";
                 $data['panelapp'] = "functions_product.js";
                 if($params==""){
@@ -96,65 +96,63 @@
             die();
         }
         public function setProduct(){
+            
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
-                    if(empty($_POST['txtName']) || empty($_POST['statusList']) || empty($_POST['categoryList'])
-                    || empty($_POST['subcategoryList'])){
+                    $arrData = json_decode($_POST['data'],true);
+                    //dep($arrData);exit;
+                    if(empty($arrData)){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
-                        $idProduct = intval($_POST['idProduct']);
-                        $strReference = strtoupper(strClean($_POST['txtReference']));
-                        $strName = ucwords(strClean($_POST['txtName']));
-                        $strShortDescription = strClean($_POST['txtShortDescription']);
-                        $idCategory = intval($_POST['categoryList']);
-                        $idSubcategory = intval($_POST['subcategoryList']);
-                        $intPrice = intval($_POST['txtPrice']);
-                        $intDiscount = intval($_POST['txtDiscount']);
-                        $intStock =  intval($_POST['txtStock']);
-                        $intStatus = intval($_POST['statusList']);
-                        $strDescription = strClean($_POST['txtDescription']);
-                        $intProductType = intval($_POST['selectProductType']);
-                        $framingMode = intval($_POST['framingMode']);
-                        $arrVariants = json_decode($_POST['variants'],true);
-                        $arrSpecs = $_POST['specs'];
+                        $arrGeneral = $arrData['general'];
+                        $id = intval($arrGeneral['id']);
+                        $strName = ucwords(strClean($arrGeneral['name']));
+                        $strReference = strtoupper(strClean($arrGeneral['reference']));
                         $imgFraming = "";
                         $photoFraming="category.jpg";
                         $reference = $strReference != "" ? $strReference."-" : "";
-
                         $route = clear_cadena($reference.$strName);
                         $route = strtolower(str_replace("¿","",$route));
                         $route = str_replace(" ","-",$route);
                         $route = str_replace("?","",$route);
-                        $photos = json_decode($_POST['images'],true);
 
-                        if($idProduct == 0){
+                        $data = array(
+                            "images"=>$arrGeneral['images'],
+                            "specs"=>$arrGeneral['specs'],
+                            "status"=>intval($arrGeneral['status']),
+                            "subcategory"=>intval($arrGeneral['subcategory']),
+                            "category"=>intval($arrGeneral['category']),
+                            "framing_mode"=> intval($arrGeneral['framing_mode']),
+                            "measure"=>intval($arrGeneral['measure']),
+                            "import"=>intval($arrGeneral['import']),
+                            "is_product"=>intval($arrGeneral['is_product']),
+                            "is_ingredient"=>intval($arrGeneral['is_ingredient']),
+                            "is_combo"=>intval($arrGeneral['is_combo']),
+                            "is_stock"=>intval($arrGeneral['is_stock']),
+                            "price_purchase"=>intval($arrGeneral['price_purchase']),
+                            "price_sell"=>intval($arrGeneral['price_sell']),
+                            "price_offer"=>intval($arrGeneral['price_offer']),
+                            "product_type"=>intval($arrGeneral['product_type']),
+                            "stock"=>intval($arrGeneral['stock']),
+                            "min_stock"=>intval($arrGeneral['min_stock']),
+                            "short_description"=>strClean($arrGeneral['short_description']),
+                            "description"=>strClean($arrGeneral['description']),
+                            "name"=>$strName,
+                            "reference"=>$strReference,
+                            "route"=>$route
+                        );
+
+                        if($id == 0){
                             if($_SESSION['permitsModule']['w']){
-                                if($framingMode==1){
-                                    if($framingMode == 1 && $_FILES['txtImgFrame']['name'] != ""){
+                                if($data['framing_mode']==1){
+                                    if($data['framing_mode']==1 && $_FILES['txtImgFrame']['name'] != ""){
                                         $imgFraming = $_FILES['txtImgFrame'];
                                         $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
                                     }
                                 }
                                 $option = 1;
-                                $request= $this->model->insertProduct(
-                                    $idCategory,
-                                    $idSubcategory,
-                                    $strReference,
-                                    $strName,
-                                    $strShortDescription,
-                                    $strDescription,
-                                    $intPrice,
-                                    $intDiscount,
-                                    $intStock,
-                                    $intStatus,
-                                    $route,
-                                    $photos,
-                                    $framingMode,
-                                    $photoFraming,
-                                    $intProductType,
-                                    $arrVariants,
-                                    $arrSpecs
-                                );
+                                $data['photo_framing'] = $photoFraming;
+                                $request= $this->model->insertProduct($data);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
@@ -195,7 +193,7 @@
                                 );
                             }
                         }
-                        if($request > 0 ){
+                        if(is_numeric($request) && $request > 0){
                             if($imgFraming!="" && $photoFraming !=""){
                                 uploadImage($imgFraming,$photoFraming);
                             }
@@ -255,6 +253,15 @@
             }
             $arrResponse = array("msg"=>"Deleted");
             echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            die();
+        }
+
+        /*************************Other methods*******************************/
+        public function getData(){
+            $request['specs'] = $this->model->selectSpecs();
+            $request['categories'] = $this->model->selectCategories();
+            $request['measures'] = $this->model->selectMeasures();
+            echo json_encode($request,JSON_UNESCAPED_UNICODE);
             die();
         }
     }

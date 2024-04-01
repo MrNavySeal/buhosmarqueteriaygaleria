@@ -112,7 +112,7 @@ const image_upload_handler_callback = (blobInfo, progress) => new Promise((resol
     
     xhr.send(formData);
 });
-function uploadMultipleImg(img,parent){
+function uploadMultipleImg(img,parent,arrClass=["col-6","col-lg-3","upload-image","mb-3"]){
     let value = img.value;
     let files = img.files;
     for (let i = 0; i < files.length; i++) {
@@ -121,7 +121,7 @@ function uploadMultipleImg(img,parent){
             value ="";
         }else{
             let div = document.createElement("div");
-            div.classList.add("col-6","col-lg-3","upload-image","mb-3");
+            if(arrClass.length > 0 )arrClass.forEach(el => { div.classList.add(el) });
             div.setAttribute("data-name",files[i].name);
             div.innerHTML = `
                     <img>

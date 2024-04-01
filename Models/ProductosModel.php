@@ -22,27 +22,8 @@
             parent::__construct();
         }
         /*************************Productos methods*******************************/
-        public function insertProduct(int $idCategory, int $idSubcategory,string $strReference, string $strName, 
-        string $strShortDescription,string $strDescription, int $intPrice, int $intDiscount, int $intStock, 
-        int $intStatus, string $route, array $photos, int $framingMode,string $photoFraming, 
-        int $productType,array $variants,string $specs){
-            
-            $this->intIdCategory = $idCategory;
-            $this->intIdSubCategory = $idSubcategory;
-            $this->strReference = $strReference;
-			$this->strName = $strName;
-            $this->strDescription = $strDescription;
-            $this->intPrice = $intPrice;
-            $this->intDiscount = $intDiscount;
-            $this->intStock = $intStock;
-			$this->intStatus = $intStatus;
-			$this->strRoute = $route;
-            $this->strShortDescription = $strShortDescription;
-            $this->intFramingMode = $framingMode;
-            $this->strFramingImg = $photoFraming;
-            $this->intProductType = $productType;
-            $this->strSpecifications = $specs;
-
+        public function insertProduct(array $data){
+            $this->arrData = $data;
 			$return = 0;
             $reference="";
             if($this->strReference!=""){
@@ -50,32 +31,42 @@
             }
 			$sql = "SELECT * FROM product WHERE name='$this->strName' $reference";
 			$request = $this->select_all($sql);
-
-			if(empty($request))
-			{ 
-				$query_insert  = "INSERT INTO product(categoryid,subcategoryid,reference,name,shortdescription,description,price,discount,stock,status,route,framing_mode,framing_img,product_type,specifications) 
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            
+			if(empty($request)){
+                $sql =  "INSERT INTO product(categoryid,
+                subcategoryid,reference,name,shortdescription,description,measure,
+                price,price_purchase,discount,stock,min_stock,status,route,
+                framing_mode,framing_img,product_type,import,is_product,is_ingredient,is_combo,is_stock) 
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	        	$arrData = array(
-                    $this->intIdCategory,
-                    $this->intIdSubCategory,
-                    $this->strReference,
-                    $this->strName,
-                    $this->strShortDescription,
-                    $this->strDescription,
-                    $this->intPrice,
-                    $this->intDiscount,
-                    $this->intStock,
-                    $this->intStatus,
-                    $this->strRoute,
-                    $this->intFramingMode,
-                    $this->strFramingImg,
-                    $this->intProductType,
-                    $this->strSpecifications
+                    $this->arrData['category'],
+                    $this->arrData['subcategory'],
+                    $this->arrData['reference'],
+                    $this->arrData['name'],
+                    $this->arrData['short_description'],
+                    $this->arrData['description'],
+                    $this->arrData['measure'],
+                    $this->arrData['price_sell'],
+                    $this->arrData['price_purchase'],
+                    $this->arrData['price_offer'],
+                    $this->arrData['stock'],
+                    $this->arrData['min_stock'],
+                    $this->arrData['status'],
+                    $this->arrData['route'],
+                    $this->arrData['framing_mode'],
+                    $this->arrData['photo_framing'],
+                    $this->arrData['product_type'],
+                    $this->arrData['import'],
+                    $this->arrData['is_product'],
+                    $this->arrData['is_ingredient'],
+                    $this->arrData['is_combo'],
+                    $this->arrData['is_stock']
         		);
-	        	$request_insert = $this->insert($query_insert,$arrData);
-                $this->insertImages($request_insert,$photos);
-                $this->insertVariants($request_insert,$variants);
-	        	$return = $request_insert;
+	        	$request = $this->insert($sql,$arrData);
+                $this->insertImages($request,$this->arrData['images']);
+                $this->insertSpecs($request,$this->arrData['specs']);
+                //$this->insertVariants($request_insert,$variants);
+	        	$return = $request;
 			}else{
 				$return = "exist";
 			}
@@ -280,6 +271,16 @@
                 $requestImg = $this->insert($sqlImg,$arrImg);
             }
         }
+        public function insertSpecs($id,$specs){
+            if(!empty($specs)){
+                $total = count($specs);
+                for ($i=0; $i < $total ; $i++) { 
+                    $sql = "INSERT INTO product_specs(product_id,specification_id,value) VALUES(?,?,?)";
+                    $arrData = array($id,$specs[$i]['id_specification'],$specs[$i]['value']);
+                    $this->insert($sql,$arrData);
+                }
+            }
+        }
         public function selectImages($id){
             $this->intIdProduct = $id;
             $sql = "SELECT * FROM productimage WHERE productid=$this->intIdProduct";
@@ -301,6 +302,21 @@
             $request = $this->delete($sql);
             return $request;
         }
-        
+        /*************************Other methods*******************************/
+        public function selectSpecs(){
+            $sql = "SELECT * FROM specifications WHERE status =1 ORDER BY name";
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectCategories(){
+            $sql = "SELECT *,idcategory as id FROM category ORDER BY name";       
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectMeasures(){
+            $sql = "SELECT id_measure as id, CONCAT(initials,' - ',name) as name, status FROM measures ORDER BY name";
+            $request = $this->select_all($sql);
+            return $request;
+        }
     }
 ?>
