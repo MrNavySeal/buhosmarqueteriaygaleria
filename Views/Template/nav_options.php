@@ -72,7 +72,7 @@
                         <a href="<?=base_url()?>/productos/productos" class="w-100">Productos</a>
                     </li> 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="<?=base_url()?>//ProductosOpciones/variantes" class="w-100">Variantes de producto</a>
+                        <a href="<?=base_url()?>/ProductosOpciones/variantes" class="w-100">Variantes de producto</a>
                     </li> 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <a href="<?=base_url()?>/ProductosOpciones/unidades" class="w-100">Unidades de medida</a>

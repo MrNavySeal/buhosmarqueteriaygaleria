@@ -318,5 +318,18 @@
             $request = $this->select_all($sql);
             return $request;
         }
+        public function selectVariants(){
+            $sql = "SELECT *, id_variation as id FROM variations WHERE status = 1";
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                $total = count($request);
+                for ($i=0; $i < $total; $i++) { 
+                    $id = $request[$i]['id_variation'];
+                    $sql ="SELECT * FROM variation_options WHERE variation_id = $id";
+                    $request[$i]['options'] = $this->select_all($sql);
+                }
+            }
+            return $request;
+        }
     }
 ?>

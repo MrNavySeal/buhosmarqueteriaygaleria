@@ -2,6 +2,7 @@
 
 const selectTypeSpc = document.querySelector("#selectTypeSpc");
 const tableSpecs = document.querySelector("#tableSpecs");
+const tableVariants = document.querySelector("#tableVariants");
 const productVariant = document.querySelector("#productVariant");
 const categoryList = document.querySelector("#categoryList");
 const subcategoryList = document.querySelector("#subcategoryList");
@@ -19,11 +20,18 @@ const checkIngredient = document.querySelector("#checkIngredient");
 const checkRecipe = document.querySelector("#checkRecipe");
 const checkInventory = document.querySelector("#checkInventory");
 const selectMeasure = document.querySelector("#selectMeasure");
+const variantOptions = document.querySelector("#variantOptions");
+const selectVariantOption = document.querySelector("#selectVariantOption");
+
 //let id = document.querySelector("#idProduct").value;
 let arrSpecs = [];
 let arrCategories = [];
 let arrSpecsAdded = [];
+let arrVariantsAdded = [];
 let arrMeasures = [];
+let arrVariants = [];
+let arrVariantsToMix = [];
+
 let imgLocation = ".uploadImg img";
 
 /*************************Initial data*******************************/
@@ -31,9 +39,12 @@ request(base_url+"/Productos/getData","","get").then(function(objData){
     arrSpecs = objData.specs;
     arrCategories = objData.categories;
     arrMeasures = objData.measures;
+    arrVariants = objData.variants;
     showOptions(arrSpecs,"specs");
     showOptions(arrCategories,"category");
     showOptions(arrMeasures,"measure");
+    showOptions(arrVariants,"variants");
+    console.log(objData);
 });
 
 /*************************Events*******************************/
@@ -64,6 +75,11 @@ selectFramingMode.addEventListener("change",function(){
     }
 });
 productVariant.addEventListener("change",function(){
+    if(productVariant.checked){
+        variantOptions.classList.remove("d-none");
+    }else{
+        variantOptions.classList.add("d-none");
+    }
 })
 framingImg.addEventListener("change",function(){
     uploadImg(framingImg,imgLocation);
@@ -72,6 +88,45 @@ framingImg.addEventListener("change",function(){
 setImage(img,parent,"product");
 delImage(parent);
 setTinymce("#txtDescription");
+/*
+const variantes = [
+    ['S', 'M', 'L'], // Tallas
+    ['Algodón', 'Poliéster'], // Materiales
+    ['Rojo', 'Azul', 'Amarillo'],
+    ['madera', 'importada', 'poliestireno'] // Colores
+];
+function generarCombinaciones(variantes) {
+let resultado = [];
+
+// Función auxiliar para agregar una opción a las combinaciones existentes
+function agregarOpcion(combinacionesExistentes, opcionesNuevas) {
+    let nuevasCombinaciones = [];
+
+    // Por cada combinación existente, agrega todas las nuevas opciones
+    combinacionesExistentes.forEach(c => {
+    opcionesNuevas.forEach(opcion => {
+        nuevasCombinaciones.push([...c, opcion]);
+    });
+    });
+
+    return nuevasCombinaciones;
+}
+
+// Inicializa el resultado con el primer conjunto de opciones
+resultado = variantes[0].map(opcion => [opcion]);
+
+// Itera sobre las demás variantes para agregarlas a las combinaciones
+for (let i = 1; i < variantes.length; i++) {
+    resultado = agregarOpcion(resultado, variantes[i]);
+}
+
+return resultado;
+}
+
+// Genera y muestra las combinaciones
+const combinaciones = generarCombinaciones(variantes);
+combinaciones.forEach(combinacion => console.log(combinacion.join(', ')));*/
+
 /*************************Functions*******************************/
 function save(){
     tinymce.triggerSave();
@@ -196,7 +251,7 @@ function save(){
 function showOptions(arrData,type){
     let html ="<option selected>Seleccione</option>";
     for (let i = 0; i < arrData.length; i++) {
-        if(type=="specs"){
+        if(type=="specs" || type=="variants"){
             html+=`<option value="${i}">${arrData[i].name}</option>`;
         }else{
             html+=`<option value="${arrData[i].id}">${arrData[i].name}</option>`;
@@ -227,26 +282,9 @@ function showOptions(arrData,type){
         selectMeasure.innerHTML = html;
         selectMeasure.value = 1;
     }
-}
-function getVariatns(){
-    let variants = document.querySelectorAll(".variantItem");
-    let arrVariants = [];
-    for (let i = 0; i < variants.length; i++) {
-        let item = variants[i].children;
-        let height = item[1].children[0].value;
-        let width = item[0].children[0].value;;
-        let stock = item[2].children[0].value;;
-        let price = item[3].children[0].value;;
-        let obj = {
-            "width":width,
-            "height":height,
-            "stock":stock,
-            "price":price
-        }
-        arrVariants.push(obj);
-
+    if(type=="variants"){
+        selectVariantOption.innerHTML = html;
     }
-    return arrVariants;
 }
 function getSpecs(){
     let specs = document.querySelectorAll(".spcItem");
@@ -257,60 +295,98 @@ function getSpecs(){
     }
     return arrSpecs;
 }
-function addVariant(){
-    let tr = document.createElement("tr");
-    tr.classList.add("variantItem");
-    let html = `
-        <td><input type="number" value="" class="form-control" placeholder="Ancho"></td>
-        <td><input type="number" value="" class="form-control" placeholder="Alto"></td>
-        <td><input type="number" value="" class="form-control" placeholder="Cantidad"></td>
-        <td><input type="number" value="" class="form-control" placeholder="Precio"></td>
-        <td><button type="button" class="btn btn-danger text-white" onclick="removeItem(this.parentElement.parentElement)"><i class="fas fa-trash"></i></button></td>
+function showVariants(combinations){
+    let html="";
+    document.querySelector("#totalCombinations").innerHTML =combinations.length;
+    combinations.forEach(c =>{
+        html+=`
+        <tr>
+            <td>${c.join("-")}</td>
+            <td><input type="text" value="" class="form-control"></td>
+            <td><input type="text" value="" class="form-control"></td>
+            <td><input type="text" value="" class="form-control"></td>
+            <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeItem(this,'variant')"><i class="fas fa-trash"></i></button></td>
+        </tr>
         `;
-    tr.innerHTML=html;
-    document.querySelector(".variantList").appendChild(tr);
-    /*let variants = document.querySelectorAll(".variantItem");
-    let flag = true;
-    if(variants.length > 0){
-        for (let i = 0; i < variants.length; i++) {
-            let item = variants[i];
-            if(item.getAttribute("attwidth") == width && item.getAttribute("attheight") == height){
-                Swal.fire("Error","La variante ya ha sido agregada","error");
-                flag = false;
+    });
+    document.querySelector("#tableCombinations").innerHTML = html;
+}
+function addOptionsVariant(element,idVariant){
+    let arrOptionsToMix = [];
+    let elements = element.parentElement.parentElement.children;
+    let options = arrVariants[idVariant].options;
+    for (let i = 0; i < elements.length; i++) {
+        const el = elements[i].children[0];
+        const idOption = el.getAttribute("data-option");
+        if(el.checked){
+            let indexOption = options.findIndex(op=> op.id_options == idOption);
+            let option = options[indexOption];
+            arrOptionsToMix.push(option);
+        }
+        
+    }
+    if(arrVariantsToMix.length > 0){
+        for (let i = 0; i < arrVariantsToMix.length; i++) {
+            if(arrVariantsToMix[i].id == idVariant){
+                arrVariantsToMix.splice(i,1);
                 break;
             }
         }
-        if(flag){
-            let div = document.createElement("div");
-            div.setAttribute("attwidth",width);
-            div.setAttribute("attheight",height);
-            div.setAttribute("attstock",stock);
-            div.setAttribute("attprice",price);
-            div.setAttribute("onclick","removeItem(this)");
-            div.classList.add("variantItem","btn","btn-success", "text-white", "m-1");
-            div.innerHTML = width+"-"+height+"-"+stock+"-"+price;
-            document.querySelector(".variantList").appendChild(div);
-            document.querySelector("#intVariantHeight").value = "";
-            document.querySelector("#intVariantWidth").value = "";
-            document.querySelector("#intVariantStock").value = 0;
-            document.querySelector("#intVariantPrice").value = "";
+    }
+    arrVariantsToMix.push({id:idVariant,options:arrOptionsToMix});
+    console.log(arrVariantsToMix);
+    function getCombinations(variants){
+        //console.log(variants[0].options);
+        let result = [];
+        function addOption( oldMix, newOptions){
+            let newMix = [];
+            oldMix.forEach(ol=>{
+                newOptions.forEach(ne =>{
+                    newMix.push([...ol,ne.name]);
+                })
+            })
+            return newMix;
         }
-    }else{
-        let div = document.createElement("div");
-        div.setAttribute("attWidth",width);
-        div.setAttribute("attHeight",height);
-        div.setAttribute("attStock",stock);
-        div.setAttribute("attPrice",price);
-        div.setAttribute("onclick","removeItem(this)");
-        div.classList.add("variantItem","btn","btn-success", "text-white", "m-1");
-        div.innerHTML = width+"-"+height+"-"+stock+"-"+price;
-        document.querySelector(".variantList").appendChild(div);
-        document.querySelector("#intVariantHeight").value = "";
-        document.querySelector("#intVariantWidth").value = "";
-        document.querySelector("#intVariantStock").value = 0;
-        document.querySelector("#intVariantPrice").value = "";
-    }*/
-    
+        result = variants[0].options.map(option => [option.name]);
+        for (let i = 1; i < variants.length; i++) {
+            result = addOption(result,variants[i].options);
+        }
+        return result;
+    }
+    console.log(getCombinations(arrVariantsToMix));
+    //showVariants();
+}
+function addVariant(){
+    let index = parseInt(selectVariantOption.value);
+    if(!isNaN(index)){
+        let obj = arrVariants[index];
+        let objOptions = obj.options;
+        let html="";
+        if(arrVariantsAdded.length > 0){
+            let flag = false;
+            arrVariantsAdded.forEach(el=>{if(el.id == obj.id)flag=true;});
+            if(flag)return false;
+        }
+        objOptions.forEach(op=>{
+            html+=`
+            <div class="form-check form-switch me-4">
+                <input class="form-check-input" type="checkbox" role="switch"  data-option="${op.id_options}"
+                onchange="addOptionsVariant(this,${arrVariantsAdded.length})" id="flexSwitchCheckDefault${op.id_options}">
+                <label class="form-check-label" for="flexSwitchCheckDefault${op.id_options}">${op.name}</label>
+            </div>
+            `;
+        })
+        let tr = document.createElement("tr");
+        tr.classList.add("variantItem");
+        tr.setAttribute("data-id",arrVariantsAdded.length);
+        tr.innerHTML = `
+            <td>${obj.name}</td>
+            <td ><div class="d-flex">${html}</div></td>
+            <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeItem(this,'variant')"><i class="fas fa-trash"></i></button></td>
+        `;
+        arrVariantsAdded.unshift(obj);
+        tableVariants.appendChild(tr);
+    }
 }
 function addSpec(){
     let index = parseInt(selectTypeSpc.value);
@@ -327,18 +403,21 @@ function addSpec(){
         tr.innerHTML = `
             <td>${objSpec.name}</td>
             <td><input type="text" value="" class="form-control" placeholder="Valor de la característica"></td>
-            <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeSpec(this)"><i class="fas fa-trash"></i></button></td>
+            <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeItem(this,'spec')"><i class="fas fa-trash"></i></button></td>
         `;
         arrSpecsAdded.unshift(objSpec);
         tableSpecs.appendChild(tr);
     }
 }
-function removeSpec(item){
+function removeItem(item,type){
     const element = item.parentElement.parentElement;
     const id = element.getAttribute("data-id");
-    arrSpecsAdded.splice(id,1);
+    if(type=="spec")arrSpecsAdded.splice(id,1);
+    if(type=="variant"){
+        arrVariantsAdded.splice(id,1);
+    }
     element.remove();
-    const elements = document.querySelectorAll(".spcItem");
+    const elements = type=="spec" ? document.querySelectorAll(".spcItem") : document.querySelectorAll(".variantItem");
     if(elements.length>0){
         let i = 0;
         elements.forEach(el => {el.setAttribute("data-id",i);i++});

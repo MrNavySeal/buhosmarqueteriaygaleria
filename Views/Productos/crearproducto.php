@@ -236,15 +236,47 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="social" role="tabpanel" aria-labelledby="social-tab">
-                        <div class="form-check">
+                        <h5>Variantes de producto</h5>
+                        <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" value="" id="productVariant">
                             <label class="form-check-label" for="productVariant">
                                 Este artículo tiene múltiples opciones como diferentes tallas, tamaños o colores.
                             </label>
                         </div>
                         <hr>
-                        <div id="variantOptions">
+                        <div id="variantOptions" class="d-none mt-3">
                             <h5>Opciones</h5>
+                            <div class="mb-3">
+                                <label for="selectVariantOption" class="form-label">Seleccione una opción</label>
+                                <div class="d-flex justify-content-start align-items mb-3">
+                                    <select class="form-control" aria-label="Default select example" id="selectVariantOption" name="selectVariantOption"></select>
+                                    <button onclick ="addVariant()" type="button" class="btn btn-info text-white" id="btnSpc"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                            <div class="table-responsive overflow-auto mb-3" style="max-height:50vh">
+                                <table class="table align-middle">
+                                    <thead>
+                                        <th>Variante</th>
+                                        <th>Opciones</th>
+                                        <th></th>
+                                    </thead>
+                                    <tbody id="tableVariants"></tbody>
+                                </table>
+                            </div>
+                            <hr class="mb-3">
+                            <h5>Combinaciones generadas <span id="totalCombinations">0</span></h5>
+                            <div  class="table-responsive overflow-auto" style="max-height:50vh">
+                                <table class="table align-middle">
+                                    <thead>
+                                        <th>Variante</th>
+                                        <th>Precio de compra</th>
+                                        <th>Precio de venta</th>
+                                        <th>Precio de oferta</th>
+                                        <th></th>
+                                    </thead>
+                                    <tbody id="tableCombinations"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="payment-tab"></div>
