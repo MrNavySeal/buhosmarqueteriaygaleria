@@ -264,15 +264,16 @@
                                 </table>
                             </div>
                             <hr class="mb-3">
-                            <h5>Combinaciones generadas <span id="totalCombinations">0</span></h5>
                             <div  class="table-responsive overflow-auto" style="max-height:50vh">
                                 <table class="table align-middle">
                                     <thead>
-                                        <th>Variante</th>
-                                        <th>Precio de compra</th>
-                                        <th>Precio de venta</th>
-                                        <th>Precio de oferta</th>
-                                        <th></th>
+                                        <th class="text-nowrap">Variante</th>
+                                        <th class="text-nowrap">Precio de compra</th>
+                                        <th class="text-nowrap">Precio de venta</th>
+                                        <th class="text-nowrap">Precio de oferta</th>
+                                        <th class="text-nowrap">Stock</th>
+                                        <th class="text-nowrap">Código SKU</th>
+                                        <th>Mostrar</th>
                                     </thead>
                                     <tbody id="tableCombinations"></tbody>
                                 </table>

@@ -296,34 +296,43 @@ function getSpecs(){
     return arrSpecs;
 }
 function showVariants(combinations){
+    console.log(combinations);
     let html="";
-    document.querySelector("#totalCombinations").innerHTML =combinations.length;
-    combinations.forEach(c =>{
-        html+=`
-        <tr>
-            <td>${c.join("-")}</td>
-            <td><input type="text" value="" class="form-control"></td>
-            <td><input type="text" value="" class="form-control"></td>
-            <td><input type="text" value="" class="form-control"></td>
-            <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeItem(this,'variant')"><i class="fas fa-trash"></i></button></td>
-        </tr>
-        `;
-    });
+    let index = 0;
+    if(combinations.length > 0){
+        combinations.forEach(c =>{
+            html+=`
+            <tr class="text-nowrap">
+                <td>${c.join("-")}</td>
+                <td><input type="text" value="" class="form-control"></td>
+                <td><input type="text" value="" class="form-control"></td>
+                <td><input type="text" value="" class="form-control"></td>
+                <td class="text-end">
+                    <div class="form-check form-switch me-4">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexCombCheckDefault${index}" checked>
+                    </div>
+                </td>
+            </tr>
+            `;
+            index++;
+        });
+    }
     document.querySelector("#tableCombinations").innerHTML = html;
 }
 function addOptionsVariant(element,idVariant){
     let arrOptionsToMix = [];
     let elements = element.parentElement.parentElement.children;
-    let options = arrVariants[idVariant].options;
+    let options = arrVariants[arrVariants.findIndex(el=>el.id_variation == idVariant)].options;
     for (let i = 0; i < elements.length; i++) {
         const el = elements[i].children[0];
         const idOption = el.getAttribute("data-option");
         if(el.checked){
-            let indexOption = options.findIndex(op=> op.id_options == idOption);
-            let option = options[indexOption];
-            arrOptionsToMix.push(option);
+            for (let j = 0; j < options.length; j++) {
+                if(options[j].id_options == idOption){
+                    arrOptionsToMix.push(options[j]);
+                }
+            }
         }
-        
     }
     if(arrVariantsToMix.length > 0){
         for (let i = 0; i < arrVariantsToMix.length; i++) {
@@ -334,10 +343,11 @@ function addOptionsVariant(element,idVariant){
         }
     }
     arrVariantsToMix.push({id:idVariant,options:arrOptionsToMix});
-    console.log(arrVariantsToMix);
-    function getCombinations(variants){
-        //console.log(variants[0].options);
-        let result = [];
+    showVariants(getCombinationsVariant(arrVariantsToMix));
+}
+function getCombinationsVariant(variants){
+    let result = [];
+    if(variants.length>0){  
         function addOption( oldMix, newOptions){
             let newMix = [];
             oldMix.forEach(ol=>{
@@ -351,10 +361,8 @@ function addOptionsVariant(element,idVariant){
         for (let i = 1; i < variants.length; i++) {
             result = addOption(result,variants[i].options);
         }
-        return result;
     }
-    console.log(getCombinations(arrVariantsToMix));
-    //showVariants();
+    return result;
 }
 function addVariant(){
     let index = parseInt(selectVariantOption.value);
@@ -362,6 +370,7 @@ function addVariant(){
         let obj = arrVariants[index];
         let objOptions = obj.options;
         let html="";
+        
         if(arrVariantsAdded.length > 0){
             let flag = false;
             arrVariantsAdded.forEach(el=>{if(el.id == obj.id)flag=true;});
@@ -371,14 +380,14 @@ function addVariant(){
             html+=`
             <div class="form-check form-switch me-4">
                 <input class="form-check-input" type="checkbox" role="switch"  data-option="${op.id_options}"
-                onchange="addOptionsVariant(this,${arrVariantsAdded.length})" id="flexSwitchCheckDefault${op.id_options}">
+                onchange="addOptionsVariant(this,${op.variation_id})" id="flexSwitchCheckDefault${op.id_options}">
                 <label class="form-check-label" for="flexSwitchCheckDefault${op.id_options}">${op.name}</label>
             </div>
             `;
         })
         let tr = document.createElement("tr");
         tr.classList.add("variantItem");
-        tr.setAttribute("data-id",arrVariantsAdded.length);
+        tr.setAttribute("data-id",obj.id);
         tr.innerHTML = `
             <td>${obj.name}</td>
             <td ><div class="d-flex">${html}</div></td>
@@ -414,7 +423,12 @@ function removeItem(item,type){
     const id = element.getAttribute("data-id");
     if(type=="spec")arrSpecsAdded.splice(id,1);
     if(type=="variant"){
-        arrVariantsAdded.splice(id,1);
+        let index = arrVariantsAdded.findIndex(el=>el.id == id);
+        arrVariantsAdded.splice(index,1);
+
+        index = arrVariantsToMix.findIndex(el=>el.id == id);
+        arrVariantsToMix.splice(index,1);
+        showVariants(getCombinationsVariant(arrVariantsToMix));
     }
     element.remove();
     const elements = type=="spec" ? document.querySelectorAll(".spcItem") : document.querySelectorAll(".variantItem");
