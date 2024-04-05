@@ -38,6 +38,7 @@
                 price,price_purchase,discount,stock,min_stock,status,route,
                 framing_mode,framing_img,product_type,import,is_product,is_ingredient,is_combo,is_stock) 
                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                
 	        	$arrData = array(
                     $this->arrData['category'],
                     $this->arrData['subcategory'],
@@ -65,7 +66,7 @@
 	        	$request = $this->insert($sql,$arrData);
                 $this->insertImages($request,$this->arrData['images']);
                 $this->insertSpecs($request,$this->arrData['specs']);
-                //$this->insertVariants($request_insert,$variants);
+                $this->insertVariants($request,$this->arrData['variants']);
 	        	$return = $request;
 			}else{
 				$return = "exist";
@@ -251,15 +252,26 @@
             }
             return $request;
         }
-        public function insertVariants($id,$variants){
-            for ($i=0; $i < count($variants) ; $i++) { 
-                $sql = "INSERT INTO product_variant(productid,width,height,stock,price) VALUES(?,?,?,?,?)";
+        public function insertVariants($id,$data){
+            $this->intIdProduct = $id;
+            $combinations = $data['combinations'];
+            $variations = json_encode($data['variations'],JSON_UNESCAPED_UNICODE);
+            $sql = "INSERT INTO product_variations(product_id,variation) VALUES (?,?)";
+            $request_insert = $this->insert($sql,array($id,$variations));
+            $total_combinations = count($combinations);
+            for ($i=0; $i < $total_combinations ; $i++) { 
+                $sql = "INSERT INTO product_variations_options(product_variation_id,name,price_purchase,price_sell,price_offer,stock,min_stock,sku,status) 
+                VALUES(?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
-                    $id,
-                    $variants[$i]['width'],
-                    $variants[$i]['height'],
-                    $variants[$i]['stock'],
-                    $variants[$i]['price']
+                    $request_insert,
+                    $combinations[$i]['name'],
+                    $combinations[$i]['price_purchase'],
+                    $combinations[$i]['price_sell'],
+                    $combinations[$i]['price_offer'],
+                    $combinations[$i]['stock'],
+                    $combinations[$i]['min_stock'],
+                    $combinations[$i]['sku'],
+                    $combinations[$i]['status']
                 );
                 $request = $this->insert($sql,$arrData);
             }

@@ -139,7 +139,11 @@
                             "description"=>strClean($arrGeneral['description']),
                             "name"=>$strName,
                             "reference"=>$strReference,
-                            "route"=>$route
+                            "route"=>$route,
+                            "variants"=>array(
+                                "combinations"=>$arrData['combinations'],
+                                "variations"=>$arrData['variants']
+                            )
                         );
 
                         if($id == 0){

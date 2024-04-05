@@ -253,7 +253,7 @@
                                     <button onclick ="addVariant()" type="button" class="btn btn-info text-white" id="btnSpc"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
-                            <div class="table-responsive overflow-auto mb-3" style="max-height:50vh">
+                            <div class="table-responsive overflow-auto mb-3 d-none" style="max-height:50vh" id="divTableVariant">
                                 <table class="table align-middle">
                                     <thead>
                                         <th>Variante</th>
@@ -264,14 +264,19 @@
                                 </table>
                             </div>
                             <hr class="mb-3">
-                            <div  class="table-responsive overflow-auto" style="max-height:50vh">
+                            <div  class="table-responsive overflow-auto d-none" style="max-height:50vh" id="tableVariantsCombination">
                                 <table class="table align-middle">
                                     <thead>
                                         <th class="text-nowrap">Variante</th>
                                         <th class="text-nowrap">Precio de compra</th>
                                         <th class="text-nowrap">Precio de venta</th>
                                         <th class="text-nowrap">Precio de oferta</th>
-                                        <th class="text-nowrap">Stock</th>
+                                        <th class="text-nowrap d-flex">
+                                            <label class="form-label m-0" for="checkStockVariants">Stock/stock mínimo</label>
+                                            <div class="form-check form-switch m-0 ms-1">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="checkStockVariants">
+                                            </div>
+                                        </th>
                                         <th class="text-nowrap">Código SKU</th>
                                         <th>Mostrar</th>
                                     </thead>

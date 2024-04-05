@@ -22,7 +22,9 @@ const checkInventory = document.querySelector("#checkInventory");
 const selectMeasure = document.querySelector("#selectMeasure");
 const variantOptions = document.querySelector("#variantOptions");
 const selectVariantOption = document.querySelector("#selectVariantOption");
-
+const tableVariantsCombination = document.querySelector("#tableVariantsCombination");
+const divTableVariant = document.querySelector("#divTableVariant");
+const checkStockVariants = document.querySelector("#checkStockVariants");
 //let id = document.querySelector("#idProduct").value;
 let arrSpecs = [];
 let arrCategories = [];
@@ -31,7 +33,7 @@ let arrVariantsAdded = [];
 let arrMeasures = [];
 let arrVariants = [];
 let arrVariantsToMix = [];
-
+let arrCombinations = [];
 let imgLocation = ".uploadImg img";
 
 /*************************Initial data*******************************/
@@ -84,48 +86,26 @@ productVariant.addEventListener("change",function(){
 framingImg.addEventListener("change",function(){
     uploadImg(framingImg,imgLocation);
 });
+checkStockVariants.addEventListener("change",function(){
+    if(document.querySelector(".minStockVariant")){
+        const arrMinStock = document.querySelectorAll(".minStockVariant");
+        const arrStock = document.querySelectorAll(".stockVariant");
+        for (let i = 0; i < arrMinStock.length; i++) {
+            if(checkStockVariants.checked){
+                arrStock[i].removeAttribute("disabled");
+                arrMinStock[i].removeAttribute("disabled");
+            }else{
+                arrStock[i].setAttribute("disabled","");
+                arrMinStock[i].setAttribute("disabled","");
+            }
+        }
+    }
+});
 
 setImage(img,parent,"product");
 delImage(parent);
 setTinymce("#txtDescription");
-/*
-const variantes = [
-    ['S', 'M', 'L'], // Tallas
-    ['Algodón', 'Poliéster'], // Materiales
-    ['Rojo', 'Azul', 'Amarillo'],
-    ['madera', 'importada', 'poliestireno'] // Colores
-];
-function generarCombinaciones(variantes) {
-let resultado = [];
 
-// Función auxiliar para agregar una opción a las combinaciones existentes
-function agregarOpcion(combinacionesExistentes, opcionesNuevas) {
-    let nuevasCombinaciones = [];
-
-    // Por cada combinación existente, agrega todas las nuevas opciones
-    combinacionesExistentes.forEach(c => {
-    opcionesNuevas.forEach(opcion => {
-        nuevasCombinaciones.push([...c, opcion]);
-    });
-    });
-
-    return nuevasCombinaciones;
-}
-
-// Inicializa el resultado con el primer conjunto de opciones
-resultado = variantes[0].map(opcion => [opcion]);
-
-// Itera sobre las demás variantes para agregarlas a las combinaciones
-for (let i = 1; i < variantes.length; i++) {
-    resultado = agregarOpcion(resultado, variantes[i]);
-}
-
-return resultado;
-}
-
-// Genera y muestra las combinaciones
-const combinaciones = generarCombinaciones(variantes);
-combinaciones.forEach(combinacion => console.log(combinacion.join(', ')));*/
 
 /*************************Functions*******************************/
 function save(){
@@ -146,14 +126,11 @@ function save(){
     const intId = document.querySelector("#id").value;
     const intImport = document.querySelector("#selectImport").value;
 
-    if(strName == "" || intPrice==""){
-        Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
+    if(strName == ""){
+        Swal.fire("Error","El nombre no puede estar vacio","error");
         return false;
     }
-    if(intPrice < 0){
-        Swal.fire("Error","El precio de venta no puede ser inferior a 0","error"); 
-        return false;
-    }
+    
     if(strShortDescription.length >140){
         Swal.fire("Error","La descripción corta debe tener un máximo de 140 caracteres","error");
         return false;
@@ -162,12 +139,27 @@ function save(){
         Swal.fire("Error","Debe subir al menos una imagen","error");
         return false;
     }
-    
-    if(intDiscount !=""){
-        if(intDiscount < 0){
-            Swal.fire("Error","El precio de oferta no puede ser inferior a 0","error"); 
-            document.querySelector("#txtDiscount").value="";
+    if(!productVariant.checked){
+        if(intPrice < 0 || intPrice ==""){
+            Swal.fire("Error","El precio de venta no puede ser inferior a 0","error"); 
             return false;
+        }
+        
+        if(intDiscount !=""){
+            if(intDiscount < 0){
+                Swal.fire("Error","El precio de oferta no puede ser inferior a 0","error"); 
+                document.querySelector("#txtDiscount").value="";
+                return false;
+            }
+        }
+        if(checkInventory.checked){
+            if(intMinStock == "" || intStock == "" ){
+                Swal.fire("Error","El stock no puede estar vacio","error"); 
+                return false;
+            }else if(intMinStock < 0 || intMinStock < 0){
+                Swal.fire("Error","El stock no puede ser negativo","error"); 
+                return false;
+            }
         }
     }
     if(arrProductsType.length == 0){
@@ -184,15 +176,7 @@ function save(){
             return false;
        }
     }
-    if(checkInventory.checked){
-        if(intMinStock == "" || intStock == "" ){
-            Swal.fire("Error","El stock no puede estar vacio","error"); 
-            return false;
-        }else if(intMinStock < 0 || intMinStock < 0){
-            Swal.fire("Error","El stock no puede ser negativo","error"); 
-            return false;
-        }
-    }
+    
     if(selectFramingMode.value == 1 && document.querySelector("#txtImgFrame").value == "" && id==0){
         Swal.fire("Error","Por favor, para el modo enmarcar, ingrese la foto a enmarcar","error");
         return false;
@@ -222,11 +206,11 @@ function save(){
             "short_description":strShortDescription,
             "description":strDescription,
             "name":strName,
-            "reference":strReference
-        }
+            "reference":strReference,
+        },
+        "combinations": getInfoCombinationVariants(),
+        "variants":arrVariantsToMix
     }
-
-    //data.append("variants",JSON.stringify(getVariatns()));
     formData.append("data",JSON.stringify(arrData));
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
@@ -251,7 +235,7 @@ function save(){
 function showOptions(arrData,type){
     let html ="<option selected>Seleccione</option>";
     for (let i = 0; i < arrData.length; i++) {
-        if(type=="specs" || type=="variants"){
+        if(type=="specs"){
             html+=`<option value="${i}">${arrData[i].name}</option>`;
         }else{
             html+=`<option value="${arrData[i].id}">${arrData[i].name}</option>`;
@@ -295,21 +279,66 @@ function getSpecs(){
     }
     return arrSpecs;
 }
+function getInfoCombinationVariants(){
+    let newArr = [];
+    if(productVariant.checked){
+        arrCombinations = getCombinationsVariant(arrVariantsToMix);
+        const arrPurchase = document.querySelectorAll(".pricePurchaseVariant");
+        const arrSell = document.querySelectorAll(".priceSellVariant");
+        const arrOffer = document.querySelectorAll(".priceOfferVariant");
+        const arrStock = document.querySelectorAll(".stockVariant");
+        const arrMinStock = document.querySelectorAll(".minStockVariant");
+        const arrSkuVariant = document.querySelectorAll(".skuVariant");
+        const arrStatusVariant = document.querySelectorAll(".checkStatusVariant");
+        
+        for (let i = 0; i < arrCombinations.length; i++) {
+            if(arrSell[i].value ==""){
+                Swal.fire("Error","El precio de venta de la variante es obligatorio","error");
+                break;
+            }
+            if(checkStockVariants.checked){
+                if(arrStock[i].value =="" || arrMinStock[i].value ==""){
+                    Swal.fire("Error","El stock de la variante es obligatorio","error");
+                    break;
+                }
+            }
+            let obj = {
+                name:arrCombinations[i].join("-"),
+                price_purchase:arrPurchase[i].value,
+                price_sell:arrSell[i].value,
+                price_offer:arrOffer[i].value,
+                stock:arrStock[i].value,
+                min_stock:arrMinStock[i].value,
+                sku:arrSkuVariant[i].value,
+                status:arrStatusVariant[i].checked,
+            }
+            newArr.push(obj);
+        }
+    }
+    arrCombinations = newArr;
+    return arrCombinations;
+}
 function showVariants(combinations){
-    console.log(combinations);
     let html="";
     let index = 0;
+    tableVariantsCombination.classList.add("d-none");
     if(combinations.length > 0){
+        tableVariantsCombination.classList.remove("d-none");
         combinations.forEach(c =>{
             html+=`
             <tr class="text-nowrap">
-                <td>${c.join("-")}</td>
-                <td><input type="text" value="" class="form-control"></td>
-                <td><input type="text" value="" class="form-control"></td>
-                <td><input type="text" value="" class="form-control"></td>
+                <td>${c.join("/")}</td>
+                <td><input type="number" value="" class="form-control pricePurchaseVariant"></td>
+                <td><input type="number" value="" class="form-control priceSellVariant"></td>
+                <td><input type="number" value="" class="form-control priceOfferVariant"></td>
+                <td class="d-flex">
+                    <input type="number" value="" class="form-control stockVariant" disabled>
+                    <input type="number" value="" class="form-control minStockVariant" disabled>
+                </td>
+                <td><input type="text" class="form-control skuVariant"></td>
                 <td class="text-end">
                     <div class="form-check form-switch me-4">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexCombCheckDefault${index}" checked>
+                        <input class="form-check-input checkStatusVariant" type="checkbox" role="switch" checked>
                     </div>
                 </td>
             </tr>
@@ -319,30 +348,25 @@ function showVariants(combinations){
     }
     document.querySelector("#tableCombinations").innerHTML = html;
 }
-function addOptionsVariant(element,idVariant){
+function addOptionsVariant(){
     let arrOptionsToMix = [];
-    let elements = element.parentElement.parentElement.children;
-    let options = arrVariants[arrVariants.findIndex(el=>el.id_variation == idVariant)].options;
-    for (let i = 0; i < elements.length; i++) {
-        const el = elements[i].children[0];
-        const idOption = el.getAttribute("data-option");
-        if(el.checked){
-            for (let j = 0; j < options.length; j++) {
-                if(options[j].id_options == idOption){
-                    arrOptionsToMix.push(options[j]);
-                }
+    let arrMix = [];
+    const parents = document.querySelectorAll(".variantItem");
+    for (let i = 0; i < parents.length; i++) {
+        const idVariant = parents[i].getAttribute("data-id");
+        const children = parents[i].children[1].children[0].children;
+        for (let j = 0; j < children.length; j++) {
+            const optionEl = children[j].children[0];
+            if(optionEl.checked){
+                arrOptionsToMix.push(optionEl.getAttribute("data-name"));
             }
         }
-    }
-    if(arrVariantsToMix.length > 0){
-        for (let i = 0; i < arrVariantsToMix.length; i++) {
-            if(arrVariantsToMix[i].id == idVariant){
-                arrVariantsToMix.splice(i,1);
-                break;
-            }
+        if(arrOptionsToMix.length > 0){
+            arrMix.push({id:idVariant,options:arrOptionsToMix});
         }
+        arrOptionsToMix = [];
     }
-    arrVariantsToMix.push({id:idVariant,options:arrOptionsToMix});
+    arrVariantsToMix = arrMix;
     showVariants(getCombinationsVariant(arrVariantsToMix));
 }
 function getCombinationsVariant(variants){
@@ -352,12 +376,12 @@ function getCombinationsVariant(variants){
             let newMix = [];
             oldMix.forEach(ol=>{
                 newOptions.forEach(ne =>{
-                    newMix.push([...ol,ne.name]);
+                    newMix.push([...ol,ne]);
                 })
             })
             return newMix;
         }
-        result = variants[0].options.map(option => [option.name]);
+        result = variants[0].options.map(option => [option]);
         for (let i = 1; i < variants.length; i++) {
             result = addOption(result,variants[i].options);
         }
@@ -365,22 +389,22 @@ function getCombinationsVariant(variants){
     return result;
 }
 function addVariant(){
-    let index = parseInt(selectVariantOption.value);
-    if(!isNaN(index)){
-        let obj = arrVariants[index];
+    let variantVal = parseInt(selectVariantOption.value);
+    if(!isNaN(variantVal)){
+        let obj = arrVariants.filter(el=>el.id == variantVal)[0];
         let objOptions = obj.options;
         let html="";
-        
+        console.log(arrVariantsAdded);
         if(arrVariantsAdded.length > 0){
             let flag = false;
-            arrVariantsAdded.forEach(el=>{if(el.id == obj.id)flag=true;});
+            arrVariantsAdded.forEach(el=>{if(el.id == variantVal)flag=true;});
             if(flag)return false;
         }
         objOptions.forEach(op=>{
             html+=`
             <div class="form-check form-switch me-4">
-                <input class="form-check-input" type="checkbox" role="switch"  data-option="${op.id_options}"
-                onchange="addOptionsVariant(this,${op.variation_id})" id="flexSwitchCheckDefault${op.id_options}">
+                <input class="form-check-input" type="checkbox" role="switch"  data-id="${op.id_options}" data-name="${op.name}"
+                onchange="addOptionsVariant()" id="flexSwitchCheckDefault${op.id_options}">
                 <label class="form-check-label" for="flexSwitchCheckDefault${op.id_options}">${op.name}</label>
             </div>
             `;
@@ -391,10 +415,13 @@ function addVariant(){
         tr.innerHTML = `
             <td>${obj.name}</td>
             <td ><div class="d-flex">${html}</div></td>
-            <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeItem(this,'variant')"><i class="fas fa-trash"></i></button></td>
+            <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeVariant(this,${obj.id})"><i class="fas fa-trash"></i></button></td>
         `;
         arrVariantsAdded.unshift(obj);
         tableVariants.appendChild(tr);
+        if(arrVariantsAdded.length > 0){
+            divTableVariant.classList.remove("d-none");
+        }
     }
 }
 function addSpec(){
@@ -418,20 +445,33 @@ function addSpec(){
         tableSpecs.appendChild(tr);
     }
 }
+function removeVariant(item,id){
+    const element = item.parentElement.parentElement;
+    for (let i = 0; i < arrVariantsAdded.length; i++) {
+        if(arrVariantsAdded[i].id == id){
+            arrVariantsAdded.splice(i,1);
+            break;
+        }
+    }
+    for (let i = 0; i < arrVariantsToMix.length; i++) {
+        if(arrVariantsToMix[i].id == id){
+            arrVariantsToMix.splice(i,1);
+            break;
+        }
+    }
+    if(arrVariantsAdded.length == 0){
+        divTableVariant.classList.add("d-none");
+        checkStockVariants.checked = "";
+    }
+    element.remove();
+    addOptionsVariant();
+}
 function removeItem(item,type){
     const element = item.parentElement.parentElement;
     const id = element.getAttribute("data-id");
-    if(type=="spec")arrSpecsAdded.splice(id,1);
-    if(type=="variant"){
-        let index = arrVariantsAdded.findIndex(el=>el.id == id);
-        arrVariantsAdded.splice(index,1);
-
-        index = arrVariantsToMix.findIndex(el=>el.id == id);
-        arrVariantsToMix.splice(index,1);
-        showVariants(getCombinationsVariant(arrVariantsToMix));
-    }
+    arrSpecsAdded.splice(id,1);
     element.remove();
-    const elements = type=="spec" ? document.querySelectorAll(".spcItem") : document.querySelectorAll(".variantItem");
+    const elements = document.querySelectorAll(".spcItem")
     if(elements.length>0){
         let i = 0;
         elements.forEach(el => {el.setAttribute("data-id",i);i++});
