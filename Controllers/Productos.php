@@ -32,8 +32,9 @@
                 if($params==""){
                     $this->views->getView($this,"crearproducto",$data);
                 }else{
-                    $id = intval(strClean($params));
-                    $data['product'] = $this->getProduct($id);
+                    $data['page_title'] = "Editar Producto";
+                    $data['id'] = intval(strClean($params));
+                    $data['images'] = $this->model->selectProduct($data['id'])['image'];
                     $this->views->getView($this,"editarproducto",$data);
                 }
             }else{
@@ -52,32 +53,29 @@
                         $btnView = '<a href="'.base_url().'/tienda/producto/'.$request[$i]['route'].'" target="_blank" class="btn btn-info m-1 text-white" title="Ver página"><i class="fas fa-eye"></i></a>';
                         $btnEdit="";
                         $btnDelete="";
-                        $price = "";
-                        $variant = $request[$i]['product_type'] == 2? "Desde " : "";
-                        if($request[$i]['discount']>0){
-                            $price = '<span class="text-danger">'.$variant.formatNum($request[$i]['price']*(1-($request[$i]['discount']*0.01)),false).'</span>'.' <span class="text-secondary text-decoration-line-through">'.formatNum($request[$i]['price'],false).'</span>';
-                            $discount = '<span class="text-danger">'.$request[$i]['discount'].'%</span>';
-                        }else{
-                            $price = $variant.formatNum($request[$i]['price'],false);
-                            $discount = "0%";
-                        }
+                        $variant = $request[$i]['product_type'] == 1 ? "Desde " : "";
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<a href="'.base_url().'/inventario/producto/'.$request[$i]['idproduct'].'" class="btn btn-success m-1 text-white" title="Editar"><i class="fas fa-pencil-alt"></i></a>';
+                            $btnEdit = '<a href="'.base_url().'/Productos/producto/'.$request[$i]['idproduct'].'" class="btn btn-success m-1 text-white" title="Editar"><i class="fas fa-pencil-alt"></i></a>';
                         }
                         if($_SESSION['permitsModule']['d']){
                             $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idproduct'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
-                        if($request[$i]['status']==1 && $request[$i]['stock']>0){
+                        if($request[$i]['is_stock'] && $request[$i]['status']==1){
+                            if($request[$i]['stock'] <= 0){
+                                $status='<span class="badge me-1 bg-warning">Agotado</span>';
+                            }
+                        }else if( $request[$i]['status']==1){
                             $status='<span class="badge me-1 bg-success">Activo</span>';
-                        }else if($request[$i]['status']==2){
+                        }else if($request[$i]['status'] == 2){
                             $status='<span class="badge me-1 bg-danger">Inactivo</span>';
-                        }else{
-                            $status='<span class="badge me-1 bg-warning">Agotado</span>';
                         }
+
                         $request[$i]['status'] = $status;
                         $request[$i]['options'] = $btnView.$btnEdit.$btnDelete;
-                        $request[$i]['discount'] = $discount;
-                        $request[$i]['price'] = $price;
+                        $request[$i]['price_purchase'] = $variant.formatNum($request[$i]['price_purchase'] != null ? $request[$i]['price_purchase'] : 0);
+                        $request[$i]['price'] = $variant.formatNum($request[$i]['price'] != null ? $request[$i]['price'] : 0);
+                        $request[$i]['discount'] = $variant.formatNum($request[$i]['discount'] != null ? $request[$i]['discount'] : 0);
+                        $request[$i]['stock'] = !$request[$i]['is_stock'] ? "No maneja inventario" : $request[$i]['stock'];
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
@@ -86,12 +84,21 @@
         }
         public function getProduct($id){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectProduct($id);
-                $request['categories'] = $this->model->selectCategories();
-                $request['subcategories'] = $this->model->getSelectSubcategories($request['idcategory']);
-                return $request;
-            }else{
-                header("location: ".base_url());
+                $id = intval($id);
+                $arrProduct = $this->model->selectProduct($id);
+                if(!empty($arrProduct)){
+                    $arrInitial = array(
+                        "categories"=>$this->model->selectCategories(),
+                        'specs' => $this->model->selectSpecs(),
+                        'measures' => $this->model->selectMeasures(),
+                        'variants' => $this->model->selectVariants(),
+                        'subcategories' => $this->model->getSelectSubcategories($arrProduct['idcategory'])
+                    );
+                    $arrData = array("product"=>$arrProduct,"initial"=>$arrInitial);
+                    echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                }else{
+                    header("location: ".base_url()."/Productos");
+                }
             }
             die();
         }
@@ -142,7 +149,8 @@
                             "route"=>$route,
                             "variants"=>array(
                                 "combinations"=>$arrData['combinations'],
-                                "variations"=>$arrData['variants']
+                                "variations"=>$arrData['variants'],
+                                "is_stock"=>$arrData['is_stock']
                             )
                         );
 
@@ -160,8 +168,8 @@
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
-                                $request = $this->model->selectProduct($idProduct);
-                                if($framingMode==1){
+                                $request = $this->model->selectProduct($id);
+                                if($data['framing_mode']==1){
                                     if($_FILES['txtImgFrame']['name'] == ""){
                                         $photoFraming = $request['framing_img'];
                                     }else{
@@ -172,29 +180,10 @@
                                         $imgFraming = $_FILES['txtImgFrame'];
                                         $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
                                     }
-                                }
-                                
+                                } 
                                 $option = 2;
-                                $request= $this->model->updateProduct(
-                                    $idProduct,
-                                    $idCategory,
-                                    $idSubcategory,
-                                    $strReference,
-                                    $strName,
-                                    $strShortDescription,
-                                    $strDescription,
-                                    $intPrice,
-                                    $intDiscount,
-                                    $intStock,
-                                    $intStatus,
-                                    $route,
-                                    $photos,
-                                    $framingMode,
-                                    $photoFraming,
-                                    $intProductType,
-                                    $arrVariants,
-                                    $arrSpecs
-                                );
+                                $data['photo_framing'] = $photoFraming;
+                                $request= $this->model->updateProduct($id,$data);
                             }
                         }
                         if(is_numeric($request) && $request > 0){

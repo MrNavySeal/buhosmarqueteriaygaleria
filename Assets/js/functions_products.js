@@ -7,7 +7,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/Inventario/getProducts",
+        "url": " "+base_url+"/Productos/getProducts",
         "dataSrc":""
     },
     columns: [
@@ -22,8 +22,9 @@ let table = new DataTable("#tableData",{
         { data: 'reference' },
         { data: 'category' },
         { data: 'subcategory' },
-        { data: 'discount' },
+        { data: 'price_purchase' },
         { data: 'price' },
+        { data: 'discount' },
         { data: 'stock' },
         { data: 'date' },
         { data: 'status' },
@@ -38,7 +39,7 @@ let table = new DataTable("#tableData",{
             "className": "btn btn-success mt-2"
         }
     ],
-    order: [[1, 'asc']],
+    order: [[0, 'desc']],
     pagingType: 'full',
     scrollY:'400px',
     //scrollX: true,
@@ -65,7 +66,7 @@ function deleteItem(id){
         if(result.isConfirmed){
             let formData = new FormData();
             formData.append("idProduct",id);
-            request(base_url+"/inventario/delProduct",formData,"post").then(function(objData){
+            request(base_url+"/Productos/delProduct",formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
                     table.ajax.reload();

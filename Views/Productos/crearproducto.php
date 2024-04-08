@@ -68,18 +68,16 @@
                             </div>
                             
                             <div class="mb-3">
-                                <div id="showCategories" class="d-none">
-                                    <div class="mb-3">
-                                        <h5>Categoría de artículo</h5>
-                                        <p class="text-secondary">Selecciona la categoría a la que pertenece tu artículo. (opcional)</p>
+                                <div id="showCategories" class="d-none row">
+                                    <div class="col-md-6 ">
                                         <div class="mb-3">
+                                            <label for="categoryList" class="form-label">Categoría de artículo (<span class="text-danger">*</span>)</label>
                                             <select class="form-control" onchange="changeCategory()" aria-label="Default select example" id="categoryList" name="categoryList" required></select>
                                         </div>
                                     </div>
-                                    <div class="mb-3" id="selectSubCategory">
-                                        <h5>Subcategoria de artículo</h5>
-                                        <p class="text-secondary">Selecciona la subcategoría de tu artículo. (opcional)</p>
+                                    <div class="col-md-6" id="selectSubCategory">
                                         <div class="mb-3">
+                                            <label for="subcategoryList" class="form-label">Subcategoria de artículo (<span class="text-danger">*</span>)</label>
                                             <select class="form-control" aria-label="Default select example" id="subcategoryList" name="subcategoryList" required></select>
                                         </div>
                                     </div>

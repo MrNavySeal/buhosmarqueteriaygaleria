@@ -6,6 +6,7 @@ const tableVariants = document.querySelector("#tableVariants");
 const productVariant = document.querySelector("#productVariant");
 const categoryList = document.querySelector("#categoryList");
 const subcategoryList = document.querySelector("#subcategoryList");
+const statusList = document.querySelector("#statusList");
 const form = document.querySelector("#formItem");
 const formFile = document.querySelector("#formFile");
 const parent = document.querySelector("#upload-multiple");
@@ -25,6 +26,10 @@ const selectVariantOption = document.querySelector("#selectVariantOption");
 const tableVariantsCombination = document.querySelector("#tableVariantsCombination");
 const divTableVariant = document.querySelector("#divTableVariant");
 const checkStockVariants = document.querySelector("#checkStockVariants");
+const selectImport = document.querySelector("#selectImport");
+const txtPurchase = document.querySelector("#txtPurchase");
+const txtPrice = document.querySelector("#txtPrice");
+const txtPriceOffer = document.querySelector("#txtPriceOffer");
 //let id = document.querySelector("#idProduct").value;
 let arrSpecs = [];
 let arrCategories = [];
@@ -37,17 +42,100 @@ let arrCombinations = [];
 let imgLocation = ".uploadImg img";
 
 /*************************Initial data*******************************/
-request(base_url+"/Productos/getData","","get").then(function(objData){
-    arrSpecs = objData.specs;
-    arrCategories = objData.categories;
-    arrMeasures = objData.measures;
-    arrVariants = objData.variants;
-    showOptions(arrSpecs,"specs");
-    showOptions(arrCategories,"category");
-    showOptions(arrMeasures,"measure");
-    showOptions(arrVariants,"variants");
-    console.log(objData);
-});
+if(document.querySelector("#id").value !=""){
+    let id = document.querySelector("#id").value
+    request(base_url+"/Productos/getProduct/"+id,"","get").then(function(objData){
+        const productData = objData.product;
+        const initialData = objData.initial;
+        let arrSubcategories = initialData.subcategories;
+        arrSpecs = initialData.specs;
+        arrCategories = initialData.categories;
+        arrMeasures = initialData.measures;
+        arrVariants = initialData.variants;
+        showOptions(arrSpecs,"specs");
+        showOptions(arrCategories,"category");
+        showOptions(arrSubcategories,"subcategory");
+        showOptions(arrMeasures,"measure");
+        showOptions(arrVariants,"variants");
+        document.querySelector("#txtName").value = productData.name;
+        document.querySelector("#txtReference").value = productData.reference;
+        document.querySelector("#txtShortDescription").value = productData.shortdescription;
+        document.querySelector("#txtDescription").value = productData.description;
+        checkProduct.checked = productData.is_product;
+        checkIngredient.checked = productData.is_ingredient,
+        checkRecipe.checked = productData.is_combo;
+        checkInventory.checked = productData.is_stock,
+        productVariant.checked = productData.product_type;
+        txtPriceOffer.value = productData.discount;
+        txtPrice.value = productData.price;
+        txtPurchase.value = productData.price_purchasE;
+        categoryList.value =productData.idcategory;
+        subcategoryList.value = productData.idsubcategory;
+        selectMeasure.value = productData.measure;
+        selectImport.value = productData.import;
+        checkStockVariants.checked = productData.is_stock;
+        selectFramingMode.value = productData.framing_mode;
+        statusList.value = productData.status;
+        if(selectFramingMode.value == 1){
+            document.querySelector(".framingImage").classList.remove("d-none");
+            document.querySelector(".uploadImg img").setAttribute("src",productData.framing_img);
+        }else{
+            document.querySelector(".framingImage").classList.add("d-none");
+        }
+        if(productVariant.checked){
+            let combinations = productData.options;
+            let html ="";
+            let disabled = productData.is_stock ? "" : "disabled";
+            arrVariantsToMix = productData.variation.variation;
+            variantOptions.classList.remove("d-none");
+            tableVariantsCombination.classList.remove("d-none");
+            combinations.forEach(c =>{
+                let checked = c.status ? "checked" : "";
+                html+=`
+                <tr class="text-nowrap">
+                    <td>${c.name}</td>
+                    <td><input type="number" value="${c.price_purchase}" class="form-control pricePurchaseVariant"></td>
+                    <td><input type="number" value="${c.price_sell}" class="form-control priceSellVariant"></td>
+                    <td><input type="number" value="${c.price_offer}" class="form-control priceOfferVariant"></td>
+                    <td class="d-flex">
+                        <input type="number" value="${c.stock}" class="form-control stockVariant" ${disabled}>
+                        <input type="number" value="${c.min_stock}" class="form-control minStockVariant" ${disabled}>
+                    </td>
+                    <td><input type="text" value="${c.sku}" class="form-control skuVariant"></td>
+                    <td class="text-end">
+                        <div class="form-check form-switch me-4">
+                            <input class="form-check-input checkStatusVariant" type="checkbox" role="switch" ${checked}>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            arrVariantsToMix.forEach(v => {
+                addVariant(v.id,v.options);
+            });
+            document.querySelector("#tableCombinations").innerHTML = html;
+            //showVariants(getCombinationsVariant(arrVariantsToMix));
+        }
+        if(productData.specs.length>0){
+            for (let i = 0; i < productData.specs.length; i++) {
+                addSpec(productData.specs[i].id,productData.specs[i].value);
+            }
+        }
+        console.log(objData);
+    });
+}else{
+    request(base_url+"/Productos/getData","","get").then(function(objData){
+        arrSpecs = objData.specs;
+        arrCategories = objData.categories;
+        arrMeasures = objData.measures;
+        arrVariants = objData.variants;
+        showOptions(arrSpecs,"specs");
+        showOptions(arrCategories,"category");
+        showOptions(arrMeasures,"measure");
+        showOptions(arrVariants,"variants");
+    });
+    
+}
 
 /*************************Events*******************************/
 checkRecipe.addEventListener("change",function(){
@@ -60,7 +148,8 @@ checkRecipe.addEventListener("change",function(){
     }
 });
 checkInventory.addEventListener("change",function(){
-    if(checkInventory.checked){
+    checkStockVariants.checked =checkInventory.checked;
+    if(checkInventory.checked && !productVariant.checked){
         document.querySelector("#setStocks").classList.remove("d-none");
     }else{
         document.querySelector("#setStocks").classList.add("d-none");
@@ -79,7 +168,10 @@ selectFramingMode.addEventListener("change",function(){
 productVariant.addEventListener("change",function(){
     if(productVariant.checked){
         variantOptions.classList.remove("d-none");
+        document.querySelector("#setStocks").classList.add("d-none");
     }else{
+        checkStockVariants.checked = false;
+        checkInventory.checked = false;
         variantOptions.classList.add("d-none");
     }
 })
@@ -87,6 +179,7 @@ framingImg.addEventListener("change",function(){
     uploadImg(framingImg,imgLocation);
 });
 checkStockVariants.addEventListener("change",function(){
+    checkInventory.checked = checkStockVariants.checked;
     if(document.querySelector(".minStockVariant")){
         const arrMinStock = document.querySelectorAll(".minStockVariant");
         const arrStock = document.querySelectorAll(".stockVariant");
@@ -101,12 +194,9 @@ checkStockVariants.addEventListener("change",function(){
         }
     }
 });
-
 setImage(img,parent,"product");
 delImage(parent);
 setTinymce("#txtDescription");
-
-
 /*************************Functions*******************************/
 function save(){
     tinymce.triggerSave();
@@ -124,10 +214,17 @@ function save(){
     const images = document.querySelectorAll(".upload-image");
     const arrProductsType = Array.from(document.querySelectorAll(".product_type")).filter(el=>el.checked);
     const intId = document.querySelector("#id").value;
-    const intImport = document.querySelector("#selectImport").value;
-
+    const combinations = getInfoCombinationVariants();
     if(strName == ""){
         Swal.fire("Error","El nombre no puede estar vacio","error");
+        return false;
+    }
+    if(categoryList.value == "selected"){
+        Swal.fire("Error","Debe seleccionar una categoría","error");
+        return false;
+    }
+    if(subcategoryList.value == "selected" || subcategoryList.value == ""){
+        Swal.fire("Error","Debe seleccionar una subcategoría","error");
         return false;
     }
     
@@ -144,7 +241,12 @@ function save(){
             Swal.fire("Error","El precio de venta no puede ser inferior a 0","error"); 
             return false;
         }
-        
+        if(!checkRecipe.checked){
+            if(intPurchase =="" || intPurchase < 0){
+                 Swal.fire("Error","El precio de compra no puede estar vacio","error"); 
+                 return false;
+            }
+         }
         if(intDiscount !=""){
             if(intDiscount < 0){
                 Swal.fire("Error","El precio de oferta no puede ser inferior a 0","error"); 
@@ -161,21 +263,15 @@ function save(){
                 return false;
             }
         }
+    }else if(combinations.length == 0){
+        Swal.fire("Error","Si el producto tiene variantes, agregue al menos una.","error"); 
+        return false;
     }
     if(arrProductsType.length == 0){
         Swal.fire("Error","Debe seleccionar el tipo de artículo","error"); 
         return false;
     }
     
-    if(!checkRecipe.checked){
-       if(intPurchase ==""){
-            Swal.fire("Error","El precio de compra no puede estar vacio","error"); 
-            return false;
-       }else if(intPurchase < 0){
-            Swal.fire("Error","El precio de compra no puede ser inferior a 0","error"); 
-            return false;
-       }
-    }
     
     if(selectFramingMode.value == 1 && document.querySelector("#txtImgFrame").value == "" && id==0){
         Swal.fire("Error","Por favor, para el modo enmarcar, ingrese la foto a enmarcar","error");
@@ -192,7 +288,7 @@ function save(){
             "category":categoryList.value,
             "framing_mode":selectFramingMode.value,
             "measure":selectMeasure.value,
-            "import":intImport,
+            "import":selectImport.value,
             "is_product":checkProduct.checked,
             "is_ingredient":checkIngredient.checked,
             "is_combo":checkRecipe.checked,
@@ -208,8 +304,9 @@ function save(){
             "name":strName,
             "reference":strReference,
         },
-        "combinations": getInfoCombinationVariants(),
-        "variants":arrVariantsToMix
+        "combinations": combinations,
+        "variants":arrVariantsToMix,
+        "is_stock":checkStockVariants.checked
     }
     formData.append("data",JSON.stringify(arrData));
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
@@ -222,10 +319,13 @@ function save(){
             if (intId == 0) {
                 Swal.fire("Guardado",objData.msg,"success");
                 setTimeout(function(){
-                    window.location.href=base_url+"/productos";
+                    window.location.reload();
                 },3500);
             } else {
                 Swal.fire("Guardado",objData.msg,"success");
+                setTimeout(function(){
+                    window.location.reload();
+                },3500);
             }
         }else{
             Swal.fire("Error",objData.msg,"error");
@@ -233,13 +333,9 @@ function save(){
     });
 }
 function showOptions(arrData,type){
-    let html ="<option selected>Seleccione</option>";
+    let html =`<option value="selected" disabled selected>Seleccione</option>`;
     for (let i = 0; i < arrData.length; i++) {
-        if(type=="specs"){
-            html+=`<option value="${i}">${arrData[i].name}</option>`;
-        }else{
-            html+=`<option value="${arrData[i].id}">${arrData[i].name}</option>`;
-        }
+        html+=`<option value="${arrData[i].id}">${arrData[i].name}</option>`;
     }
     if(type=="specs"){
         if(arrData.length > 0){
@@ -262,6 +358,7 @@ function showOptions(arrData,type){
             document.querySelector("#toAddCategories").classList.remove("d-none");
         }
     }
+    if(type=="subcategory")subcategoryList.innerHTML = html;
     if(type=="measure"){
         selectMeasure.innerHTML = html;
         selectMeasure.value = 1;
@@ -272,15 +369,19 @@ function showOptions(arrData,type){
 }
 function getSpecs(){
     let specs = document.querySelectorAll(".spcItem");
-    let arrSpecs = arrSpecsAdded;
+    let arrSpecs = [];
+    console.log(arrSpecs);
     for (let i = 0; i < specs.length; i++) {
         let item = specs[i];
-        arrSpecs[i]['value'] = item.children[1].children[0].value;
+        let id = item.getAttribute("data-id");
+        let value = item.children[1].children[0].value;
+        arrSpecs.push({id:id,value:value});
     }
     return arrSpecs;
 }
 function getInfoCombinationVariants(){
     let newArr = [];
+    let obj = {};
     if(productVariant.checked){
         arrCombinations = getCombinationsVariant(arrVariantsToMix);
         const arrPurchase = document.querySelectorAll(".pricePurchaseVariant");
@@ -302,7 +403,7 @@ function getInfoCombinationVariants(){
                     break;
                 }
             }
-            let obj = {
+            obj = {
                 name:arrCombinations[i].join("-"),
                 price_purchase:arrPurchase[i].value,
                 price_sell:arrSell[i].value,
@@ -312,6 +413,7 @@ function getInfoCombinationVariants(){
                 sku:arrSkuVariant[i].value,
                 status:arrStatusVariant[i].checked,
             }
+            
             newArr.push(obj);
         }
     }
@@ -320,7 +422,6 @@ function getInfoCombinationVariants(){
 }
 function showVariants(combinations){
     let html="";
-    let index = 0;
     tableVariantsCombination.classList.add("d-none");
     if(combinations.length > 0){
         tableVariantsCombination.classList.remove("d-none");
@@ -343,7 +444,6 @@ function showVariants(combinations){
                 </td>
             </tr>
             `;
-            index++;
         });
     }
     document.querySelector("#tableCombinations").innerHTML = html;
@@ -388,26 +488,31 @@ function getCombinationsVariant(variants){
     }
     return result;
 }
-function addVariant(){
-    let variantVal = parseInt(selectVariantOption.value);
+function addVariant(id="",options=[]){
+    let variantVal = id!= "" ? id : parseInt(selectVariantOption.value);
     if(!isNaN(variantVal)){
         let obj = arrVariants.filter(el=>el.id == variantVal)[0];
         let objOptions = obj.options;
         let html="";
-        console.log(arrVariantsAdded);
+        let index = 0;
         if(arrVariantsAdded.length > 0){
             let flag = false;
             arrVariantsAdded.forEach(el=>{if(el.id == variantVal)flag=true;});
             if(flag)return false;
         }
         objOptions.forEach(op=>{
+            let checked = "";
+            if(options.length > 0){
+                checked = op.name == options [index] ? "checked" : "";
+            }
             html+=`
             <div class="form-check form-switch me-4">
                 <input class="form-check-input" type="checkbox" role="switch"  data-id="${op.id_options}" data-name="${op.name}"
-                onchange="addOptionsVariant()" id="flexSwitchCheckDefault${op.id_options}">
+                onchange="addOptionsVariant()" id="flexSwitchCheckDefault${op.id_options}" ${checked}>
                 <label class="form-check-label" for="flexSwitchCheckDefault${op.id_options}">${op.name}</label>
             </div>
             `;
+            index++;
         })
         let tr = document.createElement("tr");
         tr.classList.add("variantItem");
@@ -424,21 +529,21 @@ function addVariant(){
         }
     }
 }
-function addSpec(){
-    let index = parseInt(selectTypeSpc.value);
+function addSpec(id="",value=""){
+    let index = id!= "" ? id : parseInt(selectTypeSpc.value);
     if(!isNaN(index)){
-        let objSpec = arrSpecs[index];
+        let objSpec =  arrSpecs.filter(el=>el.id == index)[0];
         if(arrSpecsAdded.length > 0){
             let flag = false;
-            arrSpecsAdded.forEach(el=>{if(el.id_specification == objSpec.id_specification)flag=true;});
+            arrSpecsAdded.forEach(el=>{if(el.id == objSpec.id)flag=true;});
             if(flag)return false;
         }
         let tr = document.createElement("tr");
         tr.classList.add("spcItem");
-        tr.setAttribute("data-id",arrSpecsAdded.length);
+        tr.setAttribute("data-id",objSpec.id);
         tr.innerHTML = `
             <td>${objSpec.name}</td>
-            <td><input type="text" value="" class="form-control" placeholder="Valor de la característica"></td>
+            <td><input type="text" value="${value}" class="form-control" placeholder="Valor de la característica"></td>
             <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeItem(this,'spec')"><i class="fas fa-trash"></i></button></td>
         `;
         arrSpecsAdded.unshift(objSpec);
@@ -469,13 +574,13 @@ function removeVariant(item,id){
 function removeItem(item,type){
     const element = item.parentElement.parentElement;
     const id = element.getAttribute("data-id");
-    arrSpecsAdded.splice(id,1);
-    element.remove();
-    const elements = document.querySelectorAll(".spcItem")
-    if(elements.length>0){
-        let i = 0;
-        elements.forEach(el => {el.setAttribute("data-id",i);i++});
+    for (let i = 0; i < arrSpecsAdded.length; i++) {
+        if(arrSpecsAdded[i].id == id){
+            arrSpecsAdded.splice(i,1);
+            break;
+        }
     }
+    element.remove();
 }
 function setImage(element,parent,pre){
     let formFile = document.querySelector("#formFile");

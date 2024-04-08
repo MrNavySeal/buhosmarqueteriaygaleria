@@ -67,32 +67,16 @@
                 $this->insertImages($request,$this->arrData['images']);
                 $this->insertSpecs($request,$this->arrData['specs']);
                 $this->insertVariants($request,$this->arrData['variants']);
-	        	$return = $request;
+	        	$return = intval($request);
 			}else{
 				$return = "exist";
 			}
 	        return $return;
 		}
-        public function updateProduct(int $idProduct,int $idCategory, int $idSubcategory,string $strReference, string $strName, 
-        string $strShortDescription, string $strDescription, int $intPrice, int $intDiscount, int $intStock, int $intStatus,
-         string $route, array $photos,int $framingMode,string $photoFraming, 
-         int $productType,array $variants,string $specs){
+        public function updateProduct(int $idProduct,array $data){
             $this->intIdProduct = $idProduct;
-            $this->intIdCategory = $idCategory;
-            $this->intIdSubCategory = $idSubcategory;
-            $this->strReference = $strReference;
-			$this->strName = $strName;
-            $this->strDescription = $strDescription;
-            $this->intPrice = $intPrice;
-            $this->intDiscount = $intDiscount;
-            $this->intStock = $intStock;
-			$this->intStatus = $intStatus;
-			$this->strRoute = $route;
-            $this->strShortDescription = $strShortDescription;
-            $this->intFramingMode = $framingMode;
-            $this->strFramingImg = $photoFraming;
-            $this->intProductType = $productType;
-            $this->strSpecifications = $specs;
+            $this->arrData = $data;
+            $return = 0;
             $reference="";
             if($this->strReference!=""){
                 $reference = "AND reference = '$this->strReference' AND name = '{$this->strName}' AND idproduct != $this->intIdProduct";
@@ -103,39 +87,47 @@
 			if(empty($request)){
                 
 
-                $sql = "UPDATE product SET categoryid=?, 
-                subcategoryid=?, reference=?, name=?, shortdescription=?,description=?, 
-                price=?,discount=?,stock=?,status=?, route=?, framing_mode=?,framing_img=?,product_type=?,specifications=? WHERE idproduct = $this->intIdProduct";
+                $sql = "UPDATE product SET categoryid=?,
+                subcategoryid=?,reference=?,name=?,shortdescription=?,description=?,measure=?,
+                price=?,price_purchase=?,discount=?,stock=?,min_stock=?,status=?,route=?,
+                framing_mode=?,framing_img=?,product_type=?,import=?,is_product=?,is_ingredient=?,is_combo=?,is_stock=?
+                WHERE idproduct = $this->intIdProduct";
                 $arrData = array(
-                    $this->intIdCategory,
-                    $this->intIdSubCategory,
-                    $this->strReference,
-                    $this->strName,
-                    $this->strShortDescription,
-                    $this->strDescription,
-                    $this->intPrice,
-                    $this->intDiscount,
-                    $this->intStock,
-                    $this->intStatus,
-                    $this->strRoute,
-                    $this->intFramingMode,
-                    $this->strFramingImg,
-                    $this->intProductType,
-                    $this->strSpecifications,
+                    $this->arrData['category'],
+                    $this->arrData['subcategory'],
+                    $this->arrData['reference'],
+                    $this->arrData['name'],
+                    $this->arrData['short_description'],
+                    $this->arrData['description'],
+                    $this->arrData['measure'],
+                    $this->arrData['price_sell'],
+                    $this->arrData['price_purchase'],
+                    $this->arrData['price_offer'],
+                    $this->arrData['stock'],
+                    $this->arrData['min_stock'],
+                    $this->arrData['status'],
+                    $this->arrData['route'],
+                    $this->arrData['framing_mode'],
+                    $this->arrData['photo_framing'],
+                    $this->arrData['product_type'],
+                    $this->arrData['import'],
+                    $this->arrData['is_product'],
+                    $this->arrData['is_ingredient'],
+                    $this->arrData['is_combo'],
+                    $this->arrData['is_stock']
         		);
 				$request = $this->update($sql,$arrData);
                 if(!empty($photos)){
                     $this->deleteImages($this->intIdProduct);
                     $this->insertImages($this->intIdProduct,$photos);
                 }
-                if(!empty($variants)){
-                    $this->deleteVariants($this->intIdProduct);
-                    $this->insertVariants($this->intIdProduct,$variants);
-                }
+                $this->insertSpecs($this->intIdProduct,$this->arrData['specs']);
+                $this->insertVariants($this->intIdProduct,$this->arrData['variants']);
+                $return = intval($request);
 			}else{
-				$request = "exist";
+				$return = "exist";
 			}
-			return $request;
+			return $return;
 		
 		}
         public function deleteProduct($id){
@@ -144,9 +136,7 @@
             for ($i=0; $i < count($images) ; $i++) { 
                 deleteFile($images[$i]['name']);
             }
-            $sql = "DELETE FROM product WHERE idproduct = $this->intIdProduct;SET @autoid :=0; 
-            UPDATE productimage SET id = @autoid := (@autoid+1);
-            ALTER TABLE productimage Auto_Increment = 1;";
+            $sql = "DELETE FROM product WHERE idproduct = $this->intIdProduct";
             $request = $this->delete($sql);
             return $request;
         }
@@ -159,12 +149,14 @@
                 p.name,
                 p.description,
                 p.price,
+                p.price_purchase,
                 p.discount,
                 p.description,
                 p.stock,
                 p.status,
                 p.product_type,
                 p.route,
+                p.is_stock,
                 c.idcategory,
                 c.name as category,
                 s.idsubcategory,
@@ -187,10 +179,14 @@
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
-                    if($request[$i]['product_type'] == 2){
-                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct";
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variant WHERE productid =$idProduct";
-                        $request[$i]['price'] = $this->select($sqlV)['minimo'];
+                    if($request[$i]['product_type'] == 1){
+                        $sqlV = "SELECT MIN(price_sell) AS sell,MIN(price_offer) AS offer,MIN(price_purchase) AS purchase
+                        FROM product_variations_options WHERE product_id =$idProduct";
+                        $requestPrices = $this->select($sqlV);
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct";
+                        $request[$i]['price_purchase'] = $requestPrices['purchase'];
+                        $request[$i]['price'] = $requestPrices['sell'];
+                        $request[$i]['discount'] = $requestPrices['offer'];
                         $request[$i]['stock'] = $this->select($sqlTotal)['total'];
                     }
                 }
@@ -205,17 +201,23 @@
                 p.subcategoryid,
                 p.reference,
                 p.name,
+                p.measure,
+                p.import,
+                p.framing_mode,
+                p.framing_img,
                 p.shortdescription,
-                p.description,
                 p.price,
+                p.price_purchase,
                 p.discount,
+                p.description,
                 p.stock,
                 p.status,
-                p.route,
                 p.product_type,
-                p.framing_mode,
-                p.specifications,
-                p.framing_img,
+                p.route,
+                p.is_stock,
+                p.is_product,
+                p.is_ingredient,
+                p.is_combo,
                 c.idcategory,
                 c.name as category,
                 s.idsubcategory,
@@ -224,9 +226,10 @@
                 DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
             INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
             AND p.idproduct = $this->intIdProduct";
             $request = $this->select($sql);
+            $request['framing_img'] = media()."/images/uploads/".$request['framing_img'];
             if(!empty($request)){
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
                 $requestImg = $this->select_all($sqlImg);
@@ -235,35 +238,35 @@
                         $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name'],"rename"=>$requestImg[$i]['name']);
                     }
                 }
-                if($request['product_type'] == 2){
-                    $sqlV = "SELECT * FROM product_variant WHERE productid = $this->intIdProduct ORDER BY price ASC";
-                    $requestV = $this->select_all($sqlV);
-                    if(count($requestV)){
-                        for ($i=0; $i < count($requestV); $i++) { 
-                            $request['variants'][$i] = array(
-                                "width"=>$requestV[$i]['width'],
-                                "height"=>$requestV[$i]['height'],
-                                "stock"=>$requestV[$i]['stock'],
-                                "price"=>$requestV[$i]['price']
-                            );
-                        }
-                    }
+                if($request['product_type'] == 1){
+                    $sqlSpecs = "SELECT p.specification_id as id,p.value,s.name
+                    FROM product_specs p
+                    INNER JOIN specifications s
+                    ON p.specification_id = s.id_specification
+                    WHERE p.product_id = $this->intIdProduct";
+                    $request['specs'] = $this->select_all($sqlSpecs);
+                    $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intIdProduct");
+                    $request['variation']['variation'] = json_decode($request['variation']['variation']);
+                    $request['options'] = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intIdProduct");
                 }
             }
             return $request;
         }
         public function insertVariants($id,$data){
             $this->intIdProduct = $id;
+            $this->delete("DELETE FROM product_variations WHERE product_id=$this->intIdProduct");
+
             $combinations = $data['combinations'];
             $variations = json_encode($data['variations'],JSON_UNESCAPED_UNICODE);
             $sql = "INSERT INTO product_variations(product_id,variation) VALUES (?,?)";
             $request_insert = $this->insert($sql,array($id,$variations));
             $total_combinations = count($combinations);
             for ($i=0; $i < $total_combinations ; $i++) { 
-                $sql = "INSERT INTO product_variations_options(product_variation_id,name,price_purchase,price_sell,price_offer,stock,min_stock,sku,status) 
-                VALUES(?,?,?,?,?,?,?,?,?)";
+                $sql = "INSERT INTO product_variations_options(product_variation_id,product_id,name,price_purchase,price_sell,price_offer,stock,min_stock,sku,status) 
+                VALUES(?,?,?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $request_insert,
+                    $this->intIdProduct,
                     $combinations[$i]['name'],
                     $combinations[$i]['price_purchase'],
                     $combinations[$i]['price_sell'],
@@ -284,11 +287,13 @@
             }
         }
         public function insertSpecs($id,$specs){
+            $this->intIdProduct = $id;
+            $this->delete("DELETE FROM product_specs WHERE product_id=$this->intIdProduct");
             if(!empty($specs)){
                 $total = count($specs);
                 for ($i=0; $i < $total ; $i++) { 
                     $sql = "INSERT INTO product_specs(product_id,specification_id,value) VALUES(?,?,?)";
-                    $arrData = array($id,$specs[$i]['id_specification'],$specs[$i]['value']);
+                    $arrData = array($id,$specs[$i]['id'],$specs[$i]['value']);
                     $this->insert($sql,$arrData);
                 }
             }
@@ -302,12 +307,6 @@
             }
             return $request;
         }
-        public function deleteVariants($id){
-            $this->intIdProduct = $id;
-            $sql = "DELETE FROM product_variant WHERE productid=$this->intIdProduct";
-            $request = $this->delete($sql);
-            return $request;
-        }
         public function deleteImages($id){
             $this->intIdProduct = $id;
             $sql = "DELETE FROM productimage WHERE productid=$this->intIdProduct";
@@ -316,7 +315,7 @@
         }
         /*************************Other methods*******************************/
         public function selectSpecs(){
-            $sql = "SELECT * FROM specifications WHERE status =1 ORDER BY name";
+            $sql = "SELECT *,id_specification as id FROM specifications WHERE status =1 ORDER BY name";
             $request = $this->select_all($sql);
             return $request;
         }
@@ -341,6 +340,22 @@
                     $request[$i]['options'] = $this->select_all($sql);
                 }
             }
+            return $request;
+        }
+        public function getSelectSubcategories(int $intIdCategory){
+            $this->intIdCategory = $intIdCategory;
+            $sql = "SELECT  
+                    s.idsubcategory as id,
+                    s.name,
+                    s.categoryid,
+                    c.idcategory,
+                    c.name as category
+                    FROM subcategory s
+                    INNER JOIN category c
+                    ON c.idcategory = s.categoryid
+                    WHERE s.categoryid = $this->intIdCategory
+                    ORDER BY s.name ASC";       
+            $request = $this->select_all($sql);
             return $request;
         }
     }

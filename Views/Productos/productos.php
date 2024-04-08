@@ -23,9 +23,10 @@
                             <th>Referencia</th>
                             <th>Categoria</th>
                             <th>Subcategoria</th>
-                            <th>Descuento</th>
-                            <th>Precio</th>
-                            <th>Cantidad</th>
+                            <th class="text-nowrap">Precio de compra</th>
+                            <th class="text-nowrap">Precio de venta</th>
+                            <th class="text-nowrap">Precio de oferta</th>
+                            <th>Stock</th>
                             <th>Fecha</th>
                             <th>Estado</th>
                             <th>Opciones</th>
