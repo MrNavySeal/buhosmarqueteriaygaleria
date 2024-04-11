@@ -45,6 +45,7 @@ let imgLocation = ".uploadImg img";
 if(document.querySelector("#id").value !=""){
     let id = document.querySelector("#id").value
     request(base_url+"/Productos/getProduct/"+id,"","get").then(function(objData){
+        console.log(objData);
         const productData = objData.product;
         const initialData = objData.initial;
         let arrSubcategories = initialData.subcategories;
@@ -68,7 +69,7 @@ if(document.querySelector("#id").value !=""){
         productVariant.checked = productData.product_type;
         txtPriceOffer.value = productData.discount;
         txtPrice.value = productData.price;
-        txtPurchase.value = productData.price_purchasE;
+        txtPurchase.value = productData.price_purchase;
         categoryList.value =productData.idcategory;
         subcategoryList.value = productData.idsubcategory;
         selectMeasure.value = productData.measure;
@@ -85,6 +86,7 @@ if(document.querySelector("#id").value !=""){
         if(productVariant.checked){
             let combinations = productData.options;
             let html ="";
+            let index =0;
             let disabled = productData.is_stock ? "" : "disabled";
             arrVariantsToMix = productData.variation.variation;
             variantOptions.classList.remove("d-none");
@@ -92,7 +94,7 @@ if(document.querySelector("#id").value !=""){
             combinations.forEach(c =>{
                 let checked = c.status ? "checked" : "";
                 html+=`
-                <tr class="text-nowrap">
+                <tr class="text-nowrap" data-name="${c.name}">
                     <td>${c.name}</td>
                     <td><input type="number" value="${c.price_purchase}" class="form-control pricePurchaseVariant"></td>
                     <td><input type="number" value="${c.price_sell}" class="form-control priceSellVariant"></td>
@@ -109,6 +111,7 @@ if(document.querySelector("#id").value !=""){
                     </td>
                 </tr>
                 `;
+                index++;
             });
             arrVariantsToMix.forEach(v => {
                 addVariant(v.id,v.options);
@@ -121,7 +124,7 @@ if(document.querySelector("#id").value !=""){
                 addSpec(productData.specs[i].id,productData.specs[i].value);
             }
         }
-        console.log(objData);
+        
     });
 }else{
     request(base_url+"/Productos/getData","","get").then(function(objData){
@@ -263,7 +266,8 @@ function save(){
                 return false;
             }
         }
-    }else if(combinations.length == 0){
+    }
+    if(productVariant.checked && combinations.length == 0){
         Swal.fire("Error","Si el producto tiene variantes, agregue al menos una.","error"); 
         return false;
     }
@@ -370,7 +374,6 @@ function showOptions(arrData,type){
 function getSpecs(){
     let specs = document.querySelectorAll(".spcItem");
     let arrSpecs = [];
-    console.log(arrSpecs);
     for (let i = 0; i < specs.length; i++) {
         let item = specs[i];
         let id = item.getAttribute("data-id");
@@ -382,6 +385,7 @@ function getSpecs(){
 function getInfoCombinationVariants(){
     let newArr = [];
     let obj = {};
+    let flag = false;
     if(productVariant.checked){
         arrCombinations = getCombinationsVariant(arrVariantsToMix);
         const arrPurchase = document.querySelectorAll(".pricePurchaseVariant");
@@ -395,11 +399,13 @@ function getInfoCombinationVariants(){
         for (let i = 0; i < arrCombinations.length; i++) {
             if(arrSell[i].value ==""){
                 Swal.fire("Error","El precio de venta de la variante es obligatorio","error");
+                flag = true;
                 break;
             }
             if(checkStockVariants.checked){
                 if(arrStock[i].value =="" || arrMinStock[i].value ==""){
                     Swal.fire("Error","El stock de la variante es obligatorio","error");
+                    flag = true;
                     break;
                 }
             }
@@ -418,39 +424,94 @@ function getInfoCombinationVariants(){
         }
     }
     arrCombinations = newArr;
+    if(flag){
+        arrCombinations = [];
+    }
     return arrCombinations;
 }
 function showVariants(combinations){
+    let table = document.querySelector("#tableCombinations");
     let html="";
+    let currentMix = [];
+    let arrComb = [];
+    combinations.forEach(c => arrComb.push(c.join("/")));
+    const currentComb= Array.from(table.children);
+    if(currentComb.length>0){
+        currentComb.forEach(c => currentMix.push(c.getAttribute("data-name")));
+        html = table.innerHTML;
+    }
     tableVariantsCombination.classList.add("d-none");
+    
     if(combinations.length > 0){
         tableVariantsCombination.classList.remove("d-none");
-        combinations.forEach(c =>{
-            html+=`
-            <tr class="text-nowrap">
-                <td>${c.join("/")}</td>
-                <td><input type="number" value="" class="form-control pricePurchaseVariant"></td>
-                <td><input type="number" value="" class="form-control priceSellVariant"></td>
-                <td><input type="number" value="" class="form-control priceOfferVariant"></td>
-                <td class="d-flex">
-                    <input type="number" value="" class="form-control stockVariant" disabled>
-                    <input type="number" value="" class="form-control minStockVariant" disabled>
-                </td>
-                <td><input type="text" class="form-control skuVariant"></td>
-                <td class="text-end">
-                    <div class="form-check form-switch me-4">
-                        <input class="form-check-input checkStatusVariant" type="checkbox" role="switch" checked>
-                    </div>
-                </td>
-            </tr>
-            `;
-        });
+        for (let i = 0; i < combinations.length; i++) {
+            let name = combinations[i].join("/");
+            if(currentMix.length > 0){
+                if(!currentMix.includes(name)){
+                    html+=`
+                    <tr class="text-nowrap" data-name="${name}">
+                        <td>${name}</td>
+                        <td><input type="number" value="" class="form-control pricePurchaseVariant"></td>
+                        <td><input type="number" value="" class="form-control priceSellVariant"></td>
+                        <td><input type="number" value="" class="form-control priceOfferVariant"></td>
+                        <td class="d-flex">
+                            <input type="number" value="" class="form-control stockVariant" disabled>
+                            <input type="number" value="" class="form-control minStockVariant" disabled>
+                        </td>
+                        <td><input type="text" class="form-control skuVariant"></td>
+                        <td class="text-end">
+                            <div class="form-check form-switch me-4">
+                                <input class="form-check-input checkStatusVariant" type="checkbox" role="switch" checked>
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+                }
+            }else{
+                html+=`
+                <tr class="text-nowrap" data-name="${name}">
+                    <td>${name}</td>
+                    <td><input type="number" value="" class="form-control pricePurchaseVariant"></td>
+                    <td><input type="number" value="" class="form-control priceSellVariant"></td>
+                    <td><input type="number" value="" class="form-control priceOfferVariant"></td>
+                    <td class="d-flex">
+                        <input type="number" value="" class="form-control stockVariant" disabled>
+                        <input type="number" value="" class="form-control minStockVariant" disabled>
+                    </td>
+                    <td><input type="text" class="form-control skuVariant"></td>
+                    <td class="text-end">
+                        <div class="form-check form-switch me-4">
+                            <input class="form-check-input checkStatusVariant" type="checkbox" role="switch" checked>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }
+        }
     }
-    document.querySelector("#tableCombinations").innerHTML = html;
+    const unique = currentMix.filter(element => !arrComb.includes(element))[0];
+    if(arrComb.length< currentMix.length){
+        for (let i = 0; i < table.children.length; i++) {
+            const name = table.children[i].getAttribute("data-name");
+            if(name == unique){
+                table.children[i].remove();
+                html = document.querySelector("#tableCombinations").innerHTML;
+                break;
+            }
+        }
+    }
+    table.innerHTML = html;
 }
 function addOptionsVariant(){
+    const table = document.querySelector("#tableCombinations");
+    const currentComb= Array.from(table.children);
+    
     let arrOptionsToMix = [];
     let arrMix = [];
+    let currentMix = [];
+    if(currentComb.length>0){
+        currentComb.forEach(c => currentMix.push(c.getAttribute("data-name")));
+    }
     const parents = document.querySelectorAll(".variantItem");
     for (let i = 0; i < parents.length; i++) {
         const idVariant = parents[i].getAttribute("data-id");
@@ -467,7 +528,8 @@ function addOptionsVariant(){
         arrOptionsToMix = [];
     }
     arrVariantsToMix = arrMix;
-    showVariants(getCombinationsVariant(arrVariantsToMix));
+    let combination = getCombinationsVariant(arrVariantsToMix);
+    showVariants(combination);
 }
 function getCombinationsVariant(variants){
     let result = [];
@@ -503,13 +565,13 @@ function addVariant(id="",options=[]){
         objOptions.forEach(op=>{
             let checked = "";
             if(options.length > 0){
-                checked = op.name == options [index] ? "checked" : "";
+                checked = options.includes(op.name) ? "checked" : "";
             }
             html+=`
-            <div class="form-check form-switch me-4">
+            <div class="form-check form-switch m-2">
                 <input class="form-check-input" type="checkbox" role="switch"  data-id="${op.id_options}" data-name="${op.name}"
                 onchange="addOptionsVariant()" id="flexSwitchCheckDefault${op.id_options}" ${checked}>
-                <label class="form-check-label" for="flexSwitchCheckDefault${op.id_options}">${op.name}</label>
+                <label class="ms-2 form-check-label" for="flexSwitchCheckDefault${op.id_options}">${op.name}</label>
             </div>
             `;
             index++;
@@ -519,7 +581,7 @@ function addVariant(id="",options=[]){
         tr.setAttribute("data-id",obj.id);
         tr.innerHTML = `
             <td>${obj.name}</td>
-            <td ><div class="d-flex">${html}</div></td>
+            <td ><div class="d-flex flex-wrap justify-between">${html}</div></td>
             <td class="text-end"><button type="button" class="btn btn-danger text-white" onclick="removeVariant(this,${obj.id})"><i class="fas fa-trash"></i></button></td>
         `;
         arrVariantsAdded.unshift(obj);
@@ -567,6 +629,7 @@ function removeVariant(item,id){
     if(arrVariantsAdded.length == 0){
         divTableVariant.classList.add("d-none");
         checkStockVariants.checked = "";
+        document.querySelector("#tableCombinations").innerHTML ="";
     }
     element.remove();
     addOptionsVariant();

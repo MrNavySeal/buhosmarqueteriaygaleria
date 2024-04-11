@@ -25,7 +25,7 @@
         }
         public function producto($params){
             if($_SESSION['permitsModule']['w']){
-                $data['page_tag'] = "Productos";
+                $data['page_tag'] = "Crear Producto";
                 $data['page_title'] = "Nuevo Producto";
                 $data['page_name'] = "productos";
                 $data['panelapp'] = "functions_product.js";
@@ -53,8 +53,12 @@
                         $btnView = '<a href="'.base_url().'/tienda/producto/'.$request[$i]['route'].'" target="_blank" class="btn btn-info m-1 text-white" title="Ver página"><i class="fas fa-eye"></i></a>';
                         $btnEdit="";
                         $btnDelete="";
+                        $btnOptions = "";
                         $variant = $request[$i]['product_type'] == 1 ? "Desde " : "";
                         if($_SESSION['permitsModule']['u']){
+                            if($request[$i]['is_combo']){
+                                $btnOptions='<a href="'.base_url().'/Productos/insumo/'.$request[$i]['idproduct'].'" target="_blank" class="btn btn-primary m-1 text-white" title="Asignar insumos"><i class="fa fa-list" aria-hidden="true"></i></a>';
+                            }
                             $btnEdit = '<a href="'.base_url().'/Productos/producto/'.$request[$i]['idproduct'].'" class="btn btn-success m-1 text-white" title="Editar"><i class="fas fa-pencil-alt"></i></a>';
                         }
                         if($_SESSION['permitsModule']['d']){
@@ -71,11 +75,14 @@
                         }
 
                         $request[$i]['status'] = $status;
-                        $request[$i]['options'] = $btnView.$btnEdit.$btnDelete;
+                        $request[$i]['options'] = $btnView.$btnOptions.$btnEdit.$btnDelete;
                         $request[$i]['price_purchase'] = $variant.formatNum($request[$i]['price_purchase'] != null ? $request[$i]['price_purchase'] : 0);
                         $request[$i]['price'] = $variant.formatNum($request[$i]['price'] != null ? $request[$i]['price'] : 0);
                         $request[$i]['discount'] = $variant.formatNum($request[$i]['discount'] != null ? $request[$i]['discount'] : 0);
                         $request[$i]['stock'] = !$request[$i]['is_stock'] ? "No maneja inventario" : $request[$i]['stock'];
+                        $request[$i]['is_product'] = $request[$i]['is_product'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
+                        $request[$i]['is_ingredient'] = $request[$i]['is_ingredient'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
+                        $request[$i]['is_combo'] = $request[$i]['is_combo'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
@@ -107,7 +114,6 @@
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     $arrData = json_decode($_POST['data'],true);
-                    //dep($arrData);exit;
                     if(empty($arrData)){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
@@ -250,6 +256,47 @@
         }
 
         /*************************Other methods*******************************/
+        public function reFactProducts(){
+            $request = $this->model->selectTempProducts();
+            $total = count($request);
+            $variantsToInsert = [];
+            for ($i=0; $i < $total; $i++) { 
+                $specs = json_decode($request[$i]['specifications'],true);
+                if(!empty($specs)){
+                    for ($j=0; $j < count($specs); $j++) { 
+                        $specs[$j]['id'] = $this->model->selectTempSpec($specs[$j]['name']);
+                    }
+                    $request[$i]['specs'] = $specs;
+                }
+                if(!empty($request[$i]['variants'])){
+                    $variants = $request[$i]['variants'];
+                    $options = [];
+                    $combination = [];
+                    for ($j=0; $j < count($variants); $j++) {
+                        array_push($combination,array(
+                            "name"=>$variants[$j]['width']."x".$variants[$j]['height'],
+                            "price_purchase"=>0,
+                            "price_sell"=>$variants[$j]['price'],
+                            "price_offer"=>0,
+                            "stock"=>100,
+                            "min_stock"=>0,
+                            "sku"=>"",
+                            "status"=>1,
+                            "is_stock"=>0
+                        ));
+                        array_push($variantsToInsert,$variants[$j]['width']."x".$variants[$j]['height']);
+                        array_push($options,$variants[$j]['width']."x".$variants[$j]['height']);
+                    }
+                    $request[$i]['variants'] = array("combinations"=>$combination,"variations"=>[array("id"=>5,"options"=>$options)]);
+                    $this->model->updateTempProduct($request[$i]['idproduct'],$request[$i]);
+                }
+            }
+            $variantsToInsert =array_values(array_unique($variantsToInsert));
+            $this->model->insertOptions(5,$variantsToInsert);
+            dep($variantsToInsert);
+            dep($request);
+            die();
+        }
         public function getData(){
             $request['specs'] = $this->model->selectSpecs();
             $request['categories'] = $this->model->selectCategories();

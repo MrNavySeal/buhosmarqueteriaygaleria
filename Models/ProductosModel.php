@@ -157,6 +157,10 @@
                 p.product_type,
                 p.route,
                 p.is_stock,
+                p.is_stock,
+                p.is_product,
+                p.is_ingredient,
+                p.is_combo,
                 c.idcategory,
                 c.name as category,
                 s.idsubcategory,
@@ -311,6 +315,45 @@
             $this->intIdProduct = $id;
             $sql = "DELETE FROM productimage WHERE productid=$this->intIdProduct";
             $request = $this->delete($sql);
+            return $request;
+        }
+        /*************************Temp methods*******************************/
+        public function updateTempProduct(int $idProduct,array $data){
+            $this->intIdProduct = $idProduct;
+            $this->arrData = $data;
+            $this->insertSpecs($this->intIdProduct,$this->arrData['specs']);
+            $this->insertVariants($this->intIdProduct,$this->arrData['variants']);
+		}
+        public function insertOptions($id,$data){
+            $total = count($data);
+            $sql = "DELETE FROM variation_options WHERE variation_id = $id; SET @autoid :=0; 
+            UPDATE variation_options SET id_options = @autoid := (@autoid+1);
+            ALTER TABLE variation_options Auto_Increment = 1;";
+            $this->delete($sql);
+            for ($i=0; $i < $total; $i++) { 
+                $sql = "INSERT INTO variation_options(variation_id,name) VALUES (?,?)";
+                $arrData = array($id,ucwords($data[$i]));
+                $this->insert($sql,$arrData);
+            }
+        }
+        public function selectTempProducts(){
+            $sql = "SELECT * FROM product";
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                $total = count($request);
+                for ($i=0; $i < $total ; $i++) { 
+                    $id = $request[$i]['idproduct'];
+                    $req = $this->select_all("SELECT * FROM product_variant WHERE productid = $id");
+                    if(!empty($req)){
+                        $request[$i]['variants'] = $req; 
+                    }
+                }
+            }
+            return $request;
+        }
+        public function selectTempSpec($name){
+            $sql = "SELECT id_specification FROM specifications WHERE name= '$name'";
+            $request = $this->select($sql)['id_specification'];
             return $request;
         }
         /*************************Other methods*******************************/

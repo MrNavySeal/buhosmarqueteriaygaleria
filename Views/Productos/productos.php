@@ -27,6 +27,9 @@
                             <th class="text-nowrap">Precio de venta</th>
                             <th class="text-nowrap">Precio de oferta</th>
                             <th>Stock</th>
+                            <th>Producto</th>
+                            <th>Insumo</th>
+                            <th class="text-nowrap">Servicio/Receta/Combo</th>
                             <th>Fecha</th>
                             <th>Estado</th>
                             <th>Opciones</th>
