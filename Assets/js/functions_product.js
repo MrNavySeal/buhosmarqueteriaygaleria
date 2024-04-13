@@ -118,6 +118,10 @@ if(document.querySelector("#id").value !=""){
             });
             document.querySelector("#tableCombinations").innerHTML = html;
             //showVariants(getCombinationsVariant(arrVariantsToMix));
+        }else if(checkInventory.checked){
+            document.querySelector("#setStocks").classList.remove("d-none");
+            document.querySelector("#txtStock").value = productData.stock;
+            document.querySelector("#txtMinStock").value = productData.min_stock;
         }
         if(productData.specs.length>0){
             for (let i = 0; i < productData.specs.length; i++) {
@@ -434,41 +438,19 @@ function showVariants(combinations){
     let html="";
     let currentMix = [];
     let arrComb = [];
-    combinations.forEach(c => arrComb.push(c.join("/")));
+    /*combinations.forEach(c => arrComb.push(c.join("/")));
     const currentComb= Array.from(table.children);
     if(currentComb.length>0){
         currentComb.forEach(c => currentMix.push(c.getAttribute("data-name")));
         html = table.innerHTML;
-    }
+    }*/
     tableVariantsCombination.classList.add("d-none");
     
     if(combinations.length > 0){
         tableVariantsCombination.classList.remove("d-none");
         for (let i = 0; i < combinations.length; i++) {
             let name = combinations[i].join("/");
-            if(currentMix.length > 0){
-                if(!currentMix.includes(name)){
-                    html+=`
-                    <tr class="text-nowrap" data-name="${name}">
-                        <td>${name}</td>
-                        <td><input type="number" value="" class="form-control pricePurchaseVariant"></td>
-                        <td><input type="number" value="" class="form-control priceSellVariant"></td>
-                        <td><input type="number" value="" class="form-control priceOfferVariant"></td>
-                        <td class="d-flex">
-                            <input type="number" value="" class="form-control stockVariant" disabled>
-                            <input type="number" value="" class="form-control minStockVariant" disabled>
-                        </td>
-                        <td><input type="text" class="form-control skuVariant"></td>
-                        <td class="text-end">
-                            <div class="form-check form-switch me-4">
-                                <input class="form-check-input checkStatusVariant" type="checkbox" role="switch" checked>
-                            </div>
-                        </td>
-                    </tr>
-                    `;
-                }
-            }else{
-                html+=`
+            html+=`
                 <tr class="text-nowrap" data-name="${name}">
                     <td>${name}</td>
                     <td><input type="number" value="" class="form-control pricePurchaseVariant"></td>
@@ -486,18 +468,6 @@ function showVariants(combinations){
                     </td>
                 </tr>
                 `;
-            }
-        }
-    }
-    const unique = currentMix.filter(element => !arrComb.includes(element))[0];
-    if(arrComb.length< currentMix.length){
-        for (let i = 0; i < table.children.length; i++) {
-            const name = table.children[i].getAttribute("data-name");
-            if(name == unique){
-                table.children[i].remove();
-                html = document.querySelector("#tableCombinations").innerHTML;
-                break;
-            }
         }
     }
     table.innerHTML = html;

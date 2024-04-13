@@ -288,8 +288,8 @@
                         array_push($options,$variants[$j]['width']."x".$variants[$j]['height']);
                     }
                     $request[$i]['variants'] = array("combinations"=>$combination,"variations"=>[array("id"=>5,"options"=>$options)]);
-                    $this->model->updateTempProduct($request[$i]['idproduct'],$request[$i]);
                 }
+                $this->model->updateTempProduct($request[$i]['idproduct'],$request[$i]);
             }
             $variantsToInsert =array_values(array_unique($variantsToInsert));
             $this->model->insertOptions(5,$variantsToInsert);

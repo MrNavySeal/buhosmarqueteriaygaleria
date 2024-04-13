@@ -215,6 +215,7 @@
                 p.discount,
                 p.description,
                 p.stock,
+                p.min_stock,
                 p.status,
                 p.product_type,
                 p.route,
@@ -242,13 +243,13 @@
                         $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name'],"rename"=>$requestImg[$i]['name']);
                     }
                 }
+                $sqlSpecs = "SELECT p.specification_id as id,p.value,s.name
+                FROM product_specs p
+                INNER JOIN specifications s
+                ON p.specification_id = s.id_specification
+                WHERE p.product_id = $this->intIdProduct";
+                $request['specs'] = $this->select_all($sqlSpecs);
                 if($request['product_type'] == 1){
-                    $sqlSpecs = "SELECT p.specification_id as id,p.value,s.name
-                    FROM product_specs p
-                    INNER JOIN specifications s
-                    ON p.specification_id = s.id_specification
-                    WHERE p.product_id = $this->intIdProduct";
-                    $request['specs'] = $this->select_all($sqlSpecs);
                     $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intIdProduct");
                     $request['variation']['variation'] = json_decode($request['variation']['variation']);
                     $request['options'] = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intIdProduct");
@@ -321,8 +322,12 @@
         public function updateTempProduct(int $idProduct,array $data){
             $this->intIdProduct = $idProduct;
             $this->arrData = $data;
-            $this->insertSpecs($this->intIdProduct,$this->arrData['specs']);
-            $this->insertVariants($this->intIdProduct,$this->arrData['variants']);
+            if(isset($this->arrData['specs']) && !empty($this->arrData['specs'])){
+                $this->insertSpecs($this->intIdProduct,$this->arrData['specs']);
+            }
+            if(isset($this->arrData['variants']) && !empty($this->arrData['variants'])){
+                $this->insertVariants($this->intIdProduct,$this->arrData['variants']);
+            }
 		}
         public function insertOptions($id,$data){
             $total = count($data);
