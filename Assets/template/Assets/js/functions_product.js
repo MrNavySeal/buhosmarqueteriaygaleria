@@ -169,34 +169,49 @@ function showMore(elements,max=null,handler){
     })
 }
 function selVariant(element){
-    let variants = document.querySelectorAll(".btnv");
+    let contentVariants = element.parentElement;
+    let variants = contentVariants.children;
     for (let i = 0; i < variants.length; i++) {
         variants[i].classList.remove("active");
     }
+    element.classList.add("active");
+    let selectedVariants = document.querySelectorAll(".btnv.active");
+    let arrSelected = [];
+    selectedVariants.forEach(element => {
+        arrSelected.push(element.getAttribute("data-name"));
+    });
+    let variant = arrSelected.join("-");
     
     let formData = new FormData();
-    formData.append("id_product",element.getAttribute("data-id"));
-    formData.append("id_variant",element.getAttribute("data-idv"));
-    if(!element.classList.contains("active")){
-        element.disabled = true;
-        request(base_url+"/tienda/getProductVariant",formData,"post").then(function(objData){
-            if(objData.status){
-                element.classList.add("active");
-                let priceElement = document.querySelector("#productPrice");
-                document.querySelector("#txtQty").setAttribute("max",objData.stock);
-                document.querySelector("#txtQty").value=1;
-                //document.querySelector("#productStock").innerHTML = `Stock: (${objData.stock}) unidades`
-                if(priceElement.children.length>1){
-                    priceElement.children[0].innerHTML = objData.pricediscount;
-                    priceElement.children[1].innerHTML = objData.price;
-                }else{
-                    priceElement.innerHTML = objData.price;
+    formData.append("id",element.getAttribute("data-idp"));
+    formData.append("variant",variant);
+    request(base_url+"/tienda/getProductVariant",formData,"post").then(function(objData){
+        if(objData.status){
+            let priceElement = document.querySelector("#productPrice");
+            if(objData.percent != ""){
+                if(document.querySelector("#productDiscount")){
+                    document.querySelector("#productDiscount").classList.remove("d-none");
+                    document.querySelector("#productDiscount").innerHTML = objData.percent;
                 }
+                priceElement.innerHTML = `<span class="current sale me-2">${objData.pricediscount}</span>
+                <span class="compare">${objData.price}</span>`
+            }else{
+                if(document.querySelector("#productDiscount"))document.querySelector("#productDiscount").classList.add("d-none");
+                priceElement.innerHTML = objData.price;
             }
-        }).finally(function() {
-            element.disabled = false;
-        });
-    }
+            if(objData.is_stock && objData.stock > 0){
+                document.querySelector("#showBtns").classList.remove("d-none");
+                document.querySelector("#txtQty").setAttribute("max",objData.stock);
+            }else if(objData.is_stock && objData.stock <= 0){
+                document.querySelector("#showBtns").classList.add("d-none");
+                if(document.querySelector("#productDiscount"))document.querySelector("#productDiscount").classList.add("d-none");
+                priceElement.innerHTML = '<span class="current sale me-2">Agotado</span>';
+            }else{
+                document.querySelector("#showBtns").classList.remove("d-none");
+            }
+            if(document.querySelector("#txtQty"))document.querySelector("#txtQty").value=1;
+        }
+    })
 }
 function addFav(element){
     
@@ -245,12 +260,13 @@ function addProductCart(element){
     }else if(document.querySelector("#txtQQty")){
         intQty = document.querySelector("#txtQQty").value; 
     }
-    if(type == 2){
-        if(document.querySelector(".btnv.active")){
-            variant = document.querySelector(".btnv.active").getAttribute("data-idv");
-        }else{
-            variant = document.querySelectorAll(".btnv")[0].getAttribute("data-idv");
-        }
+    if(type == 1){
+        let selectedVariants = document.querySelectorAll(".btnv.active");
+        let arrSelected = [];
+        selectedVariants.forEach(element => {
+            arrSelected.push(element.getAttribute("data-name"));
+        });
+        variant = arrSelected.join("-");
         
     }
     formData.append("idProduct",idProduct);

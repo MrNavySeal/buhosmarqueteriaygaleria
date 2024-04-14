@@ -48,26 +48,18 @@
                 $qty = intval($_POST['txtQty']);
                 $topic = intval($_POST['topic']);
                 $productType = intval($_POST['type']);
-                $id_variant = intval(openssl_decrypt($_POST['variant'],METHOD,KEY));
+                $variant = strClean($_POST['variant']);
                 $qtyCart = 0;
                 $arrCart = array();
                 $valiQty =true;
                 $reference = "";
                 if(is_numeric($id)){
-                    $request = $this->getProductT($id,$id_variant);
+                    $request = $this->getProductT($id,$variant);
                     $price = $request['price'];
-                    $variant = $productType == 2 ? $request['variant'] : array();
+                    $variant = $productType == 1 ? $request['combination'] : array();
+                    $props = $productType == 1 ? $request['variants'] : array();
                     $id = openssl_encrypt($id,METHOD,KEY);
-                    
-                    if(!empty($variant)){
-                        $variant['id_product_variant'] = openssl_encrypt($id_variant,METHOD,KEY);
-                        $variant['productid'] = $id;
-                    }
-                    if($request['discount']>0 && $productType == 1){
-                        $price = $request['price'] - ($request['price']*($request['discount']/100));
-                    }else if($request['discount']>0 && $productType == 2){
-                        $variant['price'] = $variant['price'] -($variant['price']*($request['discount']/100));
-                    }
+
                     $data = array(
                         "reference"=>$request['reference'],
                         "name"=>$request['name'],
@@ -86,20 +78,23 @@
                             "url"=>base_url()."/tienda/producto/".$request['route'],
                             "price" =>$price,
                             "stock"=>$request['stock'],
-                            "variant"=>$variant
+                            "is_stock"=>$request['is_stock'],
+                            "variant"=>$variant,
+                            "props"=>$props
                         );
+                        //dep($arrProduct);exit;
                         if(isset($_SESSION['arrCart'])){
                             $arrCart = $_SESSION['arrCart'];
                             $currentQty = 0;
                             $flag = true;
                             for ($i=0; $i < count($arrCart) ; $i++) { 
                                 if($arrCart[$i]['topic'] == 2){
-                                    if($arrCart[$i]['producttype'] == 2){
+                                    if($arrCart[$i]['producttype'] == 1){
                                         if($arrCart[$i]['id'] == $arrProduct['id']
-                                        && $arrCart[$i]['variant']['id_product_variant'] == $arrProduct['variant']['id_product_variant']){
+                                        && $arrCart[$i]['variant']['name'] == $arrProduct['variant']['name']){
                                             $currentQty = $arrCart[$i]['qty'];
                                             $arrCart[$i]['qty']+= $qty;
-                                            if($arrCart[$i]['qty'] > $request['variant']['stock']){
+                                            if($arrCart[$i]['is_stock'] && $arrCart[$i]['qty'] > $arrProduct['stock']){
                                                 $arrCart[$i]['qty'] = $currentQty;
                                                 $arrResponse = array("status"=>false,"msg"=>"No hay suficientes unidades","data"=>$data);
                                                 $flag = false;
@@ -118,7 +113,7 @@
                                         if($arrCart[$i]['id'] == $arrProduct['id']){
                                             $currentQty = $arrCart[$i]['qty'];
                                             $arrCart[$i]['qty']+= $qty;
-                                            if($arrCart[$i]['qty'] > $request['stock']){
+                                            if($arrCart[$i]['is_stock'] && $arrCart[$i]['qty'] > $arrProduct['stock']){
                                                 $arrCart[$i]['qty'] = $currentQty;
                                                 $arrResponse = array("status"=>false,"msg"=>"No hay suficientes unidades","data"=>$data);
                                                 $flag = false;
@@ -137,10 +132,10 @@
                                 }
                             }
                             if($flag){
-                                if(!empty($request) && $qty > $request['stock'] && $productType == 1){
+                                if(!empty($request) && $request['is_stock']  && $qty > $request['stock'] && $productType !=1){
                                     $arrResponse = array("status"=>false,"msg"=>"No hay suficientes unidades","data"=>$data);
                                     $_SESSION['arrCart'] = $arrCart;
-                                }else if(!empty($request['variant']) && $qty > $variant['stock'] && $productType == 2){
+                                }else if(!empty($request['variant']) && $request['is_stock']  && $qty > $variant['stock'] && $productType == 1){
                                     $arrResponse = array("status"=>false,"msg"=>"No hay suficientes unidades","data"=>$data);
                                     $_SESSION['arrCart'] = $arrCart;
                                 }else{
@@ -153,10 +148,10 @@
                                 }
                             }
                         }else{
-                            if(!empty($request) && $qty > $request['stock'] && $productType == 1){
+                            if(!empty($request) && $request['is_stock'] && $qty > $request['stock'] && $productType != 1){
                                 $arrResponse = array("status"=>false,"msg"=>"No hay suficientes unidades","data"=>$data);
                                 $_SESSION['arrCart'] = $arrCart;
-                            }else if(!empty($request['variant']) && $qty > $variant['stock'] && $productType == 2){
+                            }else if(!empty($request['variant']) && $request['is_stock'] && $qty > $variant['stock'] && $productType == 1){
                                 $arrResponse = array("status"=>false,"msg"=>"No hay suficientes unidades","data"=>$data);
                                 $_SESSION['arrCart'] = $arrCart;
                             }else{
@@ -270,7 +265,7 @@
             die();
         }
         public function delCart(){
-        //dep($_POST);exit;
+            //dep($_POST);exit;
             if($_POST){
                 $id = $_POST['id'];
                 $topic = intval($_POST['topic']);
@@ -310,12 +305,12 @@
                         }
                     }else if($topic == 2){
                         if($id == $arrCart[$i]['id']){
-                            if($arrCart[$i]['producttype'] == 2){
-                                if($arrCart[$i]['variant']['id_product_variant'] == $variant){
+                            if($arrCart[$i]['producttype'] == 1){
+                                if($arrCart[$i]['variant']['name'] == $variant){
                                     unset($arrCart[$i]);
                                     break;
                                 }
-                            }else if($arrCart[$i]['producttype'] == 1){
+                            }else if($arrCart[$i]['producttype'] == 0){
                                 unset($arrCart[$i]);
                                 break;
                             }
@@ -372,7 +367,7 @@
                         </li>
                         ';
                     }else if($arrProducts[$i]['topic'] == 2){
-                        if($arrProducts[$i]['producttype'] == 1){
+                        if($arrProducts[$i]['producttype'] != 1){
                             $html.= '
                             <li class="cartlist--item" data-id="'.$arrProducts[$i]['id'].'" data-topic ="'.$arrProducts[$i]['topic'].'">
                                 <a href="'.$arrProducts[$i]['url'].'">
@@ -387,25 +382,42 @@
                                         </span>
                                     </div>
                                 </div>
+                                <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
                                 <span class="delItem"><i class="fas fa-times"></i></span>
                             </li>
                             ';
                         }else{
-                            $id_variant = $arrProducts[$i]['variant']['id_product_variant'];
+                            $arrVariant = explode("-",$arrProducts[$i]['variant']['name']); 
+                            $props = $arrProducts[$i]['props'];
+                            $propsTotal = count($props);
+                            $htmlComb="";
+                            
+                            for ($j=0; $j < $propsTotal; $j++) { 
+                                $options = $props[$j]['options'];
+                                $optionsTotal = count($options);
+                                for ($k=0; $k < $optionsTotal ; $k++) { 
+                                    if($options[$k]== $arrVariant[$j]){
+                                        $htmlComb.='<p class="m-0" >'.$props[$j]['name'].': '.$arrVariant[$j].'</p>';
+                                        break;
+                                    }
+                                }
+                            }
                             $html.= '
-                            <li class="cartlist--item" data-id="'.$arrProducts[$i]['id'].'" data-topic ="'.$arrProducts[$i]['topic'].'" data-variant="'.$id_variant.'">
+                            <li class="cartlist--item" data-id="'.$arrProducts[$i]['id'].'" 
+                            data-topic ="'.$arrProducts[$i]['topic'].'" data-variant="'.$arrProducts[$i]['variant']['name'].'">
                                 <a href="'.$arrProducts[$i]['url'].'">
                                     <img src="'.$arrProducts[$i]['image'].'" alt="'.$arrProducts[$i]['name'].'">
                                 </a>
                                 <div class="item--info">
                                     <a href="'.$arrProducts[$i]['url'].'">'.$arrProducts[$i]['reference']." ".$arrProducts[$i]['name'].'</a>
-                                    <p class="m-0" >Tamaño: '.$arrProducts[$i]['variant']['width']."x".$arrProducts[$i]['variant']['height'].'</p>
+                                    '.$htmlComb.'
                                     <div class="item--qty">
                                         <span>
                                             <span class="fw-bold">'.$arrProducts[$i]['qty'].' x</span>
-                                            <span class="item--price">'.formatNum($arrProducts[$i]['variant']['price'],false).'</span>
+                                            <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                         </span>
                                     </div>
+                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
                                 </div>
                                 <span class="delItem"><i class="fas fa-times"></i></span>
                             </li>
@@ -416,15 +428,7 @@
                 $total =0;
                 $qty = 0;
                 foreach ($arrProducts as $pro) {
-                    if($pro['topic'] == 2){
-                        if($pro['producttype'] == 2){
-                            $total+=$pro['qty']*$pro['variant']['price'];
-                        }else{
-                            $total+=$pro['qty']*$pro['price'];
-                        }
-                    }else{
-                        $total+=$pro['qty']*$pro['price'];
-                    }
+                    $total+=$pro['qty']*$pro['price'];
                     $qty+=$pro['qty'];
                 }
                 $status=false;

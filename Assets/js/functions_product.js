@@ -485,6 +485,7 @@ function addOptionsVariant(){
     const parents = document.querySelectorAll(".variantItem");
     for (let i = 0; i < parents.length; i++) {
         const idVariant = parents[i].getAttribute("data-id");
+        const name = parents[i].getAttribute("data-name");
         const children = parents[i].children[1].children[0].children;
         for (let j = 0; j < children.length; j++) {
             const optionEl = children[j].children[0];
@@ -493,7 +494,7 @@ function addOptionsVariant(){
             }
         }
         if(arrOptionsToMix.length > 0){
-            arrMix.push({id:idVariant,options:arrOptionsToMix});
+            arrMix.push({id:idVariant,name:name,options:arrOptionsToMix});
         }
         arrOptionsToMix = [];
     }
@@ -549,6 +550,7 @@ function addVariant(id="",options=[]){
         let tr = document.createElement("tr");
         tr.classList.add("variantItem");
         tr.setAttribute("data-id",obj.id);
+        tr.setAttribute("data-name",obj.name);
         tr.innerHTML = `
             <td>${obj.name}</td>
             <td ><div class="d-flex flex-wrap justify-between">${html}</div></td>

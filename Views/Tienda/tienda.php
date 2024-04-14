@@ -92,7 +92,7 @@
                         <?php
                             for ($i=0; $i < count($productos) ; $i++) { 
                                 $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
-                                $resultDiscount = (1-($productos[$i]['discount']/$productos[$i]['price']))*100;
+                                $resultDiscount = floor((1-($productos[$i]['discount']/$productos[$i]['price']))*100);
                                 $discount = "";
                                 $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
                                 $variant = $productos[$i]['product_type']? "Desde " : "";

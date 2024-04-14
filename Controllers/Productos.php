@@ -110,7 +110,6 @@
             die();
         }
         public function setProduct(){
-            
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     $arrData = json_decode($_POST['data'],true);
@@ -287,7 +286,7 @@
                         array_push($variantsToInsert,$variants[$j]['width']."x".$variants[$j]['height']);
                         array_push($options,$variants[$j]['width']."x".$variants[$j]['height']);
                     }
-                    $request[$i]['variants'] = array("combinations"=>$combination,"variations"=>[array("id"=>5,"options"=>$options)]);
+                    $request[$i]['variants'] = array("combinations"=>$combination,"variations"=>[array("id"=>5,"name"=>"Medidas","options"=>$options)]);
                 }
                 $this->model->updateTempProduct($request[$i]['idproduct'],$request[$i]);
             }

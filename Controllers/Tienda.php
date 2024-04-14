@@ -323,22 +323,28 @@
         }
         /******************************Product methods************************************/
         public function getProductVariant(){
-            //dep(openssl_decrypt($_POST['id_product'],METHOD,KEY));exit;
             if($_POST){
-                if(empty($_POST['id_product']) || empty($_POST['id_variant'])){
+                if(empty($_POST['id']) || empty($_POST['variant'])){
                     $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                 }else{
-                    $id = openssl_decrypt($_POST['id_product'],METHOD,KEY);
-                    $variant = openssl_decrypt($_POST['id_variant'],METHOD,KEY);
-                    if(is_numeric($id) && is_numeric($variant)){
+                    $id = openssl_decrypt($_POST['id'],METHOD,KEY);
+                    $variant = strClean($_POST['variant']);
+                    if(is_numeric($id)){
                         $request = $this->selectProductVariant($id,$variant);
                         $discount = 0;
                         $priceDiscount = 0;
-                        if($request['discount']>0){
-                            $discount = $request['discount'];
-                            $priceDiscount = $request['variant']['price'] -($request['variant']['price']*($discount*0.01));
+                        $percent =0;
+                        if($request['price_offer']>0){
+                            $percent = floor((1-($request['price_offer']/$request['price_sell']))*100);
                         }
-                        $arrResponse = array("status"=>true,"stock"=>$request['variant']['stock'],"price"=>formatNum($request['variant']['price'],false),"pricediscount"=>formatNum($priceDiscount,false));
+                        $arrResponse = array(
+                            "status"=>true,
+                            "is_stock"=>boolval($request['is_stock']),
+                            "stock"=>$request['stock'],
+                            "price"=>formatNum($request['price_sell'],false),
+                            "pricediscount"=>formatNum($request['price_offer'],false),
+                            "percent"=>$percent > 0 ? "-".$percent."%" : ""
+                        );
                     }else{
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }
