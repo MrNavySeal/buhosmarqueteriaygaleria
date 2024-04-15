@@ -32,15 +32,7 @@
                     
                     $cupon = 0;
                     for ($i=0; $i < count($arrProducts) ; $i++) { 
-                        if($arrProducts[$i]['topic'] == 2){
-                            if($arrProducts[$i]['producttype'] == 2){
-                                $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['variant']['price'];
-                            }else{
-                                $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
-                            }
-                        }else{
-                            $subtotal += $arrProducts[$i]['price']*$arrProducts[$i]['qty']; 
-                        }
+                        $subtotal+=$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
                     }
                     if(isset($data['cupon'])){
                         $cupon = $subtotal-($subtotal*($data['cupon']['discount']/100));
@@ -72,13 +64,7 @@
                             <?php 
                                 for ($i=0; $i <count($arrProducts) ; $i++) { 
                                     $variant = "";
-                                    $price =0;
-                                    if($arrProducts[$i]['topic'] == 2 && $arrProducts[$i]['producttype'] == 2){
-
-                                        $price = $arrProducts[$i]['variant']['price'];
-                                    }else{
-                                        $price = $arrProducts[$i]['price'];
-                                    }
+                                    $price = $arrProducts[$i]['price'];
                                     $totalPerProduct=0;
                                     $totalPerProduct = formatNum($price*$arrProducts[$i]['qty'],false);
                                     if($arrProducts[$i]['topic'] == 1){
@@ -96,10 +82,25 @@
                         data-r="<?=$arrProducts[$i]['reference']?>" data-f="<?=$arrProducts[$i]['photo']?>" data-material="<?=$arrProducts[$i]['material']?>"
                         data-fc="<?=$arrProducts[$i]['colorframe']?>" data-glass="<?=$arrProducts[$i]['glass']?>">
                             <?php }else if($arrProducts[$i]['topic'] == 2){?>
-                                <?php if($arrProducts[$i]['producttype'] == 2){
-                                    $variant = '<ul><li><span class="fw-bold t-color-3">Tamaño:</span> '.$arrProducts[$i]['variant']['width']."x".$arrProducts[$i]['variant']['height'].'cm</li></ul>'
+                                <?php if($arrProducts[$i]['producttype']){
+                                    $arrVariant = explode("-",$arrProducts[$i]['variant']['name']); 
+                                    $props = $arrProducts[$i]['props'];
+                                    $propsTotal = count($props);
+                                    $htmlComb="";
+                                    
+                                    for ($j=0; $j < $propsTotal; $j++) { 
+                                        $options = $props[$j]['options'];
+                                        $optionsTotal = count($options);
+                                        for ($k=0; $k < $optionsTotal ; $k++) { 
+                                            if($options[$k]== $arrVariant[$j]){
+                                                $htmlComb.='<li><span class="fw-bold t-color-3" >'.$props[$j]['name'].': '.$arrVariant[$j].'</span></li>';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    $variant = '<ul>'.$htmlComb.'</ul>';
                                 ?>
-                                    <tr data-id = "<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>" data-variant ="<?=$arrProducts[$i]['variant']['id_product_variant']?>">
+                                    <tr data-id = "<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>" data-variant ="<?=$arrProducts[$i]['variant']['name']?>">
                                 <?php }else{?>
                                     <tr data-id = "<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>">
                                 <?php }?>

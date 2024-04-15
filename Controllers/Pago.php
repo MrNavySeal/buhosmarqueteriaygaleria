@@ -221,7 +221,6 @@
                 $arrOrder = array("idorder"=>$request,"iduser"=>$_SESSION['idUser'],"products"=>$_SESSION['arrCart']);
                 $requestDetail = $this->insertOrderDetail($arrOrder);
                 $orderInfo = $this->getOrder($request);
-                //$orderInfo['totaldetail'] = $arrTotal;
                 $company = getCompanyInfo();
                 $dataEmailOrden = array(
                     'asunto' => "Se ha generado un pedido",

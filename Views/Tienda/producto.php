@@ -20,7 +20,7 @@
         if($product['discount'] > 0 && $product['stock'] > 0){
             $discount = '<span class="discount" id="productDiscount">-'.$resultDiscount.'%</span>';
             $price ='<span class="current sale me-2">'.formatNum($product['discount'],false).'</span><span class="compare">'.formatNum($product['price']).'</span>';
-        }else if($productos[$i]['stock'] == 0){
+        }else if($product['stock'] == 0){
             $price = '<span class="current sale me-2">Agotado</span>';
             $discount="";
         }

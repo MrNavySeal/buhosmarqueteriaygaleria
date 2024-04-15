@@ -199,6 +199,17 @@ if($order['status'] =="pendent"){
                 </td>
                 <?php
                     if($product['topic'] == 2 || $product['topic'] == 3){
+                        $flag = substr($product['description'], 0,1) == "{" ? true : false;
+                        if($flag){
+                            $arrData = json_decode($product['description'],true);
+                            $name = $arrData['name'];
+                            $varDetail = $arrData['detail'];
+                            $textDetail ="";
+                            foreach ($varDetail as $d) {
+                                $textDetail .= '<li><span class="fw-bold t-color-3">'.$d['name'].':</span> '.$d['option'].'</li>';
+                            }
+                            $product['description'] = $name.'<ul>'.$textDetail.'</ul>';
+                        }
                 ?>
                 <td class="text-start w55">
                     <?=$product['description']?><br>

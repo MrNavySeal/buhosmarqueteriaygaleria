@@ -175,7 +175,6 @@
             die();
         }
         public function updateCart(){
-            //dep($_POST);exit;
             if($_POST){
                 $id = $_POST['id'];
                 $topic = intval($_POST['topic']);
@@ -217,24 +216,23 @@
                                 break;
                             }
                         }else if($arrProducts[$i]['topic'] == 2 && $topic == 2){
-                            if($arrProducts[$i]['id'] == $id && $arrProducts[$i]['producttype'] == 2 
-                            && $arrProducts[$i]['variant']['id_product_variant'] == $variant){
+                            if($arrProducts[$i]['id'] == $id && $arrProducts[$i]['producttype'] == 1 
+                            && $arrProducts[$i]['variant']['name'] == $variant){
                                 $idProduct = intval(openssl_decrypt($id,METHOD,KEY));
-                                $id_variant = intval(openssl_decrypt($variant,METHOD,KEY));
                                 
-                                $stock = $this->getProductT($idProduct,$id_variant)['variant']['stock'];
-                                if($qty >= $stock ){
-                                    $qty = $stock;
+                                $request = $this->getProductT($idProduct,$variant);
+                                if($request['is_stock'] && $qty >= $request['stock'] ){
+                                    $qty = $request['stock'];
                                 }
                                 $arrProducts[$i]['qty'] = $qty;
                                 
-                                $totalPrice =$arrProducts[$i]['qty']*$arrProducts[$i]['variant']['price'];
+                                $totalPrice =$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
                                 break;
-                            }else if($arrProducts[$i]['id'] == $id && $arrProducts[$i]['producttype'] == 1 ){
+                            }else if($arrProducts[$i]['id'] == $id && $arrProducts[$i]['producttype'] != 1 ){
                                 $idProduct = intval(openssl_decrypt($id,METHOD,KEY));
-                                $stock = $this->getProductT($idProduct,$variant)['stock'];
-                                if($qty >= $stock ){
-                                    $qty = $stock;
+                                $request = $this->getProductT($idProduct,$variant);
+                                if($request['is_stock'] && $qty >= $request['stock'] ){
+                                    $qty = $request['stock'];
                                 }
                                 
                                 $arrProducts[$i]['qty'] = $qty;
@@ -362,6 +360,7 @@
                                         <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                     </span>
                                 </div>
+                                <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
                             </div>
                             <span class="delItem"><i class="fas fa-times"></i></span>
                         </li>
@@ -381,8 +380,8 @@
                                             <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                         </span>
                                     </div>
+                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
                                 </div>
-                                <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
                                 <span class="delItem"><i class="fas fa-times"></i></span>
                             </li>
                             ';

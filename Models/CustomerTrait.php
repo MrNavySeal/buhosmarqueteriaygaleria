@@ -166,16 +166,32 @@
                         "photo"=>$pro['photo']
                     ));
                 }else{
-                    $variant = $pro['producttype'] == 2 ? openssl_decrypt($pro['variant']['id_product_variant'],METHOD,KEY) : null;
-                    $selectProduct = $this->selectProductC($this->intIdProduct,$variant);
-                    $price = $pro['producttype'] == 1 ? $pro['price'] : $pro['variant']['price'];
-                    $description = $pro['producttype'] == 1 ? $pro['name'] : $pro['name']." ".$pro['variant']['width']."x".$pro['variant']['height']."cm";
-                    if($selectProduct['stock']>0 && $pro['producttype'] == 1){
-                        $stock = $selectProduct['stock']-$pro['qty'];
-                        $this->updateStock($this->intIdProduct,$stock);
-                    }else if($selectProduct['variant']['stock'] > 0 && $pro['producttype'] == 2){
-                        $stock = $selectProduct['variant']['stock']-$pro['qty'];
-                        $this->updateStock($this->intIdProduct,$stock,$variant);
+                    $stock = $this->selectStock($this->intIdProduct,$pro['variant']);
+                    $description = $pro['name'];
+                    if($pro['producttype'] == 1){
+                        $arrVariant = explode("-",$pro['variant']['name']); 
+                        $props = $pro['props'];
+                        $propsTotal = count($props);
+                        $arrComb = [];
+                        for ($j=0; $j < $propsTotal; $j++) { 
+                            $options = $props[$j]['options'];
+                            $optionsTotal = count($options);
+                            for ($k=0; $k < $optionsTotal ; $k++) { 
+                                if($options[$k]== $arrVariant[$j]){
+                                    array_push($arrComb,
+                                        array(
+                                        "name"=>$props[$j]['name'],
+                                        "option"=>$arrVariant[$j])
+                                    );
+                                    break;
+                                }
+                            }
+                        }
+                        $description = json_encode(array("name"=>$pro['name'],"detail"=>$arrComb));
+                    }
+                    if($pro['is_stock']){
+                        $stock = $stock-$pro['qty'];
+                        $this->updateStock($this->intIdProduct,$stock,$pro['variant']['name']);
                     }
                 }
                 $query = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference)
@@ -187,7 +203,7 @@
                     $pro['topic'],
                     $description,
                     $pro['qty'],
-                    $price,
+                    $pro['price'],
                     $reference
                 );
                 $request = $this->con->insert($query,$arrData);
@@ -275,22 +291,24 @@
             $request = $this->con->select($sql);
             return $request;
         }
-        public function selectProductC($id,$variant=null){
+        public function selectStock($id,$variant=null){
             $this->con = new Mysql();
             $this->intIdProduct = $id;
-            $sql = "SELECT * FROM product WHERE idproduct = $this->intIdProduct";
+            $sql = "SELECT stock,product_type FROM product WHERE idproduct = $this->intIdProduct";
             $request = $this->con->select($sql);
-            if($request['product_type'] == 2){
-                $sqlV = "SELECT * FROM product_variant WHERE id_product_variant = $variant";
-                $request['variant'] = $this->con->select($sqlV);
+            $stock = $request['stock'];
+            if($request['product_type'] == 1){
+                $name = $variant['name'];
+                $sqlV = "SELECT stock FROM product_variations_options WHERE name = '$name'";
+                $stock = $this->con->select($sqlV)['stock'];
             }
-            return $request;
+            return $stock;
         }
         public function updateStock($id,$stock,$variant=null){
             $this->con = new Mysql();
             $this->intIdProduct = $id;
             if($variant != null){
-                $sql = "UPDATE product_variant SET stock=? WHERE id_product_variant = $variant";
+                $sql = "UPDATE product_variations_options SET stock=? WHERE name = $variant AND product_id = $this->intIdProduct";
                 $arrData = array($stock);
             }else{
                 $sql = "UPDATE product SET stock=? WHERE idproduct = $this->intIdProduct";
