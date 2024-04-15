@@ -185,9 +185,7 @@
                     <?php
                         $spec = "";
                         if(!empty($product['specifications'])){
-                            $spec = json_decode($product['specifications'],true);
-                             
-                                
+                            $spec = $product['specifications'];
                     ?>
                     <table class="table table-bordered">
                         <tbody>

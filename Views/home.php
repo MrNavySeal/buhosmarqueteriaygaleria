@@ -272,9 +272,11 @@
                                 <div class="card--product-btns">
                                     <div class="d-flex">
                                         <?=$favorite?>
-                                        <?php if($productos[$j]['product_type'] == 0 && $productos[$j]['is_stock'] > 0 && $productos[$j]['stock'] > 0){?>
+                                        <?php if(!$productos[$j]['product_type'] && $productos[$j]['is_stock'] && $productos[$j]['stock'] > 0){?>
                                         <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
-                                        <?php }else if($productos[$j]['product_type'] == 1){?>
+                                        <?php }else if(!$productos[$j]['product_type'] && !$productos[$j]['is_stock']){?>
+                                        <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
+                                        <?php }else if($productos[$j]['product_type']){?>
                                         <a href="<?=base_url()."/tienda/producto/".$productos[$j]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
                                         <?php }?>
                                     </div>
