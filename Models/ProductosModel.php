@@ -117,9 +117,9 @@
                     $this->arrData['is_stock']
         		);
 				$request = $this->update($sql,$arrData);
-                if(!empty($photos)){
+                if(!empty($this->arrData['images'])){
                     $this->deleteImages($this->intIdProduct);
-                    $this->insertImages($this->intIdProduct,$photos);
+                    $this->insertImages($this->intIdProduct,$this->arrData['images']);
                 }
                 $this->insertSpecs($this->intIdProduct,$this->arrData['specs']);
                 $this->insertVariants($this->intIdProduct,$this->arrData['variants']);

@@ -63,7 +63,7 @@
                       <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>">Inicio</a></li>
                       <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>/tienda">Tienda</a></li>
                       <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()."/tienda/categoria/".$product['routec']?>"><?=$product['category']?></a></li>
-                      <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()."/tienda/categoria/".$product['routes']?>"><?=$product['subcategory']?></a></li>
+                      <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()."/tienda/categoria/".$product['routec']."/".$product['routes']?>"><?=$product['subcategory']?></a></li>
                       <li class="breadcrumb-item active" aria-current="page"><?=$product['name']?></li>
                     </ol>
                 </nav>

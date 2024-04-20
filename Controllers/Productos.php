@@ -158,7 +158,7 @@
                                 "is_stock"=>$arrData['is_stock']
                             )
                         );
-
+                        //dep($data);exit;
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 if($data['framing_mode']==1){
