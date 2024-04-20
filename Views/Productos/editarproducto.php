@@ -8,9 +8,16 @@
         <?php require_once('Views/Template/nav_admin.php');?>
         <div class="col-12 col-lg-9 col-md-12">
             <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-                <div class="d-flex align-items-center">
-                    <a href="<?=base_url()?>/productos" class="btn btn-primary me-2"><i class="fas fa-arrow-circle-left"></i></a>
-                    <h2 class="text-center m-0"><?=$data['page_title']?></h2>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex mb-2">
+                        <a href="<?=base_url()?>/productos" class="btn btn-primary me-2"><i class="fas fa-arrow-circle-left"></i></a>
+                        <h2 class="text-center m-0"><?=$data['page_title']?></h2>
+                    </div>
+                    <div class="mb-2">
+                        <a href="<?=base_url()."/productos/producto"?>" class="btn btn-primary me-2">
+                           <?= $data['page_tag']?> <i class="fas fa-plus"></i>
+                        </a>
+                    </div>
                 </div>
                 <ul class="nav nav-pills mb-5" id="product-tab" role="tablist">
                     <li class="nav-item" role="presentation">

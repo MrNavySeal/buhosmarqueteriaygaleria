@@ -386,7 +386,7 @@ function getSpecs(){
     }
     return arrSpecs;
 }
-function getInfoCombinationVariants(){
+function getInfoCombinationVariants(bypass=true){
     let newArr = [];
     let obj = {};
     let flag = false;
@@ -399,29 +399,30 @@ function getInfoCombinationVariants(){
         const arrMinStock = document.querySelectorAll(".minStockVariant");
         const arrSkuVariant = document.querySelectorAll(".skuVariant");
         const arrStatusVariant = document.querySelectorAll(".checkStatusVariant");
-        
         for (let i = 0; i < arrCombinations.length; i++) {
-            if(arrSell[i].value ==""){
-                Swal.fire("Error","El precio de venta de la variante es obligatorio","error");
-                flag = true;
-                break;
-            }
-            if(checkStockVariants.checked){
-                if(arrStock[i].value =="" || arrMinStock[i].value ==""){
-                    Swal.fire("Error","El stock de la variante es obligatorio","error");
+            if(bypass){
+                if(arrSell[i].value ==""){
+                    Swal.fire("Error","El precio de venta de la variante es obligatorio","error");
                     flag = true;
                     break;
+                }
+                if(checkStockVariants.checked){
+                    if(arrStock[i].value =="" || arrMinStock[i].value ==""){
+                        Swal.fire("Error","El stock de la variante es obligatorio","error");
+                        flag = true;
+                        break;
+                    }
                 }
             }
             obj = {
                 name:arrCombinations[i].join("-"),
-                price_purchase:arrPurchase[i].value,
-                price_sell:arrSell[i].value,
-                price_offer:arrOffer[i].value,
-                stock:arrStock[i].value,
-                min_stock:arrMinStock[i].value,
-                sku:arrSkuVariant[i].value,
-                status:arrStatusVariant[i].checked,
+                price_purchase:arrPurchase[i] ? arrPurchase[i].value : 0,
+                price_sell:arrSell[i] ? arrSell[i].value : 0,
+                price_offer:arrOffer[i] ? arrOffer[i].value : 0,
+                stock:arrStock[i] ? arrStock[i].value : 0,
+                min_stock:arrMinStock[i] ? arrMinStock[i].value : 0,
+                sku:arrSkuVariant[i] ? arrSkuVariant[i].value : "",
+                status:arrStatusVariant[i] ? arrStatusVariant[i].checked : true,
             }
             
             newArr.push(obj);
@@ -436,23 +437,15 @@ function getInfoCombinationVariants(){
 function showVariants(combinations){
     let table = document.querySelector("#tableCombinations");
     let html="";
-    let currentMix = [];
-    let arrComb = [];
-    /*combinations.forEach(c => arrComb.push(c.join("/")));
-    const currentComb= Array.from(table.children);
-    if(currentComb.length>0){
-        currentComb.forEach(c => currentMix.push(c.getAttribute("data-name")));
-        html = table.innerHTML;
-    }*/
     tableVariantsCombination.classList.add("d-none");
     
     if(combinations.length > 0){
         tableVariantsCombination.classList.remove("d-none");
         for (let i = 0; i < combinations.length; i++) {
-            let name = combinations[i].join("/");
+            
             html+=`
-                <tr class="text-nowrap" data-name="${name}">
-                    <td>${name}</td>
+                <tr class="text-nowrap">
+                    <td></td>
                     <td><input type="number" value="" class="form-control pricePurchaseVariant"></td>
                     <td><input type="number" value="" class="form-control priceSellVariant"></td>
                     <td><input type="number" value="" class="form-control priceOfferVariant"></td>
@@ -470,7 +463,20 @@ function showVariants(combinations){
                 `;
         }
     }
+    let arrComb = getInfoCombinationVariants(false);
     table.innerHTML = html;
+    for (let i = 0; i < arrComb.length; i++) {
+        table.children[i].setAttribute("data-name",arrComb[i].name);
+        table.children[i].children[0].innerHTML = arrComb[i].name;
+        table.children[i].children[1].children[0].value = arrComb[i].price_purchase;
+        table.children[i].children[2].children[0].value = arrComb[i].price_sell;
+        table.children[i].children[3].children[0].value = arrComb[i].price_offer;
+        table.children[i].children[4].children[0].value = arrComb[i].stock;
+        table.children[i].children[4].children[1].value = arrComb[i].min_stock;
+        table.children[i].children[5].children[0].value = arrComb[i].sku;
+        table.children[i].children[6].children[0].children[0].checked = arrComb[i].status;
+    }
+    
 }
 function addOptionsVariant(){
     const table = document.querySelector("#tableCombinations");
