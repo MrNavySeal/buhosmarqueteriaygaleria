@@ -442,7 +442,7 @@ function showVariants(combinations){
     if(combinations.length > 0){
         tableVariantsCombination.classList.remove("d-none");
         for (let i = 0; i < combinations.length; i++) {
-            
+            let disabled = checkInventory.checked ? "" : "disabled";
             html+=`
                 <tr class="text-nowrap">
                     <td></td>
@@ -450,8 +450,8 @@ function showVariants(combinations){
                     <td><input type="number" value="" class="form-control priceSellVariant"></td>
                     <td><input type="number" value="" class="form-control priceOfferVariant"></td>
                     <td class="d-flex">
-                        <input type="number" value="" class="form-control stockVariant" disabled>
-                        <input type="number" value="" class="form-control minStockVariant" disabled>
+                        <input type="number" value="" class="form-control stockVariant" ${disabled}>
+                        <input type="number" value="" class="form-control minStockVariant" ${disabled}>
                     </td>
                     <td><input type="text" class="form-control skuVariant"></td>
                     <td class="text-end">
