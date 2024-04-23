@@ -67,7 +67,10 @@
                     </li> 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <a href="<?=base_url()?>/ProductosCategorias/subcategorias" class="w-100">Subcategorias</a>
-                    </li>      
+                    </li>    
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="<?=base_url()?>/ProductosMasivos/productos" class="w-100">Creación/Edición masiva</a>
+                    </li>   
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <a href="<?=base_url()?>/productos/productos" class="w-100">Productos</a>
                     </li> 
