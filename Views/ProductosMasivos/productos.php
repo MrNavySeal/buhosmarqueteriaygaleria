@@ -19,8 +19,23 @@
                 </ul>
                 <div class="tab-content mb-3" id="myTabContent">
                     <div class="tab-pane show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-                        <form id="formItem" name="formItem" class="mb-4">  
-                        </form>
+                        <div class="mb-3">
+                            <h4>Paso 1 - Descargar excel</h4>
+                            <p class="text-secondary">Descarga nuestra plantilla de excel</p>
+                            <a href="<?=base_url()?>/ProductosMasivos/plantilla" class="btn btn-success"> Descargar</a>
+                        </div>
+                        <div class="mb-3">
+                            <h4>Paso 2 - Completar la información</h4>
+                            <p class="text-secondary">Completar la información siguiendo las instrucciones.</p>
+                        </div>
+                        <div class="mb-3">
+                            <h4>Paso 3 - Subir excel</h4>
+                            <p class="text-secondary">Sube el excel una vez que hayas terminado de completar la información de los productos.</p>
+                            <div class="d-flex mb-3 align-items-center">
+                                <input class="form-control w-50" type="file" accept=".xlsx" id="formFile">
+                                <button type="button" id="btnAdd" class="btn btn-primary text-white"> Cargar archivo</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="tab-pane fade" id="social" role="tabpanel" aria-labelledby="social-tab"></div>
                 </div>
