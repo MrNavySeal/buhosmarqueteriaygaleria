@@ -15,15 +15,13 @@ btnAdd.addEventListener("click",function(){
     let formData = new FormData();
     formData.append("template",file);
 
-    btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Verificando productos...`;  
+    btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Espere...`;  
     //btnAdd.setAttribute("disabled","");
     request(base_url+"/ProductosMasivos/uploadProducts",formData,"post").then(function(objData){
+        btnAdd.innerHTML="Cargar archivo";
+        if(objData.status){
+            inputFile.files[0] = "";
+            Swal.fire("",objData.msg,"success");
+        }
     });
-    //setInterval(getProgress(),1);
 });
-function getProgress(){
-    request(base_url+"/ProductosMasivos/getProgress","","get").then(function(objData){
-        btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Verificando productos ${objData}%`;  
-        //btnAdd.removeAttribute("disabled");
-    });
-}
