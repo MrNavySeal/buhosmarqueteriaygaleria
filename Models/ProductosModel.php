@@ -24,12 +24,14 @@
         /*************************Productos methods*******************************/
         public function insertProduct(array $data){
             $this->arrData = $data;
+            $name = $this->arrData['name'];
 			$return = 0;
             $reference="";
-            if($this->strReference!=""){
-                $reference = "AND reference = '$this->strReference'";
+            if($this->arrData['reference']){
+                $reference = $this->arrData['reference'];
+                $reference = "AND reference = '$reference'";
             }
-			$sql = "SELECT * FROM product WHERE name='$this->strName' $reference";
+			$sql = "SELECT * FROM product WHERE name='$name' $reference";
 			$request = $this->select_all($sql);
             
 			if(empty($request)){

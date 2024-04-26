@@ -44,6 +44,7 @@
             $arrImport = array(0,19);
             $arrStatus = array("activo","inactivo");
             $arrMeasures = $this->model->selectMeasures();
+            $arrSpecs = $this->model->selectSpecs();
             $arrCategories = $categories['categories'];
             $arrSubcategories = $categories['subcategories'];
 
@@ -70,6 +71,7 @@
             );
             $headImg = array("producto_id","url");
             $headVariants = array("producto_id","sku","precio_compra","precio_venta","precio_oferta","stock","stock_minimo");
+            $headSpecs = array("producto_id","característica","valor");
             $spreadsheet = new Spreadsheet();
             //Add sheets and set sheet names
             $spreadsheet->addSheet(new Worksheet($spreadsheet,"productos"),0);
@@ -108,7 +110,29 @@
             $sheetProduct->setCellValue('P1', $headProduct[15]);
             $sheetProduct->setCellValue('Q1', $headProduct[16]);
             $sheetProduct->setCellValue('R1', $headProduct[17]);
+            //Set headers in sheetImg
+            $sheetImg->setCellValue('A1', $headImg[0]);
+            $sheetImg->setCellValue('B1', $headImg[1]);
+            //Set headers in sheetVariant
+            $sheetVariant->setCellValue('A1', $headVariants[0]);
+            $sheetVariant->setCellValue('B1', $headVariants[1]);
+            $sheetVariant->setCellValue('C1', $headVariants[2]);
+            $sheetVariant->setCellValue('D1', $headVariants[3]);
+            $sheetVariant->setCellValue('E1', $headVariants[4]);
+            $sheetVariant->setCellValue('F1', $headVariants[5]);
+            $sheetVariant->setCellValue('G1', $headVariants[6]);
+            //Set headers in sheetSpecs
+            $sheetSpc->setCellValue('A1', $headSpecs[0]);
+            $sheetSpc->setCellValue('B1', $headSpecs[1]);
+            $sheetSpc->setCellValue('C1', $headSpecs[2]);
 
+            //Set idproduct
+            $sheetProduct->setCellValue('A2', $nextId);
+            $sheetImg->setCellValue('A2', $nextId);
+            $sheetVariant->setCellValue('A2', $nextId);
+            $sheetSpc->setCellValue('A2', $nextId);
+
+            //Set categories
             $colSub = 'S';
             $totalCat = count($arrCategories);
             for ($i=0; $i < $totalCat ; $i++) { 
@@ -130,12 +154,7 @@
                 }
                 $colSub++;
             }
-
-            //Set headers in sheetImg
-            $sheetImg->setCellValue('A1', $headImg[0]);
-            $sheetImg->setCellValue('B1', $headImg[1]);
-
-            
+            //Set general combobox
             for ($i=$rowCount; $i < $lastRowSheet; $i++) { 
                 //Boolean fields is_product,is_combo,is_ingredient,is_stock...
                 $validation = $sheetProduct->getCell("H$i")->getDataValidation();
@@ -228,7 +247,7 @@
                 ->setPromptTitle('Elegir opción')
                 ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrBool).'"');
-                
+                //Categories
                 $validation = $sheetProduct->getCell("R$i")->getDataValidation();
                 $validation->setType(DataValidation::TYPE_LIST)
                 ->setErrorStyle(DataValidation::STYLE_INFORMATION)
@@ -242,26 +261,28 @@
                 ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrCategories).'"');
 
+                $validation = $sheetSpc->getCell("B$i")->getDataValidation();
+                $validation->setType(DataValidation::TYPE_LIST)
+                ->setErrorStyle(DataValidation::STYLE_INFORMATION)
+                ->setAllowBlank(false)
+                ->setShowInputMessage(true)
+                ->setShowErrorMessage(true)
+                ->setShowDropDown(true)
+                ->setErrorTitle('Error')
+                ->setError('Valor no válido')
+                ->setPromptTitle('Elegir opción')
+                ->setPrompt('Por favor, elige una opción de la lista')
+                ->setFormula1('"'.implode(',', $arrSpecs).'"');
+
             }
-
-            //Set headers in sheetVariant
-            $sheetVariant->setCellValue('A1', $headVariants[0]);
-            $sheetVariant->setCellValue('B1', $headVariants[1]);
-            $sheetVariant->setCellValue('C1', $headVariants[2]);
-            $sheetVariant->setCellValue('D1', $headVariants[3]);
-            $sheetVariant->setCellValue('E1', $headVariants[4]);
-            $sheetVariant->setCellValue('F1', $headVariants[5]);
-            $sheetVariant->setCellValue('G1', $headVariants[6]);
-
+            //Set variants
             $variants = $this->model->selectVariants();
-            //dep($variants);exit;
             $totalVar = count($variants);
             $colSub = 'H';
             for ($i=0; $i < $totalVar ; $i++) { 
                 $sheetVariant->setCellValue($colSub.'1',$variants[$i]['name']);
                 $options = $variants[$i]['options'];
                 $implode = implode(',', $options);
-                //dep($implode);exit;
                 for ($j=$rowCount; $j < $lastRowSheet ; $j++) { 
                     $validation = $sheetVariant->getCell($colSub.$j)->getDataValidation();
                     $validation->setType(DataValidation::TYPE_LIST)
@@ -278,20 +299,12 @@
                 }
                 $colSub++;
             }
-            
-            //Set idproduct
-            $sheetProduct->setCellValue('A2', $nextId);
-            $sheetImg->setCellValue('A2', $nextId);
-            $sheetVariant->setCellValue('A2', $nextId);
-            
             foreach (range('A','Z') as $col) {
                 $sheetProduct->getColumnDimension($col)->setAutoSize(true); 
                 $sheetVariant->getColumnDimension($col)->setAutoSize(true); 
                 $sheetImg->getColumnDimension($col)->setAutoSize(true); 
                 $sheetSpc->getColumnDimension($col)->setAutoSize(true); 
             }
-            $sheetProduct->getColumnDimension("A:P")->setAutoSize(true);
-            $sheetVariant->setCellValue('A1', 'Hello World !');
             $writer = new Xlsx($spreadsheet);
             ob_end_clean();
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -314,10 +327,9 @@
                         $sheetProduct = $spreadsheet->getSheetByName("productos");
                         $sheetImg = $spreadsheet->getSheetByName("imagenes");
                         $sheetVariant = $spreadsheet->getSheetByName("variantes");
+                        $sheetSpc = $spreadsheet->getSheetByName("caracteristicas");
                         $arrProducts = [];
-                        $arrImages = [];
                         $index = 2;
-                        $cont = 1;
                         $colSub = 'S';
                         $categories = $this->model->selectCategories()['categories'];
                         $totalCat = count($categories);
@@ -331,6 +343,8 @@
                             $route = str_replace(" ","-",$route);
                             $route = str_replace("?","",$route);
                             $subcategory = "";
+                            $arrImages = [];
+                            $arrSpecs = [];
                             for ($i=0; $i < $totalCat; $i++) { 
                                 if($sheetProduct->getCell($colSub.$index)->getValue() !=""){
                                     $subcategory = $sheetProduct->getCell($colSub.$index)->getValue();
@@ -340,7 +354,7 @@
                             }
                             $product = array(
                                 "id"=>intval($sheetProduct->getCell("A$index")->getValue()),
-                                "status"=>strClean($sheetProduct->getCell("Q$index")->getValue()),
+                                "status"=>1,
                                 "subcategory"=>strClean($subcategory),
                                 "category"=>strClean($sheetProduct->getCell("R$index")->getValue()),
                                 "measure"=>strClean($sheetProduct->getCell("I$index")->getValue()),
@@ -359,104 +373,104 @@
                                 "name"=>$strName,
                                 "reference"=>$strReference,
                                 "route"=>$route,
-                                "variants"=>array()
+                                "variants"=>array(),
+                                "specs"=>array()
                             );
                             $idCategory = $this->model->selectCategoryId($product['category']);
                             $idSubcategory = $this->model->selectSubcategoryId($idCategory,$subcategory);
+                            $product['measure'] = $this->model->selectMeasure($product['measure']);
                             $product['category'] = $idCategory;
                             $product['subcategory'] = $idSubcategory;
                             $product['is_product'] = $product['is_product'] =="Si" ? 1 : 0;
                             $product['is_ingredient'] = $product['is_ingredient'] =="Si" ? 1 : 0;
                             $product['is_combo'] = $product['is_combo'] =="Si" ? 1 : 0;
                             $product['is_stock'] = $product['is_stock'] =="Si" ? 1 : 0;
-                            $product['status'] = $product['status'] =="activo" ? 1 : 2;
+                            //$product['status'] = $product['status'] =="activo" ? 1 : 2;
                             $product['description'] = '<p>'.$product['description'].'</p>';
+                            //img read;
+                            $indexImg = 2;
+                            while ($sheetImg->getCell("A$indexImg")->getValue() !=""){
+                                $idProduct = $sheetImg->getCell("A$indexImg")->getValue();
+                                if($product['id'] == $idProduct){
+                                    array_push($arrImages,$sheetImg->getCell("B$indexImg")->getValue());
+                                }
+                                $indexImg++;
+                            }
+                            //Read specs
+                            $indexSpec = 2;
+                            while ($sheetSpc->getCell("A$indexSpec")->getValue() !=""){
+                                $idProduct = $sheetSpc->getCell("A$indexSpec")->getValue();
+                                if($product['id'] == $idProduct){
+                                    $arrSpec = explode("_",$sheetSpc->getCell("B$indexSpec")->getValue());
+                                    array_push($arrSpecs,
+                                        array(
+                                            "id"=>$arrSpec[0],
+                                            "value"=>$sheetSpc->getCell("C$indexSpec")->getValue()
+                                        )
+                                    );
+                                }
+                                $indexSpec++;
+                            }
+                            //Read variants
+                            $variants = $this->model->selectVariants();
+                            if(!empty($variants)){
+                                $totalVar = count($variants);
+                                $arrVariants = array();
+                                $arrCombinations = array();
+                                $arrOptions = array();
+                                $indexVar = 2;
+                                while ($sheetVariant->getCell("A$indexVar")->getValue() !="") {
+                                    $idProduct = intval($sheetVariant->getCell("A$indexVar")->getValue());
+                                    if($product['id'] == $idProduct){
+                                        $combination =array();
+                                        $col = "H";
+                                        for ($i=0; $i < $totalVar; $i++) { 
+                                            if($sheetVariant->getCell($col.$indexVar)->getValue() !=""){
+                                                $value = $sheetVariant->getCell($col.$indexVar)->getValue();
+                                                $arrValue = explode("_",$value);
+                                                $option = $arrValue[1];
+                                                $variant = $arrValue[0];
+            
+                                                if(!in_array($variant,$arrVariants)){
+                                                    array_push($arrVariants,$variant);
+                                                }
+                                                if(!in_array($option,$arrOptions)){
+                                                    array_push($arrOptions,$option);
+                                                }
+                                                //array_push($variant,$arrValue[0]);
+                                                array_push($combination,$option);
+                                            }
+                                            $col++;
+                                        }
+                                        array_push($arrCombinations,
+                                            array(
+                                                "id"=>$idProduct,
+                                                "name"=>implode("-",$combination),
+                                                "sku"=>intval($sheetVariant->getCell("B$indexVar")->getValue()),
+                                                "price_purchase"=>intval($sheetVariant->getCell("C$indexVar")->getValue()),
+                                                "price_sell"=>intval($sheetVariant->getCell("D$indexVar")->getValue()),
+                                                "price_offer"=>intval($sheetVariant->getCell("E$indexVar")->getValue()),
+                                                "stock"=>intval($sheetVariant->getCell("F$indexVar")->getValue()),
+                                                "min_stock"=>intval($sheetVariant->getCell("G$indexVar")->getValue()),
+                                            )
+                                        );
+                                    }
+                                    $indexVar++;
+                                }
+                                if(!empty($arrCombinations)){
+                                    $product['variants'] = array(
+                                        "combinations"=>$arrCombinations,
+                                        "variations"=>$this->model->orderVariants($arrVariants,$arrOptions)
+                                    );
+                                }
+                            }
+                            $product['images'] = $arrImages;
+                            $product['specs'] = $arrSpecs;
+                            $product['product_type'] = !empty($product['variants']) ? 1 : 0;
                             array_push($arrProducts,$product);
                             $index ++;
-                            $cont++;
                         }
-                        $index = 2;
-                        //img read;
-                        while ($sheetImg->getCell("A$index")->getValue() !=""){
-                            $img = array(
-                                "id"=>$sheetImg->getCell("A$index")->getValue(),
-                                "name"=>$sheetImg->getCell("B$index")->getValue()
-                            );
-                            array_push($arrImages,$img);
-                            $index++;
-                        }
-                        /*
-                            [
-                                {
-                                    "id":"5",
-                                    "name":"Medidas",
-                                    "options":[
-                                        "15x20",
-                                        "20x25",
-                                        "20x30",
-                                        "30x40",
-                                        "50x70",
-                                        "90x60"
-                                    ]
-                                },
-                                {
-                                    "id":"2",
-                                    "name":"Color",
-                                    "options":[
-                                        "Blanco",
-                                        "Negro"
-                                    ]
-                                }
-                                ]
-                            */
-                        //Read variants
-                        $variants = $this->model->selectVariants();
-                        $totalVar = count($variants);
-                        $arrVariants = array();
-                        $arrCombinations = array();
-                        $index = 2;
-                        while ($sheetVariant->getCell("A$index")->getValue() !="") {
-                            $combination =array();
-                            $variant = "";
-                            $col = "H";
-                            for ($i=0; $i < $totalVar; $i++) { 
-                                if($sheetVariant->getCell($col.$index)->getValue() !=""){
-                                    $value = $sheetVariant->getCell($col.$index)->getValue();
-                                    $arrValue = explode("_",$value);
-                                    $option = $arrValue[1];
-                                    $variant .= $arrValue[0];
-                                    array_push($combination,$option);
-                                }
-                                $col++;
-                            }
-                            array_push($arrVariants,$combination);
-                            
-                            array_push($arrCombinations,
-                                array(
-                                    "id"=>intval($sheetVariant->getCell("A$index")->getValue()),
-                                    "name"=>implode("-",$combination),
-                                    "sku"=>intval($sheetVariant->getCell("B$index")->getValue()),
-                                    "price_purchase"=>intval($sheetVariant->getCell("C$index")->getValue()),
-                                    "price_sell"=>intval($sheetVariant->getCell("D$index")->getValue()),
-                                    "price_offer"=>intval($sheetVariant->getCell("E$index")->getValue()),
-                                    "stock"=>intval($sheetVariant->getCell("F$index")->getValue()),
-                                    "min_stock"=>intval($sheetVariant->getCell("G$index")->getValue()),
-                                )
-                            );
-                            $index++;
-                        }
-                        dep($arrVariants);exit;
-                        //img, specs, variants filter by idproduct
-                        $totalPro = count($arrProducts);
-                        for ($i=0; $i < $totalPro ; $i++) { 
-                            for ($j=0; $j < count($arrImages) ; $j++) { 
-                                if($arrImages[$j]['id'] == $arrProducts[$i]['id']){
-                                    $arrProducts[$i]['images'][$j] = $arrImages[$j];
-                                }
-                            }
-                            sort($arrProducts[$i]['images']);
-                        }
-                        dep($arrProducts);exit;
+                        //dep($arrProducts);exit;
                         $this->setProducts($arrProducts);
                         $arrResponse = array("status"=>true,"msg"=>"Productos cargados correctamente.");
                     }
@@ -466,17 +480,18 @@
             die();
         }
         public function setProducts($data){
-            $products = $data['products'];
-            $images = $products['images'];
-            foreach ($products as $product ) {
-                $id = $this->model->insertProduct($product);
-                foreach ($images as $img) {
-                    $img = file_get_contents($img['name']);
+            $total = count($data);
+            for ($i=0; $i < $total; $i++) {
+                $images = $data[$i]['images'];
+                $totalImg = count($images); 
+                for ($j=0; $j < $totalImg; $j++) { 
+                    $img = file_get_contents($images[0]);
                     $name = "product_".bin2hex(random_bytes(6)).'.png';
                     $route = "Assets/images/uploads/".$name;
+                    $data[$i]['images'][$j] = $name;
                     file_put_contents($route, $img);
-                    $this->model->insertImages($id,$name);
                 }
+                $this->model->insertProduct($data[$i]);
             }
         }
     }

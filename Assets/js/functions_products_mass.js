@@ -16,9 +16,10 @@ btnAdd.addEventListener("click",function(){
     formData.append("template",file);
 
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Espere...`;  
-    //btnAdd.setAttribute("disabled","");
+    btnAdd.setAttribute("disabled","");
     request(base_url+"/ProductosMasivos/uploadProducts",formData,"post").then(function(objData){
         btnAdd.innerHTML="Cargar archivo";
+        btnAdd.removeAttribute("disabled","");
         if(objData.status){
             inputFile.files[0] = "";
             Swal.fire("",objData.msg,"success");
