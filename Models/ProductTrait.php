@@ -706,10 +706,6 @@
                     }
                 }
                 if($request['product_type'] == 1){
-                    $sqlSpecs = "SELECT s.value,sp.name FROM product_specs s 
-                    INNER JOIN specifications sp 
-                    ON s.specification_id = sp.id_specification
-                    WHERE s.product_id = $this->intIdProduct";
                     $sqlVariants = "SELECT variation FROM product_variations WHERE product_id = $this->intIdProduct";
                     $sqlV = "SELECT price_sell,price_offer, name, stock
                     FROM product_variations_options WHERE product_id =$this->intIdProduct AND status = 1 
@@ -720,8 +716,13 @@
                     $request['stock'] = $requestPrices['stock'];
                     $request['variation'] = json_decode($this->con->select($sqlVariants)['variation'],true);;
                     $request['default'] = explode("-",$requestPrices['name']);
-                    $request['specifications'] = $this->con->select_all($sqlSpecs);
+                    
                 }
+                $sqlSpecs = "SELECT s.value,sp.name FROM product_specs s 
+                    INNER JOIN specifications sp 
+                    ON s.specification_id = sp.id_specification
+                    WHERE s.product_id = $this->intIdProduct";
+                $request['specifications'] = $this->con->select_all($sqlSpecs);
             }
             return $request;
         }
