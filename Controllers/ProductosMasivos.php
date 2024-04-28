@@ -485,7 +485,7 @@
                 $images = $data[$i]['images'];
                 $totalImg = count($images); 
                 for ($j=0; $j < $totalImg; $j++) { 
-                    $img = file_get_contents($images[0]);
+                    $img = file_get_contents($images[$j]);
                     $name = "product_".bin2hex(random_bytes(6)).'.png';
                     $route = "Assets/images/uploads/".$name;
                     $data[$i]['images'][$j] = $name;
