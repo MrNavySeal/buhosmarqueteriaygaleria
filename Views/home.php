@@ -143,7 +143,10 @@
                         <?php
                             for ($i=0; $i < count($productos); $i++) { 
                                 $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
-                                $resultDiscount = floor((1-($productos[$i]['discount']/$productos[$i]['price']))*100);
+                                $resultDiscount = "";
+                                if($productos[$i]['discount'] > 0){
+                                    $resultDiscount = floor((1-($productos[$i]['discount']/$productos[$i]['price']))*100);
+                                }
                                 $discount = "";
                                 $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
                                 $variant = $productos[$i]['product_type']? "Desde " : "";
@@ -229,7 +232,10 @@
                                 for ($j=0; $j < count($productos); $j++) { 
                                     $id = openssl_encrypt($productos[$j]['idproduct'],METHOD,KEY);
                                     $discount = "";
-                                    $resultDiscount = floor((1-($productos[$j]['discount']/$productos[$j]['price']))*100);
+                                    $resultDiscount = "";
+                                    if($productos[$j]['discount'] > 0){
+                                        $resultDiscount = floor((1-($productos[$j]['discount']/$productos[$j]['price']))*100);
+                                    }
                                     $reference = $productos[$j]['reference']!="" ? "REF: ".$productos[$j]['reference'] : "";
                                     $variant = $productos[$j]['product_type'] ? "Desde " : "";
                                     $price ='</span><span class="current">'.$variant.formatNum($productos[$j]['price']).'</span>';
