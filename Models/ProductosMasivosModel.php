@@ -85,7 +85,7 @@
                 $this->arrData['price_offer'],
                 $this->arrData['stock'],
                 $this->arrData['min_stock'],
-                $this->arrData['status'],
+                1,
                 $this->arrData['route'],
                 $this->arrData['product_type'],
                 $this->arrData['import'],
@@ -100,7 +100,7 @@
                 $this->insertSpecs($request,$this->arrData['specs']);
             }
             if(!empty($this->arrData['variants'])){
-                $this->insertVariants($request,$this->arrData['variants'],$this->arrData['is_stock']);
+                $this->insertVariants($request,$this->arrData['variants'],1);
             }
 			if(empty($request)){
 	        	$return = intval($request);
@@ -131,7 +131,7 @@
                     $combinations[$i]['stock'],
                     $combinations[$i]['min_stock'],
                     $combinations[$i]['sku'],
-                    $is_stock
+                    1
                 );
                 $request = $this->insert($sql,$arrData);
             }
