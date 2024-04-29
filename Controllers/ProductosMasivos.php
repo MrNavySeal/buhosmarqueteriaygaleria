@@ -436,8 +436,6 @@
                                                 if(!in_array($option,$arrOptions)){
                                                     array_push($arrOptions,$option);
                                                 }
-                                                
-                                                //array_push($variant,$arrValue[0]);
                                                 array_push($combination,$option);
                                             }
                                             $col++;
