@@ -42,7 +42,6 @@
             //Dropdowns 
             $arrBool = array("Si","No");
             $arrImport = array(0,19);
-            $arrStatus = array("activo","inactivo");
             $arrMeasures = $this->model->selectMeasures();
             $arrSpecs = $this->model->selectSpecs();
             $arrCategories = $categories['categories'];
@@ -233,7 +232,7 @@
                 ->setError('Valor no válido')
                 ->setPromptTitle('Elegir opción')
                 ->setPrompt('Por favor, elige una opción de la lista')
-                ->setFormula1('"'.implode(',', $arrStatus).'"');
+                ->setFormula1('"'.implode(',', $arrBool).'"');
                 //Category
                 $validation = $sheetProduct->getCell("F$i")->getDataValidation();
                 $validation->setType(DataValidation::TYPE_LIST)
@@ -354,7 +353,7 @@
                             }
                             $product = array(
                                 "id"=>intval($sheetProduct->getCell("A$index")->getValue()),
-                                "status"=>1,
+                                "status"=>strClean($sheetProduct->getCell("Q$index")->getValue()),
                                 "subcategory"=>strClean($subcategory),
                                 "category"=>strClean($sheetProduct->getCell("R$index")->getValue()),
                                 "measure"=>strClean($sheetProduct->getCell("I$index")->getValue()),
@@ -385,7 +384,7 @@
                             $product['is_ingredient'] = $product['is_ingredient'] =="Si" ? 1 : 0;
                             $product['is_combo'] = $product['is_combo'] =="Si" ? 1 : 0;
                             $product['is_stock'] = $product['is_stock'] =="Si" ? 1 : 0;
-                            //$product['status'] = $product['status'] =="activo" ? 1 : 2;
+                            $product['status'] = $product['status'] =="Si" ? 1 : 2;
                             $product['description'] = '<p>'.$product['description'].'</p>';
                             //img read;
                             $indexImg = 2;
@@ -470,7 +469,6 @@
                             array_push($arrProducts,$product);
                             $index ++;
                         }
-                        //dep($arrProducts);exit;
                         $this->setProducts($arrProducts);
                         $arrResponse = array("status"=>true,"msg"=>"Productos cargados correctamente.");
                     }

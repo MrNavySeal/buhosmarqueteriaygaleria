@@ -85,7 +85,7 @@
                 $this->arrData['price_offer'],
                 $this->arrData['stock'],
                 $this->arrData['min_stock'],
-                1,
+                $this->arrData['status'],
                 $this->arrData['route'],
                 $this->arrData['product_type'],
                 $this->arrData['import'],
