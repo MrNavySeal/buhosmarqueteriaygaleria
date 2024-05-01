@@ -12,7 +12,7 @@
             return $request;
         }
         public function selectCategories(){
-            $sql = "SELECT name,idcategory FROM category WHERE status = 1";
+            $sql = "SELECT name,idcategory FROM category";
             $request = $this->select_all($sql);
             $arrCategories = [];
             $arrSubcategories = [];
@@ -21,7 +21,7 @@
                 $sql = "SELECT s.name,c.status 
                 FROM subcategory s 
                 INNER JOIN category c ON s.categoryid = c.idcategory
-                WHERE c.status = 1 AND s.status = 1 AND s.categoryid =$id";
+                WHERE s.categoryid =$id";
                 $subcategories = $this->select_all($sql);
                 for ($j=0; $j < count($subcategories) ; $j++) { 
                     $subcategories[$j] = $subcategories[$j]['name'];
@@ -66,48 +66,53 @@
         }
         public function insertProduct(array $data){
             $this->arrData = $data;
-            $sql =  "INSERT INTO product(categoryid,
-            subcategoryid,reference,name,shortdescription,description,measure,
-            price,price_purchase,discount,stock,min_stock,status,route,
-            product_type,import,is_product,is_ingredient,is_combo,is_stock) 
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            
-            $arrData = array(
-                $this->arrData['category'],
-                $this->arrData['subcategory'],
-                $this->arrData['reference'],
-                $this->arrData['name'],
-                $this->arrData['short_description'],
-                $this->arrData['description'],
-                $this->arrData['measure'],
-                $this->arrData['price_sell'],
-                $this->arrData['price_purchase'],
-                $this->arrData['price_offer'],
-                $this->arrData['stock'],
-                $this->arrData['min_stock'],
-                $this->arrData['status'],
-                $this->arrData['route'],
-                $this->arrData['product_type'],
-                $this->arrData['import'],
-                $this->arrData['is_product'],
-                $this->arrData['is_ingredient'],
-                $this->arrData['is_combo'],
-                $this->arrData['is_stock']
-            );
-            $request = $this->insert($sql,$arrData);
-            $this->insertImages($request,$this->arrData['images']);
-            if(!empty($this->arrData['specs'])){
-                $this->insertSpecs($request,$this->arrData['specs']);
+            $name = $this->arrData['name'];
+            $reference="";
+            if($this->arrData['reference']){
+                $reference = $this->arrData['reference'];
+                $reference = "AND reference = '$reference'";
             }
-            if(!empty($this->arrData['variants'])){
-                $this->insertVariants($request,$this->arrData['variants'],1);
+			$sql = "SELECT * FROM product WHERE name='$name' $reference";
+			$request = $this->select_all($sql);
+            if(empty($request)){
+                $sql =  "INSERT INTO product(categoryid,
+                subcategoryid,reference,name,shortdescription,description,measure,
+                price,price_purchase,discount,stock,min_stock,status,route,
+                product_type,import,is_product,is_ingredient,is_combo,is_stock) 
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                
+                $arrData = array(
+                    $this->arrData['category'],
+                    $this->arrData['subcategory'],
+                    $this->arrData['reference'],
+                    $this->arrData['name'],
+                    $this->arrData['short_description'],
+                    $this->arrData['description'],
+                    $this->arrData['measure'],
+                    $this->arrData['price_sell'],
+                    $this->arrData['price_purchase'],
+                    $this->arrData['price_offer'],
+                    $this->arrData['stock'],
+                    $this->arrData['min_stock'],
+                    $this->arrData['status'],
+                    $this->arrData['route'],
+                    $this->arrData['product_type'],
+                    $this->arrData['import'],
+                    $this->arrData['is_product'],
+                    $this->arrData['is_ingredient'],
+                    $this->arrData['is_combo'],
+                    $this->arrData['is_stock']
+                );
+                $request = $this->insert($sql,$arrData);
+                $this->insertImages($request,$this->arrData['images']);
+                if(!empty($this->arrData['specs'])){
+                    $this->insertSpecs($request,$this->arrData['specs']);
+                }
+                if(!empty($this->arrData['variants'])){
+                    $this->insertVariants($request,$this->arrData['variants'],1);
+                }
             }
-			if(empty($request)){
-	        	$return = intval($request);
-			}else{
-				$return = "exist";
-			}
-	        return $return;
+	        return $request;
 		}
         public function insertVariants($id,$data,$is_stock){
             $this->intIdProduct = $id;

@@ -481,12 +481,16 @@
             for ($i=0; $i < $total; $i++) {
                 $images = $data[$i]['images'];
                 $totalImg = count($images); 
-                for ($j=0; $j < $totalImg; $j++) { 
-                    $img = file_get_contents($images[$j]);
-                    $name = "product_".bin2hex(random_bytes(6)).'.png';
-                    $route = "Assets/images/uploads/".$name;
-                    $data[$i]['images'][$j] = $name;
-                    file_put_contents($route, $img);
+                if($totalImg > 0){
+                    for ($j=0; $j < $totalImg; $j++) { 
+                        $img = file_get_contents($images[$j]);
+                        $name = "product_".bin2hex(random_bytes(6)).'.png';
+                        $route = "Assets/images/uploads/".$name;
+                        $data[$i]['images'][$j] = $name;
+                        file_put_contents($route, $img);
+                    }
+                }else{
+                    $data[$i]['images'][0] = "category.jpg";
                 }
                 $this->model->insertProduct($data[$i]);
             }

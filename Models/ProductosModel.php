@@ -136,7 +136,9 @@
             $this->intIdProduct = $id;
             $images = $this->selectImages($this->intIdProduct);
             for ($i=0; $i < count($images) ; $i++) { 
-                deleteFile($images[$i]['name']);
+                if($images[$i]['name'] != "category.jpg"){
+                    deleteFile($images[$i]['name']);
+                }
             }
             $sql = "DELETE FROM product WHERE idproduct = $this->intIdProduct";
             $request = $this->delete($sql);
