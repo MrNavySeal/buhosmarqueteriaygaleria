@@ -41,7 +41,6 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
@@ -402,7 +401,6 @@
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['idproduct'];
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
                     $request[$i]['favorite'] = 0;
@@ -492,7 +490,6 @@
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['idproduct'];
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
                     $request[$i]['favorite'] = 0;
@@ -544,33 +541,43 @@
                 c.route as routec,
                 s.idsubcategory,
                 s.categoryid,
-                s.name as subcategory
+                s.name as subcategory,
+                p.is_stock
             FROM product p
             INNER JOIN category c, subcategory s, wishlist w
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
-            AND c.status = 1 AND s.status = 1 AND
+            AND c.status = 1 AND s.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
             AND p.idproduct = w.productid AND w.personid = $id AND w.status = 1";
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['idproduct'];
-                    $request[$i]['price'] = round((($request[$i]['price']*COMISION)+TASA)/1000)*1000;
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
                     $request[$i]['favorite'] = 0;
-
+                    if(isset($_SESSION['login'])){
+                        $idUser = $_SESSION['idUser'];
+                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
+                        $requestFavorite = $this->con->select($sqlFavorite);
+                        if(!empty($requestFavorite)){
+                            $request[$i]['favorite'] = $requestFavorite['status'];
+                        }
+                    }
                     if(count($requestImg)>0){
                         $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
                         $request[$i]['image'] = $requestImg[0]['name'];
                     }else{
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
-
-                    if($request[$i]['product_type'] == 2){
-                        $sqlV = "SELECT MIN(price) AS minimo FROM product_variant WHERE productid =$idProduct AND stock > 0";
-                        $sqlTotal = "SELECT SUM(stock) AS stock FROM product_variant WHERE productid =$idProduct AND stock > 0";
-                        $request[$i]['price'] = round((($this->con->select($sqlV)['minimo']*COMISION)+TASA)/1000)*1000;
-                        $request[$i]['stock'] = $this->con->select($sqlTotal)['stock'];
+                    if($request[$i]['product_type'] == 1){
+                        $sqlV = "SELECT price_sell,price_offer, name, stock
+                        FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
+                        $requestPrices = $this->con->select($sqlV);
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1";
+                        $request[$i]['price'] = $requestPrices['price_sell'];
+                        $request[$i]['discount'] = $requestPrices['price_offer'];
+                        $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
                     }
                 }
             }
@@ -683,7 +690,6 @@
                 $requestImg = $this->con->select_all($sqlImg);
                 $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $this->intIdProduct AND status = 1 HAVING rate IS NOT NULL";
                 $requestRate =  $this->con->select($sqlRate);
-                $request['price'] = round((($request['price']*COMISION)+TASA)/1000)*1000;
                 $request['favorite'] = 0;
                 if(isset($_SESSION['login'])){
                     $idUser = $_SESSION['idUser'];

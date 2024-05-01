@@ -24,26 +24,40 @@
                             <?php
                                 for ($i=0; $i < count($productos) ; $i++) { 
                                     $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
+                                    $resultDiscount = "";
+                                    if($productos[$i]['discount'] > 0){
+                                        $resultDiscount = floor((1-($productos[$i]['discount']/$productos[$i]['price']))*100);
+                                    }
                                     $discount = "";
                                     $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
-                                    $variant = $productos[$i]['product_type'] == 2? "Desde " : "";
+                                    $variant = $productos[$i]['product_type']? "Desde " : "";
                                     $price ='</span><span class="current">'.$variant.formatNum($productos[$i]['price']).'</span>';
                                     $favorite="";
                                     $btnAdd="";
                                     $route = base_url()."/tienda/producto/".$productos[$i]['route'];
-                                    if($productos[$i]['product_type'] == 1 && $productos[$i]['stock'] > 0){
+
+                                    if((!$productos[$i]['product_type'] && $productos[$i]['is_stock'] && $productos[$i]['stock'] > 0)
+                                    || (!$productos[$i]['product_type'] && !$productos[$i]['is_stock'])){
                                         $btnAdd = '<button title="Agregar al carrito" type="button" class="btn btn-bg-1" data-id="'.$id.'" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>';
-                                    }elseif($productos[$i]['product_type'] == 2){
+                                    }elseif($productos[$i]['product_type']){
                                         $btnAdd = '<a title="Ver opciones" href="'.$route.'" class="btn btn-bg-1"><i class="fas fa-exchange-alt"></i></a>';
                                     }else{
                                         $btnAdd = '<a title="Ver producto" href="'.$route.'" class="btn btn-bg-2"><i class="fas fa-eye"></i></a>';
                                     }
 
-                                    if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
-                                        $discount = '<span class="discount">-'.$productos[$i]['discount'].'%</span>';
-                                        $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['price']*(1-($productos[$i]['discount']*0.01)),false).'</span><span class="compare">'.$variant.formatNum($productos[$i]['price']).'</span>';
-                                    }else if($productos[$i]['stock'] == 0){
-                                        $price = '<span class="current sale me-2">Agotado</span>';
+                                    if($productos[$i]['is_stock']){
+                                        if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
+                                            $discount = '<span class="discount">-'.$resultDiscount.'%</span>';
+                                            $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['discount'],false).'</span><span class="compare">'.formatNum($productos[$i]['price']).'</span>';
+                                        }else if($productos[$i]['stock'] == 0){
+                                            $price = '<span class="current sale me-2">Agotado</span>';
+                                            $discount="";
+                                        }
+                                    }else{
+                                        if($productos[$i]['discount']>0){
+                                            $discount = '<span class="discount">-'.$resultDiscount.'%</span>';
+                                            $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['discount'],false).'</span><span class="compare">'.formatNum($productos[$i]['price']).'</span>';
+                                        }
                                     }
                             ?>
                             <tr data-id="<?=$id?>">
