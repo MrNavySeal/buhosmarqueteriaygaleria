@@ -246,7 +246,7 @@
                         FROM product p 
                         INNER JOIN category c, subcategory s
                         WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
-                        AND p.subcategoryid = s.idsubcategory AND p.status = 1 
+                        AND p.subcategoryid = s.idsubcategory AND p.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
                         AND (p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%' || p.reference LIKE '%$search%')";
                         
             $totalProducts =$this->con->select($sqlTotal)['total'];
@@ -452,7 +452,7 @@
             FROM product p 
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
-            AND p.status = 1 $routes";
+            AND (p.is_product = 1 OR p.is_combo = 1) AND p.status = 1 $routes";
              
             $totalProducts =$this->con->select($sqlTotal)['total'];
             $totalPages = ceil($totalProducts/$perPage);
@@ -608,7 +608,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
-            AND p.idproduct = $this->intIdProduct AND p.status = 1
+            AND p.idproduct = $this->intIdProduct AND p.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
             AND c.status = 1 AND s.status = 1";
             $request = $this->con->select($sql);
             if(!empty($request)){
@@ -674,7 +674,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
-            AND c.status = 1 AND s.status = 1
+            AND c.status = 1 AND s.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
             AND p.route = '$route'";
             $request = $this->con->select($sql);
             $this->intIdProduct = $request['idproduct'];

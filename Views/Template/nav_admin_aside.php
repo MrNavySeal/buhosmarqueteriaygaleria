@@ -95,7 +95,7 @@
                     <div class="dropdown-menu bg-transparent border-0">
                         <a href="<?=base_url()?>/pedidos" class="dropdown-item">Pedidos</a>
                         <?php if($_SESSION['permit'][6]['w']){ ?>
-                        <a href="<?=base_url()?>/pedidos/pos" class="dropdown-item">Pedido manual</a>
+                        <a href="<?=base_url()?>/pedidos/pos" class="dropdown-item">Punto de venta</a>
                         <?php } ?>
                     </div>
                 </div>
