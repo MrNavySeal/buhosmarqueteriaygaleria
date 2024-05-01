@@ -81,7 +81,7 @@
             </div>
         </div>
     </div>
-    <div class="modal-footer d-flex justify-content-start">
+    <div class="modal-footer">
         <button type="submit" class="btn btn-primary" id="btnAdd"> Actualizar</button>
     </div>
 </form>
