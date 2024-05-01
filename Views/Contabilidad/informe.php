@@ -1,6 +1,6 @@
 <?php 
     //dep( $data['infoAnual']);
-    headerPage($data);
+    headerAdmin($data);
     $costos=$data['resumenMensual']['costos']['total'];
     $gastos = $data['resumenMensual']['gastos']['total'];
     $ingresos = $data['resumenMensual']['ingresos']['total'];
@@ -69,66 +69,59 @@
     $tBodyA = $htmlCA.$htmlGA.$htmlIA.'<tr class="bg-color-2"><td class="text-end fw-bold" colspan="13">Ingresos - (costos+gastos)</td><td>'.formatNum($resultadoAnual).'</td></tr>';
     
 ?>
-<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
-    <div class="row">
-        <?php require_once('Views/Template/nav_admin.php');?>
-        <div class="col-12 col-lg-9 col-md-12">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-end mb-3">
-                        <div class="d-flex align-items-center">
-                            <input  class="date-picker contabilidadMes" name="contabilidadMes" placeholder="Mes y año" required>
-                            <button class="btn btn-sm btn-primary" id="btnContabilidadMes"><i class="fas fa-search"></i></button>
-                        </div>
-                    </div>
-                    <figure class="highcharts-figure mb-3 mt-3"><div id="monthChart"></div></figure>
-                </div>
-            </div>
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h4 class="mb-4 fs-4 text-center" id="titleDetail">Detalle mensual <?=$data['resumenMensual']['ingresos']['month']." ".$data['resumenMensual']['ingresos']['year']?></h4>
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Descripción</th>
-                                    <th>Monto</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableDetail">
-                                <?=$tBody?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-end mb-3">
-                        <div class="d-flex align-items-center">
-                            <input type="number" name="contabilidadAnio" id="sYear" placeholder="Año" min="2000" max="9999">
-                            <button class="btn btn-sm btn-primary" id="btnContabilidadAnio"><i class="fas fa-search"></i></button>
-                        </div>
-                    </div>
-                    <figure class="highcharts-figure"><div id="yearChart"></div></figure>
-                </div>
-            </div>
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h4 class="mb-4 fs-4 text-center" id="titleDetailAnual">Detalle anual <?=$dataAnual[0]['year']?></h4>
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <tbody id="tableDetailAnual">
-                                <?=$tBodyA?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex align-items-center">
+                <input  class="date-picker contabilidadMes" name="contabilidadMes" placeholder="Mes y año" required>
+                <button class="btn btn-sm btn-primary" id="btnContabilidadMes"><i class="fas fa-search"></i></button>
             </div>
         </div>
+        <figure class="highcharts-figure mb-3 mt-3"><div id="monthChart"></div></figure>
     </div>
-</main> 
-<?php footerPage($data)?>     
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        <h4 class="mb-4 fs-4 text-center" id="titleDetail">Detalle mensual <?=$data['resumenMensual']['ingresos']['month']." ".$data['resumenMensual']['ingresos']['year']?></h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody id="tableDetail">
+                    <?=$tBody?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex align-items-center">
+                <input type="number" name="contabilidadAnio" id="sYear" placeholder="Año" min="2000" max="9999">
+                <button class="btn btn-sm btn-primary" id="btnContabilidadAnio"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+        <figure class="highcharts-figure"><div id="yearChart"></div></figure>
+    </div>
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        <h4 class="mb-4 fs-4 text-center" id="titleDetailAnual">Detalle anual <?=$dataAnual[0]['year']?></h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tbody id="tableDetailAnual">
+                    <?=$tBodyA?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<?php footerAdmin($data)?>     
 <script>
     Highcharts.chart('monthChart', {
         chart: {

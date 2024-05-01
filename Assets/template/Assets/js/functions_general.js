@@ -55,16 +55,6 @@ cartMask.addEventListener("click",function(){
 })
 
 /********************************Aside nav******************************** */
-if(document.querySelector("#btnProfile")){
-    const btnProfile = document.querySelector("#btnProfile");
-    btnProfile.addEventListener("click",function(){
-        navBar.classList.add("active");
-        //document.querySelector("#mainNav").classList.add("d-none");
-        document.querySelector("#filterNav").classList.add("d-none");
-        document.querySelector("#navProfile").classList.remove("d-none");
-        document.querySelector("body").style.overflow="hidden";
-    });
-}
 btnNav.addEventListener("click",function(){
     navBar.classList.add("active");
     //document.querySelector("#mainNav").classList.remove("d-none");

@@ -432,6 +432,7 @@
             return $return;
         }
         public function selectCategories($flag=false){
+            $status = "";
             if($flag)$status = " WHERE status != 3";
             $sql = "SELECT * FROM moldingcategory $status ORDER BY id DESC";       
             $request = $this->select_all($sql);

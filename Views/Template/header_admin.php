@@ -18,109 +18,45 @@
         <title><?=$data['page_title']." | Panel"?></title>
         <link rel ="shortcut icon" href="<?=media()."/images/uploads/".$companyData['logo']?>" sizes="114x114" type="image/png">
         
+        <!-- Google Web Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <!-- Icon Font Stylesheet -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        <!-- Libraries Stylesheet -->
+        <link href="<?=media()?>/DashboardTemplate/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+        <link href="<?=media()?>/DashboardTemplate/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="<?=media()?>/DashboardTemplate/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Template Stylesheet -->
+        <link href="<?=media()?>/DashboardTemplate/css/style.css" rel="stylesheet">
         
-        <!------------------------------Admin template--------------------------------->
-        <link href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/css/style.css" rel="stylesheet">
         <!------------------------------Frameworks--------------------------------->
+        <link rel="stylesheet" href="<?=media();?>/frameworks/bootstrap/bootstrap.min.css">
         <!------------------------------Plugins--------------------------------->
-        <link href="<?=media()?>/plugins/fontawesome/font-awesome.min.css">
+
         <script src="<?= media();?>/plugins/tinymce/tinymce.min.js"></script>
         <link href="<?= media();?>/plugins/datepicker/jquery-ui.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="<?=media();?>/plugins/datatables/datatables.min.css">
         <!------------------------------My styles--------------------------------->
         <link rel="stylesheet" href="<?=media()?>/css/style.css">
         <link rel="stylesheet" href="<?=media()?>/css/marco.css">
     </head>
     <body>
-        <?php require_once("nav_admin.php");?>
-        <!--wrapper-->
-        <div class="wrapper d-flex flex-column min-vh-100 bg-light">
-            <header class="header header-sticky mb-4">
-                <div class="container-fluid">
-                    <button class="header-toggler px-md-0 me-md-3" type="button" onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()">
-                        <svg class="icon icon-lg">
-                            <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
-                        </svg>
-                    </button>
-                    <a class="header-brand d-md-none" href="#">
-                        <i class="" style="width: 118px;height: 46px;"></i>
-                        <div class="fw-bold" width="118" height="46" alt="MediaStore Logo">
-                            <img src="<?=media()."/images/uploads/".$companyData['logo']?>" alt="MediaStore Logo" width="50" height="46">
-                        </div>
-                    </a>
-                    <?php 
-                        if($_SESSION['permit'][5]['r']){
-                    ?>
-                    <ul class="header-nav ms-auto">
-                         <li class="nav-item dropdown">
-                            <a class="nav-link position-relative" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                <svg class="icon me-2">
-                                    <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-comment-bubble"></use>
-                                </svg>
-                                <?php
-                                    $notifyReview ="";
-                                    if($reviews>0){
-                                        $notifyReview='<span class="position-absolute top-0 end-0 translate-middle p-1 ms-2 mt-1 bg-danger border border-light rounded-circle"><span class="visually-hidden">New alerts</span></span>';
-                                    }
-                                ?>
-                                <?=$notifyReview?>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end pt-0">
-                                <a class="dropdown-item" href="<?=base_url()?>/comentarios/opiniones">
-                                    
-                                    <svg class="icon me-2">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-star"></use>
-                                    </svg> Opiniones <span class="badge badge-sm bg-warning ms-2"><?=$reviews?></span>
-                                </a>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link position-relative" href="<?=base_url()?>/administracion/correo">
-                                <?php
-                                    $notify ="";
-                                    if($notification>0){
-                                        $notify='<span class="position-absolute top-0 end-0 translate-middle p-1 ms-2 mt-1 bg-danger border border-light rounded-circle"><span class="visually-hidden">New alerts</span></span>';
-                                    }
-                                ?>
-                                <svg class="icon icon-lg">
-                                <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-envelope-open"></use>
-                                </svg>
-                                <?=$notify?>
-                            </a>
-                        </li>
-                    </ul>
-                    <?php }?>
-                    <ul class="header-nav ms-3">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link py-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                <div class="avatar avatar-md">
-                                    <img class="avatar-img" src="<?=media()?>/images/uploads/<?=$_SESSION['userData']['image']?>" alt="<?=$_SESSION['userData']['email']?>">
-                                </div>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end pt-0">
-                                <a class="dropdown-item" href="<?=base_url()?>/usuarios/perfil">
-                                    <svg class="icon me-2">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-user"></use>
-                                    </svg> Perfil
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="<?=base_url()?>/logout">
-                                    <svg class="icon me-2">
-                                        <use xlink:href="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/icons/svg/free.svg#cil-account-logout"></use>
-                                    </svg> Cerrar sesión
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
+        <div class="container-xxl position-relative bg-white d-flex p-0">
+             <!-- Spinner Start -->
+            <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="sr-only">Loading...</span>
                 </div>
-                <div class="header-divider"></div>
-                <div class="container-fluid">
-                <button class="btn btn-secondary text-white" type="button" onclick="window.history.go(-1); return false;"><i class="fas fa-arrow-circle-left" aria-hidden="true"></i> Atrás</button>
-                <?php
-                    if($_SESSION['permitsModule']['w']){
-                ?>
-                <button class="btn btn-primary d-none" type="button" id="btnNew">Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></button>
-                <?php
-                }
-                ?>
-                </div>
-            </header>
+            </div>
+            <?php require('Views/Template/nav_admin_aside.php');?>
+            <!-- Content Start -->
+            <div class="content">
+            <?php require('Views/Template/nav_header_admin.php');?>
+            <div class="container p-4">

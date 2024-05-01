@@ -25,7 +25,11 @@
         public function sessionLogin(int $iduser){
             $this->intIdUser = $iduser;
 
-            $sql = "SELECT  *  FROM person WHERE idperson = $this->intIdUser";
+            $sql = "SELECT  *,r.name as role_name 
+            FROM person p 
+            INNER JOIN role r
+            ON r.idrole = p.roleid
+            WHERE idperson = $this->intIdUser";
             $request = $this->select($sql);
             $_SESSION['userData'] = $request;
             return $request;

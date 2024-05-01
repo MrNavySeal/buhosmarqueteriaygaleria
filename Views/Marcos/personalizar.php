@@ -1,5 +1,5 @@
 <?php
-    headerPage($data);
+    headerAdmin($data);
 ?>
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -13,18 +13,11 @@
         </div>
     </div>
 </div>
-<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
-    <div class="row">
-        <?php require_once('Views/Template/nav_admin.php');?>
-        <div class="col-12 col-lg-9 col-md-12">
-            <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-                <a href="<?=base_url()?>/pedidos/pos" class="btn btn-primary"><i class="fas fa-arrow-circle-left"></i> Regresar</a>
-                <?=$data['option']?>
-            </div>
-        </div>
-    </div>
-</main>
+<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
+    <a href="<?=base_url()?>/pedidos/pos" class="btn btn-primary"><i class="fas fa-arrow-circle-left"></i> Regresar</a>
+    <?=$data['option']?>
+</div>
 <?php
-    footerPage($data);
+    footerAdmin($data);
 ?>
 

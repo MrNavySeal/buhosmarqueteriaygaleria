@@ -1,24 +1,28 @@
 <?php $company = getCompanyInfo();?>
+          
         
-        <footer class="footer">
-            <div>CoreUI Bootstrap Admin Template © 2021 creativeLabs.</div>
-            <div class="ms-auto">Powered by&nbsp; CoreUI UI Components</div>
-        </footer>
+          </div>
+          </div>
+          <!-- Content End -->
+          <!-- Back to Top -->
+          <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>        
         </div>
-        
-        <!------------------------------Admin template--------------------------------->
-        <script src="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/coreui/js/coreui.bundle.min.js"></script>
-        <script src="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/simplebar/js/simplebar.min.js"></script>
-        <script src="<?=media()?>/coreui/coreui-free-bootstrap-admin-template/dist/vendors/@coreui/utils/js/coreui-utils.js"></script>
 
-        <!------------------------------Frameworks--------------------------------->
-        <script src="<?= media();?>/frameworks/jquery/jquery.js"></script>
-        <script src="<?= media(); ?>/frameworks/bootstrap/popper.min.js?n=1"></script>
-        <script src="<?= media(); ?>/frameworks/bootstrap/bootstrap.min.js?n=1"></script>
+        <!------------------------------Admin template--------------------------------->
         
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="<?=media()?>/DashboardTemplate/lib/chart/chart.min.js"></script>
+        <script src="<?=media()?>/DashboardTemplate/lib/easing/easing.min.js"></script>
+        <script src="<?=media()?>/DashboardTemplate/lib/waypoints/waypoints.min.js"></script>
+        <script src="<?=media()?>/DashboardTemplate/lib/owlcarousel/owl.carousel.min.js"></script>
+        <script src="<?=media()?>/DashboardTemplate/lib/tempusdominus/js/moment.min.js"></script>
+        <script src="<?=media()?>/DashboardTemplate/lib/tempusdominus/js/moment-timezone.min.js"></script>
+        <script src="<?=media()?>/DashboardTemplate/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="<?=media()?>/DashboardTemplate/js/main.js"></script>
         
         <!------------------------------Plugins--------------------------------->
-        <script src="<?= media();?>/plugins/fontawesome/fontawesome.js"></script>
         <script src="<?= media();?>/plugins/sweetalert/sweetalert.js"></script>
 
         <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -28,6 +32,8 @@
         <script src="<?= media();?>/plugins/datepicker/jquery-ui.min.js"></script>
         <script src="<?= media();?>/plugins/sheetjs/sheetjs.js"></script>
         <script src="<?= media();?>/plugins/print/print.min.js"></script>
+        <script src="<?= media();?>/plugins/datatables/datatables.min.js"></script>
+        <script src="<?= media();?>/plugins/datatables/jszip.min.js"></script>
         <!------------------------------My functions--------------------------------->
 
         <script>
@@ -37,7 +43,9 @@
         </script>
         
         <script type="text/javascript" src="<?= media(); ?>/js/functions.js"></script>
-        <script src="<?= media(); ?>/js/<?=$data['app']?>"></script>
+        <?php if(isset($data['panelapp'])){?>
+        <script src="<?=media();?>/js/<?=$data['panelapp']."?v=".rand()?>"></script>
+        <?php }?>
         
     </body>
 </html>
