@@ -6,7 +6,7 @@
 <!-- Sidebar Start -->
 <div class="sidebar pe-4 pb-3">
     <nav class="navbar bg-light navbar-light">
-        <a href="index.html" class="navbar-brand mx-4 mb-3">
+        <a href="#" class="navbar-brand mx-4 mb-3">
             <div class="d-flex flex-column text-center align-items-center">
                 <div style="max-width:30%">
                     <img class="img-fluid" src="<?=media()."/images/uploads/".$companyData['logo']?>" alt="">
