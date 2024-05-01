@@ -50,11 +50,14 @@
                     for ($i=0; $i < count($request); $i++) { 
 
                         $status="";
-                        $btnView = '<a href="'.base_url().'/tienda/producto/'.$request[$i]['route'].'" target="_blank" class="btn btn-info m-1 text-white" title="Ver página"><i class="fas fa-eye"></i></a>';
+                        $btnView = "";
                         $btnEdit="";
                         $btnDelete="";
                         $btnOptions = "";
                         $variant = $request[$i]['product_type'] == 1 ? "Desde " : "";
+                        if($request[$i]['is_product'] || $request[$i]['is_combo']){
+                            $btnView = '<a href="'.base_url().'/tienda/producto/'.$request[$i]['route'].'" target="_blank" class="btn btn-info m-1 text-white" title="Ver página"><i class="fas fa-eye"></i></a>';
+                        }
                         if($_SESSION['permitsModule']['u']){
                             if($request[$i]['is_combo']){
                                 $btnOptions='<a href="'.base_url().'/Productos/insumo/'.$request[$i]['idproduct'].'" target="_blank" class="btn btn-primary m-1 text-white" title="Asignar insumos"><i class="fa fa-list" aria-hidden="true"></i></a>';
