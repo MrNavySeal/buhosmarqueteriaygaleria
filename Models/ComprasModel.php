@@ -8,7 +8,6 @@
         private $strAddress;
         private $arrProducts;
         private $intTotal;
-
         public function __construct(){
             parent::__construct();
         }
@@ -183,108 +182,64 @@
 	        return $request;
 		}
         /*************************Products methods*******************************/
-        public function selectProducts(int $id = null){
-            $selProducts ="";
-            if($id != null){
-                $selProducts = " AND s.supplier_id = $id AND s.status = 1";
-            }
+        public function selectProducts($search=""){
+            $perPage = 100;
             $sql = "SELECT 
-            s.id_storage,
-            s.name, 
-            DATE_FORMAT(s.date, '%d/%m/%Y') as date,
-            s.import,
-            s.cost,
-            s.status,
-            s.reference,
-            sp.name as supplier 
-            FROM storage s 
-            INNER JOIN suppliers sp
-            WHERE sp.idsupplier = s.supplier_id $selProducts ORDER BY s.id_storage DESC";
-
+                p.idproduct,
+                p.reference,
+                p.name,
+                p.price_purchase,
+                p.stock,
+                p.product_type,
+                p.is_stock
+            FROM product p
+            INNER JOIN category c, subcategory s
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
+            AND p.is_combo !=1 AND p.status = 1 
+            AND (c.name LIKE '$search%' || s.name LIKE '$search%' || p.name LIKE '$search%' || p.reference LIKE '$search%')
+            ORDER BY p.idproduct DESC
+            ";
             $request = $this->select_all($sql);
-            if(!empty($request)){
-                for ($i=0; $i < count($request) ; $i++) { 
-                    $impt = 0;
-                    $iva="0%";
-                    if($request[$i]['import'] == 3){
-                        $impt = 0.19;
-                        $iva="19%";
-                    }else if($request[$i]['import'] == 2){
-                        $impt = 0.05;
-                        $iva="5%";
+            if(count($request)> 0){
+                for ($i=0; $i < count($request); $i++) { 
+                    $idProduct = $request[$i]['idproduct'];
+                    if($request[$i]['product_type'] == 1){
+                        $sqlV = "SELECT MIN(price_sell) AS sell,MIN(price_offer) AS offer,MIN(price_purchase) AS purchase
+                        FROM product_variations_options WHERE product_id =$idProduct";
+                        $requestPrices = $this->select($sqlV);
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct";
+                        $request[$i]['price_purchase'] = $requestPrices['purchase'];
+                        $request[$i]['price'] = $requestPrices['sell'];
+                        $request[$i]['discount'] = $requestPrices['offer'];
+                        $request[$i]['stock'] = $this->select($sqlTotal)['total'];
                     }
-                    $request[$i]['iva'] = $iva;
-                    $request[$i]['costiva'] = round(intval($request[$i]['cost'] * $impt)/10)*10;
-                    $request[$i]['costtotal'] = round(intval(($request[$i]['cost']+$request[$i]['costiva']))/100)*100;
                 }
             }
             return $request;
         }
-        public function selectProduct(int $id){
-            $sql = "SELECT 
-            s.id_storage,
-            s.name, 
-            DATE_FORMAT(s.date, '%d/%m/%Y') as date,
-            s.import,
-            s.cost,
-            s.status,
-            s.reference,
-            s.supplier_id,
-            sp.name as supplier 
-            FROM storage s 
-            INNER JOIN suppliers sp
-            WHERE sp.idsupplier = s.supplier_id AND id_storage = $id";
-
-            $request = $this->select($sql);
-            return $request;
-        }
-        public function insertProduct(string $strReference, string $strName,int $intSupp,int $intCost,int $intImport,int $intStatus){
-            $sql ="SELECT * FROM storage WHERE supplier_id = $intSupp AND name = '$strName'";
-            $request = $this->select_all($sql);
-            $return="";
-            if(empty($request)){
-
-                $sql = "INSERT INTO storage(reference,name,supplier_id,cost,import,status) VALUES(?,?,?,?,?,?)";
-                $arrData = array(
-                    $strReference,
-                    $strName,
-                    $intSupp,
-                    $intCost,
-                    $intImport,
-                    $intStatus
-                );
-                $return = $this->insert($sql,$arrData);
-            }else{
-                $return = "exists";
-            }
-            return $return;
-        }
-        public function updateProduct(int $id,string $strReference, string $strName,int $intSupp,int $intCost,int $intImport,int $intStatus){
-            $sql ="SELECT * FROM storage WHERE supplier_id = $intSupp AND name = '$strName' AND id_storage != $id";
-            $request = $this->select_all($sql);
-            $return="";
-            if(empty($request)){
-
-                $sql = "UPDATE storage SET reference=?,name=?,supplier_id=?,cost=?,import=?,status=? WHERE id_storage = $id";
-                $arrData = array(
-                    $strReference,
-                    $strName,
-                    $intSupp,
-                    $intCost,
-                    $intImport,
-                    $intStatus
-                );
-                $return = $this->update($sql,$arrData);
-            }else{
-                $return = "exists";
-            }
-            return $return;
-        }
-        public function deleteProduct($id){
+        public function selectProduct($id){
             $this->intId = $id;
-            $sql = "DELETE FROM storage WHERE id_storage = $this->intId;";
-            $return = $this->delete($sql);
-            return $return;
+            $sql = "SELECT 
+                p.idproduct,
+                p.name,
+                p.reference,
+                p.price_purchase,
+                p.product_type,
+                p.is_stock
+            FROM product p
+            INNER JOIN category c, subcategory s
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
+            AND p.is_combo !=1 AND p.status = 1 
+            AND p.idproduct = $this->intId";
+            $request = $this->select($sql);
+            if(!empty($request)){
+                if($request['product_type'] == 1){
+                    $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intId");
+                    $request['variation']['variation'] = json_decode($request['variation']['variation']);
+                    $request['options'] = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intId");
+                }
+            }
+            return $request;
         }
     }
 ?>

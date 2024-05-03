@@ -13,7 +13,6 @@
                 $data['page_tag'] = "compras";
                 $data['page_title'] = "Compras";
                 $data['page_name'] = "compras";
-                $data['proveedores'] = $this->getSelectSuppliers();
                 $data['panelapp'] = "functions_compras.js";
                 $this->views->getView($this,"compras",$data);
             }else{
@@ -184,7 +183,6 @@
         }
         /*******************Purchases**************************** */
         public function setPurchase(){
-            
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
                     if(empty($_POST['arrProducts']) || empty($_POST['total'])){
@@ -251,206 +249,52 @@
             die();
         }
         /*************************Products methods*******************************/
-        public function setProduct(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    if(empty($_POST['suppList']) || empty($_POST['typeList']) || empty($_POST['txtName'])){
-                        $arrResponse = array("status" => false, "msg" => 'Error de datos');
-                    }else{ 
-                        $id = intval($_POST['id']);
-                        $strName = ucwords(strClean($_POST['txtName']));
-                        $strReference = strtoupper(strClean($_POST['txtReference']));
-                        $intSupp = intval($_POST['suppList']);
-                        $intCost = intval($_POST['txtCost']);
-                        $intStatus = intval($_POST['statusList']);
-                        $intImport = intval($_POST['typeList']);
-                        if($id == 0){
-                            if($_SESSION['permitsModule']['w']){
-                                $option = 1;
-                                $request= $this->model->insertProduct($strReference,$strName,$intSupp,$intCost,$intImport,$intStatus);
-                            }
-                        }else{
-                            if($_SESSION['permitsModule']['u']){
-                                $option = 2;
-                                $request= $this->model->updateProduct($id,$strReference,$strName,$intSupp,$intCost,$intImport,$intStatus);
-                            }
-                        }
-                        if($request > 0 ){
-                            if($option == 1){
-                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
-                            }else{
-                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
-                            }
-                        }else if($request ="exists"){
-                            $arrResponse = array("status" => false, "msg" => 'El producto ya existe para este proveedor, intente con otro.');
-                        }else{
-                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-			die();
-        }
         public function getProducts(){
-            if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectProducts();
+            if($_SESSION['permitsModule']['w']){
+                $search="";
+                if($_POST['search']){
+                    $search = strClean($_POST['search']);
+                }
+                $request = $this->model->selectProducts($search);
+                
+                $html="";
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
-                        $btnEdit="";
-                        $btnDelete="";
-                        $status="";
-                        if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" onclick="editItem('.$request[$i]['id_storage'].')"><i class="fas fa-pencil-alt"></i></button>';
-                        }
-                        if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" onclick="deleteItem('.$request[$i]['id_storage'].')"><i class="fas fa-trash-alt"></i></button>';
-                        }
-                        if($request[$i]['status']==1){
-                            $status='<span class="badge me-1 bg-success">Activo</span>';
-                        }else{
-                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
-                        }
-                        $request[$i]['status'] = $status;
-                        $request[$i]['options'] = $btnEdit.$btnDelete;
-                        $request[$i]['cost'] = formatNum($request[$i]['cost']);
-                        $request[$i]['costiva'] = formatNum($request[$i]['costiva']);
-                        $request[$i]['costtotal'] = formatNum($request[$i]['costtotal']);
+                        $request[$i]['stock'] = !$request[$i]['is_stock'] ? "N/A" : $request[$i]['stock'];
+                        $variant = $request[$i]['product_type'] == 1 ? "Desde " : "";
+                        $request[$i]['format_purchase'] = $variant.formatNum($request[$i]['price_purchase'] != null ? $request[$i]['price_purchase'] : 0);
+                        $html.='
+                            <tr>
+                                <td>'.$request[$i]['stock'].'</td>
+                                <td>'.$request[$i]['reference'].'</td>
+                                <td>'.$request[$i]['name'].'</td>
+                                <td>'.$request[$i]['format_purchase'].'</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" onclick="getProduct(this,'.$request[$i]['idproduct'].')"><i class="fas fa-plus"></i></button>
+                                </td>
+                            </tr>
+                        ';
                     }
                 }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                echo json_encode($html,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
         public function getProduct(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    if(empty($_POST)){
-                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['id']);
-                        $request = $this->model->selectProduct($id);
-                        if(!empty($request)){
-                            $arrResponse = array("status"=>true,"data"=>$request);
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-            die();
-        }
-        public function delProduct(){
-            if($_SESSION['permitsModule']['d']){
-                if($_POST){
-                    if(empty($_POST['id'])){
-                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['id']);
-                        $request = $this->model->deleteProduct($id);
-                        if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-            die();
-        }
-        public function getSelectProducts(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
+            if($_SESSION['permitsModule']['w']){
+                if($_POST['id']){
                     $id = intval($_POST['id']);
-                    $html ='<option value ="0">Seleccione</option>';
-                    $request = $this->model->selectProducts($id);
+                    $request = $this->model->selectProduct($id);
                     if(!empty($request)){
-                        for ($i=0; $i < count($request); $i++) { 
-                            $html.='<option value="'.$request[$i]['id_storage'].'">'.$request[$i]['name'].'</option>';
-                        }
-                    }
-                    echo json_encode($html,JSON_UNESCAPED_UNICODE);
-                }
-            } 
-            die();
-        }
-        public function getSelectProduct(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    $id="";
-                    $qty = floatval($_POST['qty']);
-                    $type = intval($_POST['type']);
-                    $html ='';
-                    $ivaText = "0%";
-                    $iva = 0;
-                    $valueIva = 0;
-                    $subtotal = 0;
-                    $discount = 0;
-                    $total = 0;
-                    $request ="";
-                    $reference="";
-                    $name="";
-                    $cost = 0;
-                    if($type == 1){
-                        $id = intval($_POST['id']);
-                        $discount = intval($_POST['discount'])/100;
-                        $request = $this->model->selectProduct($id);
-                        if(!empty($request)){
-                            if($request['import'] == 2){
-                                $ivaText = "5%";
-                                $iva = 0.05;
-                            }else if($request['import'] == 3){
-                                $ivaText="19%";
-                                $iva = 0.19;
-                            }
-                            $cost = $request['cost'];
-                            $valueIva = round(intval($cost * $iva)/10)*10;
-                            $iva = round((intval($cost * $iva)*$qty));
-                            $subtotal = $cost*$qty;
-                            $discount = round((intval(($cost * $qty)*($discount)))/10)*10;
-                            $total = round((($subtotal-$discount)+$iva)/100)*100;
-                            $reference = $request['reference'];
-                            $name = $request['name'];
-                        }
+                        $arrResponse = array("status"=>true,"data"=>$request);
                     }else{
-                        $name = ucwords(strClean($_POST['name']));
-                        $cost = intval($_POST['price']);
-                        $subtotal = $cost*$qty;
-                        $total = $subtotal;
+                        $arrResponse = array("status"=>false,"msg"=>"El artículo no existe");
                     }
-                    
-                    $html = '
-                    <td>'.$reference.'</td>
-                    <td>'.$name.'</td>
-                    <td>'.$qty.'</td>
-                    <td>'.formatNum($cost).'</td>
-                    <td>'.$ivaText.'</td>
-                    <td>'.formatNum($valueIva).'</td>
-                    <td>'.formatNum($subtotal).'</td>
-                    <td><button class="btn btn-danger m-1" type="button" title="Delete" onclick="delProduct(this.parentElement.parentElement)"><i class="fas fa-trash-alt"></i></button></td>
-                    ';
-
-                    $arrData = array(
-                        "reference"=>$reference,
-                        "name"=>$name,
-                        "qty"=>$qty,
-                        "cost"=>$cost,
-                        "ivatext"=>$ivaText,
-                        "valueiva"=>$valueIva,
-                        "type"=>$type,
-                        "id"=> $id != "" ? $id : "",
-                        "status"=>true,
-                        "data"=>$html,
-                        "subtotal"=>$subtotal,
-                        "total"=>$total,
-                        "discount"=>$discount,
-                        "iva"=>$iva
-                    );
-                    echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                 }
-            } 
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
             die();
         }
 
