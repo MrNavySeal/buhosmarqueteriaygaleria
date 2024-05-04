@@ -34,7 +34,7 @@
         <link href="<?=media()?>/DashboardTemplate/css/bootstrap.min.css" rel="stylesheet">
 
         <!-- Template Stylesheet -->
-        <link href="<?=media()?>/DashboardTemplate/css/style.css" rel="stylesheet">
+        <link href="<?=media()."/DashboardTemplate/css/style.css?v=".rand()?>" rel="stylesheet">
         
         <!------------------------------Frameworks--------------------------------->
         <link rel="stylesheet" href="<?=media();?>/frameworks/bootstrap/bootstrap.min.css">

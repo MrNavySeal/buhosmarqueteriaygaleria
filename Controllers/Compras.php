@@ -297,6 +297,24 @@
             }
             die();
         }
+        public function getProductVariant(){
+            dep($_POST);exit;
+            if($_SESSION['permitsModule']['w']){
+                if($_POST){
+                    $name = strClean($_POST['variant']);
+                    $request = $this->model->selectProductVariant($name);
+                    if(!empty($request)){
+                        $arrResponse = array("status"=>true,"data"=>$request);
+                    }else{
+                        $arrResponse = array("status"=>false,"msg"=>"El artículo no existe");
+                    }
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
 
     }
 ?>

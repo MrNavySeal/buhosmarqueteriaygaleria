@@ -224,8 +224,11 @@
                 p.name,
                 p.reference,
                 p.price_purchase,
+                p.price,
                 p.product_type,
-                p.is_stock
+                p.is_stock,
+                p.stock,
+                p.import
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
@@ -236,7 +239,12 @@
                 if($request['product_type'] == 1){
                     $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intId");
                     $request['variation']['variation'] = json_decode($request['variation']['variation']);
-                    $request['options'] = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intId");
+                    $options = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intId");
+                    $totalOptions = count($options);
+                    for ($i=0; $i < $totalOptions ; $i++) { 
+                        $options[$i]['format_purchase'] = "$".number_format($options[$i]['price_purchase'],0,",",".");
+                    }
+                    $request['options'] = $options;
                 }
             }
             return $request;
