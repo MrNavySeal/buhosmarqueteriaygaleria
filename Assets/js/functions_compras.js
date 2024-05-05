@@ -2,25 +2,86 @@
 const tablePurchase = document.querySelector("#tablePurchase");
 const tableProducts = document.querySelector("#tableProducts");
 const searchProduct = document.querySelector("#searchProduct");
-const modalVariant = document.querySelector("#modalVariant") ? new bootstrap.Modal(document.querySelector("#modalVariant")) :"";
+const modalVariant = new bootstrap.Modal(document.querySelector("#modalVariant"));
+const modalPurchase = new bootstrap.Modal(document.querySelector("#modalPurchase"));
 const modalSelectvariants = document.querySelector("#modalSelectvariants");
 const modalVariantCost = document.querySelector("#modalVariantCost");
 const modalVariantName = document.querySelector("#modalVariantName");
 const btnAdd = document.querySelector("#btnAdd");
+const btnPurchase = document.querySelector("#btnPurchase");
+const btnClean = document.querySelector("#btnClean");
+const searchItems = document.querySelector("#searchItems");
+const selectItems = document.querySelector("#selectItems");
+const items = document.querySelector("#items");
 let product;
 let arrProducts = [];
+let arrSuppliers = [];
 window.addEventListener("load",function(){
     getProducts();
+    getSuppliers();
 });
 
 btnAdd.addEventListener("click",function(){
     addProduct(product);
     modalVariant.hide();
 });
+btnPurchase.addEventListener("click",function(){
+    modalPurchase.show();
+});
+btnClean.addEventListener("click",function(){
+    arrProducts = [];
+    tablePurchase.innerHTML ="";
+    document.querySelector("#subtotalProducts").innerHTML = "$0";
+    document.querySelector("#ivaProducts").innerHTML = "$0";
+    document.querySelector("#discountProducts").innerHTML = "$0";
+    document.querySelector("#totalProducts").innerHTML = "$0";
+});
+
+searchItems.addEventListener('input',function() {
+    items.innerHTML ="";
+    let search = searchItems.value.toLowerCase();
+    let arrToShow = arrSuppliers.filter(
+        s =>s.name.toLowerCase().includes(search) 
+        || s.nit.toLowerCase().includes(search)
+        || s.phone.toLowerCase().includes(search)
+    );
+    arrToShow.forEach(e => {
+        let btn = document.createElement("button");
+        btn.classList.add("p-2","btn","w-100","text-start");
+        btn.setAttribute("data-id",e.id_supplier);
+        btn.setAttribute("onclick","addItem(this)");
+        btn.innerHTML = `
+            <p class="m-0 fw-bold">${e.name}</p>
+            <p class="m-0">CC/NIT: <span>${e.nit}</span></p>
+            <p class="m-0">Correo: <span>${e.email}</span></p>
+            <p class="m-0">Teléfono: <span>${e.phone}</span></p>
+        `
+        items.appendChild(btn);
+    });
+});
 searchProduct.addEventListener("input",function(){
     getProducts(searchProduct.value);
 });
-
+/*************************functions to select item from search suppliers*******************************/
+function addItem(element){
+    element.setAttribute("onclick","delItem(this)");
+    element.classList.add("border","border-primary");
+    document.querySelector("#selectedItem").appendChild(element);
+    document.querySelector("#items").innerHTML = "";
+    document.querySelector("#id").value = element.getAttribute("data-id");
+    searchItems.parentElement.classList.add("d-none");
+}
+function delItem(element){
+    searchItems.parentElement.classList.remove("d-none");
+    document.querySelector("#id").value = 0;
+    element.remove();
+}
+function getSuppliers(){
+    request(base_url+"/compras/getSuppliers","","get").then(function(res){
+        arrSuppliers = res;
+    });
+}
+/*************************functions to get products*******************************/
 function getProducts(search=""){
     const formData = new FormData();
     formData.append("search",search);
@@ -49,8 +110,9 @@ function getProduct(element,id){
 
     });
 }
+/*************************functions to add and update products*******************************/
 function addProduct(product){
-    tablePurchase.innerHTML ="";
+    
     let obj = {
         "id":product.idproduct,
         "is_stock":product.is_stock,
@@ -58,10 +120,14 @@ function addProduct(product){
         "qty":1,
         "price_purchase":product.price_purchase,
         "price_sell":product.price,
+        "price_base":0,
+        "discount":0,
+        "discount_percent":0,
         "reference":product.reference,
         "product_type":product.product_type,
         "name":product.name,
         "import":product.import,
+        "subtotal":0,
         "variant_name":""
     };
     if(product.product_type == 1){
@@ -91,11 +157,129 @@ function addProduct(product){
     }else{
         arrProducts.push(obj);
     }
+    showProducts();
+} 
+function updateProduct(element,type,data){
+    let obj = JSON.parse(data);
+    let discount = 0;
+    let discountPercent = 0;
+    let subtotal = 0;
+    if(type == "discount"){
+        let value = parseInt(element.value);
+        discount = value > 0 && value <= 100 ? value/100: 0;
+        discountPercent =  value > 0 && value <= 100 ? value : 0;
+        console.log(discountPercent);
+    }
+    let value = parseInt(element.value);
+    for (let i = 0; i < arrProducts.length; i++) {
+        let iva = 1+(arrProducts[i].import/100);
+        if(arrProducts[i].product_type){
+            if(arrProducts[i].id == obj.id && arrProducts[i].reference == obj.reference
+                && arrProducts[i].name == obj.name && arrProducts[i].variant_name == obj.variant_name
+             ){
+                if(type =="qty"){
+                    arrProducts[i].qty = value;
+                }else if(type=="price_purchase"){
+                    arrProducts[i].price_base = Math.round(value/iva);
+                    arrProducts[i].price_purchase = value;
+                }else if(type=="price_base"){
+                    arrProducts[i].price_purchase = Math.round(value*iva);
+                    arrProducts[i].price_base = value;
+                }else if(type=="price_sell"){
+                    arrProducts[i].price_sell = value;
+                }
+                subtotal = arrProducts[i].qty * arrProducts[i].price_purchase;
+                totalDiscount = Math.round(subtotal*discount);
+                subtotal = subtotal-totalDiscount;
+                arrProducts[i].subtotal = subtotal;
+                arrProducts[i].discount = totalDiscount;
+                arrProducts[i].discount_percent = discountPercent;
+                break;
+             }
+        }else if(arrProducts[i].id == obj.id && arrProducts[i].reference == obj.reference && arrProducts[i].name == obj.name){
+            if(type =="qty"){
+                arrProducts[i].qty = value;
+            }else if(type=="price_purchase"){
+                arrProducts[i].price_base = Math.round(value/iva);
+                arrProducts[i].price_purchase = value;
+            }else if(type=="price_base"){
+                arrProducts[i].price_purchase = Math.round(value*iva);
+                arrProducts[i].price_base = value;
+            }else if(type=="price_sell"){
+                arrProducts[i].price_sell = value;
+            }
+            subtotal = arrProducts[i].qty * arrProducts[i].price_purchase;
+            totalDiscount = Math.round(subtotal*discount);
+            subtotal = subtotal-totalDiscount;
+            arrProducts[i].subtotal = subtotal;
+            arrProducts[i].discount = totalDiscount;
+            arrProducts[i].discount_percent = discountPercent;
+            break;
+        }
+    }
+    currentProducts();
+}
+function currentTotal(){
+    let subtotal = 0;
+    let iva = 0;
+    let descuento = 0;
+    let total = 0;
+
+    arrProducts.forEach(p=>{
+        subtotal+=p.price_purchase*p.qty;
+        descuento+=p.discount;
+        iva+= p.import > 0 ? (p.price_base*p.qty) : 0;
+    });
+    total = subtotal-descuento;
+    document.querySelector("#subtotalProducts").innerHTML = "$"+formatNum(subtotal,".");
+    document.querySelector("#ivaProducts").innerHTML = "$"+formatNum(iva,".");
+    document.querySelector("#discountProducts").innerHTML = "$"+formatNum(descuento,".");
+    document.querySelector("#totalProducts").innerHTML = "$"+formatNum(total,".");
+    document.querySelector("#totalPurchase").innerHTML = "$"+formatNum(total,".");
+}
+function currentProducts(){
+    let rows = document.querySelectorAll(".productToBuy");
+    for (let i = 0; i < arrProducts.length; i++) {
+        let children = rows[i].children;
+        children[2].children[0].value = arrProducts[i].qty; //Cantidad
+        children[3].children[0].value = arrProducts[i].price_base; //Precio base
+        children[5].children[0].value = arrProducts[i].price_purchase; //Precio compra
+        children[6].children[0].value = arrProducts[i].price_sell; //Precio de venta
+        children[7].children[0].value = arrProducts[i].discount_percent; //Descuento
+        children[8].innerHTML = "$"+formatNum(arrProducts[i].subtotal,".");//Subtotal
+    }
+    currentTotal();
+}
+function deleteProduct(element,data){
+    let obj = JSON.parse(data);
+    let parent = element.parentElement.parentElement;
+    let index = 0;
+    for (let i = 0; i < arrProducts.length; i++) {
+        if(arrProducts[i].product_type){
+            if(arrProducts[i].id == obj.id && arrProducts[i].reference == obj.reference
+                && arrProducts[i].name == obj.name && arrProducts[i].variant_name == obj.variant_name
+             ){
+                index = i;
+                break;
+             }
+        }else if(arrProducts[i].id == obj.id && arrProducts[i].reference == obj.reference && arrProducts[i].name == obj.name){
+            index = i;
+            break;
+        }
+    }
+    arrProducts.splice(index,1);
+    parent.remove();
+    currentProducts();
+}
+function showProducts(){
+    tablePurchase.innerHTML ="";
     arrProducts.forEach(pro=>{
         let iva = 1+(pro.import/100);
-        let purchase = (Math.ceil((pro.price_purchase*iva)/100))*100;
-        let productTotal = pro.qty * purchase;
+        pro.price_base = Math.round(pro.price_purchase/iva);
+        pro.subtotal = (pro.qty * pro.price_purchase)-pro.discount;
         let tr = document.createElement("tr");
+        tr.classList.add("productToBuy");
+        let objString = JSON.stringify(pro).replace(/"/g, '&quot;');
         tr.innerHTML = `
             <td>${pro.is_stock ? pro.stock : "N/A"}</td>
             <td>
@@ -103,19 +287,19 @@ function addProduct(product){
                 <p class="text-secondary m-0 mb-1">${pro.reference}</p>
                 <p class="text-secondary m-0 mb-1">${pro.variant_name}</p>
             </td>
-            <td>${pro.qty}</td>
-            <td><input class="form-control" value="${pro.price_purchase}" type="number"></td>
+            <td><input class="form-control text-center" onchange="updateProduct(this,'qty','${objString}')" value="${pro.qty}" type="number"></td>
+            <td><input class="form-control" value="${pro.price_base}" onchange="updateProduct(this,'price_base','${objString}')" type="number"></td>
             <td>${pro.import}</td>
-            <td><input class="form-control" value="${purchase}" type="number"></td>
-            <td><input class="form-control" value="${pro.price_sell}" type="number"></td>
-            <td><input class="form-control" value="" type="number"></td>
-            <td>${formatNum(productTotal,".")}</td>
-            <td><button class="btn btn-danger m-1 text-white" type="button"><i class="fas fa-trash-alt"></i></button>'</td>
+            <td><input class="form-control" value="${pro.price_purchase}" onchange="updateProduct(this,'price_purchase','${objString}')" type="number"></td>
+            <td><input class="form-control" value="${pro.price_sell}" onchange="updateProduct(this,'price_sell','${objString}')" type="number"></td>
+            <td><input class="form-control" value="${pro.discount_percent}" onchange="updateProduct(this,'discount','${objString}')" value="" type="number"></td>
+            <td class="text-end">$${formatNum(pro.subtotal,".")}</td>
+            <td><button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${objString}')"type="button"><i class="fas fa-trash-alt"></i></button></td>
         `;
         tablePurchase.appendChild(tr);
     });
-    console.log(arrProducts);
-} 
+    currentTotal();
+}
 function displayVariants(data){
     const variants = data.variation.variation;
     const option = data.options;

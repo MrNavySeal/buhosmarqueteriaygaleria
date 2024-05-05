@@ -53,37 +53,10 @@
                 die();
             }
         }
-        public function almacen(){
-            if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Compras | Almacén";
-                $data['page_title'] = "Compras | Almacén";
-                $data['page_name'] = "producto";
-                $data['suppliers'] = $this->model->selectSuppliers();
-                $data['panelapp'] = "functions_storage.js";
-                $this->views->getView($this,"almacen",$data);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-        }
         /*******************Suppliers**************************** */
         public function getSuppliers(){
             if($_SESSION['permitsModule']['r']){
                 $request = $this->model->selectSuppliers();
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-
-                        $btnEdit="";
-                        $btnDelete="";
-                        if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['idsupplier'].')"><i class="fas fa-pencil-alt"></i></button>';
-                        }
-                        if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idsupplier'].')"><i class="fas fa-trash-alt"></i></button>';
-                        }
-                        $request[$i]['options'] = $btnEdit.$btnDelete;
-                    }
-                }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
             die();
@@ -266,7 +239,6 @@
                         $html.='
                             <tr>
                                 <td>'.$request[$i]['stock'].'</td>
-                                <td>'.$request[$i]['reference'].'</td>
                                 <td>'.$request[$i]['name'].'</td>
                                 <td>'.$request[$i]['format_purchase'].'</td>
                                 <td>

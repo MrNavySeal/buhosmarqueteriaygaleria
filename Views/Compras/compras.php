@@ -1,6 +1,7 @@
 <?php 
     headerAdmin($data);
     getModal("modalPurchaseVariant");
+    getModal("modalPurchase");
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <div class="d-flex align-items-center mb-4">
@@ -26,7 +27,6 @@
                                 <thead>
                                     <tr>
                                         <th>Stock</th>
-                                        <th>Referencia</th>
                                         <th>Artículo</th>
                                         <th>Costo</th>
                                         <th></th>
@@ -59,7 +59,30 @@
                         </tr>
                     </thead>
                     <tbody id="tablePurchase"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="8" class="text-end fw-bold">Subtotal:</td>
+                            <td class="text-end" id="subtotalProducts">$0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" class="text-end fw-bold">IVA:</td>
+                            <td class="text-end" id="ivaProducts">$0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" class="text-end fw-bold">Descuento:</td>
+                            <td class="text-end" id="discountProducts">$0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" class="text-end fw-bold">Total:</td>
+                            <td class="text-end" id="totalProducts">$0</td>
+                        </tr>
+                    </tfoot>
+                    </table>
                 </table>
+            </div>
+            <div class="d-flex mt-2">
+                <button type="button" class="btn btn-primary w-100" id="btnPurchase">Comprar</button>
+                <button type="button" class="btn btn-danger w-100" id="btnClean">Limpiar</button>
             </div>
         </div>
     </div>
