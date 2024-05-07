@@ -8,32 +8,57 @@
         private $strAddress;
         private $arrProducts;
         private $intTotal;
+        private $arrData;
         public function __construct(){
             parent::__construct();
         }
         /*******************Purchases**************************** */
-        public function insertPurchase(int $id,string $arrProducts,int $total, string $strDate){
-            $this->intId = $id;
-            $this->arrProducts = $arrProducts;
-            $this->intTotal = $total;
-            $sql="";
-            $arrData ="";
-            if($strDate!=""){
-                $arrDate = explode("-",$strDate);
-                $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
-                $dateFormat = date_format($dateCreated,"Y-m-d");
-                $sql = "INSERT INTO purchase(supplierid,products,total,date) VALUE(?,?,?,?)";
-                $arrData = array($this->intId,$this->arrProducts,$this->intTotal,$dateFormat);
-                
-            }else{
-                $sql = "INSERT INTO purchase(supplierid,products,total) VALUE(?,?,?)";
-                $arrData = array($this->intId,$this->arrProducts,$this->intTotal);
-            }
+        public function insertPurchase(array $data){
+            $this->arrData = $data;
+            //Insert header
+            $sql = "INSERT INTO purchase(supplierid,cod_bill,date,note,type,total,subtotal,iva,discount) VALUE(?,?,?,?,?,?,?,?,?)";
+            $arrData = array(
+                $this->arrData['id'],
+                $this->arrData['code_bill'],
+                $this->arrData['date'],
+                $this->arrData['note'],
+                $this->arrData['type'],
+                $this->arrData['total']['total'],
+                $this->arrData['total']['subtotal'],
+                $this->arrData['total']['iva'],
+                $this->arrData['total']['discount'],
+            );
             $request = $this->insert($sql,$arrData);
-            if($request>0){
-                $this->insertEgress($request,2,2,"Compra de material",$this->intTotal,$strDate,1);
+            //Insert detail
+            if($request > 0){
+                $this->insertPurchaseDet($request,$this->arrData['products']);
             }
+            /*if($request>0){
+                $this->insertEgress($request,2,2,"Compra de material",$this->intTotal,$strDate,1);
+            }*/
             return $request;
+        }
+        public function insertPurchaseDet(int $id,array $data){
+            $this->intId = $id;
+            $this->arrData = $data;
+            $total = count($this->arrData);
+            for ($i=0; $i < $total ; $i++) { 
+                $sql = "INSERT INTO purchase_det(purchase_id,product_id,qty,price_base,price_purchase,
+                price_discount,subtotal,variant_name) VALUE(?,?,?,?,?,?,?,?)";
+                $arrData = array(
+                    $id,
+                    $this->arrData[$i]['id'],
+                    $this->arrData[$i]['qty'],
+                    $this->arrData[$i]['price_base'],
+                    $this->arrData[$i]['price_purchase'],
+                    $this->arrData[$i]['discount'],
+                    $this->arrData[$i]['subtotal'],
+                    $this->arrData[$i]['variant_name']
+                );
+                $this->insert($sql,$arrData);
+
+                //Update products
+            }
         }
         public function deletePurchase($id){
             $this->intId = $id;

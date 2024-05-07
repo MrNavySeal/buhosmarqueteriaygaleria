@@ -79,7 +79,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="btnSetPurchase">Guardar</button>
+                        <button type="submit" class="btn btn-primary" id="btnSetPurchase"><i class="fas fa-save"></i> Guardar</button>
                         <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </form>

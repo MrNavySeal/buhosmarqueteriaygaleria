@@ -10,9 +10,11 @@ const modalVariantName = document.querySelector("#modalVariantName");
 const btnAdd = document.querySelector("#btnAdd");
 const btnPurchase = document.querySelector("#btnPurchase");
 const btnClean = document.querySelector("#btnClean");
+const btnSetPurchase = document.querySelector("#btnSetPurchase");
 const searchItems = document.querySelector("#searchItems");
 const selectItems = document.querySelector("#selectItems");
 const items = document.querySelector("#items");
+const formSetOrder = document.querySelector("#formSetOrder");
 let product;
 let arrProducts = [];
 let arrSuppliers = [];
@@ -36,7 +38,42 @@ btnClean.addEventListener("click",function(){
     document.querySelector("#discountProducts").innerHTML = "$0";
     document.querySelector("#totalProducts").innerHTML = "$0";
 });
+formSetOrder.addEventListener("submit",function(e){
+    e.preventDefault();
 
+    if(document.querySelector("#id").value == ""){
+        Swal.fire("Error","Debe seleccionar el proveedor","error");
+        return false;
+    }
+    
+    let url = base_url+"/Compras/setPurchase";
+    let formData = new FormData(formSetOrder);
+    formData.append("products",JSON.stringify(arrProducts));
+    formData.append("total",JSON.stringify(currentTotal()));
+    btnSetPurchase.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnSetPurchase.setAttribute("disabled","");
+    request(url,formData,"post").then(function(objData){
+        btnSetPurchase.innerHTML=`<i class="fas fa-save"></i> Guardar`;
+        btnSetPurchase.removeAttribute("disabled");
+        if(objData.status){
+            Swal.fire("Guardado",objData.msg,"success");
+            formSetOrder.reset();
+            arrProducts = [];
+            tablePurchase.innerHTML ="";
+            document.querySelector("#subtotalProducts").innerHTML = "$0";
+            document.querySelector("#ivaProducts").innerHTML = "$0";
+            document.querySelector("#discountProducts").innerHTML = "$0";
+            document.querySelector("#totalProducts").innerHTML = "$0";
+            searchItems.parentElement.classList.remove("d-none");
+            document.querySelector("#id").value = 0;
+            document.querySelector("#selectedItem").innerHTML="";
+            modalPurchase.hide();
+            getProducts();
+        }else{
+            Swal.fire("Error",objData.msg,"error");
+        }
+    });
+})
 searchItems.addEventListener('input',function() {
     items.innerHTML ="";
     let search = searchItems.value.toLowerCase();
@@ -222,20 +259,21 @@ function updateProduct(element,type,data){
 function currentTotal(){
     let subtotal = 0;
     let iva = 0;
-    let descuento = 0;
+    let discount = 0;
     let total = 0;
 
     arrProducts.forEach(p=>{
         subtotal+=p.price_purchase*p.qty;
-        descuento+=p.discount;
+        discount+=p.discount;
         iva+= p.import > 0 ? (p.price_base*p.qty) : 0;
     });
-    total = subtotal-descuento;
+    total = subtotal-discount;
     document.querySelector("#subtotalProducts").innerHTML = "$"+formatNum(subtotal,".");
     document.querySelector("#ivaProducts").innerHTML = "$"+formatNum(iva,".");
-    document.querySelector("#discountProducts").innerHTML = "$"+formatNum(descuento,".");
+    document.querySelector("#discountProducts").innerHTML = "$"+formatNum(discount,".");
     document.querySelector("#totalProducts").innerHTML = "$"+formatNum(total,".");
     document.querySelector("#totalPurchase").innerHTML = "$"+formatNum(total,".");
+    return {"subtotal":subtotal,"total":total,"iva":iva,"discount":discount}
 }
 function currentProducts(){
     let rows = document.querySelectorAll(".productToBuy");
@@ -358,7 +396,5 @@ function selectVariant(element){
     product['stock'] = selectedOption.stock;
 }
 function openModal(option){
-    if(option == "variant"){
-        modalVariant.show();
-    }
+    modalVariant.show();
 }

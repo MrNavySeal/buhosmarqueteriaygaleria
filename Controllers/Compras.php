@@ -158,14 +158,20 @@
         public function setPurchase(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
-                    if(empty($_POST['arrProducts']) || empty($_POST['total'])){
+                    if(empty($_POST['id'])){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
-                        $idSupplier = intval($_POST['idSupplier']);
-                        $arrProducts = $_POST['arrProducts'];
-                        $total = intval($_POST['total']);
-                        $strDate = strClean($_POST['date']);
-                        $request = $this->model->insertPurchase($idSupplier,$arrProducts,$total,$strDate);
+                        $strDate = $_POST['strDate'] == "" ? date("Y-m-d") : strClean($_POST['strDate']);
+                        $data = array(
+                            "id"=>intval($_POST['id']),
+                            "date"=>$strDate,
+                            "code_bill"=>strClean($_POST['strCode']),
+                            "type"=>strClean($_POST['paymentList']),
+                            "note"=>strClean($_POST['strNote']),
+                            "products"=>json_decode($_POST['products'],true),
+                            "total"=>json_decode($_POST['total'],true)
+                        );
+                        $request = $this->model->insertPurchase($data);
                         if($request > 0){
                             $arrResponse = array("status"=>true,"msg"=>"La compra se ha registrado con éxito");
                         }else{
@@ -211,7 +217,7 @@
                         $id = intval($_POST['idPurchase']);
                         $request = $this->model->deletePurchase($id);
                         if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha anulado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
