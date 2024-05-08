@@ -58,6 +58,20 @@
                 $this->insert($sql,$arrData);
 
                 //Update products
+                if($this->arrData[$i]['is_stock']){
+                    $sql ="UPDATE product SET stock=?, price=?, price_purchase=? 
+                    WHERE idproduct = {$this->arrData[$i]['id']}";
+                    if($this->arrData[$i]['product_type']){
+                        $sql = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
+                        WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
+                    }
+                    $arrData = array(
+                        $this->arrData[$i]['qty']+$this->arrData[$i]['stock'],
+                        $this->arrData[$i]['price_sell'],
+                        $this->arrData[$i]['price_purchase']
+                    );
+                    $this->update($sql,$arrData);
+                }  
             }
         }
         public function deletePurchase($id){
