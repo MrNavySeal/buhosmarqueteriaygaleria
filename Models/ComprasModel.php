@@ -59,16 +59,22 @@
 
                 //Update products
                 if($this->arrData[$i]['is_stock']){
+                    $sqlPurchase = "SELECT AVG(price_purchase) as price_purchase FROM purchase_det WHERE product_id = {$this->arrData[$i]['id']}";
                     $sql ="UPDATE product SET stock=?, price=?, price_purchase=? 
                     WHERE idproduct = {$this->arrData[$i]['id']}";
                     if($this->arrData[$i]['product_type']){
                         $sql = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
                         WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
+                        $sqlPurchase = "SELECT AVG(price_purchase) as price_purchase
+                        FROM purchase_det 
+                        WHERE product_id = {$this->arrData[$i]['id']} 
+                        AND variant_name = '{$this->arrData[$i]['variant_name']}' ";
                     }
+                    $price_purchase = $this->select($sqlPurchase)['price_purchase'];
                     $arrData = array(
                         $this->arrData[$i]['qty']+$this->arrData[$i]['stock'],
                         $this->arrData[$i]['price_sell'],
-                        $this->arrData[$i]['price_purchase']
+                        $price_purchase
                     );
                     $this->update($sql,$arrData);
                 }  
