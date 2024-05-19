@@ -6,17 +6,19 @@
         private $strPhone;
         private $strEmail;
         private $strAddress;
-        private $arrProducts;
         private $intTotal;
         private $arrData;
+        private $arrProducts;
         public function __construct(){
             parent::__construct();
         }
         /*******************Purchases**************************** */
         public function insertPurchase(array $data){
             $this->arrData = $data;
+            $this->arrProducts = $data['products'];
+            $status = $this->arrData['type'] != "credito" ? 1 : 3;
             //Insert header
-            $sql = "INSERT INTO purchase(supplierid,cod_bill,date,note,type,total,subtotal,iva,discount) VALUE(?,?,?,?,?,?,?,?,?)";
+            $sql = "INSERT INTO purchase(supplierid,cod_bill,date,note,type,total,subtotal,iva,discount,user,status) VALUE(?,?,?,?,?,?,?,?,?,?,?)";
             $arrData = array(
                 $this->arrData['id'],
                 $this->arrData['code_bill'],
@@ -27,15 +29,18 @@
                 $this->arrData['total']['subtotal'],
                 $this->arrData['total']['iva'],
                 $this->arrData['total']['discount'],
+                $_SESSION['userData']['idperson'],
+                $status
             );
             $request = $this->insert($sql,$arrData);
             //Insert detail
             if($request > 0){
-                $this->insertPurchaseDet($request,$this->arrData['products']);
+                $this->insertPurchaseDet($request,$this->arrProducts);
             }
-            /*if($request>0){
-                $this->insertEgress($request,2,2,"Compra de material",$this->intTotal,$strDate,1);
-            }*/
+            //insert egress
+            if($request>0 && $data['type']!="credito"){
+                $this->insertEgress($request,2,2,"Compra de material",$data['total']['total'],$data['date'],1,$data['type']);
+            }
             return $request;
         }
         public function insertPurchaseDet(int $id,array $data){
@@ -82,24 +87,50 @@
         }
         public function deletePurchase($id){
             $this->intId = $id;
-            $sql = "DELETE FROM purchase WHERE idpurchase = $this->intId;DELETE FROM count_amount WHERE purchase_id = $this->intId";
-            $return = $this->delete($sql);
+            $sql = "UPDATE purchase SET status = ? WHERE idpurchase = $this->intId;DELETE FROM count_amount WHERE purchase_id = $this->intId";
+            $arrData = array(2);
+            $return = $this->update($sql,$arrData);
             return $return;
         }
         public function selectPurchases(){
             $sql = "SELECT 
                     p.idpurchase,
-                    p.supplierid,
                     p.total,
+                    p.subtotal,
+                    p.iva,
+                    p.discount,
                     DATE_FORMAT(p.date, '%d/%m/%Y') as date,
-                    s.idsupplier,
-                    s.name
+                    s.name as supplier,
+                    CONCAT(u.firstname,' ',u.lastname) as user,
+                    p.cod_bill,
+                    p.type,
+                    p.status
                     FROM purchase p
                     INNER JOIN suppliers s
-                    WHERE p.supplierid = s.idsupplier
+                    ON p.supplierid = s.idsupplier
+                    INNER JOIN person u
+                    ON p.user = u.idperson
                     ORDER BY p.idpurchase DESC
             ";
             $request = $this->select_all($sql);
+            if(!empty($request)){
+                $total = count($request);
+                for ($i=0; $i < $total ; $i++) { 
+                    $id = $request[$i]['idpurchase'];
+                    $sql_det = "SELECT 
+                    p.name, 
+                    det.qty,
+                    det.price_purchase,
+                    subtotal,
+                    det.price_base,
+                    variant_name 
+                    FROM purchase_det det
+                    INNER JOIN product p
+                    ON p.idproduct = det.product_id
+                    WHERE det.purchase_id = $id";
+                    $request[$i]['detail'] = $this->select_all($sql_det);
+                }
+            }
             return $request;
         }
         public function selectPurchase($id){
@@ -124,38 +155,21 @@
             $request = $this->select($sql);
             return $request;
         }
-        public function insertEgress(int $idPurchase,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus){
+        public function insertEgress(int $idPurchase,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus, string $method){
             $request="";
-            if($strDate){
-                $arrDate = explode("-",$strDate);
-                $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
-                $dateFormat = date_format($dateCreated,"Y-m-d");
-
-                $sql  = "INSERT INTO count_amount(purchase_id,type_id,category_id,name,amount,date,status) VALUES(?,?,?,?,?,?,?)";
-								  
-	        	$arrData = array(
-                    $idPurchase,
-                    $intType,
-                    $intTopic,
-                    $strName,
-                    $intAmount,
-                    $dateFormat,
-                    $intStatus
-                );
-	        	$request = $this->insert($sql,$arrData);
-            }else{
-                $sql  = "INSERT INTO count_amount(purchase_id,type_id,category_id,name,amount,status) VALUES(?,?,?,?,?,?)";
-								  
-	        	$arrData = array(
-                    $idPurchase,
-                    $intType,
-                    $intTopic,
-                    $strName,
-                    $intAmount,
-                    $intStatus
-                );
-	        	$request = $this->insert($sql,$arrData);
-            }
+            
+            $sql  = "INSERT INTO count_amount(purchase_id,type_id,category_id,name,amount,date,status,method) VALUES(?,?,?,?,?,?,?,?)";      
+            $arrData = array(
+                $idPurchase,
+                $intType,
+                $intTopic,
+                $strName,
+                $intAmount,
+                $strDate,
+                $intStatus,
+                $method
+            );
+            $request = $this->insert($sql,$arrData);
 	        return $request;
 		}
         /*************************Products methods*******************************/
