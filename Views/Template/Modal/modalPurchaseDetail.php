@@ -32,7 +32,7 @@
                             <tr>
                                 <th colspan="3">Nombre</th>
                                 <th>Precio</th>
-                                <th>Cantidad</th>
+                                <th class="text-center">Cantidad</th>
                                 <th>Subtotal</th>
                             </tr>
                         </thead>

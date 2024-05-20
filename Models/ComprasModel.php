@@ -114,9 +114,11 @@
             ";
             $request = $this->select_all($sql);
             if(!empty($request)){
-                $total = count($request);
-                for ($i=0; $i < $total ; $i++) { 
+                $rows = count($request);
+                for ($i=0; $i < $rows ; $i++) { 
                     $id = $request[$i]['idpurchase'];
+                    $type = $request[$i]['type'];
+                    $total = $request[$i]['total'];
                     $sql_det = "SELECT 
                     p.name, 
                     det.qty,
@@ -129,6 +131,21 @@
                     ON p.idproduct = det.product_id
                     WHERE det.purchase_id = $id";
                     $request[$i]['detail'] = $this->select_all($sql_det);
+                    $request[$i]['total_pendent'] = 0;
+                    if($type == "credito"){
+                        $sql_credit = "SELECT COALESCE(SUM(advance),0) as total_advance FROM purchase_advance WHERE purchase_id = $id";
+                        $advance = $this->select($sql_credit)['total_advance'];
+                        $total = $total - $advance;
+                        $request[$i]['total_pendent'] = $total;
+                        $sql_advance = "SELECT det.purchase_id, det.type, det.advance,det.date,det.user,
+                        CONCAT(u.firstname,' ',u.lastname) as user_name
+                        FROM purchase_advance det 
+                        INNER JOIN person u
+                        ON det.user = u.idperson
+                        WHERE det.purchase_id = $id";
+                        $request[$i]['detail_advance']= $this->select_all($sql_advance);
+                        $request[$i]['total_advance'] = $advance;
+                    }
                 }
             }
             return $request;

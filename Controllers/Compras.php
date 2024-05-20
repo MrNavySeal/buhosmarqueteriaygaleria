@@ -197,7 +197,10 @@
                             $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Anular" onclick="deleteItem('.$request[$i]['idpurchase'].')" ><i class="fas fa-trash-alt"></i></button>';
                         }
                         $request[$i]['status'] = $status;
+                        $request[$i]['format_total'] = formatNum($request[$i]['total']);
                         $request[$i]['options'] = $btnView.$btnAdvance.$btnDelete;
+                        $request[$i]['total_pendent'] = formatNum($request[$i]['total_pendent']);
+                        $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);

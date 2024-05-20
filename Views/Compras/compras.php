@@ -1,6 +1,7 @@
 <?php 
     headerAdmin($data);
     getModal("modalPurchaseDetail");
+    getModal("modalPurchaseAdvance");
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <h2 class="text-center"><?=$data['page_title']?></h2>
@@ -23,6 +24,7 @@
                 <th>Atendió</th>
                 <th>Método de pago</th>
                 <th>Total</th>
+                <th>Total pendiente</th>
                 <th>Estado</th>
                 <th>Opciones</th>
             </tr>
