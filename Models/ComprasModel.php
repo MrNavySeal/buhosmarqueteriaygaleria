@@ -137,14 +137,14 @@
                         $advance = $this->select($sql_credit)['total_advance'];
                         $total = $total - $advance;
                         $request[$i]['total_pendent'] = $total;
-                        $sql_advance = "SELECT det.purchase_id, det.type, det.advance,det.date,det.user,
+                        $sql_advance = "SELECT det.purchase_id, det.type, det.advance,DATE_FORMAT(det.date,'%Y-%m-%d') as date,det.user,
                         CONCAT(u.firstname,' ',u.lastname) as user_name
                         FROM purchase_advance det 
                         INNER JOIN person u
                         ON det.user = u.idperson
                         WHERE det.purchase_id = $id";
                         $request[$i]['detail_advance']= $this->select_all($sql_advance);
-                        $request[$i]['total_advance'] = $advance;
+                        $request[$i]['total_advance'] = intval($advance);
                     }
                 }
             }
@@ -262,6 +262,28 @@
             $sql = "SELECT id_supplier,name,nit,phone,email FROM supplier WHERE status = 1 ORDER BY id_supplier";
             $request = $this->select_all($sql);
             return $request;
+        }
+        /*************************Advance methods*******************************/
+        public function insertAdvance(int $id,array $data,bool $isSuccess){
+            $this->intId = $id;
+            $request = $this->delete("DELETE FROM purchase_advance WHERE purchase_id = $id");
+            $request = $this->delete("DELETE FROM count_amount WHERE purchase_id = $id");
+            if(!empty($data)){
+                if($isSuccess){
+                    $request = $this->update("UPDATE purchase SET status=? WHERE idpurchase = $id",array(1)); 
+                }
+                foreach ($data as $d) {
+                    //Insert advance
+                    $sql = "INSERT INTO purchase_advance(purchase_id,type,advance,date,user)
+                    VALUES(?,?,?,?,?)";
+                    $arrData = array($this->intId,$d['type'],$d['advance'],$d['date'],$d['user']);
+                    $request = $this->insert($sql,$arrData);
+
+                    //Insert egress
+                    $this->insertEgress($this->intId,2,2,"Abono a factura de compra",$d['advance'],$d['date'],1,$d['type']);
+                }
+            }
+            return intval($request);
         }
     }
 ?>

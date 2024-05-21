@@ -199,8 +199,9 @@
                         $request[$i]['status'] = $status;
                         $request[$i]['format_total'] = formatNum($request[$i]['total']);
                         $request[$i]['options'] = $btnView.$btnAdvance.$btnDelete;
-                        $request[$i]['total_pendent'] = formatNum($request[$i]['total_pendent']);
+                        $request[$i]['format_pendent'] = formatNum($request[$i]['total_pendent']);
                         $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
+                        $request[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
@@ -226,6 +227,32 @@
                             $arrResponse = array("status"=>true,"msg"=>"La factura ha sido anulada correctamente.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible anular, intenta de nuevo.");
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
+        }
+        /*******************Advance**************************** */
+        public function setAdvance(){
+            if($_SESSION['permitsModule']['u']){
+                if($_POST){
+                    if(empty($_POST['id'])){
+                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
+                    }else{
+                        $id = intval($_POST['id']);
+                        $data = json_decode($_POST['data'],true);
+                        $isSuccess = intval($_POST['is_success']);
+                        if(is_array($data)){
+                            $request = $this->model->insertAdvance($id,$data,$isSuccess);
+                            if($request>0){
+                                $arrResponse = array("status"=>true,"msg"=>"La factura ha sido abonada correctamente.");
+                            }else{
+                                $arrResponse = array("status"=>false,"msg"=>"No es posible abonar, intenta de nuevo.");
+                            }
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"El tipo de dato es incorrecto.");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
