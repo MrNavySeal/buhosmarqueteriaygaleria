@@ -19,6 +19,7 @@
             $status = $this->arrData['type'] != "credito" ? 1 : 3;
             //Insert header
             $sql = "INSERT INTO purchase(supplierid,cod_bill,date,note,type,total,subtotal,iva,discount,user,status) VALUE(?,?,?,?,?,?,?,?,?,?,?)";
+            
             $arrData = array(
                 $this->arrData['id'],
                 $this->arrData['code_bill'],
@@ -36,10 +37,10 @@
             //Insert detail
             if($request > 0){
                 $this->insertPurchaseDet($request,$this->arrProducts);
-            }
-            //insert egress
-            if($request>0 && $data['type']!="credito"){
-                $this->insertEgress($request,2,2,"Compra de material",$data['total']['total'],$data['date'],1,$data['type']);
+                //insert egress
+                if($data['type']!="credito"){
+                    $this->insertEgress($request,2,2,"Compra de material",$data['total']['total'],$data['date'],1,$data['type']);
+                }
             }
             return $request;
         }
@@ -61,28 +62,25 @@
                     $this->arrData[$i]['variant_name']
                 );
                 $this->insert($sql,$arrData);
-
                 //Update products
-                if($this->arrData[$i]['is_stock']){
-                    $sqlPurchase = "SELECT AVG(price_purchase) as price_purchase FROM purchase_det WHERE product_id = {$this->arrData[$i]['id']}";
-                    $sql ="UPDATE product SET stock=?, price=?, price_purchase=? 
-                    WHERE idproduct = {$this->arrData[$i]['id']}";
-                    if($this->arrData[$i]['product_type']){
-                        $sql = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
-                        WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
-                        $sqlPurchase = "SELECT AVG(price_purchase) as price_purchase
-                        FROM purchase_det 
-                        WHERE product_id = {$this->arrData[$i]['id']} 
-                        AND variant_name = '{$this->arrData[$i]['variant_name']}' ";
-                    }
-                    $price_purchase = $this->select($sqlPurchase)['price_purchase'];
-                    $arrData = array(
-                        $this->arrData[$i]['qty']+$this->arrData[$i]['stock'],
-                        $this->arrData[$i]['price_sell'],
-                        $price_purchase
-                    );
-                    $this->update($sql,$arrData);
-                }  
+                $sqlPurchase = "SELECT AVG(price_purchase) as price_purchase FROM purchase_det WHERE product_id = {$this->arrData[$i]['id']}";
+                $sqlProduct ="UPDATE product SET stock=?, price=?, price_purchase=? 
+                WHERE idproduct = {$this->arrData[$i]['id']}";
+                if($this->arrData[$i]['product_type']){
+                    $sqlProduct = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
+                    WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
+                    $sqlPurchase = "SELECT AVG(price_purchase) as price_purchase
+                    FROM purchase_det 
+                    WHERE product_id = {$this->arrData[$i]['id']} 
+                    AND variant_name = '{$this->arrData[$i]['variant_name']}' ";
+                } 
+                $price_purchase = $this->select($sqlPurchase)['price_purchase'];
+                $arrData = array(
+                    $this->arrData[$i]['is_stock'] ? $this->arrData[$i]['qty']+$this->arrData[$i]['stock'] : 0,
+                    $this->arrData[$i]['price_sell'],
+                    $price_purchase
+                );
+                $this->update($sqlProduct,$arrData);
             }
         }
         public function deletePurchase($id){
