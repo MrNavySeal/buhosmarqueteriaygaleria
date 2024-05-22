@@ -104,7 +104,7 @@
                     p.type,
                     p.status
                     FROM purchase p
-                    INNER JOIN suppliers s
+                    INNER JOIN supplier s
                     ON p.supplierid = s.idsupplier
                     INNER JOIN person u
                     ON p.user = u.idperson
@@ -163,7 +163,7 @@
                     s.nit,
                     s.address
                     FROM purchase p
-                    INNER JOIN suppliers s
+                    INNER JOIN supplier s
                     WHERE p.supplierid = s.idsupplier AND p.idpurchase = $this->intId
                     ORDER BY p.idpurchase DESC
             ";
