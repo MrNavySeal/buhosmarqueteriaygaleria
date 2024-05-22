@@ -105,7 +105,7 @@
                     p.status
                     FROM purchase p
                     INNER JOIN supplier s
-                    ON p.supplierid = s.idsupplier
+                    ON p.supplierid = s.id_supplier
                     INNER JOIN person u
                     ON p.user = u.idperson
                     ORDER BY p.idpurchase DESC
@@ -156,7 +156,7 @@
                     p.products,
                     p.total,
                     DATE_FORMAT(p.date, '%d/%m/%Y') as date,
-                    s.idsupplier,
+                    s.id_supplier,
                     s.name,
                     s.phone,
                     s.email,
@@ -164,7 +164,7 @@
                     s.address
                     FROM purchase p
                     INNER JOIN supplier s
-                    WHERE p.supplierid = s.idsupplier AND p.idpurchase = $this->intId
+                    WHERE p.supplierid = s.id_supplier AND p.idpurchase = $this->intId
                     ORDER BY p.idpurchase DESC
             ";
             $request = $this->select($sql);
