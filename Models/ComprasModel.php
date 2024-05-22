@@ -22,7 +22,7 @@
             
             $arrData = array(
                 $this->arrData['id'],
-                $this->arrData['code_bill'],
+                strtoupper($this->arrData['code_bill']),
                 $this->arrData['date'],
                 $this->arrData['note'],
                 $this->arrData['type'],
