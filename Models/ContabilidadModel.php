@@ -7,6 +7,7 @@
         private $strName;
         private $intType;
         private $intAmount;
+        private $intStatus;
 
         public function __construct(){
             parent::__construct();
@@ -94,7 +95,7 @@
             $request = $this->select_all($sql);
             return $request;
         }
-        public function insertIncome(int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus){
+        public function insertIncome(int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus,string $method){
 
 			$this->strName = $strName;
             $this->intType = $intType;
@@ -109,7 +110,7 @@
                 $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
                 $dateFormat = date_format($dateCreated,"Y-m-d");
 
-                $sql  = "INSERT INTO count_amount(type_id,category_id,name,amount,date,status) VALUES(?,?,?,?,?,?)";
+                $sql  = "INSERT INTO count_amount(type_id,category_id,name,amount,date,status,method) VALUES(?,?,?,?,?,?,?)";
 								  
 	        	$arrData = array(
                     $this->intType,
@@ -117,24 +118,26 @@
                     $this->strName,
                     $this->intAmount,
                     $dateFormat,
-                    $this->intStatus
+                    $this->intStatus,
+                    $method
                 );
 	        	$request = $this->insert($sql,$arrData);
             }else{
-                $sql  = "INSERT INTO count_amount(type_id,category_id,name,amount,status) VALUES(?,?,?,?,?)";
+                $sql  = "INSERT INTO count_amount(type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?)";
 								  
 	        	$arrData = array(
                     $this->intType,
                     $this->intTopic,
                     $this->strName,
                     $this->intAmount,
-                    $this->intStatus
+                    $this->intStatus,
+                    $method
                 );
 	        	$request = $this->insert($sql,$arrData);
             }
 	        return $request;
 		}
-        public function updateIncome(int $intId,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus){
+        public function updateIncome(int $intId,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus,string $method){
 
 			$this->strName = $strName;
             $this->intType = $intType;
@@ -150,7 +153,7 @@
                 $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
                 $dateFormat = date_format($dateCreated,"Y-m-d");
 
-                $sql  = "UPDATE count_amount SET type_id=?,category_id=?,name=?,amount=?,date=?,status=? WHERE id = $this->intId";
+                $sql  = "UPDATE count_amount SET type_id=?,category_id=?,name=?,amount=?,date=?,status=?,method=? WHERE id = $this->intId";
 								  
 	        	$arrData = array(
                     $this->intType,
@@ -158,18 +161,20 @@
                     $this->strName,
                     $this->intAmount,
                     $dateFormat,
-                    $this->intStatus
+                    $this->intStatus,
+                    $method
                 );
 	        	$request = $this->update($sql,$arrData);
             }else{
-                $sql  = "UPDATE count_amount SET type_id=?,category_id=?,name=?,amount=?,status=? WHERE id = $this->intID";
+                $sql  = "UPDATE count_amount SET type_id=?,category_id=?,name=?,amount=?,status=?,method=? WHERE id = $this->intId";
 								  
 	        	$arrData = array(
                     $this->intType,
                     $this->intTopic,
                     $this->strName,
                     $this->intAmount,
-                    $this->intStatus
+                    $this->intStatus,
+                    $method
                 );
 	        	$request = $this->update($sql,$arrData);
             }
@@ -202,7 +207,7 @@
             $request = $this->select_all($sql);
             return $request;
         }
-        public function insertEgress(int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus){
+        public function insertEgress(int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus,string $method){
 
 			$this->strName = $strName;
             $this->intType = $intType;
@@ -217,7 +222,7 @@
                 $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
                 $dateFormat = date_format($dateCreated,"Y-m-d");
 
-                $sql  = "INSERT INTO count_amount(type_id,category_id,name,amount,date,status) VALUES(?,?,?,?,?,?)";
+                $sql  = "INSERT INTO count_amount(type_id,category_id,name,amount,date,status,method) VALUES(?,?,?,?,?,?,?)";
 								  
 	        	$arrData = array(
                     $this->intType,
@@ -225,24 +230,26 @@
                     $this->strName,
                     $this->intAmount,
                     $dateFormat,
-                    $this->intStatus
+                    $this->intStatus,
+                    $method
                 );
 	        	$request = $this->insert($sql,$arrData);
             }else{
-                $sql  = "INSERT INTO count_amount(type_id,category_id,name,amount,status) VALUES(?,?,?,?,?)";
+                $sql  = "INSERT INTO count_amount(type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?)";
 								  
 	        	$arrData = array(
                     $this->intType,
                     $this->intTopic,
                     $this->strName,
                     $this->intAmount,
-                    $this->intStatus
+                    $this->intStatus,
+                    $method
                 );
 	        	$request = $this->insert($sql,$arrData);
             }
 	        return $request;
 		}
-        public function updateEgress(int $intId,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus){
+        public function updateEgress(int $intId,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus,string $method){
 
 			$this->strName = $strName;
             $this->intType = $intType;
@@ -258,7 +265,7 @@
                 $dateCreated = date_create($arrDate[2]."-".$arrDate[1]."-".$arrDate[0]);
                 $dateFormat = date_format($dateCreated,"Y-m-d");
 
-                $sql  = "UPDATE count_amount SET type_id=?,category_id=?,name=?,amount=?,date=?,status=? WHERE id = $this->intId";
+                $sql  = "UPDATE count_amount SET type_id=?,category_id=?,name=?,amount=?,date=?,status=?,method=? WHERE id = $this->intId";
 								  
 	        	$arrData = array(
                     $this->intType,
@@ -266,18 +273,20 @@
                     $this->strName,
                     $this->intAmount,
                     $dateFormat,
-                    $this->intStatus
+                    $this->intStatus,
+                    $method
                 );
 	        	$request = $this->update($sql,$arrData);
             }else{
-                $sql  = "UPDATE count_amount SET type_id=?,category_id=?,name=?,amount=?,status=? WHERE id = $this->intID";
+                $sql  = "UPDATE count_amount SET type_id=?,category_id=?,name=?,amount=?,status=?, method=? WHERE id = $this->intId";
 								  
 	        	$arrData = array(
                     $this->intType,
                     $this->intTopic,
                     $this->strName,
                     $this->intAmount,
-                    $this->intStatus
+                    $this->intStatus,
+                    $method
                 );
 	        	$request = $this->update($sql,$arrData);
             }

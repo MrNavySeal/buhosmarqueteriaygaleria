@@ -100,6 +100,7 @@ function editItem(id){
         document.querySelector("#txtName").value = objData.data.name;
         document.querySelector("#id").value = objData.data.id;
         document.querySelector("#txtAmount").value = objData.data.amount;
+        document.querySelector("#subType").value = objData.data.method;
         let arrDate = new String(objData.data.date).split("/");
         document.querySelector("#txtDate").valueAsDate = new Date(arrDate[2]+"-"+arrDate[1]+"-"+arrDate[0]);
         modal.show();

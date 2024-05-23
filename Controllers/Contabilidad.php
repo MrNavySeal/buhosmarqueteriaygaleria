@@ -197,16 +197,16 @@
                         $intType = 3;
                         $strDate = strClean($_POST['txtDate']);
                         $intStatus = intval($_POST['statusList']);
-
+                        $strMethod = strClean($_POST['subType']);
                         if($idIncome == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                $request= $this->model->insertIncome($intType,$intTopic,$strName,$intAmount,$strDate,$intStatus);
+                                $request= $this->model->insertIncome($intType,$intTopic,$strName,$intAmount,$strDate,$intStatus,$strMethod);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request= $this->model->updateIncome($idIncome,$intType,$intTopic,$strName,$intAmount,$strDate,$intStatus);
+                                $request= $this->model->updateIncome($idIncome,$intType,$intTopic,$strName,$intAmount,$strDate,$intStatus,$strMethod);
                             }
                         }
                         if($request > 0 ){
@@ -306,16 +306,17 @@
                         $intType = intval($_POST['typeList']);
                         $strDate = strClean($_POST['txtDate']);
                         $intStatus = intval($_POST['statusList']);
+                        $strMethod = strClean($_POST['subType']);
 
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                $request= $this->model->insertEgress($intType,$intTopic,$strName,$intAmount,$strDate,$intStatus);
+                                $request= $this->model->insertEgress($intType,$intTopic,$strName,$intAmount,$strDate,$intStatus,$strMethod);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request= $this->model->updateEgress($id,$intType,$intTopic,$strName,$intAmount,$strDate,$intStatus);
+                                $request= $this->model->updateEgress($id,$intType,$intTopic,$strName,$intAmount,$strDate,$intStatus,$strMethod);
                             }
                         }
                         if($request > 0 ){

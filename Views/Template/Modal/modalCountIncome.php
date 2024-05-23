@@ -1,3 +1,11 @@
+<?php
+    $pago="";
+    for ($i=0; $i < count(PAGO) ; $i++) { 
+        if(PAGO[$i] != "credito"){
+            $pago .='<option value="'.PAGO[$i].'">'.PAGO[$i].'</option>';
+        }
+    }
+?>
 <div class="modal fade" id="modalElement">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -30,12 +38,22 @@
                         <label for="txtAmount" class="form-label">Monto <span class="text-danger">*</span></label>
                         <input type="number" class="form-control" id="txtAmount" name="txtAmount" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
-                        <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                            <option value="1">Activo</option>
-                            <option value="2">Inactivo</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="subType" class="form-label">Método de pago</label>
+                                <select class="form-control" aria-label="Default select example" id="subType" name="subType"><?=$pago?></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
+                                <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
+                                    <option value="1">Activo</option>
+                                    <option value="2">Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary" id="btnAdd"><i class="fas fa-save"></i> Guardar</button>
