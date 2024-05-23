@@ -1,6 +1,7 @@
 <?php 
     headerAdmin($data);
     getModal("modalPurchaseDetail");
+    getModal("modalPurchaseAdvance");
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <h2 class="text-center"><?=$data['page_title']?></h2>

@@ -148,6 +148,93 @@
             }
             return $request;
         }
+        public function selectCreditPurchases(){
+            $sql = "SELECT 
+                    p.idpurchase,
+                    p.total,
+                    p.subtotal,
+                    p.iva,
+                    p.discount,
+                    DATE_FORMAT(p.date, '%d/%m/%Y') as date,
+                    s.name as supplier,
+                    CONCAT(u.firstname,' ',u.lastname) as user,
+                    p.cod_bill,
+                    p.type,
+                    p.status
+                    FROM purchase p
+                    INNER JOIN supplier s
+                    ON p.supplierid = s.id_supplier
+                    INNER JOIN person u
+                    ON p.user = u.idperson
+                    WHERE p.type = 'credito'
+                    ORDER BY p.idpurchase DESC
+            ";
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                $rows = count($request);
+                for ($i=0; $i < $rows ; $i++) { 
+                    $id = $request[$i]['idpurchase'];
+                    $type = $request[$i]['type'];
+                    $total = $request[$i]['total'];
+                    $sql_det = "SELECT 
+                    p.name, 
+                    det.qty,
+                    det.price_purchase,
+                    subtotal,
+                    det.price_base,
+                    variant_name 
+                    FROM purchase_det det
+                    INNER JOIN product p
+                    ON p.idproduct = det.product_id
+                    WHERE det.purchase_id = $id";
+                    $request[$i]['detail'] = $this->select_all($sql_det);
+                    $request[$i]['total_pendent'] = 0;
+                    if($type == "credito"){
+                        $sql_credit = "SELECT COALESCE(SUM(advance),0) as total_advance FROM purchase_advance WHERE purchase_id = $id";
+                        $advance = $this->select($sql_credit)['total_advance'];
+                        $total = $total - $advance;
+                        $request[$i]['total_pendent'] = $total;
+                        $sql_advance = "SELECT det.purchase_id, det.type, det.advance,DATE_FORMAT(det.date,'%Y-%m-%d') as date,det.user,
+                        CONCAT(u.firstname,' ',u.lastname) as user_name
+                        FROM purchase_advance det 
+                        INNER JOIN person u
+                        ON det.user = u.idperson
+                        WHERE det.purchase_id = $id";
+                        $request[$i]['detail_advance']= $this->select_all($sql_advance);
+                        $request[$i]['total_advance'] = intval($advance);
+                    }
+                }
+            }
+            return $request;
+        }
+        public function selectDetailPurchases(){
+            $sql = "SELECT 
+                    CONCAT(p.name,' ',det.variant_name) as name, 
+                    det.purchase_id,
+                    det.qty,
+                    det.price_purchase,
+                    det.subtotal,
+                    det.price_discount,
+                    det.variant_name,
+                    s.name as supplier,
+                    cab.cod_bill,
+                    s.nit as document,
+                    m.initials as measure,
+                    DATE_FORMAT(cab.date,'%d/%m/%Y') as date
+                    FROM purchase_det det
+                    INNER JOIN product p
+                    ON p.idproduct = det.product_id
+                    INNER JOIN purchase cab
+                    ON det.purchase_id = cab.idpurchase
+                    INNER JOIN supplier s
+                    ON cab.supplierid = s.id_supplier
+                    INNER JOIN measures m
+                    ON p.measure = m.id_measure
+                    ORDER BY det.purchase_id DESC
+            ";
+            $request = $this->select_all($sql);
+            return $request;
+        }
         public function selectPurchase($id){
             $this->intId = $id;
             $sql = "SELECT 

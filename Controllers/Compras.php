@@ -20,6 +20,30 @@
                 die();
             }
         }
+        public function creditos(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "compras";
+                $data['page_title'] = "Compras por crédito";
+                $data['page_name'] = "compras";
+                $data['panelapp'] = "functions_compras_creditos.js";
+                $this->views->getView($this,"creditos",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+        public function detalles(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "compras";
+                $data['page_title'] = "Detalles de compras";
+                $data['page_name'] = "compras";
+                $data['panelapp'] = "functions_compras_detalles.js";
+                $this->views->getView($this,"detalles",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
         public function compra(){
             if($_SESSION['permitsModule']['w']){
                 $data['page_tag'] = "compras";
@@ -181,7 +205,6 @@
                     for ($i=0; $i < count($request); $i++) { 
                         $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['idpurchase'].')"><i class="fas fa-eye"></i></button>';
                         $btnDelete="";
-                        $btnAdvance="";
                         $status="";
                         if($request[$i]['status']==1){
                             $status='<span class="badge me-1 bg-success">Pagado</span>';
@@ -190,8 +213,37 @@
                         }else{
                             $status='<span class="badge me-1 bg-warning">Crédito</span>';
                         }
-                        if($request[$i]['type']=="credito"){
+                        if($_SESSION['permitsModule']['d'] && $request[$i]['status']!=2){
+                            $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Anular" onclick="deleteItem('.$request[$i]['idpurchase'].')" ><i class="fas fa-trash-alt"></i></button>';
+                        }
+                        $request[$i]['status'] = $status;
+                        $request[$i]['format_total'] = formatNum($request[$i]['total']);
+                        $request[$i]['options'] = $btnView.$btnDelete;
+                        $request[$i]['format_pendent'] = formatNum($request[$i]['total_pendent']);
+                        $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
+                        $request[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
+                    }
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getCreditPurchases(){
+            if($_SESSION['permitsModule']['r']){
+                $request = $this->model->selectCreditPurchases();
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+                        $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['idpurchase'].')"><i class="fas fa-eye"></i></button>';
+                        $btnDelete="";
+                        $btnAdvance="";
+                        $status="";
+                        if($request[$i]['status']==1){
+                            $status='<span class="badge me-1 bg-success">Pagado</span>';
+                        }else if($request[$i]['status'] == 2){
+                            $status='<span class="badge me-1 bg-danger">Anulado</span>';
+                        }else{
                             $btnAdvance = '<button class="btn btn-success m-1 text-white" type="button" title="Abonar" onclick="advanceItem('.$request[$i]['idpurchase'].')"><i class="fas fa-hand-holding-usd"></i></button>';
+                            $status='<span class="badge me-1 bg-warning">Crédito</span>';
                         }
                         if($_SESSION['permitsModule']['d'] && $request[$i]['status']!=2){
                             $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Anular" onclick="deleteItem('.$request[$i]['idpurchase'].')" ><i class="fas fa-trash-alt"></i></button>';
@@ -202,6 +254,20 @@
                         $request[$i]['format_pendent'] = formatNum($request[$i]['total_pendent']);
                         $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
                         $request[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
+                    }
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getDetailPurchases(){
+            if($_SESSION['permitsModule']['r']){
+                $request = $this->model->selectDetailPurchases();
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+                        $request[$i]['price_purchase'] = formatNum($request[$i]['price_purchase']);
+                        $request[$i]['price_discount'] = formatNum($request[$i]['price_discount']);
+                        $request[$i]['subtotal'] = formatNum($request[$i]['subtotal']);
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);

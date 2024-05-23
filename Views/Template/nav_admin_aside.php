@@ -106,9 +106,9 @@
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-coins"></i>Compras</a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <a href="<?=base_url()?>/compras/compra" class="dropdown-item">Nueva compra</a>
-                        <a href="<?=base_url()?>/compras/compras" class="dropdown-item">Compras por crédito</a>
                         <a href="<?=base_url()?>/compras" class="dropdown-item">Historial de Compras</a>
-                        <a href="<?=base_url()?>/compras/compras" class="dropdown-item">Detalle de Compras</a>
+                        <a href="<?=base_url()?>/compras/creditos" class="dropdown-item">Historial de créditos</a>
+                        <a href="<?=base_url()?>/compras/detalles" class="dropdown-item">Detalle de Compras</a>
                         <a href="<?=base_url()?>/proveedores/proveedores" class="dropdown-item">Proveedores</a>
                     </div>
                 </div>

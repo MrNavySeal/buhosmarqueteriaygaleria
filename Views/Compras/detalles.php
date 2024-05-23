@@ -1,6 +1,5 @@
 <?php 
     headerAdmin($data);
-    getModal("modalPurchaseDetail");
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <h2 class="text-center"><?=$data['page_title']?></h2>
@@ -19,13 +18,13 @@
                 <th>Nro Factura</th>
                 <th>Factura proveedor</th>
                 <th>Fecha</th>
+                <th>Documento</th>
                 <th>Nombre proveedor</th>
-                <th>Atendió</th>
-                <th>Método de pago</th>
+                <th>Cantidad</th>
+                <th>Precio de compra</th>
+                <th>Descuento</th>
+                <th>Unidad</th>
                 <th>Total</th>
-                <th>Total pendiente</th>
-                <th>Estado</th>
-                <th>Opciones</th>
             </tr>
         </thead>
         <tbody></tbody>
