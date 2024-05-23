@@ -133,7 +133,7 @@ function viewAdvance(id){
         document.querySelector("#viewTotalPendent").innerHTML = "$"+formatNum(totalPendent,".");
         document.querySelector("#viewTotalAdvance").innerHTML = "$"+formatNum(totalAdvance,".");
     }
-    document.querySelector("#viewStrDateAdvance").innerHTML = "hola";
+    document.querySelector("#viewStrDateAdvance").innerHTML =  purchase.date;
     document.querySelector("#viewStrIdAdvance").innerHTML = purchase.idpurchase;
     document.querySelector("#viewStrCodeAdvance").innerHTML = purchase.cod_bill;
     document.querySelector("#viewStrSupplierAdvance").innerHTML = purchase.supplier;
