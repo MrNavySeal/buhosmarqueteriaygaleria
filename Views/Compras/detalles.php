@@ -20,6 +20,7 @@
                 <th>Fecha</th>
                 <th>Documento</th>
                 <th>Nombre proveedor</th>
+                <th>Artículo</th>
                 <th>Cantidad</th>
                 <th>Precio de compra</th>
                 <th>Descuento</th>

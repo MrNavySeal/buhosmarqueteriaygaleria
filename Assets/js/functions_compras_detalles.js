@@ -14,6 +14,7 @@ let table = new DataTable("#tableData",{
         { data: 'date' },
         { data: 'document' },
         { data: 'supplier' },
+        { data: 'name' },
         { data: 'qty' },
         { data: 'price_purchase' },
         { data: 'price_discount' },
