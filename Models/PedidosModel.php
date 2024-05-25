@@ -408,12 +408,18 @@
             }
             $request = $this->update($sql,$arrData);
             if($request>0){
-                $this->delete("DELETE FROM order_advance WHERE order_id = $this->intIdOrder;DELETE FROM count_amount WHERE order_id = $this->intIdOrder");
-                foreach ($arrSuscription as $advance) {
-                    $this->insertAdvance($this->intIdOrder,$advance['type'],$advance['debt'],$advance['date']);
-                    if($advance['debt'] > 0){
-                        $this->insertIncome($this->intIdOrder,3,3,"Anticipo de cliente",$advance['debt'],$advance['date'],1);
+                if($status != "approved"){
+                    $this->delete("DELETE FROM order_advance WHERE order_id = $this->intIdOrder;DELETE FROM count_amount WHERE order_id = $this->intIdOrder");
+                    foreach ($arrSuscription as $advance) {
+                        $this->insertAdvance($this->intIdOrder,$advance['type'],$advance['debt'],$advance['date']);
+                        
+                        if($advance['debt'] > 0){
+                            $this->insertIncome($this->intIdOrder,3,3,"Anticipo de cliente",$advance['debt'],$advance['date'],1);
+                        }
                     }
+                }else{
+                    $this->delete("DELETE FROM count_amount WHERE order_id = $this->intIdOrder");
+                    $this->insertIncome($this->intIdOrder,3,3,"Venta de producto",$order['amount'],$strDate,1);
                 }
             }
             return $request;
