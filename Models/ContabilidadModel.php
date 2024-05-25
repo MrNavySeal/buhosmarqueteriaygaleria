@@ -466,5 +466,32 @@
             }
             return $categories;   
         }
+        public function selectMovements(){
+            $year = date("Y");
+            $sql = "SELECT 
+            a.id,
+            c.name,
+            a.method,
+            a.amount,
+            a.name as detail,
+            a.type_id,
+            DATE_FORMAT(a.date,'%d/%m/%Y') as date 
+            FROM count_amount as a
+            INNER JOIN count_category as c
+            ON a.category_id = c.id
+            WHERE a.status = 1 AND YEAR(a.date) = '$year';
+            ORDER BY DATE(a.date) DESC;";
+            $movements = $this->select_all($sql);
+            $sql_resume="SELECT 
+            type_id,
+            method,
+            sum(amount) as total
+            FROM count_amount
+            WHERE status = 1 AND YEAR(date) = '$year'
+            GROUP BY method, type_id
+            ORDER BY method DESC;";
+            $resume = $this->select_all($sql_resume);
+            return array("movements"=>$movements,"resume"=>$resume);
+        }
     }
 ?>

@@ -119,8 +119,9 @@
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-file-invoice-dollar"></i>Contabilidad</a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <a href="<?=base_url()?>/contabilidad/categorias" class="dropdown-item">Categorias</a>
-                        <a href="<?=base_url()?>/contabilidad/egreso" class="dropdown-item">Cuenta egreso</a>
-                        <a href="<?=base_url()?>/contabilidad/ingreso" class="dropdown-item">Cuenta ingreso</a>
+                        <a href="<?=base_url()?>/contabilidad/egreso" class="dropdown-item">Egresos</a>
+                        <a href="<?=base_url()?>/contabilidad/ingreso" class="dropdown-item">Ingresos</a>
+                        <a href="<?=base_url()?>/contabilidad/movimientos" class="dropdown-item">Movimientos</a>
                         <a href="<?=base_url()?>/contabilidad/informe" class="dropdown-item">Informe general</a>
                     </div>
                 </div>

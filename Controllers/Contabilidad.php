@@ -45,6 +45,18 @@
                 die();
             }
         }
+        public function movimientos(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "Caja";
+                $data['page_title'] = "Contabilidad | Movimientos";
+                $data['page_name'] = "movimientos";
+                $data['panelapp'] = "functions_movimientos.js";
+                $this->views->getView($this,"movimientos",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
         public function informe(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "Informe";
@@ -560,6 +572,71 @@
 
             $tBody = $htmlCA.$htmlGA.$htmlIA.'<tr class="bg-color-2"><td class="text-end fw-bold" colspan="13">Ingresos - (costos+gastos)</td><td>'.formatNum($neto).'</td></tr>';
             return $tBody;
+        }
+        public function getMovements(){
+            if($_SESSION['permitsModule']['r']){
+                $request = $this->model->selectMovements();
+                $movimientos = $request['movements'];
+                if(!empty($movimientos)){
+                    for ($i=0; $i < count($movimientos) ; $i++) { 
+                        $movimientos[$i]['amount'] = formatNum($movimientos[$i]['amount']);
+                        if($movimientos[$i]['type_id'] == 1){
+                            $movimientos[$i]['type'] = "Gastos";
+                        }else if($movimientos[$i]['type_id'] == 2){
+                            $movimientos[$i]['type'] = "Costos";
+                        }else{
+                            $movimientos[$i]['type'] = "Ingresos";
+                        }
+                    }
+                }
+                echo json_encode($movimientos,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getMovementsResume(){
+            if($_SESSION['permitsModule']['r']){
+                $request = $this->model->selectMovements();
+                $resumen = $request['resume'];
+                $total = 0;
+                $arrData = [];
+                if(!empty($resumen)){
+                    $egresos = array_values(array_filter($resumen,function($e){return $e['type_id'] != 3;}));
+                    $ingresos = array_values(array_filter($resumen,function($e){return $e['type_id'] == 3;}));
+            
+                    $totales = [];
+
+                    foreach ($ingresos as $ingreso) {
+                        if (!isset($totales[$ingreso['method']])) {
+                            $totales[$ingreso['method']] = 0;
+                        }
+                        $totales[$ingreso['method']] += $ingreso['total'];
+                    }
+
+                    foreach ($egresos as $egreso) {
+                        if (!isset($totales[$egreso['method']])) {
+                            $totales[$egreso['method']] = 0;
+                        }
+                        $totales[$egreso['method']] -= $egreso['total'];
+                    }
+
+                    $totalGeneral = 0;
+                    $detalle = [];
+
+                    foreach ($totales as $method => $total) {
+                        $detalle[] = ['method' => $method, 'total' => formatNum($total)];
+                        $totalGeneral += $total;
+                    }
+
+                    $totalGeneral = formatNum($totalGeneral);
+
+                    $arrData = [
+                        'total' => $totalGeneral,
+                        'detail' => $detalle
+                    ];                  
+                }
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+            }
+            die();
         }
     }
 ?>
