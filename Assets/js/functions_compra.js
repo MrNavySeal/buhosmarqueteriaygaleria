@@ -202,12 +202,12 @@ function updateProduct(element,type,data){
     let discountPercent = 0;
     let subtotal = 0;
     if(type == "discount"){
-        let value = parseInt(element.value);
+        let value = parseFloat(element.value);
         discount = value > 0 && value <= 100 ? value/100: 0;
         discountPercent =  value > 0 && value <= 100 ? value : 0;
         console.log(discountPercent);
     }
-    let value = parseInt(element.value);
+    let value = parseFloat(element.value);
     for (let i = 0; i < arrProducts.length; i++) {
         let iva = 1+(arrProducts[i].import/100);
         if(arrProducts[i].product_type){
