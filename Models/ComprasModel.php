@@ -365,7 +365,11 @@
                     $request = $this->insert($sql,$arrData);
 
                     //Insert egress
-                    $this->insertEgress($this->intId,2,2,"Abono a factura de compra",$d['advance'],$d['date'],1,$d['type']);
+                    if($isSuccess){
+                        $this->insertEgress($this->intId,2,2,"Compra de material",$d['advance'],$d['date'],1,$d['type']);
+                    }else{
+                        $this->insertEgress($this->intId,2,29,"Abono a factura de compra",$d['advance'],$d['date'],1,$d['type']);
+                    }
                 }
             }
             return intval($request);

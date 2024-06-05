@@ -211,7 +211,7 @@
                         }else if($request[$i]['status'] == 2){
                             $status='<span class="badge me-1 bg-danger">Anulado</span>';
                         }else{
-                            $status='<span class="badge me-1 bg-warning">Crédito</span>';
+                            $status='<span class="badge me-1 bg-warning text-black">Crédito</span>';
                         }
                         if($_SESSION['permitsModule']['d'] && $request[$i]['status']!=2){
                             $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Anular" onclick="deleteItem('.$request[$i]['idpurchase'].')" ><i class="fas fa-trash-alt"></i></button>';
@@ -243,7 +243,7 @@
                             $status='<span class="badge me-1 bg-danger">Anulado</span>';
                         }else{
                             $btnAdvance = '<button class="btn btn-success m-1 text-white" type="button" title="Abonar" onclick="advanceItem('.$request[$i]['idpurchase'].')"><i class="fas fa-hand-holding-usd"></i></button>';
-                            $status='<span class="badge me-1 bg-warning">Crédito</span>';
+                            $status='<span class="badge me-1 bg-warning text-black">Crédito</span>';
                         }
                         if($_SESSION['permitsModule']['d'] && $request[$i]['status']!=2){
                             $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Anular" onclick="deleteItem('.$request[$i]['idpurchase'].')" ><i class="fas fa-trash-alt"></i></button>';
