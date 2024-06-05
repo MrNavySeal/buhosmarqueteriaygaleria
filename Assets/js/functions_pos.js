@@ -23,7 +23,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/pedidos/getProducts",
+        "url": " "+base_url+"/PedidosPos/getProducts",
         "dataSrc":""
     },
     columns: [
@@ -72,7 +72,7 @@ formPOS.addEventListener("submit",function(e){
     formData.append("txtTransaction",strTransaction);*/
     btnAddPos.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAddPos.setAttribute("disabled","");
-    request(base_url+"/pedidos/setOrder",formData,"post").then(function(objData){
+    request(base_url+"/PedidosPos/setOrder",formData,"post").then(function(objData){
         btnAddPos.removeAttribute("disabled");
         btnAddPos.innerHTML="Guardar";
         if(objData.status){
@@ -85,7 +85,7 @@ formPOS.addEventListener("submit",function(e){
 });
 searchCustomers.addEventListener('input',function() {
     if(searchCustomers.value !=""){
-        request(base_url+"/pedidos/searchCustomers/"+searchCustomers.value,"","get").then(function(objData){
+        request(base_url+"/PedidosPos/searchCustomers/"+searchCustomers.value,"","get").then(function(objData){
             if(objData.status){
                 document.querySelector("#customers").innerHTML = objData.data;
             }else{
@@ -129,7 +129,7 @@ function addProduct(type,id=null, element){
     
     element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     element.setAttribute("disabled","");
-    request(base_url+"/pedidos/addCart",formData,"post").then(function(objData){
+    request(base_url+"/PedidosPos/addCart",formData,"post").then(function(objData){
         element.innerHTML=`<i class="fas fa-plus"></i> Agregar`;
         element.removeAttribute("disabled");
         document.querySelector(".toast-header img").src=objData.data.image;
@@ -185,7 +185,7 @@ function delProduct(element){
     }
     element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     element.setAttribute("disabled","");
-    request(base_url+"/pedidos/delCart",formData,"post").then(function(objData){
+    request(base_url+"/PedidosPos/delCart",formData,"post").then(function(objData){
         element.innerHTML=`<i class="fas fa-times"></i>`;
         element.removeAttribute("disabled");
         if(objData.status){
@@ -235,7 +235,7 @@ function productInc(element){
 
     document.querySelector("#total").innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     productTotal.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    request(base_url+"/pedidos/updateCart",formData,"post").then(function(objData){
+    request(base_url+"/PedidosPos/updateCart",formData,"post").then(function(objData){
         if(objData.status){
             //qtyProduct.innerHTML = objData.qty;
             productTotal.innerHTML = objData.totalprice;
@@ -288,7 +288,7 @@ function productDec(element){
 
     document.querySelector("#total").innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     productTotal.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    request(base_url+"/pedidos/updateCart",formData,"post").then(function(objData){
+    request(base_url+"/PedidosPos/updateCart",formData,"post").then(function(objData){
         if(objData.status){
             //qtyProduct.innerHTML = objData.qty;
             productTotal.innerHTML = objData.totalprice;

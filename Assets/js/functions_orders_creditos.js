@@ -1,10 +1,11 @@
 'use strict';
 
 
-let purchase = {};
+let order = {};
 let arrAdvance=[];
 let modalView = document.querySelector("#modalView") ? new bootstrap.Modal(document.querySelector("#modalView")) :"";
 let modalEdit = document.querySelector("#modalEdit") ? new bootstrap.Modal(document.querySelector("#modalEdit")) :"";
+let modalAdvance = document.querySelector("#modalAdvance") ? new bootstrap.Modal(document.querySelector("#modalAdvance")) :"";
 
 let totalPendent = 0;
 let table = new DataTable("#tableData",{
@@ -13,7 +14,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/pedidos/getOrders",
+        "url": " "+base_url+"/pedidos/getCreditOrders",
         "dataSrc":""
     },
     columns: [
@@ -130,12 +131,7 @@ function viewItem(id){
     document.querySelector("#total").innerHTML = "$"+formatNum(total,".");
     document.querySelector("#shipping").innerHTML = "$"+formatNum(order.shipping,".");
 
-    if(order.statusval =="pendent" || order.type =="credito"){
-        viewAdvance(order.idorder);
-        document.querySelector("#navAdvance-tab").parentElement.classList.remove("d-none");
-    }else{
-        document.querySelector("#navAdvance-tab").parentElement.classList.add("d-none");
-    }
+    viewAdvance(order.idorder);
     openModal("view");
 }
 function viewAdvance(id){
@@ -223,12 +219,132 @@ function deleteItem(id){
         }
     });
 }
+function advanceItem(id){
+    document.querySelector("#tablePurchaseAdvance").innerHTML ="";
+    arrAdvance = [];
+    const arrOrder = table.rows().data().toArray();
+    let index = arrOrder.findIndex(e=>e.idorder==id);
+    order = arrOrder[index];
+    let totalAdvance = order.total_advance;
+    let totalPendent = order.amount;
+    arrAdvance = order.detail_advance;
+    
+    if(arrAdvance.length > 0){
+        showAdvance();
+        totalPendent = totalPendent - totalAdvance;
+    }
+    document.querySelector("#strDateAdvance").innerHTML = order.date;
+    document.querySelector("#strIdAdvance").innerHTML = order.idorder;
+    document.querySelector("#strTotalAdvance").innerHTML = "$"+formatNum(order.amount,".");
+    document.querySelector("#totalPendent").innerHTML = "$"+formatNum(totalPendent,".");
+    document.querySelector("#totalAdvance").innerHTML = "$"+formatNum(totalAdvance,".");
+    openModal();
+}
+function showAdvance(){
+    document.querySelector("#tablePurchaseAdvance").innerHTML ="";
+    let tableDetail = document.querySelector("#tablePurchaseAdvance");
+    let totalAdvance = 0;
+    let totalPendent = 0;
+    for (let i = 0; i < arrAdvance.length; i++) {
+        totalAdvance+=arrAdvance[i].advance;
+        let tr = document.createElement("tr");
+        tr.innerHTML=`
+            <td>${arrAdvance[i].user_name}</td>
+            <td>${arrAdvance[i].date}</td>
+            <td>$${formatNum(arrAdvance[i].advance,".")}</td>
+            <td class="text-center">${arrAdvance[i].type}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-danger text-white" type="button" title="Eliminar" onclick='deleteAdvance(this,${i})' >
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </td>
+        `;
+        tableDetail.appendChild(tr);
+    }
+    totalPendent = order.amount - totalAdvance;
+    document.querySelector("#totalPendent").innerHTML = "$"+formatNum(totalPendent,".");
+    document.querySelector("#totalAdvance").innerHTML = "$"+formatNum(totalAdvance,".");
+}
+function addAdvance(){
+    let strDate = document.querySelector("#subDate").value;
+    const strValue = parseInt(document.querySelector("#subDebt").value);
+    const strType = document.querySelector("#subType").value;
+    let fechaActual = new Date();
+    let fechaFormateada = fechaActual.toISOString().split('T')[0];
+    strDate = strDate !="" ? strDate : fechaFormateada;
+    if(strValue == "" || strValue <= 0){
+        Swal.fire("Error","El valor del abono no puede estar vacio","error");
+        return false;
+    }
+    if(strValue > order.total_pendent){
+        Swal.fire("Error","El valor no puede superar el total pendiente","error");
+        return false;
+    }
+    
+    if(arrAdvance.length > 0){
+        let total = 0;
+        let pendent = 0;
+        arrAdvance.forEach(element => {
+            total+=element.advance;
+        });
+        total+=strValue;
+        pendent = order.amount - total;
+        if(pendent < 0){
+            Swal.fire("Error","Ya ha superdo el total pendiente","error");
+            return false;
+        }
+    }
+    arrAdvance.push({
+        user:order.id_actual_user,
+        user_name:order.actual_user,
+        advance:parseInt(strValue),
+        type:strType,
+        date:strDate
+    });
+    showAdvance();
+}
+function deleteAdvance(element,index){
+    element.parentElement.parentElement.remove();
+    arrAdvance.splice(index,1);
+    showAdvance();
+}
+async function saveAdvance(){
+    const formData = new FormData();
+    let totalAdvance = 0;
+    let isSuccess = 0;
+    arrAdvance.forEach(element => {
+        totalAdvance+=element.advance;
+    });
+    if(totalAdvance == order.amount){
+        isSuccess = 1;
+    }
+    formData.append("id",order.idorder);
+    formData.append("data",JSON.stringify(arrAdvance));
+    formData.append("is_success",isSuccess);
+    const btnAdd = document.querySelector("#btnSaveAdvance");
+    btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
+    btnAdd.removeAttribute("disabled");
+
+    const response = await fetch(base_url+"/pedidos/setAdvance",{method:"POST",body:formData});
+    const objData = await response.json();
+    if(objData.status){
+        Swal.fire("Guardado",objData.msg,"success");
+        table.ajax.reload();
+        modalAdvance.hide();
+    }else{
+        Swal.fire("Error",objData.msg,"error");
+    }
+    btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
+    btnAdd.removeAttribute("disabled");
+}
 //Modal
 function openModal(type=""){
     if(type=="view"){
         modalView.show();
     }else if(type=="edit"){
         modalEdit.show();
+    }else{
+        modalAdvance.show();
     }
 }
 

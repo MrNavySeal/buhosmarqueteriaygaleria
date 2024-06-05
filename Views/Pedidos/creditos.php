@@ -1,6 +1,7 @@
 <?php 
     headerAdmin($data);
     if($_SESSION['permitsModule']['u']){
+        getModal("modalOrderAdvance");
         getModal("modalOrderEdit");
     }
     getModal("modalOrderDetail");
