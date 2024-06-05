@@ -52,7 +52,7 @@
                     $sql_det = "SELECT * FROM orderdetail WHERE orderid = {$request[$i]['idorder']}";
                     $request[$i]['detail']=$this->select_all($sql_det);
                     $request[$i]['total_pendent'] = 0;
-                    if($request[$i]['type'] == "credito"){
+                    if($request[$i]['type'] == "credito" || $request[$i]['status'] == "pendent"){
                         $sql_credit = "SELECT COALESCE(SUM(advance),0) as total_advance FROM order_advance WHERE order_id = {$request[$i]['idorder']}";
                         $advance = $this->select($sql_credit)['total_advance'];
                         $total = $total - $advance;
