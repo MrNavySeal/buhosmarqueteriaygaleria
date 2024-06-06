@@ -44,7 +44,7 @@
             note,
             DATE_FORMAT(date, '%d/%m/%Y') as date,
             DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat  
-            FROM orderdata $whre ORDER BY idorder DESC";       
+            FROM orderdata $whre ORDER BY idorder DESC";      
             $request = $this->select_all($sql);
             if(!empty($request)){
                 for ($i=0; $i < count($request); $i++) { 
@@ -90,7 +90,7 @@
             note,
             DATE_FORMAT(date, '%d/%m/%Y') as date,
             DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat  
-            FROM orderdata WHERE type = 'credito' OR status = 'pendent' $whre ORDER BY idorder DESC";       
+            FROM orderdata WHERE (type = 'credito' OR status = 'pendent') $whre ORDER BY idorder DESC";      
             $request = $this->select_all($sql);
             if(!empty($request)){
                 for ($i=0; $i < count($request); $i++) { 
