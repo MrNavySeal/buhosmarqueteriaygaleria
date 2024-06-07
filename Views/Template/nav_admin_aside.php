@@ -96,7 +96,7 @@
                         <a href="<?=base_url()?>/pedidos" class="dropdown-item">Historial de pedidos</a>
                         <a href="<?=base_url()?>/pedidos/creditos" class="dropdown-item">Historial de créditos</a>
                         <?php if($_SESSION['permit'][6]['w']){ ?>
-                        <a href="<?=base_url()?>/PedidosPos" class="dropdown-item">Punto de venta</a>
+                        <a href="<?=base_url()?>/PedidosPos/venta" class="dropdown-item">Punto de venta</a>
                         <?php } ?>
                     </div>
                 </div>
