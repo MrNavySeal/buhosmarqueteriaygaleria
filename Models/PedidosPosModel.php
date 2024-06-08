@@ -57,8 +57,8 @@
                 p.idproduct,
                 p.name,
                 p.reference,
-                p.price_purchase,
-                p.price,
+                p.price as price_sell,
+                p.discount as price_offer,
                 p.product_type,
                 p.is_stock,
                 p.stock,
@@ -72,17 +72,17 @@
             if(!empty($request)){
                 if($request['product_type'] == 1){
                     $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intIdProduct");
-                    $request['variation']['variation'] = json_decode($request['variation']['variation']);
+                    $request['variation']['variation'] = json_decode($request['variation']['variation'],true);
                     $options = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intIdProduct");
                     $totalOptions = count($options);
                     for ($i=0; $i < $totalOptions ; $i++) {
-                        $price =  $options[$i]['price_offer'] > 0 ? $options[$i]['price_offer'] : $options[$i]['price_sell'];
-                        $options[$i]['price'] = $price;
-                        $options[$i]['format_price'] = "$".number_format($options[$i]['price'],0,",",".");
+                        $options[$i]['format_offer'] = "$".number_format($options[$i]['price_offer'],0,",",".");
+                        $options[$i]['format_price'] = "$".number_format($options[$i]['price_sell'],0,",",".");
                     }
                     $request['options'] = $options;
                 }
             }
+            //dep($request);exit;
             return $request;
         }
         /*************************methods to get customers*******************************/
@@ -152,21 +152,22 @@
             $this->arrData = $data;
             $total = count($this->arrData);
             for ($i=0; $i < $total ; $i++) { 
+                
                 $sql = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference) VALUE(?,?,?,?,?,?,?,?)";
                 $arrData = array(
                     $id,
                     $this->intIdUser,
                     $this->arrData[$i]['id'],
                     $this->arrData[$i]['topic'],
-                    $this->arrData[$i]['name'],
+                    $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'],
                     $this->arrData[$i]['qty'],
                     $this->arrData[$i]['price_sell'],
                     $this->arrData[$i]['reference']
                 );
                 $this->insert($sql,$arrData);
                 //Update products
-                if($this->arrData[$i]['product_type'] == 2){
-                    $sqlStock = "SELECT stock FROM product WHERE product_id = {$this->arrData[$i]['id']}";
+                if($this->arrData[$i]['topic'] == 2){
+                    $sqlStock = "SELECT stock FROM product WHERE idproduct = {$this->arrData[$i]['id']}";
                     //$sqlPurchase = "SELECT AVG(price) as price_purchase FROM orderdetail WHERE product_id = {$this->arrData[$i]['id']}";
                     $sqlProduct ="UPDATE product SET stock=? 
                     WHERE idproduct = {$this->arrData[$i]['id']}";
@@ -182,8 +183,9 @@
                         AND variant_name = '{$this->arrData[$i]['variant_name']}' ";*/
                     } 
                     $stock = $this->select($sqlStock)['stock'];
+                    $stock = $stock -$this->arrData[$i]['qty'];
                     //$price_purchase = $this->select($sqlPurchase)['price_purchase'];
-                    $arrData = array($this->arrData[$i]['is_stock'] ? $this->arrData[$i]['qty']-$stock : 0);
+                    $arrData = array($this->arrData[$i]['is_stock'] ? $stock : 0);
                     $this->update($sqlProduct,$arrData);
                 }
             }

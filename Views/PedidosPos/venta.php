@@ -109,8 +109,8 @@ if($_SESSION['permitsModule']['w']){
                                 <th class="text-nowrap">Stock</th>
                                 <th class="text-nowrap">Artículo</th>
                                 <th class="text-nowrap">Cantidad</th>
-                                <th class="text-nowrap">Valor</th>
-                                <th class="text-nowrap">Descuento</th>
+                                <th class="text-nowrap">Precio</th>
+                                <th class="text-nowrap">Oferta</th>
                                 <th class="text-nowrap">Subtotal</th>
                                 <th></th>
                             </tr>

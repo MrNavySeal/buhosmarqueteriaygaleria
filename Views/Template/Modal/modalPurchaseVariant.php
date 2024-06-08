@@ -10,7 +10,7 @@
                 <div id="modalSelectvariants"></div>
                 <p class="fs-3" id="modalVariantCost">Costo: $125.000</p>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-primary" id="btnAdd"><i class="fas fa-plus"></i> Agregar a compra</button>
+                    <button type="button" class="btn btn-primary" id="btnAdd"><i class="fas fa-plus"></i> Agregar</button>
                 </div>
             </div>
         </div>
