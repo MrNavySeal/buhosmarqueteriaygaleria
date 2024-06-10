@@ -13,16 +13,29 @@
                         <label for="txtImg"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
                         <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
                     </div>
-                    <div class="mb-3">
-                        <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="txtName" name="txtName" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtName" name="txtName" required>
+                            </div>
+                            
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
+                                <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
+                                    <option value="1">Activo</option>
+                                    <option value="2">Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
-                        <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
-                            <option value="1">Activo</option>
-                            <option value="2">Inactivo</option>
-                        </select>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isVisible" checked>
+                            <label class="form-check-label" for="flexSwitchCheckChecked">Habilitar si la categoría es visible en la tienda virtual</label> 
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="txtDescription" class="form-label">Descripción </label>

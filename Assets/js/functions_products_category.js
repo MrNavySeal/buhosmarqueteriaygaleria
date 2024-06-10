@@ -57,7 +57,7 @@ if(document.querySelector("#formItem")){
 
     form.addEventListener("submit",function(e){
         e.preventDefault();
-
+        let isVisible = document.querySelector("#isVisible").checked;
         let strName = document.querySelector("#txtName").value;
         if(strName == ""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
@@ -66,6 +66,7 @@ if(document.querySelector("#formItem")){
         
         let url = base_url+"/ProductosCategorias/setCategory";
         let formData = new FormData(form);
+        formData.append("isVisible",isVisible ? 1 : 0);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             
@@ -96,6 +97,7 @@ function editItem(id){
             document.querySelector("#txtDescription").value = objData.data.description;
             document.querySelector("#idCategory").value = objData.data.idcategory;
             document.querySelector(".uploadImg img").setAttribute("src",objData.data.picture);
+            document.querySelector("#isVisible").checked = objData.data.is_visible;
             document.querySelector(".modal-title").innerHTML = "Actualizar categoría";
             modal.show();
         }else{

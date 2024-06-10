@@ -148,6 +148,7 @@
                         $idCategory = intval($_POST['idCategory']);
                         $strName = ucwords(strClean($_POST['txtName']));
                         $strDescription = strClean($_POST['txtDescription']);
+                        $isVisible = intval($_POST['isVisible']);
                         $status = intval($_POST['statusList']);
                         $route = clear_cadena($strName);
                         $route = strtolower(str_replace("¿","",$route));
@@ -172,7 +173,8 @@
                                     $strName,
                                     $status,
                                     $strDescription,
-                                    $route
+                                    $route,
+                                    $isVisible
                                 );
                             }
                         }else{
@@ -194,7 +196,8 @@
                                     $strName,
                                     $status,
                                     $strDescription,
-                                    $route
+                                    $route,
+                                    $isVisible
                                 );
                             }
                         }

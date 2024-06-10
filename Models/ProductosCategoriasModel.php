@@ -38,7 +38,7 @@
             return $request;
         }
         /*************************Category methods*******************************/
-        public function insertCategory(string $photo,string $strName,int $status, string $strDescription, string $strRoute){
+        public function insertCategory(string $photo,string $strName,int $status, string $strDescription, string $strRoute, int $isVisible){
 
 			$this->strName = $strName;
 			$this->strRoute = $strRoute;
@@ -53,14 +53,15 @@
 
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO category(picture,name,status,description,route) 
-								  VALUES(?,?,?,?,?)";
+				$query_insert  = "INSERT INTO category(picture,name,status,description,route,is_visible) 
+								  VALUES(?,?,?,?,?,?)";
 	        	$arrData = array(
                     $this->strPhoto,
                     $this->strName,
                     $this->intStatus,
                     $this->strDescription,
-                    $this->strRoute
+                    $this->strRoute,
+                    $isVisible
         		);
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
@@ -69,7 +70,7 @@
 			}
 	        return $return;
 		}
-        public function updateCategory(int $intIdCategory,string $photo, string $strName,int $status, string $strDescription,string $strRoute){
+        public function updateCategory(int $intIdCategory,string $photo, string $strName,int $status, string $strDescription,string $strRoute, int $isVisible){
             $this->intIdCategory = $intIdCategory;
             $this->strName = $strName;
             $this->strDescription = $strDescription;
@@ -82,13 +83,14 @@
 
 			if(empty($request)){
 
-                $sql = "UPDATE category SET picture=?, name=?,status=?,description=?, route=? WHERE idcategory = $this->intIdCategory";
+                $sql = "UPDATE category SET picture=?, name=?,status=?,description=?, route=?,is_visible=? WHERE idcategory = $this->intIdCategory";
                 $arrData = array(
                     $this->strPhoto,
                     $this->strName,
                     $this->intStatus,
                     $this->strDescription,
-                    $this->strRoute
+                    $this->strRoute,
+                    $isVisible
                 );
 				$request = $this->update($sql,$arrData);
 			}else{
