@@ -17,7 +17,7 @@
         public function pedidos(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "pedido";
-                $data['page_title'] = "Historial de Pedidos | Panel";
+                $data['page_title'] = "Pedidos | Panel";
                 $data['page_name'] = "pedidos";
                 $data['panelapp'] = "functions_orders.js";
                 $this->views->getView($this,"pedidos",$data);
@@ -29,7 +29,7 @@
         public function creditos(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "pedido";
-                $data['page_title'] = "Historial de pedidos a crédito | Panel";
+                $data['page_title'] = "Pedidos a crédito | Panel";
                 $data['page_name'] = "creditos";
                 $data['panelapp'] = "functions_orders_creditos.js";
                 $this->views->getView($this,"creditos",$data);

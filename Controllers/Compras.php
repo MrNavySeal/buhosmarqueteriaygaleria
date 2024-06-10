@@ -11,7 +11,7 @@
         public function compras(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "compras";
-                $data['page_title'] = "Historial de compras";
+                $data['page_title'] = "Compras";
                 $data['page_name'] = "compras";
                 $data['panelapp'] = "functions_compras.js";
                 $this->views->getView($this,"compras",$data);
