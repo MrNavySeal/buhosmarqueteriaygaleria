@@ -27,8 +27,12 @@
             ORDER BY p.idproduct DESC
             ";
             $request = $this->select_all($sql);
+            $arrProducts = [];
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
+                    $stock = $request[$i]['stock'];
+
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
@@ -38,18 +42,23 @@
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT MIN(price_sell) AS sell,MIN(price_offer) AS offer,MIN(price_purchase) AS purchase
-                        FROM product_variations_options WHERE product_id =$idProduct";
+                        FROM product_variations_options WHERE product_id =$idProduct $stockCondition";
                         $requestPrices = $this->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND stock >= 0";
+                        $stock = $this->select($sqlTotal)['total'];
                         $request[$i]['price_sell'] = $requestPrices['purchase'];
                         $request[$i]['price'] = $requestPrices['sell'];
                         $request[$i]['discount'] = $requestPrices['offer'];
-                        $request[$i]['stock'] = $this->select($sqlTotal)['total'];
+                        $request[$i]['stock'] = $stock;
+                    }
+                    if(!$isStock || ($isStock && $stock > 0)){
+                        array_push($arrProducts,$request[$i]);
                     }
                 }
             }
-            return $request;
+            return $arrProducts;
         }
         public function selectProduct($id){
             $this->intIdProduct = $id;
@@ -66,14 +75,17 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
-            AND p.is_combo !=1 AND p.status = 1 
+            AND (p.is_product =1 OR p.is_combo=1) AND p.status = 1 
             AND p.idproduct = $this->intIdProduct";
             $request = $this->select($sql);
             if(!empty($request)){
                 if($request['product_type'] == 1){
-                    $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intIdProduct");
+                    $stockCondition = $request['is_stock'] ? " AND stock > 0" :"";
+                    $sqlVariations = "SELECT * FROM product_variations WHERE product_id = $this->intIdProduct";
+                    $sqlVarOptions ="SELECT * FROM product_variations_options WHERE product_id = $this->intIdProduct";
+                    $request['variation'] = $this->select($sqlVariations);
                     $request['variation']['variation'] = json_decode($request['variation']['variation'],true);
-                    $options = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intIdProduct");
+                    $options = $this->select_all($sqlVarOptions);
                     $totalOptions = count($options);
                     for ($i=0; $i < $totalOptions ; $i++) {
                         $options[$i]['format_offer'] = "$".number_format($options[$i]['price_offer'],0,",",".");
@@ -105,7 +117,8 @@
                     t.name as city
                     FROM person p
                     INNER JOIN role r, countries c, states s,cities t 
-                    WHERE c.id = p.countryid AND p.stateid = s.id AND t.id = p.cityid AND r.idrole = p.roleid AND p.idperson = $this->intIdUser";
+                    WHERE c.id = p.countryid AND p.stateid = s.id AND t.id = p.cityid AND r.idrole = p.roleid AND p.idperson = $this->intIdUser
+                    AND p.status = 1";
             $request = $this->select($sql);
             return $request;
         }

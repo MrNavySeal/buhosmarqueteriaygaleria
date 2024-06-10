@@ -45,7 +45,7 @@ let imgLocation = ".uploadImg img";
 if(document.querySelector("#id").value !=""){
     let id = document.querySelector("#id").value
     request(base_url+"/Productos/getProduct/"+id,"","get").then(function(objData){
-        console.log(objData);
+        
         const productData = objData.product;
         const initialData = objData.initial;
         let arrSubcategories = initialData.subcategories;
@@ -82,6 +82,13 @@ if(document.querySelector("#id").value !=""){
             document.querySelector(".uploadImg img").setAttribute("src",productData.framing_img);
         }else{
             document.querySelector(".framingImage").classList.add("d-none");
+        }
+        if(!checkInventory.checked || !checkStockVariants.checked ){
+            checkInventory.checked = false;
+            checkStockVariants.checked = false; 
+
+            checkInventory.setAttribute("disabled","");
+            checkStockVariants.setAttribute("disabled","");
         }
         if(productVariant.checked){
             let combinations = productData.options;
@@ -149,8 +156,17 @@ checkRecipe.addEventListener("change",function(){
     checkIngredient.checked = false;
     checkProduct.checked = false;
     if(checkRecipe.checked){
+        checkInventory.checked = false;
+        checkStockVariants.checked = false; 
+
+        checkInventory.setAttribute("disabled","");
+        checkStockVariants.setAttribute("disabled","");
+
+        document.querySelector("#setStocks").classList.add("d-none");
         document.querySelector("#divPurchase").classList.add("d-none");
     }else{
+        checkInventory.removeAttribute("disabled");
+        checkStockVariants.removeAttribute("disabled");
         document.querySelector("#divPurchase").classList.remove("d-none");
     }
 });
@@ -162,8 +178,16 @@ checkInventory.addEventListener("change",function(){
         document.querySelector("#setStocks").classList.add("d-none");
     }
 });
-checkIngredient.addEventListener("change",function(){checkRecipe.checked = false;});
-checkProduct.addEventListener("change",function(){checkRecipe.checked = false;});
+checkIngredient.addEventListener("change",function(){
+    checkRecipe.checked = false;
+    checkInventory.removeAttribute("disabled");
+    checkStockVariants.removeAttribute("disabled");
+});
+checkProduct.addEventListener("change",function(){
+    checkRecipe.checked = false;
+    checkInventory.removeAttribute("disabled");
+    checkStockVariants.removeAttribute("disabled");
+});
 
 selectFramingMode.addEventListener("change",function(){
     if(selectFramingMode.value == 1){

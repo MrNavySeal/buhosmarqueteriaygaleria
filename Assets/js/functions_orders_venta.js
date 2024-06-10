@@ -55,7 +55,7 @@ window.addEventListener("load",function(){
 /*************************Events*******************************/
 btnAdd.addEventListener("click",function(){
     addProduct(product);
-    modalVariant.hide();
+    //modalVariant.hide();
 });
 btnPurchase.addEventListener("click",function(){
     modalPurchase.show();
@@ -202,6 +202,10 @@ function addProduct(product={},topic=2){
         obj.variant_name =""
         obj.topic =topic
         if(product.product_type == 1){
+            if(product.is_stock && product.stock<= 0){
+                Swal.fire("Error","El artículo está agotado, pruebe con otro","error");
+                return false;
+            }
             obj.variant_name = product.variant_name;
             obj.variant_detail = product.variant_detail;
         }
@@ -423,12 +427,15 @@ function displayVariants(data){
         `;
         modalSelectvariants.appendChild(div);
     }
-    let price = `<span>${option[0].format_price}</span>`;
+    let price = `Precio: <span>${option[0].format_price}</span>`;
     if(option[0].price_offer > 0){
-        price =`<span class="text-decoration-line-through me-1">${option[0].format_price}</span>
+        price =`Precio: <span class="text-decoration-line-through me-1">${option[0].format_price}</span>
         <span class="text-danger">${option[0].format_offer}</span>`;
     }
-    modalVariantCost.innerHTML = "Precio: "+price;
+    if(data.is_stock && option[0].stock <= 0){
+        price =`<span class="text-danger">Agotado</span>`;
+    }
+    modalVariantCost.innerHTML = price;
     modalVariantName.innerHTML = data.reference!="" ? data.reference+" "+data.name : data.name;
     let selectedVariants = document.querySelectorAll(".btn-primary.btnVariant");
     let arrSelected = [];
@@ -478,7 +485,10 @@ function selectVariant(element){
         price =`<span class="text-decoration-line-through me-1">${selectedOption.format_price}</span>
         <span class="text-danger">${selectedOption.format_offer}</span>`;
     }
-    modalVariantCost.innerHTML = "Precio: "+price;
+    if(product.is_stock && selectedOption.stock <= 0){
+        price =`<span class="text-danger">Agotado</span>`;
+    }
+    modalVariantCost.innerHTML = price;
     product['variant_name'] = variant;
     product['price_sell'] = selectedOption.price_sell;
     product['price_offer'] = selectedOption.price_offer;
