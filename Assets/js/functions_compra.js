@@ -25,7 +25,6 @@ window.addEventListener("load",function(){
 
 btnAdd.addEventListener("click",function(){
     addProduct(product);
-    modalVariant.hide();
 });
 btnPurchase.addEventListener("click",function(){
     modalPurchase.show();
