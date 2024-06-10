@@ -161,7 +161,7 @@
                                     if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
                                         $discount = '<span class="discount">-'.$resultDiscount.'%</span>';
                                         $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['discount'],false).'</span><span class="compare">'.formatNum($productos[$i]['price']).'</span>';
-                                    }else if($productos[$i]['stock'] == 0){
+                                    }else if($productos[$i]['stock'] <= 0){
                                         $price = '<span class="current sale me-2">Agotado</span>';
                                         $discount="";
                                     }
@@ -249,7 +249,7 @@
                                         if($productos[$j]['discount'] > 0 && $productos[$j]['stock'] > 0){
                                             $discount = '<span class="discount">-'.$resultDiscount.'%</span>';
                                             $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$j]['discount'],false).'</span><span class="compare">'.formatNum($productos[$j]['price']).'</span>';
-                                        }else if($productos[$j]['stock'] == 0){
+                                        }else if($productos[$j]['stock'] <= 0){
                                             $price = '<span class="current sale me-2">Agotado</span>';
                                             $discount="";
                                         }

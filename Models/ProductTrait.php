@@ -41,6 +41,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
@@ -61,11 +62,12 @@
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
                         $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
                         $request[$i]['discount'] = $requestPrices['price_offer'];
                         $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
@@ -111,6 +113,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
@@ -130,11 +133,12 @@
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
                         $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
                         $request[$i]['discount'] = $requestPrices['price_offer'];
                         $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
@@ -197,6 +201,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
@@ -216,11 +221,12 @@
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
                         $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
                         $request[$i]['discount'] = $requestPrices['price_offer'];
                         $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
@@ -286,6 +292,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
@@ -305,11 +312,12 @@
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
                         $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
                         $request[$i]['discount'] = $requestPrices['price_offer'];
                         $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
@@ -400,6 +408,7 @@
             }
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
@@ -419,11 +428,12 @@
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
                         $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
                         $request[$i]['discount'] = $requestPrices['price_offer'];
                         $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
@@ -489,6 +499,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
@@ -508,11 +519,12 @@
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
                         $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
                         $request[$i]['discount'] = $requestPrices['price_offer'];
                         $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
@@ -686,6 +698,7 @@
             $request = $this->con->select($sql);
             $this->intIdProduct = $request['idproduct'];
             if(!empty($request)){
+                $isStock = $request['is_stock'];
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
                 $requestImg = $this->con->select_all($sqlImg);
                 $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate WHERE productid = $this->intIdProduct AND status = 1 HAVING rate IS NOT NULL";
@@ -712,10 +725,11 @@
                     }
                 }
                 if($request['product_type'] == 1){
+                    $stockCondition = $isStock ? " AND stock > 0" : "";
                     $sqlVariants = "SELECT variation FROM product_variations WHERE product_id = $this->intIdProduct";
                     $sqlV = "SELECT price_sell,price_offer, name, stock
                     FROM product_variations_options WHERE product_id =$this->intIdProduct AND status = 1 
-                    AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$this->intIdProduct AND status = 1)";
+                    AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$this->intIdProduct AND status = 1 $stockCondition)";
                     $requestPrices = $this->con->select($sqlV);
                     $request['price'] = $requestPrices['price_sell'];
                     $request['discount'] = $requestPrices['price_offer'];
