@@ -12,7 +12,7 @@
             return $request;
         }
         public function selectCategories(){
-            $sql = "SELECT name,idcategory FROM category";
+            $sql = "SELECT name,idcategory FROM category WHERE status = 1";
             $request = $this->select_all($sql);
             $arrCategories = [];
             $arrSubcategories = [];
@@ -21,7 +21,7 @@
                 $sql = "SELECT s.name,c.status 
                 FROM subcategory s 
                 INNER JOIN category c ON s.categoryid = c.idcategory
-                WHERE s.categoryid =$id";
+                WHERE s.categoryid =$id AND c.status = 1";
                 $subcategories = $this->select_all($sql);
                 for ($j=0; $j < count($subcategories) ; $j++) { 
                     $subcategories[$j] = $subcategories[$j]['name'];
@@ -41,7 +41,7 @@
             return $arr;
         }
         public function selectMeasures(){
-            $sql = "SELECT name FROM measures";
+            $sql = "SELECT name FROM measures WHERE status = 1";
             $request = $this->select_all($sql);
             $arrMeasures = [];
             for ($i=0; $i < count($request) ; $i++) { 

@@ -372,12 +372,12 @@
             return $request;
         }
         public function selectCategories(){
-            $sql = "SELECT *,idcategory as id FROM category ORDER BY name";       
+            $sql = "SELECT *,idcategory as id FROM category WHERE status = 1 ORDER BY name";       
             $request = $this->select_all($sql);
             return $request;
         }
         public function selectMeasures(){
-            $sql = "SELECT id_measure as id, CONCAT(initials,' - ',name) as name, status FROM measures ORDER BY name";
+            $sql = "SELECT id_measure as id, CONCAT(initials,' - ',name) as name, status FROM measures WHERE status = 1 ORDER BY name ";
             $request = $this->select_all($sql);
             return $request;
         }
@@ -405,7 +405,7 @@
                     FROM subcategory s
                     INNER JOIN category c
                     ON c.idcategory = s.categoryid
-                    WHERE s.categoryid = $this->intIdCategory
+                    WHERE s.categoryid = $this->intIdCategory AND c.status = 1
                     ORDER BY s.name ASC";       
             $request = $this->select_all($sql);
             return $request;
