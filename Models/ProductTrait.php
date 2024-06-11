@@ -35,7 +35,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.categoryid = $id AND p.status = 1
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1
+            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
             ORDER BY RAND() $cant";
             
             $request = $this->con->select_all($sql);
@@ -107,7 +107,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1 
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1
+            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
             ORDER BY p.idproduct DESC $cant";
             
             $request = $this->con->select_all($sql);
@@ -195,7 +195,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1
+            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
             $option LIMIT $start,$perPage
             ";
             $request = $this->con->select_all($sql);
@@ -285,7 +285,7 @@
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
             AND p.subcategoryid = s.idsubcategory AND p.status = 1 
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1
+            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
             AND (p.reference LIKE '%$search%' || p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%')
             $option LIMIT $start,$perPage
             ";
@@ -368,7 +368,7 @@
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
             AND p.subcategoryid = s.idsubcategory 
             AND p.status = 1 AND p.categoryid = $idCategory AND p.idproduct != $idProduct
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1
+            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
             ORDER BY RAND() $cant
             ";
             $sqlS = "SELECT 
@@ -493,7 +493,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1
+            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
             $routes $option 
             LIMIT $start,$perPage";
             $request = $this->con->select_all($sql);
@@ -563,6 +563,7 @@
             $request = $this->con->select_all($sql);
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
                     $idProduct = $request[$i]['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->con->select_all($sqlImg);
@@ -582,11 +583,12 @@
                         $request[$i]['image'] = media()."/images/uploads/image.png";
                     }
                     if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
                         $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1";
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
                         $request[$i]['discount'] = $requestPrices['price_offer'];
                         $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
@@ -693,7 +695,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
-            AND c.status = 1 AND s.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
+            AND c.status = 1 AND s.status = 1 AND c.is_visible = 1 AND (p.is_product = 1 OR p.is_combo = 1)
             AND p.route = '$route'";
             $request = $this->con->select($sql);
             $this->intIdProduct = $request['idproduct'];
