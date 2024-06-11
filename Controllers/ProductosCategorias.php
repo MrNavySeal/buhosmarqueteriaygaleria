@@ -14,7 +14,7 @@
         public function categorias(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "categoría";
-                $data['page_title'] = "Productos | Categorias";
+                $data['page_title'] = "Categorías | Panel";
                 $data['page_name'] = "categorias";
                 $data['panelapp'] = "functions_products_category.js";
                 $this->views->getView($this,"categorias",$data);
@@ -26,7 +26,7 @@
         public function subcategorias(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "subcategoria";
-                $data['page_title'] = "Productos | Subcategorias";
+                $data['page_title'] = "Subcategorias | Panel";
                 $data['page_name'] = "subcategorias";
                 $data['panelapp'] = "functions_products_subcategory.js";
                 $this->views->getView($this,"subcategorias",$data);
@@ -37,7 +37,7 @@
         }
         public function getSelectCategories(){
             $html='<option value="0" selected>Seleccione</option>';
-            $request = $this->model->selectCategories();
+            $request = $this->model->selectCategoriesSel();
             if(count($request)>0){
                 for ($i=0; $i < count($request); $i++) { 
                     $html.='<option value="'.$request[$i]['idcategory'].'">'.$request[$i]['name'].'</option>';

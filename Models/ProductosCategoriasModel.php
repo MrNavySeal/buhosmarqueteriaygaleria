@@ -185,6 +185,11 @@
             }
             return $return;
         }
+        public function selectCategoriesSel(){
+            $sql = "SELECT * FROM category WHERE status = 1 ORDER BY idcategory DESC";       
+            $request = $this->select_all($sql);
+            return $request;
+        }
         public function selectSubCategories(){
             $sql = "SELECT  
                     s.idsubcategory,
