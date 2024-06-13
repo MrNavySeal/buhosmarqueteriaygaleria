@@ -13,7 +13,7 @@
         public function proveedores(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "proveedor";
-                $data['page_title'] = "Proveedores";
+                $data['page_title'] = "Proveedores | Compras";
                 $data['page_name'] = "proveedor";
                 $data['panelapp'] = "functions_supplier.js";
                 $this->views->getView($this,"proveedores",$data);

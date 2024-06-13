@@ -23,7 +23,7 @@
         public function creditos(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "compras";
-                $data['page_title'] = "Compras por crédito";
+                $data['page_title'] = "Compras por crédito | Compras";
                 $data['page_name'] = "compras";
                 $data['panelapp'] = "functions_compras_creditos.js";
                 $this->views->getView($this,"creditos",$data);
@@ -35,7 +35,7 @@
         public function detalles(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "compras";
-                $data['page_title'] = "Detalles de compras";
+                $data['page_title'] = "Detalles de compras | Compras";
                 $data['page_name'] = "compras";
                 $data['panelapp'] = "functions_compras_detalles.js";
                 $this->views->getView($this,"detalles",$data);
@@ -51,18 +51,6 @@
                 $data['page_name'] = "compras";
                 $data['panelapp'] = "functions_compra.js";
                 $this->views->getView($this,"compra",$data);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-        }
-        public function proveedores(){
-            if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Proveedores";
-                $data['page_title'] = "Proveedores";
-                $data['page_name'] = "proveedores";
-                $data['panelapp'] = "functions_proveedores.js";
-                $this->views->getView($this,"proveedores",$data);
             }else{
                 header("location: ".base_url());
                 die();

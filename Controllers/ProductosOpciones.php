@@ -14,7 +14,7 @@
         public function unidades(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "unidad";
-                $data['page_title'] = "Productos | Unidades de medida";
+                $data['page_title'] = "Unidades de medida | Productos";
                 $data['page_name'] = "unidades";
                 $data['panelapp'] = "functions_products_measures.js";
                 $this->views->getView($this,"unidades",$data);
@@ -26,7 +26,7 @@
         public function caracteristicas(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "caracteristica";
-                $data['page_title'] = "Productos | Características de producto";
+                $data['page_title'] = "Características de producto | Productos";
                 $data['page_name'] = "caracteristicas";
                 $data['panelapp'] = "functions_products_specifications.js";
                 $this->views->getView($this,"caracteristicas",$data);
@@ -38,7 +38,7 @@
         public function variantes(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "variante";
-                $data['page_title'] = "Productos | Variantes de producto";
+                $data['page_title'] = "Variantes de producto | Productos";
                 $data['page_name'] = "variantes";
                 $data['panelapp'] = "functions_products_variants.js";
                 $this->views->getView($this,"variantes",$data);

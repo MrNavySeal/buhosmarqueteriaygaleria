@@ -14,7 +14,7 @@
         public function categorias(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "categoría";
-                $data['page_title'] = "Categorías | Panel";
+                $data['page_title'] = "Categorías";
                 $data['page_name'] = "categorias";
                 $data['panelapp'] = "functions_products_category.js";
                 $this->views->getView($this,"categorias",$data);
@@ -26,7 +26,7 @@
         public function subcategorias(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "subcategoria";
-                $data['page_title'] = "Subcategorias | Panel";
+                $data['page_title'] = "Subcategorias | Categorías";
                 $data['page_name'] = "subcategorias";
                 $data['panelapp'] = "functions_products_subcategory.js";
                 $this->views->getView($this,"subcategorias",$data);
