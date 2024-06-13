@@ -7,18 +7,13 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/Marqueteria/getCategories",
+        "url": " "+base_url+"/Marqueteria/getProperties",
         "dataSrc":""
     },
     columns: [
-        { 
-            data: 'image',
-            render: function (data, type, full, meta) {
-                return '<img src="'+data+'" class="rounded" height="50" width="50">';
-            }
-        },
+        { data: 'id'},
         { data: 'name'},
-        { data: 'is_visible'},
+        { data: 'is_material'},
         { data: 'status' },
         { data: 'options' },
     ],
@@ -31,7 +26,7 @@ let table = new DataTable("#tableData",{
             "className": "btn btn-success mt-2"
         }
     ],
-    order: [[1, 'asc']],
+    order: [[0, 'asc']],
     pagingType: 'full',
     scrollY:'400px',
     //scrollX: true,
@@ -43,38 +38,28 @@ if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
-        document.querySelector(".uploadImg img").setAttribute("src",base_url+"/Assets/images/uploads/category.jpg");
-        document.querySelector(".modal-title").innerHTML = "Nueva categoría";
-        document.querySelector("#idCategory").value = "";
+        document.querySelector(".modal-title").innerHTML = "Nueva propiedad";
+        document.querySelector("#id").value = "";
         document.querySelector("#txtName").value = "";
-        document.querySelector("#txtDescription").value = "";
-        document.querySelector("#txtBtn").value = "";
         document.querySelector("#statusList").value = 1;
         modal.show();
     });
 }
 if(document.querySelector("#formItem")){
     let form = document.querySelector("#formItem");
-    let img = document.querySelector("#txtImg");
-    let imgLocation = ".uploadImg img";
-    img.addEventListener("change",function(){
-        uploadImg(img,imgLocation);
-    });
     form.addEventListener("submit",function(e){
         e.preventDefault();
 
         let strName = document.querySelector("#txtName").value;
-        let strDescription = document.querySelector("#txtDescription").value;
         let intStatus = document.querySelector("#statusList").value;
-        let idCategory = document.querySelector("#idCategory").value;
         let isVisible = document.querySelector("#isVisible").checked;
 
-        if(strName == "" || strDescription =="" || intStatus ==""){
+        if(strName == "" || intStatus ==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
         
-        let url = base_url+"/Marqueteria/setCategory";
+        let url = base_url+"/Marqueteria/setProperty";
         let formData = new FormData(form);
         formData.append("is_visible",isVisible ? 1 : 0);
         let btnAdd = document.querySelector("#btnAdd");
@@ -98,16 +83,13 @@ if(document.querySelector("#formItem")){
     
 function editItem(id){
     let formData = new FormData();
-    formData.append("idCategory",id);
-    request(base_url+"/Marqueteria/getCategory",formData,"post").then(function(objData){
-        document.querySelector("#idCategory").value = objData.data.id;
-        document.querySelector(".uploadImg img").setAttribute("src",objData.data.image);
+    formData.append("id",id);
+    request(base_url+"/Marqueteria/getProperty",formData,"post").then(function(objData){
+        document.querySelector("#id").value = objData.data.id;
         document.querySelector("#txtName").value = objData.data.name;
-        document.querySelector("#txtDescription").value = objData.data.description;
-        document.querySelector("#txtBtn").value = objData.data.button;
         document.querySelector("#statusList").value = objData.data.status;
-        document.querySelector("#isVisible").checked = objData.data.is_visible;
-        document.querySelector(".modal-title").innerHTML = "Actualizar categoría";
+        document.querySelector("#isVisible").checked = objData.data.is_material;
+        document.querySelector(".modal-title").innerHTML = "Actualizar propiedad";
         modal.show();
     });
 }
@@ -123,9 +105,9 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/marqueteria/delCategory"
+            let url = base_url+"/marqueteria/delProperty"
             let formData = new FormData();
-            formData.append("idCategory",id);
+            formData.append("id",id);
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");

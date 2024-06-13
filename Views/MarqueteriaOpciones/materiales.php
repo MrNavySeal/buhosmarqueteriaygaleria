@@ -1,10 +1,10 @@
 <?php 
     headerAdmin($data);
-    getModal("modalFrameCategory");
+    getModal("modalMaterial");
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <h2 class="text-center"><?=$data['page_title']?></h2>
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-end mb-3">
         <?php
             if($_SESSION['permitsModule']['w']){
         ?>
@@ -16,14 +16,12 @@
     <table class="table align-middle" id="tableData">
         <thead>
             <tr>
-                <th>Portada</th>
                 <th>Nombre</th>
-                <th>Visible</th>
-                <th>Estado</th>
+                <th>Costo</th>
                 <th>Opciones</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
 </div>
-<?php footerAdmin($data)?>               
+<?php footerAdmin($data)?>           

@@ -2,30 +2,21 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Nueva categoría</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">Nueva opción de propiedad</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="formItem" name="formItem" class="mb-4">
-                    <input type="hidden" id="idCategory" name="idCategory">
-                    <div class="mb-3 uploadImg">
-                        <img src="<?=BASE_URL."/Assets/images/uploads/category.jpg"?>">
-                        <label for="txtImg"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
-                        <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
-                    </div>
+                    <input type="hidden" id="id" name="id">
                     <div class="mb-3">
                         <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="txtName" name="txtName" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="txtDescription" class="form-label">Descripción </label>
-                        <textarea class="form-control" id="txtDescription" name="txtDescription" rows="5"></textarea>
-                    </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="txtBtn" class="form-label">Botón <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="txtBtn" name="txtBtn" required>
+                                <label for="statusList" class="form-label">Propiedades <span class="text-danger">*</span></label>
+                                <select class="form-control" aria-label="Default select example" id="propList" name="propList" required></select>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -36,12 +27,6 @@
                                     <option value="2">Inactivo</option>
                                 </select>
                             </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isVisible" checked>
-                            <label class="form-check-label" for="flexSwitchCheckChecked">Habilitar si la categoría es visible en la tienda virtual</label> 
                         </div>
                     </div>
                     <div class="modal-footer">

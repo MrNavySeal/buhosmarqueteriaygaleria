@@ -15,7 +15,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <meta http-equiv="content-type" content="text/plain; charset=UTF-8"/>
-        <title><?=$data['page_title']." | Panel"?></title>
+        <title><?=$data['page_title'].""?></title>
         <link rel ="shortcut icon" href="<?=media()."/images/uploads/".$companyData['logo']?>" sizes="114x114" type="image/png">
         
         <!-- Google Web Fonts -->

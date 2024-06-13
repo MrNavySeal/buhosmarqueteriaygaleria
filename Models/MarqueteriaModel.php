@@ -20,11 +20,146 @@
         private $strDescription;
         private $strPhoto;
         private $strName;
+        private $isVisible;
 
         public function __construct(){
             parent::__construct();
         }
+        /*************************Category methods*******************************/
+        public function insertCategory(string $photo,string $strName, string $strDescription, string $strRoute, int $intStatus, string $button,int $isVisible){
 
+			$this->strName = $strName;
+			$this->strRoute = $strRoute;
+            $this->strDescription = $strDescription;
+            $this->strPhoto = $photo;
+            $this->intStatus = $intStatus;
+            $this->isVisible = $isVisible;
+			$return = 0;
+
+			$sql = "SELECT * FROM moldingcategory WHERE 
+					name = '{$this->strName}'";
+			$request = $this->select_all($sql);
+
+			if(empty($request))
+			{ 
+				$query_insert  = "INSERT INTO moldingcategory(image,name,description,route,status,button,is_visible) 
+								  VALUES(?,?,?,?,?,?,?)";
+	        	$arrData = array($this->strPhoto,$this->strName,$this->strDescription,$this->strRoute,$this->intStatus,$button,$this->isVisible);
+	        	$request_insert = $this->insert($query_insert,$arrData);
+	        	$return = $request_insert;
+			}else{
+				$return = "exist";
+			}
+	        return $return;
+		}
+        public function updateCategory(int $intIdCategory,string $photo, string $strName, string $strDescription,string $strRoute, int $intStatus, string $button,int $isVisible){
+            $this->intIdCategory = $intIdCategory;
+            $this->strName = $strName;
+            $this->strDescription = $strDescription;
+            $this->intStatus = $intStatus;
+			$this->strRoute = $strRoute;
+            $this->strPhoto = $photo;
+            $this->isVisible = $isVisible;
+
+			$sql = "SELECT * FROM moldingcategory WHERE name = '{$this->strName}' AND id != $this->intIdCategory";
+			$request = $this->select_all($sql);
+
+			if(empty($request)){
+
+                $sql = "UPDATE moldingcategory SET image=?, name=?,description=?, route=?, status=?, button=? ,is_visible=? WHERE id = $this->intIdCategory";
+                $arrData = array($this->strPhoto,$this->strName,$this->strDescription,$this->strRoute,$this->intStatus,$button,$this->isVisible);
+				$request = $this->update($sql,$arrData);
+			}else{
+				$request = "exist";
+			}
+			return $request;
+		
+		}
+        public function deleteCategory($id){
+            $this->intIdCategory = $id;
+            $sql = "DELETE FROM moldingcategory WHERE id = $this->intIdCategory";
+            $return = $this->delete($sql);
+            return $return;
+        }
+        public function selectCategories($flag=false){
+            $status = "";
+            if($flag)$status = " WHERE status != 3";
+            $sql = "SELECT * FROM moldingcategory $status ORDER BY id DESC";       
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectCategory($id){
+            $this->intIdCategory = $id;
+            $sql = "SELECT * FROM moldingcategory WHERE id = $this->intIdCategory";
+            $request = $this->select($sql);
+            return $request;
+        }
+        public function selectTipo($route){
+            $sql = "SELECT * FROM moldingcategory WHERE route = '$route'";
+            $request = $this->select($sql);
+            return $request;
+        }
+        /*************************Properties methods*******************************/
+        public function insertProperty(string $strName, int $intStatus,int $isVisible){
+
+			$this->strName = $strName;
+            $this->intStatus = $intStatus;
+            $this->isVisible = $isVisible;
+			$return = 0;
+
+			$sql = "SELECT * FROM molding_props WHERE 
+					name = '{$this->strName}'";
+			$request = $this->select_all($sql);
+
+			if(empty($request))
+			{ 
+				$query_insert  = "INSERT INTO molding_props(name,status,is_material) 
+								  VALUES(?,?,?)";
+	        	$arrData = array($this->strName,$this->intStatus,$this->isVisible);
+	        	$request_insert = $this->insert($query_insert,$arrData);
+	        	$return = $request_insert;
+			}else{
+				$return = "exist";
+			}
+	        return $return;
+		}
+        public function updateProperty(int $intId,string $strName, int $intStatus, int $isVisible){
+            $this->intIdCategory = $intId;
+            $this->strName = $strName;
+            $this->intStatus = $intStatus;
+            $this->isVisible = $isVisible;
+
+			$sql = "SELECT * FROM molding_props WHERE name = '{$this->strName}' AND id != $this->intIdCategory";
+			$request = $this->select_all($sql);
+
+			if(empty($request)){
+
+                $sql = "UPDATE molding_props SET  name=?, status=? ,is_material=? WHERE id = $this->intIdCategory";
+                $arrData = array($this->strName,$this->intStatus,$this->isVisible);
+				$request = $this->update($sql,$arrData);
+			}else{
+				$request = "exist";
+			}
+			return $request;
+		
+		}
+        public function deleteProperty($id){
+            $this->intIdCategory = $id;
+            $sql = "DELETE FROM molding_props WHERE id = $this->intIdCategory";
+            $return = $this->delete($sql);
+            return $return;
+        }
+        public function selectProperties(){
+            $sql = "SELECT * FROM molding_props ORDER BY id DESC";       
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectProperty($id){
+            $this->intIdCategory = $id;
+            $sql = "SELECT * FROM molding_props WHERE id = $this->intIdCategory";
+            $request = $this->select($sql);
+            return $request;
+        }
         /*************************Product methods*******************************/
         public function insertProduct(string $strReference,int $intType, int $intWaste, int $intPrice, int $intDiscount, int $intStatus, string $strFrame, array $photos){
             
@@ -375,94 +510,7 @@
             $request = $this->select_all($sql);
             return $request;
         }
-
-        /*************************Category methods*******************************/
-        public function insertCategory(string $photo,string $strName, string $strDescription, string $strRoute, int $intStatus, string $button){
-
-			$this->strName = $strName;
-			$this->strRoute = $strRoute;
-            $this->strDescription = $strDescription;
-            $this->strPhoto = $photo;
-            $this->intStatus = $intStatus;
-			$return = 0;
-
-			$sql = "SELECT * FROM moldingcategory WHERE 
-					name = '{$this->strName}'";
-			$request = $this->select_all($sql);
-
-			if(empty($request))
-			{ 
-				$query_insert  = "INSERT INTO moldingcategory(image,name,description,route,status,button) 
-								  VALUES(?,?,?,?,?,?)";
-	        	$arrData = array($this->strPhoto,$this->strName,$this->strDescription,$this->strRoute,$this->intStatus,$button);
-	        	$request_insert = $this->insert($query_insert,$arrData);
-	        	$return = $request_insert;
-			}else{
-				$return = "exist";
-			}
-	        return $return;
-		}
-        public function updateCategory(int $intIdCategory,string $photo, string $strName, string $strDescription,string $strRoute, int $intStatus, string $button){
-            $this->intIdCategory = $intIdCategory;
-            $this->strName = $strName;
-            $this->strDescription = $strDescription;
-            $this->intStatus = $intStatus;
-			$this->strRoute = $strRoute;
-            $this->strPhoto = $photo;
-            
-
-			$sql = "SELECT * FROM moldingcategory WHERE name = '{$this->strName}' AND id != $this->intIdCategory";
-			$request = $this->select_all($sql);
-
-			if(empty($request)){
-
-                $sql = "UPDATE moldingcategory SET image=?, name=?,description=?, route=?, status=?, button=? WHERE id = $this->intIdCategory";
-                $arrData = array($this->strPhoto,$this->strName,$this->strDescription,$this->strRoute,$this->intStatus,$button);
-				$request = $this->update($sql,$arrData);
-			}else{
-				$request = "exist";
-			}
-			return $request;
-		
-		}
-        public function deleteCategory($id){
-            $this->intIdCategory = $id;
-            $sql = "DELETE FROM moldingcategory WHERE id = $this->intIdCategory";
-            $return = $this->delete($sql);
-            return $return;
-        }
-        public function selectCategories($flag=false){
-            $status = "";
-            if($flag)$status = " WHERE status != 3";
-            $sql = "SELECT * FROM moldingcategory $status ORDER BY id DESC";       
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function selectCategory($id){
-            $this->intIdCategory = $id;
-            $sql = "SELECT * FROM moldingcategory WHERE id = $this->intIdCategory";
-            $request = $this->select($sql);
-            return $request;
-        }
-        public function searchca($search){
-            $sql = "SELECT * FROM moldingcategory WHERE name LIKE '%$search%'";
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function sortca($sort){
-            $option="DESC";
-            if($sort == 2){
-                $option = " ASC"; 
-            }
-            $sql = "SELECT * FROM moldingcategory ORDER BY id $option ";
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function selectTipo($route){
-            $sql = "SELECT * FROM moldingcategory WHERE route = '$route'";
-            $request = $this->select($sql);
-            return $request;
-        }
+        
         /*************************Calc methods*******************************/
 
         public function selectMolduras($dimensions=""){

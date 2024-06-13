@@ -11,6 +11,30 @@
             getPermits(4);
             
         }
+        public function categorias(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "Categorias";
+                $data['page_title'] = "Categorias | Marquetería";
+                $data['page_name'] = "categorias";
+                $data['panelapp'] = "functions_moldingcategory.js";
+                $this->views->getView($this,"categorias",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+        public function propiedades(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "Propiedades";
+                $data['page_title'] = "Propiedades | Marquetería";
+                $data['page_name'] = "propiedades";
+                $data['panelapp'] = "functions_molding_props.js";
+                $this->views->getView($this,"propiedades",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
         public function molduras(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "Molduras";
@@ -47,18 +71,7 @@
                 die();
             }
         }
-        public function categorias(){
-            if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Categorias";
-                $data['page_title'] = "Categorias";
-                $data['page_name'] = "categorias";
-                $data['panelapp'] = "functions_moldingcategory.js";
-                $this->views->getView($this,"categorias",$data);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-        }
+        
         public function calculadora(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "Calculadora de costos";
@@ -120,6 +133,258 @@
                 header("location: ".base_url()."/marqueteria/calculadora");
             }
             
+        }
+        /*************************Category methods*******************************/
+        public function getCategories(){
+            if($_SESSION['permitsModule']['r']){
+                $request = $this->model->selectCategories();
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+                        
+                        $image =  media()."/images/uploads/".$request[$i]['image'];
+                        $btnEdit="";
+                        $btnDelete="";
+                        $status="";
+                        if($_SESSION['permitsModule']['u']){
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')"><i class="fas fa-pencil-alt"></i></button>';
+                        }
+                        if($_SESSION['permitsModule']['d']){
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id'].')"><i class="fas fa-trash-alt"></i></button>';
+                        }
+                        if($request[$i]['status']==1){
+                            $status='<span class="badge me-1 bg-success">Activo</span>';
+                        }else if($request[$i]['status']==3){
+                            $status='<span class="badge me-1 bg-warning">En proceso</span>';
+                        }else{
+                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
+                        }
+                        $request[$i]['is_visible'] = $request[$i]['is_visible'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
+                        $request[$i]['image'] = $image;
+                        $request[$i]['status'] = $status;
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
+                    }
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getCategory(){
+            if($_SESSION['permitsModule']['r']){
+                if($_POST){
+                    if(empty($_POST)){
+                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    }else{
+                        $idCategory = intval($_POST['idCategory']);
+                        $request = $this->model->selectCategory($idCategory);
+                        if(!empty($request)){
+                            $request['image'] = media()."/images/uploads/".$request['image'];
+                            $arrResponse = array("status"=>true,"data"=>$request);
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
+        }
+        public function setCategory(){
+            if($_SESSION['permitsModule']['r']){
+                if($_POST){
+                    if(empty($_POST['txtName']) || empty($_POST['txtDescription']) || empty($_POST['statusList'])){
+                        $arrResponse = array("status" => false, "msg" => 'Error de datos');
+                    }else{ 
+                        $idCategory = intval($_POST['idCategory']);
+                        $strName = ucwords(strClean($_POST['txtName']));
+                        $strDescription = strClean($_POST['txtDescription']);
+                        $strButton = strClean($_POST['txtBtn']);
+                        $intStatus = intval($_POST['statusList']);
+                        $isVisible = intval($_POST['is_visible']);
+                        $route = str_replace(" ","-",$strName);
+                        $route = str_replace("?","",$route);
+                        $route = strtolower(str_replace("¿","",$route));
+                        $route = clear_cadena($route);
+                        $photo = "";
+                        $photoCategory="";
+
+                        if($idCategory == 0){
+                            if($_SESSION['permitsModule']['w']){
+                                $option = 1;
+
+                                if($_FILES['txtImg']['name'] == ""){
+                                    $photoCategory = "category.jpg";
+                                }else{
+                                    $photo = $_FILES['txtImg'];
+                                    $photoCategory = 'moldingcategory_'.bin2hex(random_bytes(6)).'.png';
+                                }
+
+                                $request= $this->model->insertCategory($photoCategory,$strName,$strDescription,$route,$intStatus,$strButton,$isVisible);
+                            }
+                        }else{
+                            if($_SESSION['permitsModule']['u']){
+                                $option = 2;
+                                $request = $this->model->selectCategory($idCategory);
+                                if($_FILES['txtImg']['name'] == ""){
+                                    $photoCategory = $request['image'];
+                                }else{
+                                    if($request['image'] != "category.jpg"){
+                                        deleteFile($request['image']);
+                                    }
+                                    $photo = $_FILES['txtImg'];
+                                    $photoCategory = 'moldingcategory_'.bin2hex(random_bytes(6)).'.png';
+                                }
+                                $request = $this->model->updateCategory($idCategory,$photoCategory,$strName,$strDescription,$route,$intStatus,$strButton,$isVisible);
+                            }
+                        }
+                        if($request > 0 ){
+                            if($photo!=""){
+                                uploadImage($photo,$photoCategory);
+                            }
+                            if($option == 1){
+                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
+                            }else{
+                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
+                            }
+                        }else if($request == 'exist'){
+                            $arrResponse = array('status' => false, 'msg' => 'La categoría ya existe, prueba con otro nombre.');		
+                        }else{
+                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+			die();
+		}
+        public function delCategory(){
+            if($_SESSION['permitsModule']['d']){
+                if($_POST){
+                    if(empty($_POST['idCategory'])){
+                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
+                    }else{
+                        $id = intval($_POST['idCategory']);
+                        $request = $this->model->selectCategory($id);
+                        if($request['image']!="category.jpg"){
+                            deleteFile($request['image']);
+                        }
+                        $request = $this->model->deleteCategory($id);
+                        if($request=="ok"){
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
+        }
+        /*************************Properties methods*******************************/
+        public function getProperties(){
+            if($_SESSION['permitsModule']['r']){
+                $request = $this->model->selectProperties();
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+                        
+                        $btnEdit="";
+                        $btnDelete="";
+                        $status="";
+                        if($_SESSION['permitsModule']['u']){
+                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')"><i class="fas fa-pencil-alt"></i></button>';
+                        }
+                        if($_SESSION['permitsModule']['d']){
+                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id'].')"><i class="fas fa-trash-alt"></i></button>';
+                        }
+                        if($request[$i]['status']==1){
+                            $status='<span class="badge me-1 bg-success">Activo</span>';
+                        }else{
+                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
+                        }
+                        $request[$i]['is_material'] = $request[$i]['is_material'] = $request[$i]['is_material'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
+                        $request[$i]['status'] = $status;
+                        $request[$i]['options'] = $btnEdit.$btnDelete;
+                    }
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getProperty(){
+            if($_SESSION['permitsModule']['r']){
+                if($_POST){
+                    if(empty($_POST)){
+                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    }else{
+                        $id = intval($_POST['id']);
+                        $request = $this->model->selectProperty($id);
+                        if(!empty($request)){
+                            $arrResponse = array("status"=>true,"data"=>$request);
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
+        }
+        public function setProperty(){
+            if($_SESSION['permitsModule']['r']){
+                if($_POST){
+                    if(empty($_POST['txtName']) || empty($_POST['statusList'])){
+                        $arrResponse = array("status" => false, "msg" => 'Error de datos');
+                    }else{ 
+                        $id = intval($_POST['id']);
+                        $strName = ucwords(strClean($_POST['txtName']));
+                        $intStatus = intval($_POST['statusList']);
+                        $isVisible = intval($_POST['is_visible']);
+
+                        if($id == 0){
+                            if($_SESSION['permitsModule']['w']){
+                                $option = 1;
+                                $request= $this->model->insertProperty($strName,$intStatus,$isVisible);
+                            }
+                        }else{
+                            if($_SESSION['permitsModule']['u']){
+                                $option = 2;
+                                $request = $this->model->updateProperty($id,$strName,$intStatus,$isVisible);
+                            }
+                        }
+                        if($request > 0 ){
+                            if($option == 1){
+                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
+                            }else{
+                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
+                            }
+                        }else if($request == 'exist'){
+                            $arrResponse = array('status' => false, 'msg' => 'La propiedad ya existe, prueba con otro nombre.');		
+                        }else{
+                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+			die();
+		}
+        public function delProperty(){
+            if($_SESSION['permitsModule']['d']){
+                if($_POST){
+                    if(empty($_POST['id'])){
+                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
+                    }else{
+                        $id = intval($_POST['id']);
+                        $request = $this->model->deleteProperty($id);
+                        if($request=="ok"){
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
         }
         /*************************Calc methods*******************************/
         public function calcularMarcoInterno($estilo,$margin,$altura,$ancho,$datos,$option=true){
@@ -744,149 +1009,7 @@
             }
             die();
         }
-        /*************************Category methods*******************************/
-        public function getCategories($option=null,$params=null){
-            if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectCategories();
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-                        
-                        $image =  media()."/images/uploads/".$request[$i]['image'];
-                        $btnEdit="";
-                        $btnDelete="";
-                        $status="";
-                        if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')"><i class="fas fa-pencil-alt"></i></button>';
-                        }
-                        if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['id'].')"><i class="fas fa-trash-alt"></i></button>';
-                        }
-                        if($request[$i]['status']==1){
-                            $status='<span class="badge me-1 bg-success">Activo</span>';
-                        }else if($request[$i]['status']==3){
-                            $status='<span class="badge me-1 bg-warning">En proceso</span>';
-                        }else{
-                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
-                        }
-                        $request[$i]['image'] = $image;
-                        $request[$i]['status'] = $status;
-                        $request[$i]['options'] = $btnEdit.$btnDelete;
-                    }
-                }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function getCategory(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    if(empty($_POST)){
-                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $idCategory = intval($_POST['idCategory']);
-                        $request = $this->model->selectCategory($idCategory);
-                        if(!empty($request)){
-                            $request['image'] = media()."/images/uploads/".$request['image'];
-                            $arrResponse = array("status"=>true,"data"=>$request);
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-            die();
-        }
-        public function setCategory(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    if(empty($_POST['txtName']) || empty($_POST['txtDescription']) || empty($_POST['statusList'])){
-                        $arrResponse = array("status" => false, "msg" => 'Error de datos');
-                    }else{ 
-                        $idCategory = intval($_POST['idCategory']);
-                        $strName = ucwords(strClean($_POST['txtName']));
-                        $strDescription = strClean($_POST['txtDescription']);
-                        $strButton = strClean($_POST['txtBtn']);
-                        $intStatus = intval($_POST['statusList']);
-                        $route = str_replace(" ","-",$strName);
-                        $route = str_replace("?","",$route);
-                        $route = strtolower(str_replace("¿","",$route));
-                        $route = clear_cadena($route);
-                        $photo = "";
-                        $photoCategory="";
-
-                        if($idCategory == 0){
-                            if($_SESSION['permitsModule']['w']){
-                                $option = 1;
-
-                                if($_FILES['txtImg']['name'] == ""){
-                                    $photoCategory = "category.jpg";
-                                }else{
-                                    $photo = $_FILES['txtImg'];
-                                    $photoCategory = 'moldingcategory_'.bin2hex(random_bytes(6)).'.png';
-                                }
-
-                                $request= $this->model->insertCategory($photoCategory,$strName,$strDescription,$route,$intStatus,$strButton);
-                            }
-                        }else{
-                            if($_SESSION['permitsModule']['u']){
-                                $option = 2;
-                                $request = $this->model->selectCategory($idCategory);
-                                if($_FILES['txtImg']['name'] == ""){
-                                    $photoCategory = $request['image'];
-                                }else{
-                                    if($request['image'] != "category.jpg"){
-                                        deleteFile($request['image']);
-                                    }
-                                    $photo = $_FILES['txtImg'];
-                                    $photoCategory = 'moldingcategory_'.bin2hex(random_bytes(6)).'.png';
-                                }
-                                $request = $this->model->updateCategory($idCategory,$photoCategory,$strName,$strDescription,$route,$intStatus,$strButton);
-                            }
-                        }
-                        if($request > 0 ){
-                            if($photo!=""){
-                                uploadImage($photo,$photoCategory);
-                            }
-                            if($option == 1){
-                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
-                            }else{
-                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
-                            }
-                        }else if($request == 'exist'){
-                            $arrResponse = array('status' => false, 'msg' => 'La categoría ya existe, prueba con otro nombre.');		
-                        }else{
-                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-			die();
-		}
-        public function delCategory(){
-            if($_SESSION['permitsModule']['d']){
-                if($_POST){
-                    if(empty($_POST['idCategory'])){
-                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['idCategory']);
-                        $request = $this->model->selectCategory($id);
-                        if($request['image']!="category.jpg"){
-                            deleteFile($request['image']);
-                        }
-                        $request = $this->model->deleteCategory($id);
-                        if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-            die();
-        }
+        
     }
 
 ?>
