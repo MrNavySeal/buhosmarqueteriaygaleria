@@ -44,8 +44,13 @@
                         
                         $btnEdit="";
                         $btnDelete="";
+                        $btnOptions ="";
                         $status="";
+                        
                         if($_SESSION['permitsModule']['u']){
+                            if($request[$i]['is_material']){
+                                $btnOptions='<button type="button" onclick="showMaterial('.$request[$i]['id'].')" class="btn btn-primary m-1 text-white" title="Asignar materiales"><i class="fa fa-list" aria-hidden="true"></i></button>';
+                            }
                             $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
@@ -57,7 +62,7 @@
                             $status='<span class="badge me-1 bg-danger">Inactivo</span>';
                         }
                         $request[$i]['status'] = $status;
-                        $request[$i]['options'] = $btnEdit.$btnDelete;
+                        $request[$i]['options'] = $btnOptions.$btnEdit.$btnDelete;
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
@@ -141,9 +146,11 @@
             die();
         }
         /*************************Properties methods*******************************/
-        public function getProperties(){
+        public function getData(){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectProperties();
+                $arrProperties = $this->model->selectProperties();
+                $arrMaterials = $this->model->selectMaterials();
+                $request = array("properties"=>$arrProperties,"materials"=>$arrMaterials);
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
             die();

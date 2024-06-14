@@ -1,7 +1,11 @@
 'use strict';
-
-let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
-let table = new DataTable("#tableData",{
+const selectMaterial = document.querySelector("#selectMaterial");
+const arrSelectedMaterial = [];
+let arrMaterials = [];
+const modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
+const modalMaterial = document.querySelector("#modalMaterial") ? new bootstrap.Modal(document.querySelector("#modalMaterial")) :"";
+const tableMaterial = document.querySelector("#tableMaterial");
+const table = new DataTable("#tableData",{
     "dom": 'lfBrtip',
     "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -81,17 +85,58 @@ if(document.querySelector("#formItem")){
     })
 }
 async function getData(){
-    const response = await fetch(base_url+"/MarqueteriaOpciones/getProperties");
+    const response = await fetch(base_url+"/MarqueteriaOpciones/getData");
     const objData = await response.json();
-    const properties = document.querySelector("#propList");
-    for (let i = 0; i < objData.length; i++) {
-        const e = objData[i];
+    const arrProperties = objData.properties;
+    arrMaterials = objData.materials;
+    const selectProperties = document.querySelector("#propList");
+    for (let i = 0; i < arrProperties.length; i++) {
+        const e = arrProperties[i];
         const option = document.createElement("option");
         option.setAttribute("value",e.id);
         option.innerHTML = e.name;
-        properties.appendChild(option);
+        selectProperties.appendChild(option);
     }
-}   
+    for (let i = 0; i < arrMaterials.length; i++) {
+        const e = arrMaterials[i];
+        const option = document.createElement("option");
+        option.setAttribute("value",e.idproduct);
+        option.innerHTML = e.name;
+        selectMaterial.appendChild(option);
+    }
+}  
+function showMaterial(){
+    modalMaterial.show();
+} 
+function addMaterial(){
+    const idMaterial = selectMaterial.value;
+    const material = arrMaterials.filter(e=>e.idproduct == idMaterial)[0];
+    
+    if(arrSelectedMaterial.length > 0){
+        const flag = arrSelectedMaterial.filter(e=>e.idproduct == idMaterial).length > 0 ? true : false;
+        if(flag){
+            Swal.fire("Error","El material ya fue agregado","error");
+            return false;
+        }else{
+            arrSelectedMaterial.push(material);
+        }
+    }else{
+        arrSelectedMaterial.push(material);
+    }
+    const html = `
+        <td>${material.name}</td>
+        <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteMaterial(this,'${idMaterial}')"><i class="fas fa-trash-alt"></i></button></td>
+    `;
+    let el = document.createElement("tr");
+    el.classList.add("data-item","w-100");
+    el.innerHTML = html;
+    tableMaterial.appendChild(el);
+}
+function deleteMaterial(item,id){
+    item.parentElement.parentElement.remove();
+    const index = arrSelectedMaterial.findIndex(e=>e.idproduct == id);
+    arrSelectedMaterial.splice(index,1);
+}
 function editItem(id){
     let formData = new FormData();
     formData.append("id",id);

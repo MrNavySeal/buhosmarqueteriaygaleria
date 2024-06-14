@@ -61,7 +61,8 @@
             o.id,
             p.name as property,
             o.status,
-            o.name
+            o.name,
+            p.is_material
             FROM molding_options o
             INNER JOIN molding_props p
             ON p.id = o.prop_id 
@@ -79,6 +80,41 @@
         public function selectProperties(){
             $sql = "SELECT * FROM molding_props WHERE status = 1 ORDER BY name";       
             $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectMaterials(){
+            $sql = "SELECT 
+                p.idproduct,
+                p.name,
+                p.measure,
+                p.price,
+                p.price_purchase,
+                p.discount,
+                p.stock,
+                p.status,
+                p.product_type,
+                p.is_stock
+            FROM product p
+            INNER JOIN category c ON p.categoryid = c.idcategory
+            WHERE c.name='Materiales' AND p.status = 1";
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                for ($i=0; $i < count($request); $i++) { 
+                    $data = $request[$i];
+                    $this->intId = $data['idproduct'];
+                    $sqlSpecs = "SELECT p.specification_id as id,p.value,s.name
+                    FROM product_specs p
+                    INNER JOIN specifications s
+                    ON p.specification_id = s.id_specification
+                    WHERE p.product_id = {$this->intId}";
+                    $request[$i]['specs'] = $this->select_all($sqlSpecs);
+                    if($request[$i]['product_type'] == 1){
+                        $request[$i]['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intId");
+                        $request[$i]['variation']['variation'] = json_decode($request[$i]['variation']['variation']);
+                        $request[$i]['options'] = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intId");
+                    }
+                }
+            }
             return $request;
         }
     }
