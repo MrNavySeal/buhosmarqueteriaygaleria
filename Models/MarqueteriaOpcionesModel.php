@@ -4,16 +4,23 @@
         private $intIdProp;
         private $intStatus;
         private $strName;
-        
+        private $isMargin;
+        private $isColor;
+        private $isFrame;
+        private $intMargin;
         public function __construct(){
             parent::__construct();
         }
         /*************************Properties methods*******************************/
-        public function insertOption(string $strName, int $intStatus,int $intIdProp){
+        public function insertOption(string $strName, int $intStatus,int $intIdProp, int $isMargin,int $isColor, int $isFrame,int $intMargin){
 
 			$this->strName = $strName;
             $this->intStatus = $intStatus;
             $this->intIdProp = $intIdProp;
+            $this->isMargin = $isMargin;
+            $this->isColor = $isColor;
+            $this->isFrame = $isFrame;
+            $this->intMargin = $intMargin;
 			$return = 0;
 
 			$sql = "SELECT * FROM molding_options WHERE 
@@ -21,9 +28,9 @@
 			$request = $this->select_all($sql);
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO molding_options(name,status,prop_id) 
-								  VALUES(?,?,?)";
-	        	$arrData = array($this->strName,$this->intStatus,$this->intIdProp);
+				$query_insert  = "INSERT INTO molding_options(name,status,prop_id,is_margin,is_color,is_frame,margin) 
+								  VALUES(?,?,?,?,?,?,?)";
+	        	$arrData = array($this->strName,$this->intStatus,$this->intIdProp,$this->isMargin,$this->isColor,$this->isFrame,$this->intMargin);
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
 			}else{
@@ -31,18 +38,22 @@
 			}
 	        return $return;
 		}
-        public function updateOption(int $intId,string $strName, int $intStatus, int $intIdProp){
+        public function updateOption(int $intId,string $strName, int $intStatus, int $intIdProp,int $isMargin,int $isColor, int $isFrame,int $intMargin){
             $this->intId = $intId;
             $this->strName = $strName;
             $this->intStatus = $intStatus;
             $this->intIdProp = $intIdProp;
+            $this->isMargin = $isMargin;
+            $this->isColor = $isColor;
+            $this->isFrame = $isFrame;
+            $this->intMargin = $intMargin;
 			$sql = "SELECT * FROM molding_options WHERE name = '{$this->strName}' AND prop_id = $this->intIdProp AND id != $this->intId";
 			$request = $this->select_all($sql);
 
 			if(empty($request)){
 
-                $sql = "UPDATE molding_options SET name=?, status=? ,prop_id=? WHERE id = $this->intId";
-                $arrData = array($this->strName,$this->intStatus,$this->intIdProp);
+                $sql = "UPDATE molding_options SET name=?, status=? ,prop_id=?,is_margin=?,is_color=?,is_frame=?,margin=? WHERE id = $this->intId";
+                $arrData = array($this->strName,$this->intStatus,$this->intIdProp,$this->isMargin,$this->isColor,$this->isFrame,$this->intMargin);
 				$request = intval($this->update($sql,$arrData));
 			}else{
 				$request = "exist";

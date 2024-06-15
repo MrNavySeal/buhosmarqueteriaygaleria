@@ -1,5 +1,5 @@
 <div class="modal fade" id="modalElement">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">Nueva opción de propiedad</h5>
@@ -11,6 +11,36 @@
                     <div class="mb-3">
                         <label for="txtName" class="form-label">Nombre <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="txtName" name="txtName" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="isColor">
+                                    <label class="form-check-label" for="isColor">Habilitar colores</label> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="isDblFrame">
+                                    <label class="form-check-label" for="isDblFrame">Habilitar doblemarco</label> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="isMargin">
+                                    <label class="form-check-label" for="isMargin">Habilitar margen</label> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 d-none" id="divMargin">
+                        <label for="txtMargin" class="form-label">Margen máximo (cm)</label>
+                        <input type="number" class="form-control" id="txtMargin" value="5">
                     </div>
                     <div class="row">
                         <div class="col-md-6">

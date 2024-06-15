@@ -31,7 +31,7 @@ const table = new DataTable("#tableData",{
             "className": "btn btn-success mt-2"
         }
     ],
-    order: [[0, 'asc']],
+    order: [[0, 'desc']],
     pagingType: 'full',
     scrollY:'400px',
     //scrollX: true,
@@ -41,14 +41,28 @@ const table = new DataTable("#tableData",{
 });
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
+    const btnNew = document.querySelector("#btnNew");
+    const divMargin = document.querySelector("#divMargin");
+    const checkMargin = document.querySelector("#isMargin");
+    checkMargin.addEventListener("change",function(){
+        if(checkMargin.checked){
+            divMargin.classList.remove("d-none");
+        }else{
+            divMargin.classList.add("d-none");
+        }
+    });
     btnNew.addEventListener("click",function(){
         document.querySelector(".modal-title").innerHTML = "Nueva opción de propiedad";
         document.querySelector("#id").value = "";
         document.querySelector("#txtName").value = "";
         document.querySelector("#statusList").value = 1;
+        document.querySelector("#isMargin").checked = false;
+        document.querySelector("#isColor").checked = false;
+        document.querySelector("#isDblFrame").checked = false;
+        document.querySelector("#txtMargin").value = 5;
         modal.show();
     });
+    
     getData();
 }
 if(document.querySelector("#formItem")){
@@ -59,7 +73,10 @@ if(document.querySelector("#formItem")){
         let strName = document.querySelector("#txtName").value;
         let intStatus = document.querySelector("#statusList").value;
         let intProp = document.querySelector("#propList").value;
-
+        let intMargin = document.querySelector("#txtMargin").value;
+        let isMargin = document.querySelector("#isMargin").checked;
+        let isColor = document.querySelector("#isColor").checked;
+        let isDblFrame = document.querySelector("#isDblFrame").checked;
         if(strName == "" || intStatus =="" || intProp ==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
@@ -67,6 +84,10 @@ if(document.querySelector("#formItem")){
         
         let url = base_url+"/MarqueteriaOpciones/setOption";
         let formData = new FormData(form);
+        formData.append("is_margin",isMargin ? 1 : 0);
+        formData.append("is_color",isColor ? 1 : 0);
+        formData.append("is_frame",isDblFrame ? 1 : 0);
+        formData.append("margin",intMargin);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             
@@ -187,6 +208,10 @@ function editItem(id){
         document.querySelector("#txtName").value = objData.data.name;
         document.querySelector("#statusList").value = objData.data.status;
         document.querySelector("#propList").value = objData.data.prop_id;
+        document.querySelector("#isMargin").checked = objData.data.is_margin;
+        document.querySelector("#isColor").checked = objData.data.is_color;
+        document.querySelector("#isDblFrame").checked = objData.data.is_frame;
+        document.querySelector("#txtMargin").value = objData.data.margin;
         document.querySelector(".modal-title").innerHTML = "Actualizar opción de propiedad";
         modal.show();
     });
