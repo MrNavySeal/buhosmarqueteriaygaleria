@@ -23,18 +23,6 @@
                 die();
             }
         }
-        public function materiales(){
-            if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Materiales";
-                $data['page_title'] = "Materiales | Marqueteria";
-                $data['page_name'] = "materiales";
-                $data['panelapp'] = "functions_materials.js";
-                $this->views->getView($this,"materiales",$data);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-        }
         /*************************Options methods*******************************/
         public function getOptions(){
             if($_SESSION['permitsModule']['r']){
@@ -138,6 +126,27 @@
                             $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
+        }
+        /*************************Material methods*******************************/
+        public function setMaterial(){
+            if($_SESSION['permitsModule']['u']){
+                if($_POST){
+                    $arrMaterials = json_decode($_POST['material'],true);
+                    if(empty($arrMaterials) || empty($_POST['id'])){
+                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    }else{
+                        $id = intval($_POST['id']);
+                        $request = $this->model->insertMaterial($id,$arrMaterials);
+                        if($request > 0){
+                            $arrResponse = array("status"=>true,"msg"=>"Datos guardados");
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"Ha ocurrido un error, inténtelo más tarde");
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);

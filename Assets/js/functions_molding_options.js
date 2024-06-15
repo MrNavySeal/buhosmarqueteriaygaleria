@@ -1,7 +1,8 @@
 'use strict';
 const selectMaterial = document.querySelector("#selectMaterial");
-const arrSelectedMaterial = [];
+let arrSelectedMaterial = [];
 let arrMaterials = [];
+let arrOptions = [];
 const modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
 const modalMaterial = document.querySelector("#modalMaterial") ? new bootstrap.Modal(document.querySelector("#modalMaterial")) :"";
 const tableMaterial = document.querySelector("#tableMaterial");
@@ -105,12 +106,52 @@ async function getData(){
         selectMaterial.appendChild(option);
     }
 }  
-function showMaterial(){
+async function saveMaterial(){
+    const btnAdd = document.querySelector("#btnMaterial");
+    const formData = new FormData();
+    if(arrSelectedMaterial.length == 0){
+        Swal.fire("Error","Debe asignar materiales","error");
+        return false;
+    }
+    formData.append("id",document.querySelector("#idMaterial").value);
+    formData.append("material",JSON.stringify(arrSelectedMaterial));
+    btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnAdd.setAttribute("disabled","");
+    const response = await fetch(base_url+"/MarqueteriaOpciones/setMaterial",{method:"POST",body:formData});
+    const objData = await response.json();
+    if(objData.status){
+        Swal.fire("Guardado",objData.msg,"success");
+        table.ajax.reload();
+        modalMaterial.hide();
+    }else{
+        Swal.fire("Error",objData.msg,"error");
+    }
+    btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
+    btnAdd.removeAttribute("disabled");
+}
+function showMaterial(id){
+    document.querySelector("#idMaterial").value = id;
+    let arrOptions = table.rows().data().toArray();
+    let option = arrOptions.filter(e=>e.id == id)[0];
+    let html ="";
+    if(option.materials){
+        arrSelectedMaterial = option.materials;
+        arrSelectedMaterial.forEach(e => {
+           html+= `
+           <tr class="data-item w-100">
+                <td>${e.name}</td>
+                <td>${e.type}</td>
+                <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteMaterial(this,'${e.idproduct}')"><i class="fas fa-trash-alt"></i></button></td>
+           </tr>`;
+        });
+    }
+    tableMaterial.innerHTML = html;
     modalMaterial.show();
 } 
 function addMaterial(){
     const idMaterial = selectMaterial.value;
     const material = arrMaterials.filter(e=>e.idproduct == idMaterial)[0];
+    material.type = document.querySelector("#selectCalc").value;
     
     if(arrSelectedMaterial.length > 0){
         const flag = arrSelectedMaterial.filter(e=>e.idproduct == idMaterial).length > 0 ? true : false;
@@ -125,6 +166,7 @@ function addMaterial(){
     }
     const html = `
         <td>${material.name}</td>
+        <td>${material.type}</td>
         <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteMaterial(this,'${idMaterial}')"><i class="fas fa-trash-alt"></i></button></td>
     `;
     let el = document.createElement("tr");
