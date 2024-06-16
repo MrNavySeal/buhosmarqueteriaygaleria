@@ -88,6 +88,7 @@ function editItem(id){
         document.querySelector("#id").value = objData.data.id;
         document.querySelector("#txtName").value = objData.data.name;
         document.querySelector("#statusList").value = objData.data.status;
+        document.querySelector("#orderList").value = objData.data.order_view;
         document.querySelector("#isVisible").checked = objData.data.is_material;
         document.querySelector(".modal-title").innerHTML = "Actualizar propiedad";
         modal.show();

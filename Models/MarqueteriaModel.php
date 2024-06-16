@@ -21,6 +21,7 @@
         private $strPhoto;
         private $strName;
         private $isVisible;
+        private $intOrder;
 
         public function __construct(){
             parent::__construct();
@@ -100,11 +101,12 @@
             return $request;
         }
         /*************************Properties methods*******************************/
-        public function insertProperty(string $strName, int $intStatus,int $isVisible){
+        public function insertProperty(string $strName, int $intStatus,int $isVisible,int $intOrder){
 
 			$this->strName = $strName;
             $this->intStatus = $intStatus;
             $this->isVisible = $isVisible;
+            $this->intOrder = $intOrder;
 			$return = 0;
 
 			$sql = "SELECT * FROM molding_props WHERE 
@@ -113,9 +115,9 @@
 
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO molding_props(name,status,is_material) 
-								  VALUES(?,?,?)";
-	        	$arrData = array($this->strName,$this->intStatus,$this->isVisible);
+				$query_insert  = "INSERT INTO molding_props(name,status,is_material,order_view) 
+								  VALUES(?,?,?,?)";
+	        	$arrData = array($this->strName,$this->intStatus,$this->isVisible, $this->intOrder);
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
 			}else{
@@ -123,19 +125,19 @@
 			}
 	        return $return;
 		}
-        public function updateProperty(int $intId,string $strName, int $intStatus, int $isVisible){
+        public function updateProperty(int $intId,string $strName, int $intStatus, int $isVisible,int $intOrder){
             $this->intIdCategory = $intId;
             $this->strName = $strName;
             $this->intStatus = $intStatus;
             $this->isVisible = $isVisible;
-
+            $this->intOrder = $intOrder;
 			$sql = "SELECT * FROM molding_props WHERE name = '{$this->strName}' AND id != $this->intIdCategory";
 			$request = $this->select_all($sql);
 
 			if(empty($request)){
 
-                $sql = "UPDATE molding_props SET  name=?, status=? ,is_material=? WHERE id = $this->intIdCategory";
-                $arrData = array($this->strName,$this->intStatus,$this->isVisible);
+                $sql = "UPDATE molding_props SET  name=?, status=? ,is_material=?, order_view=? WHERE id = $this->intIdCategory";
+                $arrData = array($this->strName,$this->intStatus,$this->isVisible,$this->intOrder);
 				$request = $this->update($sql,$arrData);
 			}else{
 				$request = "exist";

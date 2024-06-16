@@ -338,16 +338,17 @@
                         $strName = ucwords(strClean($_POST['txtName']));
                         $intStatus = intval($_POST['statusList']);
                         $isVisible = intval($_POST['is_visible']);
+                        $intOrder = intval($_POST['orderList']);
 
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                $request= $this->model->insertProperty($strName,$intStatus,$isVisible);
+                                $request= $this->model->insertProperty($strName,$intStatus,$isVisible,$intOrder);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->updateProperty($id,$strName,$intStatus,$isVisible);
+                                $request = $this->model->updateProperty($id,$strName,$intStatus,$isVisible,$intOrder);
                             }
                         }
                         if($request > 0 ){
