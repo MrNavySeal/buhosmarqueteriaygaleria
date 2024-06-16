@@ -40,7 +40,49 @@ window.addEventListener("DOMContentLoaded",function(){
     });
     getData();
 });
+if(document.querySelector("#formItem")){
+    let form = document.querySelector("#formItem");
+    form.addEventListener("submit",function(e){
+        e.preventDefault();
+        const arrProps = [];
+        const htmlPropsCheck = document.querySelectorAll(".propsCheck");
+        const isFrame = document.querySelector("#isFrame").checked;
+        const isPrint = document.querySelector("#isPrint").checked;
+        const isCost = document.querySelector("#isCost").checked;
 
+        for (let i = 0; i < htmlPropsCheck.length; i++) {
+            const e = htmlPropsCheck[i];
+            const obj = {
+                topic:e.getAttribute("data-topic"),
+                prop:e.getAttribute("data-id"),
+                is_check: e.checked ? 1 : 0
+            }
+            arrProps.push(obj);
+        }
+        
+        let url = base_url+"/MarqueteriaConfiguracion/setConfig";
+        let formData = new FormData(form);
+        formData.append("props",JSON.stringify(arrProps));
+        formData.append("is_cost", isCost ? 1 : 0);
+        formData.append("is_print", isPrint ? 1 : 0);
+        formData.append("is_frame", isFrame ? 1 : 0);
+        let btnAdd = document.querySelector("#btnAdd");
+        btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+        btnAdd.setAttribute("disabled","");
+        request(url,formData,"post").then(function(objData){
+            btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
+            btnAdd.removeAttribute("disabled");
+            if(objData.status){
+                Swal.fire("Guardado",objData.msg,"success");
+                table.ajax.reload();
+                form.reset();
+                modal.hide();
+            }else{
+                Swal.fire("Error",objData.msg,"error");
+            }
+        });
+    })
+}
 async function getData(){
     const response = await fetch(base_url+"/MarqueteriaConfiguracion/getData");
     const objData = await response.json();
@@ -53,7 +95,7 @@ async function getData(){
                 <td>${e.name}</td>
                 <td>
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" checked>
+                        <input class="form-check-input propsCheck" type="checkbox" role="switch" data-id="${e.id}" data-topic="1" checked>
                     </div>
                 </td>
             </tr>
@@ -67,7 +109,7 @@ async function getData(){
                 <td>${e.name}</td>
                 <td>
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" checked>
+                        <input class="form-check-input propsCheck" type="checkbox" role="switch" data-id="${e.id}" data-topic="2" checked>
                     </div>
                 </td>
             </tr>
@@ -76,6 +118,35 @@ async function getData(){
     tableProps.innerHTML = html;
 
 }
-function editItem(id){
+async function editItem(id){
+    document.querySelector("#id").value = id;
+    const formData = new FormData();
+    formData.append("id",id);
+    const response = await fetch(base_url+"/MarqueteriaConfiguracion/getConfig",{method:"POST",body:formData});
+    const objData = await response.json();
+    if(objData.status){
+        const data = objData.data;
+        const props = data.props;
+
+        document.querySelector("#id").value = data.category_id;
+        document.querySelector("#isFrame").checked = data.is_frame;
+        document.querySelector("#isPrint").checked = data.is_print;
+        document.querySelector("#isCost").checked = data.is_cost;
+        document.querySelector(".uploadImg img").setAttribute("src",data.url);
+
+        const htmlPropsCheck = document.querySelectorAll(".propsCheck");
+        for (let i = 0; i < htmlPropsCheck.length; i++) {
+            const html = htmlPropsCheck[i];
+            const topic = html.getAttribute("data-topic");
+            const idProp = html.getAttribute("data-id")
+            for (let j = 0; j < props.length; j++) {
+                const e = props[j];
+                if(topic == e.topic && idProp == e.prop){
+                    html.checked = e.is_check;
+                    break;
+                }
+            }
+        }
+    }
     modal.show();
 }

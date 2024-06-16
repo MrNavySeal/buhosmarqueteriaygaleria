@@ -8,7 +8,7 @@
             </div>
             <div class="modal-body">
                 <form id="formItem" name="formItem" class="mb-4">
-                    <input type="hidden" id="idCategory" name="idCategory">
+                    <input type="hidden" id="id" name="id">
                     <div class="mb-3">
                         <label for="txtName" class="form-label">Imagen por defecto de la aplicación</label>
                         <div class="uploadImg">
@@ -21,7 +21,7 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="isVisible" checked>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="isFrame" checked>
                                     <label class="form-check-label" for="flexSwitchCheckChecked">Visualizar enmarcación</label> 
                                 </div>
                             </div>
@@ -29,7 +29,7 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="isVisible">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="isPrint">
                                     <label class="form-check-label" for="flexSwitchCheckChecked">Habilitar impresión de imagen</label> 
                                 </div>
                             </div>
@@ -37,7 +37,7 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="isVisible">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="isCost" checked>
                                     <label class="form-check-label" for="flexSwitchCheckChecked">Habilitar modo costos</label> 
                                 </div>
                             </div>
