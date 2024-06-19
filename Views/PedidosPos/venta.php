@@ -1,12 +1,11 @@
 <?php 
 headerAdmin($data);
-$tipos = $data['tipos'];
-$total = 0;
 $active="d-none";
 
 if($_SESSION['permitsModule']['w']){
     getModal("modalOrder");
     getModal("modalPurchaseVariant");
+    getModal("modalFrameCustom");
 }
 
 ?>
@@ -28,7 +27,7 @@ if($_SESSION['permitsModule']['w']){
     <?php if($_SESSION['permitsModule']['w']){?>
         <ul class="nav nav-pills mb-3" id="product-tab">
             <li class="nav-item">
-                <button class="nav-link active" id="navEnmarcar-tab" data-bs-toggle="tab" data-bs-target="#navEnmarcar" type="button" role="tab" aria-controls="navEnmarcar" aria-selected="true">Enmarcar</button>
+                <button class="nav-link active" id="navEnmarcar-tab" data-bs-toggle="tab" data-bs-target="#navEnmarcar" type="button" role="tab" aria-controls="navEnmarcar" aria-selected="true">Marquetería</button>
             </li>
             <li class="nav-item">
                 <button class="nav-link " id="navTienda-tab" data-bs-toggle="tab" data-bs-target="#navTienda" type="button" role="tab" aria-controls="navTienda" aria-selected="true">Tienda</button>
@@ -41,22 +40,17 @@ if($_SESSION['permitsModule']['w']){
             <div class="col-md-6 mb-3">
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="navEnmarcar">
-                        <div class="row">
-                            <?php
-                                for ($i=0; $i < count($tipos); $i++) { 
-                                    $url = base_url()."/marcos/personalizar/".$tipos[$i]['route'];
-                                    //$img = media()."/images/uploads/".$tipos[$i]['image'];
-                            ?>
-                            <div class="col-6 col-lg-4">
-                                <div class="card--product">
-                                    <a href="<?=$url?>" class="t-color-2">
-                                        <div class="card--product-info mt-3">
-                                            <h2 class="enmarcar--title"><?=$tipos[$i]['name']?></h2>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <?php }?>
+                        <div class="mt-3">
+                            <table class="table align-middle" id="tableMolding">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
                     <div class="tab-pane fade " id="navTienda">

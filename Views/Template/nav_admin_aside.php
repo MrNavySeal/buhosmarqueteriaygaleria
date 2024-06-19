@@ -74,7 +74,7 @@
                     <a href="<?=base_url()?>/marqueteria/propiedades" class="dropdown-item">Propiedades</a>
                     <a href="<?=base_url()?>/MarqueteriaOpciones/opciones" class="dropdown-item">Opciones de propiedades</a>
                     <a href="<?=base_url()?>/MarqueteriaConfiguracion/configuracion" class="dropdown-item">Configurar categorías</a>
-                    <a href="<?=base_url()?>/marqueteria/calculadora" class="dropdown-item">Calculadora de costos</a>
+                    <a href="<?=base_url()?>/MarqueteriaCalculos/calculadora" class="dropdown-item">Calculadora de costos</a>
                 </div>
             </div>
             <?php } ?>

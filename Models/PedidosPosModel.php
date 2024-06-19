@@ -220,9 +220,124 @@
             $request = $this->insert($sql,$arrData);
 	        return $request;
 		}
-        /*************************Category methods*******************************/
-        public function selectCategories(){
-            $sql = "SELECT * FROM moldingcategory WHERE status != 3 ORDER BY id ASC";       
+        /*************************Molding methods*******************************/
+        public function selectMoldingCategories(){
+            $sql = "SELECT * FROM moldingcategory WHERE status = 1 ORDER BY id ASC";       
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectConfig(int $id){
+            $this->intId = $id;
+            $sql = "SELECT 
+            co.id,
+            co.category_id,
+            co.is_frame,
+            co.is_print,
+            co.is_cost,
+            co.img,
+            c.name
+            FROM molding_config co
+            INNER JOIN moldingcategory c ON c.id = co.category_id
+            WHERE co.category_id = $this->intId";
+            $request = $this->select($sql);
+            if(!empty($request)){
+                $request_frames = $this->selectConfigFrame($request['id']);
+                if(!empty($request_frames)){
+                    $total = count($request_frames);
+                    for ($i=0; $i < $total; $i++) { 
+                        $arrFrames = $request_frames[$i]['frames'];
+                        $totalFrames = count($arrFrames);
+                        for ($j=0; $j < $totalFrames; $j++) { 
+                            $arrFrames[$j]['framing_img'] = "url(".media().'/images/uploads/'.$arrFrames[$j]['framing_img'].") 40% repeat";
+                        }
+                        $request_frames[$i]['frames'] = $arrFrames;
+                    }
+                }
+                $request['detail']['molding'] = $request_frames;
+                $request['detail']['props'] = $this->selectConfigProps($request['id']);
+                $request['url'] = media()."/images/uploads/".$request['img'];
+            }
+            return $request;
+        }
+        public function selectConfigFrame(int $id){
+            $this->intId = $id;
+            $sql = "SELECT 
+            f.topic, 
+            f.prop, 
+            f.is_check,
+            s.name,
+            s.idsubcategory
+            FROM molding_config_frame f 
+            INNER JOIN subcategory s ON f.prop = s.idsubcategory
+            WHERE f.topic = 1 AND f.config_id = $this->intId AND f.is_check = 1";
+            $request= $this->select_all($sql);
+            if(!empty($request)){
+                $total = count($request);
+                for ($i=0; $i < $total ; $i++) { 
+                    $sql = "SELECT 
+                    idproduct,
+                    reference,
+                    name,
+                    price,
+                    price_purchase,
+                    discount,
+                    stock,
+                    status,
+                    product_type,
+                    is_stock,
+                    subcategoryid,
+                    framing_img
+                    FROM product p
+                    WHERE subcategoryid = {$request[$i]['prop']} AND status = 1
+                    ORDER BY p.idproduct DESC
+                    ";
+                    $arrProducts = $this->select_all($sql);
+                    $totalProducts = count($arrProducts);
+                    for ($j=0; $j < $totalProducts; $j++) { 
+                        $idProduct = $arrProducts[$j]['idproduct'];
+                        $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
+                        $requestImg = $this->select_all($sqlImg);
+                        $totalImg = count($requestImg);
+                        for ($k=0; $k < $totalImg; $k++) { 
+                            $requestImg[$k]['image'] = media()."/images/uploads/".$requestImg[$k]['name'];
+                        }
+                        $sqlWaste = "SELECT 
+                        p.value as waste 
+                        FROM product_specs p
+                        INNER JOIN specifications s ON p.specification_id = s.id_specification
+                        WHERE p.product_id = $idProduct";
+                        $arrProducts[$j]['waste'] = $this->select($sqlWaste)['waste'];
+                        $arrProducts[$j]['images'] = $requestImg;
+                        $arrProducts[$j]['image'] = $requestImg[0]['image'];
+                    }
+                    $request[$i]['frames'] = $arrProducts;
+                }
+            }
+            return $request;
+        }
+        public function selectConfigProps(int $id){
+            $this->intId = $id;
+            $sql = "SELECT 
+            f.topic, 
+            f.prop, 
+            f.is_check,
+            p.name
+            FROM molding_config_frame f 
+            INNER JOIN molding_props p ON f.prop = p.id
+            WHERE f.config_id = $this->intId AND f.topic = 2 AND f.is_check = 1 
+            AND p.status = 1 ORDER BY p.order_view";
+            $request= $this->select_all($sql);
+            if(!empty($request)){
+                $total = count($request);
+                for ($i=0; $i < $total; $i++) { 
+                    $sql = "SELECT * FROM molding_options WHERE status = 1 AND prop_id = {$request[$i]['prop']} ORDER BY name";
+                    $request[$i]['options'] = $this->select_all($sql);
+                }
+            }
+            return $request;
+        }
+        public function selectColors(){
+            $sql = "SELECT * FROM moldingcolor WHERE status = 1 ORDER BY id DESC";       
             $request = $this->select_all($sql);
             return $request;
         }

@@ -12,6 +12,7 @@ let table = new DataTable("#tableData",{
         "dataSrc":""
     },
     columns: [
+        { data: 'id'},
         { data: 'name'},
         { data: 'options' },
     ],

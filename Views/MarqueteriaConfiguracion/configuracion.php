@@ -7,6 +7,7 @@
     <table class="table align-middle" id="tableData">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Nombre</th>
                 <th>Opciones</th>
             </tr>

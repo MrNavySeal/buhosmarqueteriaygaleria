@@ -2,6 +2,7 @@
 
 const modalVariant = new bootstrap.Modal(document.querySelector("#modalVariant"));
 const modalPurchase = new bootstrap.Modal(document.querySelector("#modalPurchase"));
+const modalFrame = new bootstrap.Modal(document.querySelector("#modalFrame"));
 const btnAdd = document.querySelector("#btnAdd");
 const btnPurchase = document.querySelector("#btnPurchase");
 const btnClean = document.querySelector("#btnClean");
@@ -47,7 +48,31 @@ let table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-
+let tableMolding = new DataTable("#tableMolding",{
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "ajax":{
+        "url": " "+base_url+"/PedidosPos/getMoldingProducts",
+        "dataSrc":""
+    },
+    "initComplete":function( settings, json){
+        //arrProducts = json;
+    },
+    columns: [
+        { data: 'id' },
+        { data: 'name' },
+        { data: 'options' },
+    ],
+    responsive: true,
+    order: [[0, 'asc']],
+    pagingType: 'full',
+    scrollY:'400px',
+    //scrollX: true,
+    "aProcessing":true,
+    "aServerSide":true,
+    "iDisplayLength": 10,
+});
 
 window.addEventListener("load",function(){
     getCustomers();
@@ -494,6 +519,196 @@ function selectVariant(element){
     product['price_offer'] = selectedOption.price_offer;
     product['stock'] = selectedOption.stock;
     product['variant_detail'] = {"name":product.name,"detail":arrVariantsDetail}
+}
+/*************************Molding functions*******************************/
+async function getConfig(element,id){
+    const formData = new FormData();
+    formData.append("id",id);
+    element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    element.setAttribute("disabled","");
+    const response = await fetch(base_url+"/PedidosPos/getConfig",{method:"POST",body:formData});
+    const objData = await response.json();
+    console.log(objData);
+    if(objData.status){
+        const data = objData.data;
+        const detail = data.detail;
+        const props = detail.props;
+        const molding = detail.molding;
+        const displayFrame = document.querySelector("#isFrame");
+        const displayPrint = document.querySelector("#isPrint");
+        const displayPrintStatus = document.querySelector("#imgQuality");
+        const displayCamera = document.querySelector(".up-image");
+        const framePages = Array.from(document.querySelectorAll(".page"));
+        if(data.is_frame){
+            displayFrame.classList.remove("d-none");
+            framePages.forEach(e=>e.classList.replace("col-md-12","col-md-6"));
+        }else{
+            displayFrame.classList.add("d-none");
+            framePages.forEach(e=>e.classList.replace("col-md-6","col-md-12"));
+        }
+        if(data.is_print){
+            displayPrint.setAttribute("data-print",1);
+            displayPrint.classList.remove("d-none");
+            displayPrintStatus.classList.remove("d-none");
+            displayCamera.classList.add("d-none");
+        }else{
+            displayPrint.setAttribute("data-print",0);
+            displayPrint.classList.add("d-none");
+            displayPrintStatus.classList.add("d-none");
+            displayCamera.classList.remove("d-none");
+        }
+        showMolding(molding,objData.color);
+        showProps(props);
+        showDefaultFraming();
+        document.querySelector("#frameTitle").innerHTML = data.name;
+        document.querySelector(".layout--img img").setAttribute("src",data.url);
+        modalFrame.show();
+    }else{
+        Swal.fire("Error",objData.msg,"error");
+    }
+    element.innerHTML=`Enmarcar`;
+    element.removeAttribute("disabled");
+    
+}
+
+function showProps(data){
+    let html ="";
+    if(data.length > 0){
+        data.forEach(d => {
+            const optionsProps = d.options;
+            let selectOptions = "";
+            const defaultOption = optionsProps[0];
+            if(optionsProps.length>0){
+                optionsProps.forEach(o=>{
+                    selectOptions+=`<option value="${o.id}">${o.name}</option>`
+                });
+            }
+            html+= `
+                <div class="mb-3">
+                    <span class="fw-bold">${d.name}</span>
+                    <select class="form-select mt-3 mb-3 selectProp"  data-ismargin="${defaultOption.is_margin}" data-id="${d.prop}"
+                    data-margin="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}">${selectOptions}</select>
+                </div>
+            `;
+            if(data[0].id == d.id ){
+                html+=`<div class="option--custom  mb-3">
+                        <div class="d-none">
+                            <div class="mb-3">
+                                <span class="fw-bold">Medida del margen</span>
+                                <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="${defaultOption.margin}" value="0" id="marginRange">
+                                <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="fw-bold d-flex justify-content-between">
+                                    <span>Elige el color del margen</span>
+                                    <span id="marginColor"></span>
+                                </div>
+                                <div class="colors mt-3">
+                                    <div class="colors--item color--frame element--hover"  title="blanco" data-id="1">
+                                        <div style="background-color:#fff"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-none">
+                            <div class="mb-3 borderColor">
+                                <div class="fw-bold d-flex justify-content-between">
+                                    <span>Elige el color del bocel</span>
+                                    <span id="borderColor"></span>
+                                </div>
+                                <div class="colors mt-3">
+                                    <div class="colors--item color--frame element--hover"  title="blanco" data-id="1">
+                                        <div style="background-color:#fff"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        });
+    }
+    document.querySelector("#contentProps").innerHTML = html;
+}
+function showMolding(data,color){
+    let html = "";
+    let contentFrames ="";
+    let colorHtml ="";
+    const colorFrame = document.querySelector("#frame--color");
+    if(data.length > 0){
+        data.forEach(e => {
+            html+=`<option value="${e.prop}">${e.name}</option>`
+        });
+        const frames = data[0].frames;
+        const needle = data[0].name.toLowerCase();
+        frames.forEach(e=>{
+            contentFrames+=`
+                <div class="mb-3 frame--container" data-r="${e.reference}">
+                    <div class="frame--item frame-main element--hover" data-id="${e.idproduct}" data-frame="${e.framing_img}" data-waste = "${e.waste}"
+                    onclick="selectActive(this,'.frame-main')">
+                        <img src="${e.image}">
+                        <p>REF: ${e.reference}</p>
+                    </div>
+                </div>
+            `;
+        });
+        if(needle.includes("madera")){
+            colorFrame.classList.remove("d-none");
+            color.forEach(e=>{
+                colorHtml +=`
+                    <div class="colors--item color--frame element--hover" onclick="selectActive(this,'.color--frame')" title="${e.name}" data-id="${e.id}">
+                        <div style="background-color:#${e.color}"></div>
+                    </div>
+                `;
+            })
+        }else{
+            colorFrame.classList.add("d-none");
+        }
+    }
+    document.querySelector("#frame--color .colors").innerHTML =colorHtml;
+    document.querySelector("#sortFrame").innerHTML = html;
+    document.querySelector(".select--frames").innerHTML = contentFrames;
+}
+async function showDefaultFraming(){
+    const layoutMargin = document.querySelector(".layout--margin");
+    const layoutBorder = document.querySelector(".layout--border");
+    const intHeight = document.querySelector("#intHeight").value;
+    const intWidth = document.querySelector("#intWidth").value;
+    const orientation = Array.from(document.querySelectorAll(".orientation"));
+    const props = Array.from(document.querySelectorAll(".selectProp"));
+    const arrProps = [];
+    props.forEach(e=>{
+        arrProps.push({
+            prop:e.getAttribute("data-id"),
+            option_prop:e.value
+        })
+    });
+    console.log(arrProps);
+    orientation.forEach(e=>{
+        e.setAttribute("onClick","selectOrientation(this)");
+    });
+    orientation[0].classList.add("element--active");
+    if(!document.querySelector(".frame--item.element--active")){
+        document.querySelectorAll(".frame--item")[0].classList.add("element--active");
+    }
+    if(!document.querySelector(".color--frame.element--active")){
+        document.querySelectorAll(".color--frame")[0].classList.add("element--active");
+    }
+    const defaultFrame = document.querySelector(".frame--item.element--active");
+    const imgFrame = defaultFrame.getAttribute("data-frame");
+    const waste = defaultFrame.getAttribute("data-waste");
+    layoutMargin.style.borderImage= imgFrame;
+    layoutMargin.style.borderWidth = (waste/1.5)+"px";
+    layoutMargin.style.boxShadow = `0px 0px 5px ${waste/1.6}px rgba(0,0,0,0.75)`;
+    layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
+    layoutBorder.style.outlineWidth = (waste/1.6)+"px";
+    const formData = new FormData();
+    formData.append("data",JSON.stringify(arrProps));
+    formData.append("id",defaultFrame.getAttribute("data-id"));
+    formData.append("height",intHeight);
+    formData.append("width",intWidth);
+    const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
+    const objData = response.json();
+    console.log(objData)
 }
 function openModal(){
     modalVariant.show();

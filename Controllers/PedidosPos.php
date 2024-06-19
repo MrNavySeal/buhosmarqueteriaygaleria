@@ -17,15 +17,15 @@
                 $data['page_tag'] = "Punto de venta";
                 $data['page_title'] = "Punto de venta";
                 $data['page_name'] = "punto de venta";
-                $data['tipos'] = $this->model->selectCategories();
                 $data['panelapp'] = "functions_orders_venta.js";
+                $data['framing'] = "functions_molding_custom.js";
                 $this->views->getView($this,"venta",$data);
             }else{
                 header("location: ".base_url());
                 die();
             }
         }
-    /*************************POS methods*******************************/
+        /*************************POS methods*******************************/
         public function getProduct(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST['id']){
@@ -112,6 +112,40 @@
                             }
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"El cliente no existe!"); 
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
+        }
+        /*************************Molding methods*******************************/
+        public function getMoldingProducts(){
+            if($_SESSION['permitsModule']['w']){
+                $request = $this->model->selectMoldingCategories();
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+                        $btn = '<button type="button" class="btn btn-primary" onclick="getConfig(this,'.$request[$i]['id'].')">Enmarcar</button>';
+                        $request[$i]['options'] = $btn;
+                    }
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getConfig(){
+            if($_SESSION['permitsModule']['w']){
+                if($_POST){
+                    if(empty($_POST['id'])){
+                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    }else{
+                        $intId = intval($_POST['id']);
+                        $request = $this->model->selectConfig($intId);
+                        if(empty($request)){
+                            $arrResponse = array("status"=>false,"msg"=>"La categoria no está configurada");
+                        }else{
+                            $arrColors = $this->model->selectColors();
+                            $arrResponse = array("status"=>true,"data"=>$request,"color"=>$arrColors);
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
