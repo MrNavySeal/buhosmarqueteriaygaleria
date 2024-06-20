@@ -13,7 +13,7 @@
                         <input type="text" class="form-control" id="txtName" name="txtName" required>
                     </div>
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="isColor">
@@ -21,7 +21,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="isDblFrame">
@@ -29,7 +29,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="isBocel">
+                                    <label class="form-check-label" for="isBocel">Habilitar bocel</label> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="isMargin">
@@ -37,6 +45,7 @@
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
                     <div class="mb-3 d-none" id="divMargin">
                         <label for="txtMargin" class="form-label">Margen máximo (cm)</label>
