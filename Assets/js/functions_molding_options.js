@@ -59,6 +59,7 @@ if(document.querySelector("#btnNew")){
         document.querySelector("#isMargin").checked = false;
         document.querySelector("#isColor").checked = false;
         document.querySelector("#isDblFrame").checked = false;
+        document.querySelector("#isBocel").checked = false;
         document.querySelector("#txtMargin").value = 5;
         modal.show();
     });
@@ -77,6 +78,7 @@ if(document.querySelector("#formItem")){
         let isMargin = document.querySelector("#isMargin").checked;
         let isColor = document.querySelector("#isColor").checked;
         let isDblFrame = document.querySelector("#isDblFrame").checked;
+        let isBocel = document.querySelector("#isBocel").checked;
         if(strName == "" || intStatus =="" || intProp ==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
@@ -87,6 +89,7 @@ if(document.querySelector("#formItem")){
         formData.append("is_margin",isMargin ? 1 : 0);
         formData.append("is_color",isColor ? 1 : 0);
         formData.append("is_frame",isDblFrame ? 1 : 0);
+        formData.append("is_bocel",isBocel ? 1 : 0);
         formData.append("margin",intMargin);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
@@ -211,6 +214,7 @@ function editItem(id){
         document.querySelector("#isMargin").checked = objData.data.is_margin;
         document.querySelector("#isColor").checked = objData.data.is_color;
         document.querySelector("#isDblFrame").checked = objData.data.is_frame;
+        document.querySelector("#isBocel").checked = objData.data.is_bocel;
         document.querySelector("#txtMargin").value = objData.data.margin;
         document.querySelector(".modal-title").innerHTML = "Actualizar opción de propiedad";
         modal.show();
