@@ -79,7 +79,7 @@ if(document.querySelector("#id").value !=""){
         statusList.value = productData.status;
         if(selectFramingMode.value == 1){
             document.querySelector(".framingImage").classList.remove("d-none");
-            document.querySelector(".uploadImg img").setAttribute("src",productData.framing_img);
+            document.querySelector(".uploadImg img").setAttribute("src",productData.framing_url);
         }else{
             document.querySelector(".framingImage").classList.add("d-none");
         }

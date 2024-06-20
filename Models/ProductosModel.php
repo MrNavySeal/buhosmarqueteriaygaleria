@@ -238,7 +238,7 @@
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
             AND p.idproduct = $this->intIdProduct";
             $request = $this->select($sql);
-            $request['framing_img'] = media()."/images/uploads/".$request['framing_img'];
+            $request['framing_url'] = media()."/images/uploads/".$request['framing_img'];
             if(!empty($request)){
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
                 $requestImg = $this->select_all($sqlImg);

@@ -177,14 +177,13 @@
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $request = $this->model->selectProduct($id);
-                                if($data['framing_mode']==1){
+                                if($request['framing_mode']==1){
                                     if($_FILES['txtImgFrame']['name'] == ""){
                                         $photoFraming = $request['framing_img'];
                                     }else{
-                                        /*
                                         if($request['framing_img'] != "category.jpg" && $request['framing_img'] != null ){
                                             deleteFile($request['framing_img']);
-                                        }*/
+                                        }
                                         $imgFraming = $_FILES['txtImgFrame'];
                                         $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
                                     }
