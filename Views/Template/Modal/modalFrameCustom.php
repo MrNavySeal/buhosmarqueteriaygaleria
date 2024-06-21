@@ -112,37 +112,7 @@
                                     </div>
                                 </div>
                                 <!--Propiedades-->
-                                <div class="mb-3" id="contentProps">
-                                    <div class="option--custom d-none mb-3">
-                                        <div class="mb-3">
-                                            <span class="fw-bold">Medida del paspartú</span>
-                                            <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="5" value="0" id="marginRange">
-                                            <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <div class="fw-bold d-flex justify-content-between">
-                                                <span>Elige el color del paspartú</span>
-                                                <span id="marginColor"></span>
-                                            </div>
-                                            <div class="colors mt-3">
-                                                <div class="colors--item color--frame element--hover"  title="blanco" data-id="1">
-                                                    <div style="background-color:#fff"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3 borderColor">
-                                            <div class="fw-bold d-flex justify-content-between">
-                                                <span>Elige el color del bocel</span>
-                                                <span id="borderColor"></span>
-                                            </div>
-                                            <div class="colors mt-3">
-                                                <div class="colors--item color--frame element--hover"  title="blanco" data-id="1">
-                                                    <div style="background-color:#fff"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div class="mb-3" id="contentProps"></div>
                                 <div class="text-center">
                                     <div class="fw-bold fs-2 t-color-1 mt-3 totalFrame">$ 0.00</div>
                                     <button type="button" class="btn btn-bg-1 mt-2" id="addFrame"><i class="fas fa-shopping-cart"></i> Agregar</button>

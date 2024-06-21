@@ -28,6 +28,7 @@
                     $totalMaterial = count($material);
                     for ($j=0; $j < $totalMaterial; $j++) { 
                         $sql = "SELECT
+                        s.name,
                         p.value
                         FROM product_specs p
                         INNER JOIN specifications s ON p.specification_id = s.id_specification
@@ -43,8 +44,12 @@
         }
         public function selectFrame(int $intId){
             $this->intId = $intId;
-            $sql = "SELECT price_purchase FROM product WHERE idproduct = $this->intId";
-            $request['price_purchase'] = $this->select($sql)['price_purchase'];
+            $sql = "SELECT p.price_purchase,s.name 
+            FROM product p 
+            INNER JOIN subcategory S ON s.idsubcategory = p.subcategoryid
+            WHERE p.idproduct = $this->intId";
+            $request = $this->select($sql);
+            $request['name'] = strtolower($request['name']);
             $sqlWaste = "SELECT 
             p.value as waste 
             FROM product_specs p

@@ -557,8 +557,8 @@ async function getConfig(element,id){
             displayPrintStatus.classList.add("d-none");
             displayCamera.classList.remove("d-none");
         }
-        showMolding(molding,objData.color);
         showProps(props);
+        showMolding(molding,objData.color);
         showDefaultFraming();
         document.querySelector("#frameTitle").innerHTML = data.name;
         document.querySelector(".layout--img img").setAttribute("src",data.url);
@@ -580,44 +580,47 @@ function showProps(data){
             const defaultOption = optionsProps[0];
             if(optionsProps.length>0){
                 optionsProps.forEach(o=>{
-                    selectOptions+=`<option value="${o.id}">${o.name}</option>`
+                    selectOptions+=`<option value="${o.id}" data-margin="${o.margin}" data-iscolor="${o.is_color}" 
+                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-id="${d.prop}" data-isbocel="${o.is_bocel}">${o.name}</option>`
                 });
             }
             html+= `
                 <div class="mb-3">
                     <span class="fw-bold">${d.name}</span>
-                    <select class="form-select mt-3 mb-3 selectProp"  data-ismargin="${defaultOption.is_margin}" data-id="${d.prop}"
-                    data-margin="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}">${selectOptions}</select>
+                    <select class="form-select mt-3 mb-3 selectProp"  onchange="updateFramingConfig(this)" data-ismargin="${defaultOption.is_margin}" data-id="${d.prop}"
+                    data-margin="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}"
+                    data-isbocel="${defaultOption.is_bocel}">${selectOptions}</select>
                 </div>
             `;
             if(data[0].id == d.id ){
                 html+=`<div class="option--custom  mb-3">
-                        <div class="d-none">
-                            <div class="mb-3">
-                                <span class="fw-bold">Medida del margen</span>
-                                <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="${defaultOption.margin}" value="0" id="marginRange">
+                        <div class="d-none" id="isMargin" data-name="${defaultOption.is_margin}">
+                            <div class="mb-3" >
+                                <span class="fw-bold">Medida del <span id="marginTitle">paspartú</span></span>
+                                <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="${defaultOption.margin}" value="1" id="marginRange" 
+                                oninput="selectMargin(this)">
                                 <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
                             </div>
                             <div class="mb-3">
                                 <div class="fw-bold d-flex justify-content-between">
-                                    <span>Elige el color del margen</span>
+                                    <span>Elige el color del <span id="colorMarginTitle">paspartú</span></span>
                                     <span id="marginColor"></span>
                                 </div>
-                                <div class="colors mt-3">
-                                    <div class="colors--item color--frame element--hover"  title="blanco" data-id="1">
+                                <div class="colors mt-3" id="colorsMargin">
+                                    <div class="colors--item color--margin element--hover"  title="blanco" data-id="1">
                                         <div style="background-color:#fff"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="d-none">
+                        <div class="d-none" id="isBorder" data-isframe="${defaultOption.is_margin}" data-isbocel="${defaultOption.is_bocel}">
                             <div class="mb-3 borderColor">
                                 <div class="fw-bold d-flex justify-content-between">
-                                    <span>Elige el color del bocel</span>
+                                    <span>Elige el color del <span id="colorBorderTitle">bocel</span></span>
                                     <span id="borderColor"></span>
                                 </div>
-                                <div class="colors mt-3">
-                                    <div class="colors--item color--frame element--hover"  title="blanco" data-id="1">
+                                <div class="colors mt-3" id="colorsBorder">
+                                    <div class="colors--item color--border element--hover"  title="blanco" data-id="1">
                                         <div style="background-color:#fff"></div>
                                     </div>
                                 </div>
@@ -636,7 +639,7 @@ function showMolding(data,color){
     const colorFrame = document.querySelector("#frame--color");
     if(data.length > 0){
         data.forEach(e => {
-            html+=`<option value="${e.prop}">${e.name}</option>`
+            html+=`<option value="${e.name}">${e.name}</option>`
         });
         const frames = data[0].frames;
         const needle = data[0].name.toLowerCase();
@@ -655,7 +658,7 @@ function showMolding(data,color){
             colorFrame.classList.remove("d-none");
             color.forEach(e=>{
                 colorHtml +=`
-                    <div class="colors--item color--frame element--hover" onclick="selectActive(this,'.color--frame')" title="${e.name}" data-id="${e.id}">
+                    <div class="colors--item color--frame element--hover" onclick="selectActive(this,'.color--frame');selectColorFrame(this);" title="${e.name}" data-id="${e.id}">
                         <div style="background-color:#${e.color}"></div>
                     </div>
                 `;
@@ -665,10 +668,25 @@ function showMolding(data,color){
         }
     }
     document.querySelector("#frame--color .colors").innerHTML =colorHtml;
+    document.querySelector("#colorsMargin").innerHTML = colorHtml;
+    document.querySelector("#colorsBorder").innerHTML = colorHtml;
     document.querySelector("#sortFrame").innerHTML = html;
     document.querySelector(".select--frames").innerHTML = contentFrames;
+
+    const arrColorsMargin = Array.from(document.querySelector("#colorsMargin").children);
+    const arrColorsBorder = Array.from(document.querySelector("#colorsBorder").children);
+    arrColorsMargin.forEach(e => {
+        e.classList.replace("color--frame","color--margin");
+        e.setAttribute("onclick","selectActive(this,'.color--margin');selectColor(this,'margin')");
+    });
+    arrColorsBorder.forEach(e => {
+        e.classList.replace("color--frame","color--border");
+        e.setAttribute("onclick","selectActive(this,'.color--border');selectColor(this,'border')");
+    });
+    
 }
 async function showDefaultFraming(){
+    const colorFrame = document.querySelectorAll(".color--frame");
     const layoutMargin = document.querySelector(".layout--margin");
     const layoutBorder = document.querySelector(".layout--border");
     const intHeight = document.querySelector("#intHeight").value;
@@ -682,7 +700,7 @@ async function showDefaultFraming(){
             option_prop:e.value
         })
     });
-    console.log(arrProps);
+
     orientation.forEach(e=>{
         e.setAttribute("onClick","selectOrientation(this)");
     });
@@ -693,6 +711,16 @@ async function showDefaultFraming(){
     if(!document.querySelector(".color--frame.element--active")){
         document.querySelectorAll(".color--frame")[0].classList.add("element--active");
     }
+    if(!document.querySelector(".color--margin.element--active")){
+        document.querySelectorAll(".color--margin")[0].classList.add("element--active");
+    }
+    if(!document.querySelector(".color--border.element--active")){
+        document.querySelectorAll(".color--border")[0].classList.add("element--active");
+    }
+    document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
+    
+
+    let bg = getComputedStyle(colorFrame[0].children[0]).backgroundColor;
     const defaultFrame = document.querySelector(".frame--item.element--active");
     const imgFrame = defaultFrame.getAttribute("data-frame");
     const waste = defaultFrame.getAttribute("data-waste");
@@ -701,14 +729,18 @@ async function showDefaultFraming(){
     layoutMargin.style.boxShadow = `0px 0px 5px ${waste/1.6}px rgba(0,0,0,0.75)`;
     layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
+    layoutBorder.style.outlineColor=bg; 
+    
     const formData = new FormData();
     formData.append("data",JSON.stringify(arrProps));
     formData.append("id",defaultFrame.getAttribute("data-id"));
     formData.append("height",intHeight);
     formData.append("width",intWidth);
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
-    const objData = response.json();
-    console.log(objData)
+    const objData = await response.json();
+    if(objData.status){
+        document.querySelector(".totalFrame").innerHTML = objData.total;
+    }
 }
 function openModal(){
     modalVariant.show();
