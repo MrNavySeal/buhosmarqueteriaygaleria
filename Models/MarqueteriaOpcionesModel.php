@@ -88,6 +88,7 @@
                     $sql = "SELECT 
                     m.product_id as idproduct,
                     m.type,
+                    m.method,
                     p.name
                     FROM molding_materials m 
                     INNER JOIN product p ON p.idproduct = m.product_id
@@ -110,8 +111,8 @@
             $this->delete("DELETE FROM molding_materials WHERE option_id = $this->intId");
             $total = count($data);
             for ($i=0; $i < $total ; $i++) { 
-                $sql = "INSERT INTO molding_materials(option_id,product_id,type) VALUES(?,?,?)";
-                $arrData = array($this->intId,$data[$i]['idproduct'],$data[$i]['type']);
+                $sql = "INSERT INTO molding_materials(option_id,product_id,type,method) VALUES(?,?,?,?)";
+                $arrData = array($this->intId,$data[$i]['idproduct'],$data[$i]['type'],$data[$i]['method']);
                 $request = $this->insert($sql,$arrData);
             }
             return $request;

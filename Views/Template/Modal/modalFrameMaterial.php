@@ -22,6 +22,10 @@
                                     <option value="area">Área</option>
                                     <option value="perimetro">Perímetro</option>
                                 </select>
+                                <select class="form-control" aria-label="Default select example" id="selectType">
+                                    <option value="completo">Completo</option>
+                                    <option value="imagen">imagen</option>
+                                </select>
                                 <button type="button" class="btn btn-primary" onclick="addMaterial()"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
@@ -33,6 +37,7 @@
                         <thead>
                             <th>Nombre</th>
                             <th>Cálculo</th>
+                            <th>Tipo</th>
                             <th>Opciones</th>
                         </thead>
                         <tbody id="tableMaterial"></tbody>

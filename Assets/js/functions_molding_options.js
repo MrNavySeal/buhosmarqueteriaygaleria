@@ -165,6 +165,7 @@ function showMaterial(id){
            <tr class="data-item w-100">
                 <td>${e.name}</td>
                 <td>${e.type}</td>
+                <td>${e.method}</td>
                 <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteMaterial(this,'${e.idproduct}')"><i class="fas fa-trash-alt"></i></button></td>
            </tr>`;
         });
@@ -176,7 +177,7 @@ function addMaterial(){
     const idMaterial = selectMaterial.value;
     const material = arrMaterials.filter(e=>e.idproduct == idMaterial)[0];
     material.type = document.querySelector("#selectCalc").value;
-    
+    material.method = document.querySelector("#selectType").value;
     if(arrSelectedMaterial.length > 0){
         const flag = arrSelectedMaterial.filter(e=>e.idproduct == idMaterial).length > 0 ? true : false;
         if(flag){
@@ -191,6 +192,7 @@ function addMaterial(){
     const html = `
         <td>${material.name}</td>
         <td>${material.type}</td>
+        <td>${material.method}</td>
         <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteMaterial(this,'${idMaterial}')"><i class="fas fa-trash-alt"></i></button></td>
     `;
     let el = document.createElement("tr");
