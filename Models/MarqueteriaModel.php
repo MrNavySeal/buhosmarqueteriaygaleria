@@ -101,7 +101,7 @@
             return $request;
         }
         /*************************Properties methods*******************************/
-        public function insertProperty(string $strName, int $intStatus,int $isVisible,int $intOrder){
+        public function insertProperty(string $strName, int $intStatus,int $isVisible,int $intOrder,array $arrFraming){
 
 			$this->strName = $strName;
             $this->intStatus = $intStatus;
@@ -113,19 +113,22 @@
 					name = '{$this->strName}'";
 			$request = $this->select_all($sql);
 
-			if(empty($request))
-			{ 
+			if(empty($request)){  
 				$query_insert  = "INSERT INTO molding_props(name,status,is_material,order_view) 
 								  VALUES(?,?,?,?)";
 	        	$arrData = array($this->strName,$this->intStatus,$this->isVisible, $this->intOrder);
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
+                foreach ($arrFraming as $d) {
+                    $sql = "INSERT INTO molding_props_framing(prop_id,framing_id,is_check) VALUES(?,?,?)";
+                    $this->insert($sql,array($request_insert,$d['id'],$d['is_check']));
+                }
 			}else{
 				$return = "exist";
 			}
 	        return $return;
 		}
-        public function updateProperty(int $intId,string $strName, int $intStatus, int $isVisible,int $intOrder){
+        public function updateProperty(int $intId,string $strName, int $intStatus, int $isVisible,int $intOrder,array $arrFraming){
             $this->intIdCategory = $intId;
             $this->strName = $strName;
             $this->intStatus = $intStatus;
@@ -139,6 +142,11 @@
                 $sql = "UPDATE molding_props SET  name=?, status=? ,is_material=?, order_view=? WHERE id = $this->intIdCategory";
                 $arrData = array($this->strName,$this->intStatus,$this->isVisible,$this->intOrder);
 				$request = $this->update($sql,$arrData);
+                $this->delete("DELETE FROM molding_props_framing WHERE prop_id = $this->intIdCategory");
+                foreach ($arrFraming as $d) {
+                    $sql = "INSERT INTO molding_props_framing(prop_id,framing_id,is_check) VALUES(?,?,?)";
+                    $this->insert($sql,array($this->intIdCategory,$d['id'],$d['is_check']));
+                }
 			}else{
 				$request = "exist";
 			}
@@ -147,6 +155,7 @@
 		}
         public function deleteProperty($id){
             $this->intIdCategory = $id;
+            $this->delete("DELETE FROM molding_props_framing WHERE prop_id = $this->intIdCategory");
             $sql = "DELETE FROM molding_props WHERE id = $this->intIdCategory";
             $return = $this->delete($sql);
             return $return;
@@ -160,6 +169,19 @@
             $this->intIdCategory = $id;
             $sql = "SELECT * FROM molding_props WHERE id = $this->intIdCategory";
             $request = $this->select($sql);
+            $sqlFraming = "SELECT s.idsubcategory as id, s.name, p.is_check
+            FROM molding_props_framing p
+            INNER JOIN subcategory s ON s.idsubcategory = p.framing_id
+            WHERE prop_id = $this->intIdCategory ORDER BY s.idsubcategory DESC";
+            $request['framing'] = $this->select_all($sqlFraming);
+            return $request;
+        }
+        public function selectCatFraming(){
+            $sql = "SELECT s.idsubcategory as id, s.name
+            FROM subcategory s
+            INNER JOIN category c ON c.idcategory = s.categoryid
+            WHERE c.name = 'Molduras' AND c.status = 1 AND s.status = 1 ORDER BY s.idsubcategory DESC";
+            $request = $this->select_all($sql);
             return $request;
         }
         /*************************Product methods*******************************/

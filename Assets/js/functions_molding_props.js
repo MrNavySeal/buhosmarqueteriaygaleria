@@ -35,6 +35,7 @@ let table = new DataTable("#tableData",{
     "iDisplayLength": 10,
 });
 if(document.querySelector("#btnNew")){
+    getFraming();
     document.querySelector("#btnNew").classList.remove("d-none");
     let btnNew = document.querySelector("#btnNew");
     btnNew.addEventListener("click",function(){
@@ -49,22 +50,29 @@ if(document.querySelector("#formItem")){
     let form = document.querySelector("#formItem");
     form.addEventListener("submit",function(e){
         e.preventDefault();
-
+        const arrFraming = [];
+        const htmlFramingCheck = document.querySelectorAll(".frameCheck");
         let strName = document.querySelector("#txtName").value;
         let intStatus = document.querySelector("#statusList").value;
         let isVisible = document.querySelector("#isVisible").checked;
-
         if(strName == "" || intStatus ==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
         }
-        
+        for (let i = 0; i < htmlFramingCheck.length; i++) {
+            const e = htmlFramingCheck[i];
+            const obj = {
+                id:e.getAttribute("data-id"),
+                is_check: e.checked ? 1 : 0
+            }
+            arrFraming.push(obj);
+        }
         let url = base_url+"/Marqueteria/setProperty";
         let formData = new FormData(form);
         formData.append("is_visible",isVisible ? 1 : 0);
+        formData.append("framing",JSON.stringify(arrFraming));
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            
         btnAdd.setAttribute("disabled","");
         request(url,formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
@@ -91,6 +99,10 @@ function editItem(id){
         document.querySelector("#orderList").value = objData.data.order_view;
         document.querySelector("#isVisible").checked = objData.data.is_material;
         document.querySelector(".modal-title").innerHTML = "Actualizar propiedad";
+        if(objData.data.framing!=""){
+            document.querySelector("#tableFraming").innerHTML =objData.data.framing; 
+        }
+        console.log(objData);
         modal.show();
     });
 }
@@ -119,4 +131,8 @@ function deleteItem(id){
             });
         }
     });
+}
+async function getFraming(){
+    const response = await fetch(base_url+"/Marqueteria/getFraming");
+    document.querySelector("#tableFraming").innerHTML =await response.json(); 
 }

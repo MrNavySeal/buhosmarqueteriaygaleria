@@ -280,6 +280,26 @@
             die();
         }
         /*************************Properties methods*******************************/
+        public function getFraming(){
+            if($_SESSION['permitsModule']['w']){
+                $request = $this->model->selectCatFraming();
+                $html = "";
+                foreach ($request as $d) {
+                    $html.= '
+                        <tr>
+                            <td>'.$d['name'].'</td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input frameCheck" type="checkbox" role="switch" data-id="'.$d['id'].'" checked>
+                                </div>
+                            </td>
+                        </tr>
+                    ';
+                }
+                echo json_encode($html,JSON_UNESCAPED_UNICODE);
+            }   
+            die();
+        }
         public function getProperties(){
             if($_SESSION['permitsModule']['r']){
                 $request = $this->model->selectProperties();
@@ -318,6 +338,23 @@
                         $id = intval($_POST['id']);
                         $request = $this->model->selectProperty($id);
                         if(!empty($request)){
+                            $html = "";
+                            if(!empty($request['framing'])){
+                                foreach ($request['framing'] as $d) {
+                                    $checked = $d['is_check'] ? "checked" : "";
+                                    $html.= '
+                                        <tr>
+                                            <td>'.$d['name'].'</td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input frameCheck" type="checkbox" role="switch" data-id="'.$d['id'].'" '.$checked.'>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ';
+                                }
+                            }
+                            $request['framing'] = $html;
                             $arrResponse = array("status"=>true,"data"=>$request);
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
@@ -331,7 +368,7 @@
         public function setProperty(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
-                    if(empty($_POST['txtName']) || empty($_POST['statusList'])){
+                    if(empty($_POST['txtName']) || empty($_POST['statusList']) || empty($_POST['framing'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $id = intval($_POST['id']);
@@ -339,16 +376,16 @@
                         $intStatus = intval($_POST['statusList']);
                         $isVisible = intval($_POST['is_visible']);
                         $intOrder = intval($_POST['orderList']);
-
+                        $arrFraming = json_decode($_POST['framing'],true);
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                $request= $this->model->insertProperty($strName,$intStatus,$isVisible,$intOrder);
+                                $request= $this->model->insertProperty($strName,$intStatus,$isVisible,$intOrder,$arrFraming);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->updateProperty($id,$strName,$intStatus,$isVisible,$intOrder);
+                                $request = $this->model->updateProperty($id,$strName,$intStatus,$isVisible,$intOrder,$arrFraming);
                             }
                         }
                         if($request > 0 ){
