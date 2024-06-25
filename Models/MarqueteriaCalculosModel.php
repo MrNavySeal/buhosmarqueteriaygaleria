@@ -13,14 +13,18 @@
             $total = count($this->arrData);
             for ($i=0; $i < $total ; $i++) { 
                 $data = $this->arrData[$i];
-                $prop = $this->select("SELECT is_material FROM molding_props WHERE id = {$data['prop']}");
-                $option = $this->select("SELECT * FROM molding_options WHERE prop_id = {$data['prop']} AND id = {$data['option_prop']}");
+                $sql_prop = "SELECT is_material,name FROM molding_props WHERE id = {$data['prop']}";
+                $prop = $this->select($sql_prop);
+                $sql_option ="SELECT * FROM molding_options WHERE prop_id = {$data['prop']} AND id = {$data['option_prop']}";
+                $option = $this->select($sql_option);
                 $material = [];
                  if($prop['is_material']){
                     $sql = "SELECT
                     m.type,
+                    m.method,
                     m.product_id,
-                    p.price_purchase
+                    p.price_purchase,
+                    p.name
                     FROM molding_materials m
                     INNER JOIN product p ON m.product_id = p.idproduct
                     WHERE m.option_id = {$option['id']}";
@@ -44,7 +48,7 @@
         }
         public function selectFrame(int $intId){
             $this->intId = $intId;
-            $sql = "SELECT p.price_purchase,s.name 
+            $sql = "SELECT p.price_purchase,s.name,p.reference
             FROM product p 
             INNER JOIN subcategory S ON s.idsubcategory = p.subcategoryid
             WHERE p.idproduct = $this->intId";
@@ -56,6 +60,15 @@
             INNER JOIN specifications s ON p.specification_id = s.id_specification
             WHERE p.product_id = $this->intId";
             $request['waste'] = $this->select($sqlWaste)['waste'];
+            return $request;
+        }
+        public function selectCategory(int $intId){
+            $this->intId = $intId;
+            $sql = "SELECT m.is_print,c.name
+            FROM molding_config m 
+            INNER JOIN moldingcategory c ON c.id = m.category_id
+            WHERE m.category_id = $this->intId";
+            $request = $this->select($sql);
             return $request;
         }
     }

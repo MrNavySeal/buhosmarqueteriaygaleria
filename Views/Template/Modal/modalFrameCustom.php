@@ -17,6 +17,7 @@
                     </div>
                     <div class="c-p position-absolute bg-color-1 rounded-circle ps-2 pe-2 top-0 end-0 m-3" id="closeImg"><i class="fas fa-times"></i></div>
                 </div>
+                <input type="hidden" id="idCategory" value="">
                 <div>
                     <div class="custom--frame mt-3" id="frame">
                         <div class="row">
@@ -115,7 +116,7 @@
                                 <div class="mb-3" id="contentProps"></div>
                                 <div class="text-center">
                                     <div class="fw-bold fs-2 t-color-1 mt-3 totalFrame">$ 0.00</div>
-                                    <button type="button" class="btn btn-bg-1 mt-2" id="addFrame"><i class="fas fa-shopping-cart"></i> Agregar</button>
+                                    <button type="button" class="btn btn-bg-1 mt-2" id="addFrame">Agregar</button>
                                 </div>
                             </div>
                         </div>

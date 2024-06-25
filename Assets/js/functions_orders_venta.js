@@ -12,7 +12,7 @@ const selectItems = document.querySelector("#selectItems");
 const items = document.querySelector("#items");
 const formSetOrder = document.querySelector("#formSetOrder");
 const tablePurchase = document.querySelector("#tablePurchase");
-
+let arrDataMolding = [];
 let arrProducts = [];
 let arrCustomers = [];
 let product;
@@ -246,6 +246,18 @@ function addProduct(product={},topic=2){
         obj.name = document.querySelector("#txtService").value;
         obj.qty = parseFloat(qty);
         obj.price_sell = parseInt(price);
+    }else if(topic== 1){
+        const isPrint = document.querySelector("#isPrint").getAttribute("data-print");
+        if(isPrint== 1){
+            if(uploadPicture.value == ""){
+                Swal.fire("Error","Por favor, sube la imagen a imprimir","error");
+                return false;
+            }
+        }
+        obj.price_sell =totalFrame;
+        obj.data = product;
+        obj.name = nameTopic;
+        obj.img = imageUrl;
     }
     if(arrProducts.length > 0){
         let flag = false;
@@ -269,6 +281,25 @@ function addProduct(product={},topic=2){
                 arrProducts[i].price_sell = obj.price_sell;
                 flag = false;
                 break;
+            }else if(arrProducts[i].topic == 1 && arrProducts[i].name == obj.name && arrProducts[i].img == obj.img){
+                let arrProductData = arrProducts[i].data;
+                let arrObjData = obj.data;
+                let flagFrame = false;
+                if(arrProductData.length == arrObjData.length){
+                    for (let j = 0; j < arrProductData.length; j++) {
+                        if(arrProductData[j].value == arrObjData[j].value){
+                            flagFrame = false;
+                        }else{
+                            flagFrame = true;
+                            break;
+                        }
+                    }
+                    if(!flagFrame){
+                        arrProducts[i].qty +=obj.qty;
+                        flag = false;
+                        break;
+                    }
+                }
             }
             flag = true;
         }
@@ -348,6 +379,39 @@ function updateProduct(element,type,data){
             arrProducts[i].discount = arrProducts[i].price_offer > 0 ? totalDiscount : 0;
             arrProducts[i].subtotal = subtotal;
             break;
+        }else if(arrProducts[i].topic == 1 && arrProducts[i].name == obj.name && arrProducts[i].img == obj.img){
+            let arrProductData = arrProducts[i].data;
+            let arrObjData = obj.data;
+            let flagFrame = false;
+            if(arrProductData.length == arrObjData.length){
+                for (let j = 0; j < arrProductData.length; j++) {
+                    if(arrProductData[j].value == arrObjData[j].value){
+                        flagFrame = false;
+                    }else{
+                        flagFrame = true;
+                        break;
+                    }
+                }
+                if(!flagFrame){
+                    if(type =="qty"){
+                        arrProducts[i].qty = value;
+                    }else if(type=="price_sell"){
+                        arrProducts[i].price_sell = value;
+                        price = value;
+                    }else if(type =="discount"){
+                        arrProducts[i].price_offer = value;
+                        price = value > 0 ? arrProducts[i].price_offer : arrProducts[i].price_sell ;
+                    }
+                    let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
+                    let subtotalOffer = arrProducts[i].qty * arrProducts[i].price_offer;
+                    totalDiscount = subtotalNormal - subtotalOffer;
+                    subtotal = arrProducts[i].qty * price;
+                    
+                    arrProducts[i].discount = arrProducts[i].price_offer > 0 ? totalDiscount : 0;
+                    arrProducts[i].subtotal = subtotal;
+                    break;
+                }
+            }
         }
     }
     currentProducts();
@@ -372,6 +436,24 @@ function deleteProduct(element,data){
         }else if(arrProducts[i].topic == 3 && arrProducts[i].name == obj.name){
             index = i;
             break;
+        }else if(arrProducts[i].topic == 1 && arrProducts[i].name == obj.name && arrProducts[i].img == obj.img){
+            let arrProductData = arrProducts[i].data;
+            let arrObjData = obj.data;
+            let flagFrame = false;
+            if(arrProductData.length == arrObjData.length){
+                for (let j = 0; j < arrProductData.length; j++) {
+                    if(arrProductData[j].value == arrObjData[j].value){
+                        flagFrame = false;
+                    }else{
+                        flagFrame = true;
+                        break;
+                    }
+                }
+                if(!flagFrame){
+                    index = i;
+                    break;
+                }
+            }
         }
     }
     arrProducts.splice(index,1);
@@ -381,6 +463,21 @@ function deleteProduct(element,data){
 function showProducts(){
     tablePurchase.innerHTML ="";
     arrProducts.forEach(pro=>{
+        let strDescription = `
+            <p class="m-0 mb-1">${pro.name}</p>
+            <p class="text-secondary m-0 mb-1">${pro.reference}</p>
+            <p class="text-secondary m-0 mb-1">${pro.variant_name}</p>
+        `;
+        if(pro.topic == 1){
+            strDescription = pro.name;
+            let data = pro.data;
+            data = data.filter(e=>"name" in e);
+            data.forEach(e => {
+                strDescription+=`<ul>
+                    <li><span class="fw-bold">${e.name}: </span>${e.value}</li>
+                </ul>`
+            });
+        }
         let price = pro.price_offer > 0 ? pro.price_offer : pro.price_sell; 
         pro.subtotal = price * pro.qty;
         let tr = document.createElement("tr");
@@ -389,9 +486,7 @@ function showProducts(){
         tr.innerHTML = `
             <td>${pro.is_stock ? pro.stock : "N/A"}</td>
             <td>
-                <p class="m-0 mb-1">${pro.name}</p>
-                <p class="text-secondary m-0 mb-1">${pro.reference}</p>
-                <p class="text-secondary m-0 mb-1">${pro.variant_name}</p>
+                ${strDescription}
             </td>
             <td><input class="form-control text-center" onchange="updateProduct(this,'qty','${objString}')" value="${pro.qty}" type="number"></td>
             <td><input class="form-control" value="${pro.price_sell}" onchange="updateProduct(this,'price_sell','${objString}')" type="number"></td>
@@ -522,18 +617,19 @@ function selectVariant(element){
 }
 /*************************Molding functions*******************************/
 async function getConfig(element,id){
+    
     const formData = new FormData();
     formData.append("id",id);
     element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     element.setAttribute("disabled","");
     const response = await fetch(base_url+"/PedidosPos/getConfig",{method:"POST",body:formData});
     const objData = await response.json();
-    console.log(objData);
     if(objData.status){
+        document.querySelector("#idCategory").value = id;
         const data = objData.data;
         const detail = data.detail;
         const props = detail.props;
-        const molding = detail.molding;
+        arrDataMolding = detail.molding;
         const displayFrame = document.querySelector("#isFrame");
         const displayPrint = document.querySelector("#isPrint");
         const displayPrintStatus = document.querySelector("#imgQuality");
@@ -558,8 +654,8 @@ async function getConfig(element,id){
             displayCamera.classList.remove("d-none");
         }
         showProps(props);
-        showMolding(molding,objData.color);
-        showDefaultFraming();
+        showMolding(arrDataMolding,objData.color);
+        showDefaultFraming(id);
         document.querySelector("#frameTitle").innerHTML = data.name;
         document.querySelector(".layout--img img").setAttribute("src",data.url);
         modalFrame.show();
@@ -580,25 +676,25 @@ function showProps(data){
             const defaultOption = optionsProps[0];
             if(optionsProps.length>0){
                 optionsProps.forEach(o=>{
-                    selectOptions+=`<option value="${o.id}" data-margin="${o.margin}" data-iscolor="${o.is_color}" 
-                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-id="${d.prop}" data-isbocel="${o.is_bocel}">${o.name}</option>`
+                    selectOptions+=`<option value="${o.id}" data-margin="1" data-iscolor="${o.is_color}" 
+                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-id="${d.prop}" data-max="${o.margin}" data-isbocel="${o.is_bocel}">${o.name}</option>`
                 });
             }
             html+= `
                 <div class="mb-3">
                     <span class="fw-bold">${d.name}</span>
                     <select class="form-select mt-3 mb-3 selectProp"  onchange="updateFramingConfig(this)" data-ismargin="${defaultOption.is_margin}" data-id="${d.prop}"
-                    data-margin="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}"
+                    data-margin="0" data-max="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}"
                     data-isbocel="${defaultOption.is_bocel}">${selectOptions}</select>
                 </div>
             `;
-            if(data[0].id == d.id ){
+            if(data[0].prop == d.prop){
                 html+=`<div class="option--custom  mb-3">
                         <div class="d-none" id="isMargin" data-name="${defaultOption.is_margin}">
                             <div class="mb-3" >
                                 <span class="fw-bold">Medida del <span id="marginTitle">paspartú</span></span>
                                 <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="${defaultOption.margin}" value="1" id="marginRange" 
-                                oninput="selectMargin(this)">
+                                oninput="selectMargin(this.value)">
                                 <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
                             </div>
                             <div class="mb-3">
@@ -685,7 +781,7 @@ function showMolding(data,color){
     });
     
 }
-async function showDefaultFraming(){
+async function showDefaultFraming(id){
     const colorFrame = document.querySelectorAll(".color--frame");
     const layoutMargin = document.querySelector(".layout--margin");
     const layoutBorder = document.querySelector(".layout--border");
@@ -693,6 +789,7 @@ async function showDefaultFraming(){
     const intWidth = document.querySelector("#intWidth").value;
     const orientation = Array.from(document.querySelectorAll(".orientation"));
     const props = Array.from(document.querySelectorAll(".selectProp"));
+    const intMargin = parseInt(props[0].getAttribute("data-margin"));
     const arrProps = [];
     props.forEach(e=>{
         arrProps.push({
@@ -730,12 +827,27 @@ async function showDefaultFraming(){
     layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
     layoutBorder.style.outlineColor=bg; 
+    /*layoutMargin.style.height = intHeight;
+    layoutMargin.style.width = intWidth;
+    layoutBorder.style.height = intHeight;
+    layoutBorder.style.width = intWidth;
+    layoutImg.style.height = intHeight;
+    layoutImg.style.width = intWidth;
+    layoutImg.style.border="none";
+    layoutImg.style.borderRadius=0;*/
     
     const formData = new FormData();
     formData.append("data",JSON.stringify(arrProps));
     formData.append("id",defaultFrame.getAttribute("data-id"));
     formData.append("height",intHeight);
     formData.append("width",intWidth);
+    formData.append("margin",intMargin);
+    formData.append("id_config",id);
+    formData.append("orientation",document.querySelector(".orientation.element--active").getAttribute("data-name"));
+    formData.append("color_frame",document.querySelector(".color--frame.element--active").getAttribute("title"));
+    formData.append("color_margin",document.querySelector(".color--margin.element--active").getAttribute("title"));
+    formData.append("color_border",document.querySelector(".color--border.element--active").getAttribute("title"));
+    formData.append("img","");
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
     const objData = await response.json();
     if(objData.status){

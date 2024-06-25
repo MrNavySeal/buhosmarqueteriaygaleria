@@ -1,5 +1,9 @@
+
 const DIMENSIONDEFAULT = 4;
 const MAXDIMENSION = 500;
+const BORDERBOCEL = 3;
+const BORDERFLOTANTE = 10;
+const BORDERRADIUS = 2;
 const rangeZoom = document.querySelector("#zoomRange");
 const minusZoom = document.querySelector("#zoomMinus");
 const plusZoom = document.querySelector("#zoomPlus");
@@ -11,18 +15,13 @@ const layoutBorder = document.querySelector(".layout--border");
 const sliderLeft = document.querySelector(".slider--control-left");
 const sliderRight = document.querySelector(".slider--control-right");
 const sliderInner = document.querySelector(".slider--inner");
-let colorMargin = document.querySelectorAll(".color--margin");
-let colorBorder = document.querySelectorAll(".color--border");
-
 const selectStyle = document.querySelectorAll(".selectProp");
-const optionsCustom = document.querySelectorAll(".option--custom");
 const btnBack = document.querySelector("#btnBack");
 const btnNext = document.querySelector("#btnNext");
 const pages = document.querySelectorAll(".page");
 const containerFrames = document.querySelector(".select--frames");
 const searchFrame = document.querySelector("#searchFrame");
 const sortFrame = document.querySelector("#sortFrame");
-const addFrame = document.querySelector("#addFrame");
 const uploadPicture = document.querySelector("#txtPicture");
 const uploadFramingImg = document.querySelector("#txtImgShow");
 const toastLiveExample = document.getElementById('liveToast');
@@ -30,13 +29,21 @@ const closeImage = document.querySelector("#closeImg");
 const framePhotos = document.querySelector("#framePhotos");
 const changeImgL = document.querySelectorAll(".change__img")[0];
 const changeImgR = document.querySelectorAll(".change__img")[1];
+const addFrame = document.querySelector("#addFrame");
 let innerP = document.querySelector(".product-image-inner");
 let btnPrevP = document.querySelector(".slider-btn-left");
 let btnNextP = document.querySelector(".slider-btn-right");
 let indexImg = 0;
 let page = 0;
+let PPI = 100;
+let colorMargin = document.querySelectorAll(".color--margin");
+let colorBorder = document.querySelectorAll(".color--border");
+let arrFrame = [];
+let totalFrame = 0;
+let nameTopic = "";
+let imageUrl ="";
 /*********************Events************************ */
-window.addEventListener("DOMContentLoaded",function(){
+window.addEventListener("load",function(){
     resizeFrame(intWidth.value, intHeight.value);
 })
 
@@ -105,8 +112,8 @@ changeImgR.addEventListener("click",function(){
     let url = images[indexImg].children[0].getAttribute("src");
     divImg.setAttribute("src",url);
 });
-
 intHeight.addEventListener("change",function(){
+    
     let height = intHeight.value;
     let width = intWidth.value;
     if(intHeight.value <= 10.0){
@@ -115,10 +122,14 @@ intHeight.addEventListener("change",function(){
     if(height >= MAXDIMENSION){
         intHeight.value = MAXDIMENSION;
     }
+    if(isPrint== 1){
+        calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
+    }
     setDefaultConfig();
     resizeFrame(intWidth.value, intHeight.value);
 });
 intWidth.addEventListener("change",function(){
+    const isPrint = document.querySelector("#isPrint").getAttribute("data-print");
     let height = intHeight.value;
     let width = intWidth.value;
     if(intHeight.value <= 10.0){
@@ -126,6 +137,9 @@ intWidth.addEventListener("change",function(){
     }
     if(width >= MAXDIMENSION){
         intWidth.value = MAXDIMENSION;
+    }
+    if(isPrint== 1){
+        calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
     }
     setDefaultConfig();
     resizeFrame(intWidth.value, intHeight.value);
@@ -150,7 +164,36 @@ plusZoom.addEventListener("click",function(){
 });
 
 uploadPicture.addEventListener("change",function(){
-    uploadImg(uploadPicture,".layout--img img");
+    let file = uploadPicture.files[0];
+    if(uploadPicture.value !=""){
+        let size = file.size;
+        let kb = parseInt(size / 1024);
+        let mb = parseInt(kb / 1024);
+        if(mb <= 30){
+            let reader = new FileReader();
+            reader.readAsDataURL (file);
+            reader.onload = function() {
+                imageUrl=reader.result;
+            };
+            uploadImg(uploadPicture,".layout--img img");
+            if(intHeight.value !="" && intWidth.value!=""){
+                btnNext.classList.remove("d-none");
+            }
+            if(document.querySelector(".orientation.element--active")){
+                btnNext.classList.remove("d-none");
+            }
+        }else{
+            Swal.fire("Error","La imagen supera los 30MB, optimiza o cambia de imagen","error");
+            uploadPicture.value ="";
+            return false;
+        }
+    }else{
+        btnNext.classList.add("d-none");
+    }
+    setTimeout(function() {
+        calcDimension(document.querySelector(".layout--img img"));
+        calcularMarco();
+    }, 100);
 });
 uploadFramingImg.addEventListener("change",function(){
     uploadImg(uploadFramingImg,".layout--img img");
@@ -172,45 +215,53 @@ searchFrame.addEventListener('input',function() {
 
 sortFrame.addEventListener("change",function(){
     if(intWidth.value !="" && intHeight.value!=""){
-        if(sortFrame.value == 1){
-            document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
-            document.querySelector("#frame--color").classList.remove("d-none");
-        }else if(sortFrame.value == 3){
-            document.querySelector("#spcFrameMaterial").innerHTML = "Madera";
-            layoutBorder.style.outlineColor="transparent";
-            document.querySelector("#frame--color").classList.add("d-none");
-        }else{
-            document.querySelector("#spcFrameMaterial").innerHTML = "Poliestireno";
-            document.querySelector("#spcFrameColor").innerHTML = "N/A";
-            layoutBorder.style.outlineColor="transparent";
-            document.querySelector("#frame--color").classList.add("d-none");
-        }
-        let formData = new FormData();
-        formData.append("height",intHeight.value);
-        formData.append("width",intWidth.value);
-        formData.append("search",searchFrame.value);
-        formData.append("sort",sortFrame.value);
-        containerFrames.innerHTML=`
-            <div class="text-center p-5">
-                <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
+        const colorFrame = document.querySelector("#frame--color");
+        const colorSelectedFrame = document.querySelector(".color--frame.element--active");
+        let bgSelectedFrame = getComputedStyle(colorSelectedFrame.children[0]).backgroundColor;
+        const data = arrDataMolding.filter(e=>e.name == sortFrame.value)[0];
+        const frames = data.frames
+        const needle = data.name.toLowerCase();
+        let contentFrames ="";
+        frames.forEach(e=>{
+            contentFrames+=`
+                <div class="mb-3 frame--container" data-r="${e.reference}">
+                    <div class="frame--item frame-main element--hover" data-id="${e.idproduct}" data-frame="${e.framing_img}" data-waste = "${e.waste}"
+                    onclick="selectActive(this,'.frame-main')">
+                        <img src="${e.image}">
+                        <p>REF: ${e.reference}</p>
+                    </div>
                 </div>
-            </div>
-        `;
-        request(base_url+"/marcos/sort",formData,"post").then(function(objData){
-            if(objData.status){
-                containerFrames.innerHTML = objData.data;
-                setDefaultConfig();
-            }else{
-                containerFrames.innerHTML = `<p class="fw-bold text-center">${objData.data}</p>`;
-            }
+            `;
         });
+        if(needle.includes("madera")){
+            colorFrame.classList.remove("d-none");
+            document.querySelector("#frameColor").innerHTML = colorSelectedFrame.getAttribute("title");
+        }else{
+            colorFrame.classList.add("d-none");
+            bgSelectedFrame = "transparent";
+        }
+        document.querySelector(".select--frames").innerHTML = contentFrames;
+        document.querySelectorAll(".frame--item")[0].classList.add("element--active");
+        const defaultFrame = document.querySelector(".frame--item.element--active");
+        const imgFrame = defaultFrame.getAttribute("data-frame");
+        const waste = defaultFrame.getAttribute("data-waste");
+        layoutMargin.style.borderImage= imgFrame;
+        layoutMargin.style.borderWidth = (waste/1.5)+"px";
+        layoutMargin.style.boxShadow = `0px 0px 5px ${waste/1.6}px rgba(0,0,0,0.75)`;
+        layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
+        layoutBorder.style.outlineWidth = (waste/1.6)+"px";
+        layoutBorder.style.outlineColor=bgSelectedFrame; 
+        calcularMarco();
     }
 });
 
 containerFrames.addEventListener("click",function(e){
     let id = e.target.parentElement.getAttribute("data-id");
     calcularMarco(id);
+});
+addFrame.addEventListener("click",function(){
+    addProduct(arrFrame,1);
+    modalFrame.hide();
 });
 
 /*********************FUNCTIONS************************ */
@@ -220,64 +271,40 @@ function updateFramingConfig(select){
     const isColor = element.getAttribute("data-iscolor");
     const isBocel = element.getAttribute("data-isbocel");
     const isFrame = element.getAttribute("data-isframe");
+    const intMarginMax = element.getAttribute("data-max");
+    const intMargin = parseInt(element.getAttribute("data-margin"));
     select.setAttribute("data-ismargin",isMargin);
     select.setAttribute("data-iscolor",isColor);
     select.setAttribute("data-isbocel",isBocel);
     select.setAttribute("data-isframe",isFrame);
-
-    if(document.querySelectorAll(".selectProp")[0]){
-        colorMargin = document.querySelectorAll(".color--margin");
-        colorBorder = document.querySelectorAll(".color--border");
-        const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
-        const divMargin = document.querySelector("#isMargin");
-        const divBorder = document.querySelector("#isBorder");
-        const isMarginStyle = selectFrameStyle.getAttribute("data-ismargin");
-        const isColorStyle = selectFrameStyle.getAttribute("data-iscolor");
-        const isBocelStyle = selectFrameStyle.getAttribute("data-isbocel");
-        const isFrameStyle = selectFrameStyle.getAttribute("data-isframe");
-        if(isMarginStyle == 1){
-            divMargin.classList.remove("d-none");
-            if(!document.querySelector(".color--margin.element--active")){
-                document.querySelectorAll(".color--margin")[0].classList.add("element--active");
-            }
-            document.querySelector("#marginColor").innerHTML = document.querySelector(".color--margin.element--active").getAttribute("title");
-            let bm = getComputedStyle(colorMargin[0]).backgroundColor;
-            layoutMargin.style.backgroundColor=bm;
-        }else{
-            divMargin.classList.add("d-none");
-        }
-        if(isBocelStyle == 1){
-            divBorder.classList.remove("d-none");
-            if(!document.querySelector(".color--border.element--active")){
-                document.querySelectorAll(".color--border")[0].classList.add("element--active");
-            }
-            document.querySelector("#borderColor").innerHTML = document.querySelector(".color--border.element--active").getAttribute("title");
-            let bb = getComputedStyle(colorBorder[0]).backgroundColor;
-            layoutImg.style.borderColor=bb;
-        }else{
-            divBorder.classList.add("d-none");
-        }
+    select.setAttribute("data-margin",intMargin);
+    select.setAttribute("data-max",intMarginMax);
+    if(document.querySelectorAll(".selectProp")[0].getAttribute("data-id") == select.getAttribute("data-id")){
+        setDefaultConfig();
     }
-    
+    calcularMarco();
 }
 function selectColor(element=null,option=null){
-    console.log(option);
     const select = document.querySelectorAll(".selectProp")[0];
     const isBocel = select.getAttribute("data-isbocel");
     const isFrame = select.getAttribute("data-isframe");
-    layoutImg.style.border="none";
-    layoutMargin.style.backgroundColor="#000";
     if(option =="margin"){
-        document.querySelector("#marginColor").innerHTML = document.querySelector(".color--margin.element--active").getAttribute("title");
+        document.querySelector("#marginColor").innerHTML = element.getAttribute("title");
         let bg = getComputedStyle(element.children[0]).backgroundColor;
         layoutMargin.style.backgroundColor=bg;
     }else if(option=="border"){
-        if(isBocel)layoutImg.style.border="5px solid #fff";
-        if(isFrame)layoutImg.style.border="10px solid #fff";
-        document.querySelector("#borderColor").innerHTML = document.querySelector(".color--border.element--active").getAttribute("title");
+        document.querySelector("#borderColor").innerHTML = element.getAttribute("title");
         let bg = getComputedStyle(element.children[0]).backgroundColor;
         layoutImg.style.backgroundColor=bg;
+        if(isBocel == 1){
+            layoutImg.style.border=BORDERBOCEL+"px solid "+bg;
+            layoutImg.style.borderRadius=BORDERRADIUS+"px";
+        }else if(isFrame == 1){
+            layoutImg.style.border=BORDERFLOTANTE+"px solid "+bg;
+            layoutImg.style.borderRadius="0";
+        }
     }
+    calcularMarco();
 }
 function selectOrientation(element){
     let items = document.querySelectorAll(".orientation");
@@ -290,7 +317,6 @@ function selectOrientation(element){
     btnNext.classList.remove("d-none");
     resizeFrame(intWidth.value, intHeight.value);
 }
-
 function selectActive(element =null,elements=null){
     let items = document.querySelectorAll(`${elements}`);
     for (let i = 0; i < items.length; i++) {
@@ -298,13 +324,28 @@ function selectActive(element =null,elements=null){
     }
     element.classList.add("element--active");
 }
+function selectMargin(value){
+    const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
+    selectFrameStyle.setAttribute("data-margin",value);
+    document.querySelector("#marginRange").setAttribute("max",selectFrameStyle.getAttribute("data-max"));
+    margin = parseFloat(value);
+    height = parseFloat(intHeight.value);
+    width = parseFloat(intWidth.value);
+    let marginHeight = (height*DIMENSIONDEFAULT) + (margin*10);
+    let marginWidth = (width*DIMENSIONDEFAULT) + (margin*10);
+    layoutMargin.style.height = `${marginHeight}px`;
+    layoutMargin.style.width = `${marginWidth}px`;
+    layoutBorder.style.height = `${marginHeight}px`;
+    layoutBorder.style.width = `${marginWidth}px`;
+    document.querySelector("#marginData").innerHTML= margin+" cm";
+    calcularMarco();
+}
 function resizeFrame(width,height){
-    const selectStyle = document.querySelectorAll(".selectProp")[0];
     let margin = 0;
     if(document.querySelector(".selectProp")){
         const selectStyle = document.querySelectorAll(".selectProp")[0];
         if(selectStyle.getAttribute("data-ismargin")==1){
-            margin = parseInt(document.querySelector("#marginRange").value);
+            margin = parseInt(selectStyle.getAttribute("data-margin"));
         }
     }
     height = parseFloat(height);
@@ -323,14 +364,13 @@ function resizeFrame(width,height){
         heightM = heightM +(margin*10);
         widthM = widthM +(margin*10); 
     }
-
     layoutImg.style.height = `${height}px`;
     layoutImg.style.width = `${width}px`;
     layoutMargin.style.height = `${heightM}px`;
     layoutMargin.style.width = `${widthM}px`;
     layoutBorder.style.height = `${heightM}px`;
     layoutBorder.style.width = `${widthM}px`;
-    
+    calcularMarco();
 }
 function selectColorFrame(element){
     const colorFrame = document.querySelectorAll(".color--frame");
@@ -348,159 +388,134 @@ function selectColorFrame(element){
     let bg = getComputedStyle(element.children[0]).backgroundColor;
     layoutBorder.style.outlineColor=bg;
     document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
-    
+    calcularMarco();
 }
 function setDefaultConfig(){
-    /*if(!document.querySelector(".frame--item.element--active")){
-        document.querySelectorAll(".frame--item")[0].classList.add("element--active");
-    }
-    if(!document.querySelector(".color--frame.element--active")){
-        document.querySelectorAll(".color--frame")[2].classList.add("element--active");
-    }else if(sortFrame.value == 1){
-        let bg = getComputedStyle(document.querySelector(".color--frame.element--active").children[0]).backgroundColor;
-        layoutBorder.style.outlineColor=bg;
-        document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
-        //document.querySelector("#spcFrameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
+    colorMargin = document.querySelectorAll(".color--margin")[0];
+    colorBorder = document.querySelectorAll(".color--border")[0];
+    const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
+    const divMargin = document.querySelector("#isMargin");
+    const divBorder = document.querySelector("#isBorder");
+    const isMarginStyle = selectFrameStyle.getAttribute("data-ismargin");
+    const isColorStyle = selectFrameStyle.getAttribute("data-iscolor");
+    const isBocelStyle = selectFrameStyle.getAttribute("data-isbocel");
+    const isFrameStyle = selectFrameStyle.getAttribute("data-isframe");
+    const intMarginStyle = selectFrameStyle.getAttribute("data-margin");
+    selectMargin(0);
+    if(isMarginStyle == 1){
+        divMargin.classList.remove("d-none");
+        if(!document.querySelector(".color--margin.element--active")){
+            colorMargin.classList.add("element--active");
+        }else{
+            colorMargin = document.querySelector(".color--margin.element--active");
+        }
+        document.querySelector("#marginColor").innerHTML = colorMargin.getAttribute("title");
+        let bm = getComputedStyle(colorMargin.children[0]).backgroundColor;
+        layoutMargin.style.backgroundColor=bm;
+        document.querySelector("#marginRange").value=intMarginStyle;
+        selectMargin(intMarginStyle);
     }else{
-        //document.querySelector("#spcFrameColor").innerHTML = "N/A";
-        layoutBorder.style.outlineColor="transparent";
-        selectColorFrame();
-    }*/
-    //document.querySelectorAll(".orientation")[0].classList.add("element--active");
+        divMargin.classList.add("d-none");
+    }
+    if(isBocelStyle == 1 || isFrameStyle == 1){
+        let borderW = isFrameStyle == 1 ? BORDERFLOTANTE: BORDERBOCEL;
+        let borderR = isFrameStyle == 1 ? 0: BORDERRADIUS;
+        document.querySelector("#marginTitle").innerHTML = isFrameStyle == 1 ? "fondo" : "paspartú";
+        document.querySelector("#colorMarginTitle").innerHTML = isFrameStyle == 1 ? "fondo" : "paspartú";
+        document.querySelector("#colorBorderTitle").innerHTML = isFrameStyle == 1 ? "marco interno" : "bocel";
+        divBorder.classList.remove("d-none");
+        if(!document.querySelector(".color--border.element--active")){
+            colorBorder.classList.add("element--active");
+        }else{
+            colorBorder = document.querySelector(".color--border.element--active");
+        }
+        document.querySelector("#borderColor").innerHTML = colorBorder.getAttribute("title");
+        let bb = getComputedStyle(colorBorder.children[0]).backgroundColor;
+        layoutImg.style.border=borderW+"px solid "+bb;
+        layoutImg.style.borderRadius=borderR;
+    }else{
+        document.querySelector("#marginTitle").innerHTML = "paspartú";
+        document.querySelector("#colorMarginTitle").innerHTML = "paspartú";
+        document.querySelector("#colorBorderTitle").innerHTML = "bocel";
+        layoutImg.style.border="none";
+        divBorder.classList.add("d-none");
+    }
     //calcularMarco();
 }
-
-
-
-function selectMargin(element){
-    margin = parseFloat(element.value);
-    height = parseFloat(intHeight.value);
-    width = parseFloat(intWidth.value);
-    let marginHeight = (height*DIMENSIONDEFAULT) + (margin*10);
-    let marginWidth = (width*DIMENSIONDEFAULT) + (margin*10);
-    layoutMargin.style.height = `${marginHeight}px`;
-    layoutMargin.style.width = `${marginWidth}px`;
-    layoutBorder.style.height = `${marginHeight}px`;
-    layoutBorder.style.width = `${marginWidth}px`;
-    document.querySelector("#marginData").innerHTML= margin+" cm";
-}
-function selectStyleFrame(option){
-    document.querySelector(".borderColor").classList.remove("d-none");
-    document.querySelector("#spanP").innerHTML="Medida del paspartú";
-    document.querySelector("#spanPC").innerHTML="Elige el color del paspartú";
-    document.querySelector("#spanBorde").innerHTML="Elige el color del bocel";
-    if(option == 1){
-        optionsCustom[0].classList.add("d-none");
-        //optionsCustom[1].classList.add("d-none");
-        customMargin(0);
-        selectColors();
-        document.querySelector("#spcColorP").innerHTML ="N/A";
-        document.querySelector("#spcColorB").innerHTML ="N/A";
-        document.querySelector("#spcMeasureP").innerHTML = "0cm";
-    }else if(option == 2 || option == 4){
-        optionsCustom[0].classList.remove("d-none");
-        //optionsCustom[1].classList.add("d-none");
-        customMargin(1);
-        document.querySelector("#spcMeasureP").innerHTML = "1cm";
-        if(option==2){
-            selectColors(1);
-        }else{
-            document.querySelector("#spanP").innerHTML="Medida del fondo";
-            document.querySelector("#spanPC").innerHTML="Elige el color del fondo";
-            document.querySelector("#spanBorde").innerHTML="Elige el color del marco interno";
-            selectColors(2);
-        }
-        if(!document.querySelector(".color--border.element--active") && !document.querySelector(".color--margin.element--active")){
-            document.querySelectorAll(".color--border")[2].classList.add("element--active");
-            document.querySelectorAll(".color--margin")[2].classList.add("element--active");
-            layoutMargin.style.backgroundColor = getComputedStyle(document.querySelectorAll(".color--margin")[2]).backgroundColor;
-            layoutImg.style.borderColor = getComputedStyle(document.querySelectorAll(".color--border")[2]).backgroundColor;
-            document.querySelector("#marginColor").innerHTML = "Blanco";
-            document.querySelector("#spcColorP").innerHTML = "Blanco";
-            document.querySelector("#borderColor").innerHTML = "Blanco";
-            document.querySelector("#spcColorB").innerHTML = "Blanco";
-        }
-    }else if(option == 3){
-        optionsCustom[0].classList.remove("d-none");
-        //optionsCustom[1].classList.add("d-none");
-        document.querySelector(".borderColor").classList.add("d-none");
-        customMargin(1);
-        selectColors(0);
-        document.querySelector("#spcColorB").innerHTML ="N/A";
-        document.querySelector("#spcMeasureP").innerHTML = "1cm";
-        if(!document.querySelector(".color--margin.element--active")){
-            document.querySelectorAll(".color--margin")[2].classList.add("element--active");
-            layoutMargin.style.backgroundColor = getComputedStyle(document.querySelectorAll(".color--margin")[2]).backgroundColor;
-            document.querySelector("#marginColor").innerHTML = document.querySelector(".color--margin.element--active").getAttribute("title");
-            document.querySelector("#spcColorP").innerHTML = document.querySelector(".color--margin.element--active").getAttribute("title");
-        }
-    }else if(option == 5){
-        document.querySelector("#glassDiv").classList.add("d-none");
-        selectGlass.value = 3;
-        optionsCustom[0].classList.add("d-none");
-        //optionsCustom[1].classList.add("d-none");
-        customMargin(0);
-        selectColors();
-        document.querySelector("#spcColorP").innerHTML ="N/A";
-        document.querySelector("#spcColorB").innerHTML ="N/A";
-        document.querySelector("#spcMeasureP").innerHTML = "0cm";
-        document.querySelector("#spcStyle").innerHTML = "N/A";
-    }else{
-        customMargin(0);
-        selectColors();
-        optionsCustom[0].classList.add("d-none");
-        //optionsCustom[1].classList.remove("d-none");
-        document.querySelector("#spcMeasureP").innerHTML = "0cm";
-    }
-    document.querySelector("#spcStyle").innerHTML = selectStyle.options[selectStyle.selectedIndex].text;
-    document.querySelector("#spcGlass").innerHTML = selectGlass.options[selectGlass.selectedIndex].text;
-
-}
-
-function calcularMarco(id=null){
+async function calcularMarco(id=null){
     if(!document.querySelector(".frame--item.element--active")){
         return false;
     }
     if(id == null){
         id = document.querySelector(".frame--item.element--active").getAttribute("data-id");
     }
-    let margin = selectStyle.value == 1 || selectStyle.value == 5 ? 0 : marginRange.value;
-    let styleFrame = selectStyle.value;
-    let height = intHeight.value;
-    let width = intWidth.value;
-    let styleGlass = selectGlass.value;
-    let type = document.querySelector("#enmarcarTipo").getAttribute("data-id");
-
-    let formData = new FormData();
-    formData.append("height",height);
-    formData.append("width",width);
-    formData.append("style",styleFrame);
-    formData.append("glass",styleGlass)
-    formData.append("margin",margin);
-    formData.append("id",id);
-    formData.append("type",type);
-
-    document.querySelectorAll(".totalFrame")[0].innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    request(base_url+"/marcos/calcularMarcoTotal",formData,"post").then(function(objData){
-        if(objData.status){
-            let data = objData.data;
-            let borderImage = `url(${base_url}/Assets/images/uploads/${data.frame}) 40% repeat`;
-            //document.querySelector("#reference").innerHTML = "Ref: "+data.reference;
-            document.querySelectorAll(".totalFrame")[0].innerHTML = data.total.format;
-            //document.querySelectorAll(".totalFrame")[1].innerHTML = data.total.format;
-            layoutMargin.style.borderImage= borderImage;
-            layoutMargin.style.borderWidth = (data.waste/1.5)+"px";
-            layoutMargin.style.boxShadow = `0px 0px 5px ${data.waste/1.6}px rgba(0,0,0,0.75)`;
-            layoutBorder.style.outlineWidth = (data.waste/1.6)+"px";
-            //layoutBorder.style.outlineColor = "blue";
-            layoutMargin.style.borderImageOutset = (data.waste/1.6)+"px";
-            
-            document.querySelector("#spcReference").innerHTML=data.reference;
-            document.querySelector(".product-image-inner").innerHTML = showImages(data.image);
-            document.querySelector(".product-image-slider").classList.remove("d-none");
-            clickShowImages()
-        }
+    const props = Array.from(document.querySelectorAll(".selectProp"));
+    const intMargin = parseInt(props[0].getAttribute("data-margin"));
+    const arrProps = [];
+    props.forEach(e=>{
+        arrProps.push({
+            prop:e.getAttribute("data-id"),
+            option_prop:e.value
+        })
     });
+    const formData = new FormData();
+    const defaultFrame = document.querySelector(".frame--item.element--active");
+    formData.append("data",JSON.stringify(arrProps));
+    formData.append("id",defaultFrame.getAttribute("data-id"));
+    formData.append("height",intHeight.value);
+    formData.append("width",intWidth.value);
+    formData.append("margin",intMargin);
+    formData.append("id_config",document.querySelector("#idCategory").value);
+    formData.append("orientation",document.querySelector(".orientation.element--active").getAttribute("data-name"));
+    formData.append("color_frame",document.querySelector(".color--frame.element--active").getAttribute("title"));
+    formData.append("color_margin",document.querySelector(".color--margin.element--active").getAttribute("title"));
+    formData.append("color_border",document.querySelector(".color--border.element--active").getAttribute("title"));
+    const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData});
+    const objData = await response.json();
+    if(objData.status){
+        arrFrame = objData.specs;
+        totalFrame = objData.total_clean;
+        nameTopic = objData.name;
+        document.querySelector(".totalFrame").innerHTML = objData.total;
+    }
+}
+function calcDimension(picture){
+    if(uploadPicture.value !=""){
+        let realHeight = picture.naturalHeight;
+        let realWidth = picture.naturalWidth;
+    
+        let height = Math.round((realHeight*2.54)/PPI) < 10 ? 10 :  Math.round((realHeight*2.54)/PPI);
+        let width = Math.round((realWidth*2.54)/PPI) < 10 ? 10 :  Math.round((realWidth*2.54)/PPI);
+        PPI = height > width ? height : width;
+        if(height > MAXDIMENSION){
+            height = Math.round((realHeight*2.54)/PPI);
+        }
+        if(width > MAXDIMENSION){
+            width = Math.round((realWidth*2.54)/PPI);
+        }
+        height = Math.round(height/10)*10;
+        width = Math.round(width/10)*10;
+        intHeight.value = height;
+        intWidth.value = width;
+        calcPpi(height,width,picture);
+        resizeFrame(intWidth.value,intHeight.value);
+    }
+}
+function calcPpi(height,width,picture){
+    
+    let realHeight = picture.naturalHeight;
+    let realWidth = picture.naturalWidth;
+
+    let h = Math.round((realHeight*2.54)/height);
+    let w = Math.round((realWidth*2.54)/width);
+    let ppi = Math.floor((h+w))/2;
+    ppi = ppi >= 300 ? 300 : ppi;
+    if(ppi<100){
+        imgQuality.innerHTML = `Resolución ${ppi} ppi <span class="text-danger">mala calidad</span>, puedes reducir las dimensiones o cambiar de imagen`;
+    }else{
+        imgQuality.innerHTML = `Resolución ${ppi} ppi <span class="text-success">buena calidad</span>`;
+    }
+
 }
 function uploadImg(img,location){
     let imgUpload = img.value;
