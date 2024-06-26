@@ -351,7 +351,19 @@
                 $total = count($request);
                 for ($i=0; $i < $total; $i++) { 
                     $sql = "SELECT * FROM molding_options WHERE status = 1 AND prop_id = {$request[$i]['prop']} ORDER BY name";
+                    $sql_framing = "SELECT 
+                    s.name,
+                    f.framing_id
+                    FROM molding_props_framing f
+                    INNER JOIN subcategory s ON f.framing_id = s.idsubcategory
+                    WHERE f.prop_id = {$request[$i]['prop']} AND is_check = 1";
+
                     $request[$i]['options'] = $this->select_all($sql);
+                    $arrPropsConfig = $this->select_all($sql_framing);
+                    for ($j=0; $j < count($arrPropsConfig) ; $j++) { 
+                        $arrPropsConfig[$j]['attribute'] = 'data-'.$j.'="'.$arrPropsConfig[$j]['name'].'"';
+                    }
+                    $request[$i]['attributes'] = $arrPropsConfig;
                 }
             }
             return $request;

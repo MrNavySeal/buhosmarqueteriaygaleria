@@ -672,6 +672,8 @@ function showProps(data){
     if(data.length > 0){
         data.forEach(d => {
             const optionsProps = d.options;
+            const attributes = d.attributes;
+            let propAttributes = "";
             let selectOptions = "";
             const defaultOption = optionsProps[0];
             if(optionsProps.length>0){
@@ -680,8 +682,11 @@ function showProps(data){
                     data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-id="${d.prop}" data-max="${o.margin}" data-isbocel="${o.is_bocel}">${o.name}</option>`
                 });
             }
+            attributes.forEach(a => {
+                propAttributes+=" "+a.attribute;
+            });
             html+= `
-                <div class="mb-3">
+                <div class="mb-3 selectPropContent" ${propAttributes}>
                     <span class="fw-bold">${d.name}</span>
                     <select class="form-select mt-3 mb-3 selectProp"  onchange="updateFramingConfig(this)" data-ismargin="${defaultOption.is_margin}" data-id="${d.prop}"
                     data-margin="0" data-max="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}"

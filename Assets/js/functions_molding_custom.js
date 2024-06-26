@@ -215,6 +215,7 @@ searchFrame.addEventListener('input',function() {
 
 sortFrame.addEventListener("change",function(){
     if(intWidth.value !="" && intHeight.value!=""){
+        const arrPropContent = Array.from(document.querySelectorAll(".selectPropContent"));
         const colorFrame = document.querySelector("#frame--color");
         const colorSelectedFrame = document.querySelector(".color--frame.element--active");
         let bgSelectedFrame = getComputedStyle(colorSelectedFrame.children[0]).backgroundColor;
@@ -233,6 +234,18 @@ sortFrame.addEventListener("change",function(){
                 </div>
             `;
         });
+        arrPropContent.forEach(e=>{
+            const arrAttributes = Array.from(e.attributes).filter(a=>a.name.includes("data"));
+            for (let i = 0; i < arrAttributes.length; i++) {
+                const element = arrAttributes[i];
+                if(element.value == sortFrame.value){
+                    e.classList.remove("d-none");
+                    break;
+                }else{
+                    e.classList.add("d-none");
+                }
+            }
+        })
         if(needle.includes("madera")){
             colorFrame.classList.remove("d-none");
             document.querySelector("#frameColor").innerHTML = colorSelectedFrame.getAttribute("title");
@@ -240,6 +253,7 @@ sortFrame.addEventListener("change",function(){
             colorFrame.classList.add("d-none");
             bgSelectedFrame = "transparent";
         }
+
         document.querySelector(".select--frames").innerHTML = contentFrames;
         document.querySelectorAll(".frame--item")[0].classList.add("element--active");
         const defaultFrame = document.querySelector(".frame--item.element--active");
