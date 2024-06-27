@@ -11,7 +11,7 @@
         <?php
             if($_SESSION['permitsModule']['w']){
         ?>
-        <a class="btn btn-primary" href="<?=base_url()."/PedidosPos"?>" >Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></a>
+        <a class="btn btn-primary" href="<?=base_url()."/PedidosPos/venta"?>" >Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></a>
         <?php
         }
         ?>
