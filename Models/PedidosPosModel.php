@@ -330,6 +330,7 @@
                         $arrProducts[$j]['images'] = $requestImg;
                         $arrProducts[$j]['image'] = $requestImg[0]['image'];
                     }
+                    usort($arrProducts,function($a,$b){return $b['waste'] < $a['waste'];});
                     $request[$i]['frames'] = $arrProducts;
                 }
             }

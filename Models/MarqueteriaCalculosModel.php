@@ -50,7 +50,7 @@
             $this->intId = $intId;
             $sql = "SELECT p.price_purchase,s.name,p.reference
             FROM product p 
-            INNER JOIN subcategory S ON s.idsubcategory = p.subcategoryid
+            INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             WHERE p.idproduct = $this->intId";
             $request = $this->select($sql);
             $request['name'] = strtolower($request['name']);
