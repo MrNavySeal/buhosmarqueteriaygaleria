@@ -467,10 +467,17 @@ async function calcularMarco(id=null){
     const intMargin = parseInt(props[0].getAttribute("data-margin"));
     const arrProps = [];
     props.forEach(e=>{
-        arrProps.push({
-            prop:e.getAttribute("data-id"),
-            option_prop:e.value
-        })
+        const arrAttributes = Array.from(e.parentElement.attributes).filter(a=>a.name.includes("data"));
+        for (let i = 0; i < arrAttributes.length; i++) {
+            const element = arrAttributes[i];
+            if(element.value == sortFrame.value){
+                arrProps.push({
+                    prop:e.getAttribute("data-id"),
+                    option_prop:e.value
+                });
+                break;
+            }
+        }
     });
     const formData = new FormData();
     const defaultFrame = document.querySelector(".frame--item.element--active");
