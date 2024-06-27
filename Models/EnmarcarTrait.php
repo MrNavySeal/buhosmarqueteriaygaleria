@@ -6,7 +6,7 @@
 
         public function selectTipos(){
             $this->con = new Mysql();
-            $sql = "SELECT * FROM moldingcategory WHERE status = 1 ORDER BY id ASC";       
+            $sql = "SELECT * FROM moldingcategory WHERE status = 1 AND is_visible = 1 ORDER BY id ASC";       
             $request = $this->con->select_all($sql);
             return $request;
         }
