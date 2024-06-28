@@ -271,6 +271,15 @@ sortFrame.addEventListener("change",function(){
 
 containerFrames.addEventListener("click",function(e){
     let id = e.target.parentElement.getAttribute("data-id");
+    const defaultFrame = document.querySelector(".frame--item.element--active");
+    const imgFrame = defaultFrame.getAttribute("data-frame");
+    const waste = defaultFrame.getAttribute("data-waste");
+    layoutMargin.style.borderImage= imgFrame;
+    layoutMargin.style.borderWidth = (waste/1.5)+"px";
+    layoutMargin.style.boxShadow = `0px 0px 5px ${waste/1.6}px rgba(0,0,0,0.75)`;
+    layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
+    layoutBorder.style.outlineWidth = (waste/1.6)+"px";
+    layoutBorder.style.outlineColor=bg; 
     calcularMarco(id);
 });
 addFrame.addEventListener("click",function(){

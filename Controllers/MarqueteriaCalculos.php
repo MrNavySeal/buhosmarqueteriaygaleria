@@ -41,7 +41,13 @@
                         $waste = $frame['waste'];
                         $data = $request['data'];
                         $totalCostMaterial = 0;
+
                         $totalCostFrame = ((($intHeightM+$intWidthM)*2)+$waste)*$cost;
+                        if( $frame['name'] !="molduras importadas"){
+                            $perimetro = 2*($intHeightM+$intWidthM);
+                            $varas = ceil(($perimetro)/($frameLength-$waste));
+                            $totalCostFrame = ($perimetro+($waste*$varas))*$cost;
+                        }
                         $totalCost = 0;
                         $arrSpecs = [];
                         array_push($arrSpecs,

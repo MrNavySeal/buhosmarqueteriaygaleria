@@ -70,10 +70,12 @@
                 <div class="dropdown-menu bg-transparent border-0">
                     <a href="<?=base_url()?>/marqueteria/molduras" class="dropdown-item">Molduras</a>
                     <a href="<?=base_url()?>/marqueteria/colores" class="dropdown-item">Colores</a>
+                    <?php  if($_SESSION['permit'][11]['w']){ ?>
                     <a href="<?=base_url()?>/marqueteria/categorias" class="dropdown-item">Categorias</a>
                     <a href="<?=base_url()?>/marqueteria/propiedades" class="dropdown-item">Propiedades</a>
                     <a href="<?=base_url()?>/MarqueteriaOpciones/opciones" class="dropdown-item">Opciones de propiedades</a>
                     <a href="<?=base_url()?>/MarqueteriaConfiguracion/configuracion" class="dropdown-item">Configurar categorías</a>
+                    <?php } ?>
                     <a href="<?=base_url()?>/MarqueteriaCalculos/calculadora" class="dropdown-item">Calculadora de costos</a>
                 </div>
             </div>
@@ -108,7 +110,9 @@
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-coins"></i>Compras</a>
                     <div class="dropdown-menu bg-transparent border-0">
+                        <?php  if($_SESSION['permit'][8]['w']){ ?>
                         <a href="<?=base_url()?>/compras/compra" class="dropdown-item">Nueva compra</a>
+                        <?php } ?>
                         <a href="<?=base_url()?>/compras" class="dropdown-item">Compras</a>
                         <a href="<?=base_url()?>/compras/creditos" class="dropdown-item">Compras por crédito</a>
                         <a href="<?=base_url()?>/compras/detalles" class="dropdown-item">Detalle de Compras</a>
