@@ -279,7 +279,6 @@ containerFrames.addEventListener("click",function(e){
     layoutMargin.style.boxShadow = `0px 0px 5px ${waste/1.6}px rgba(0,0,0,0.75)`;
     layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
-    layoutBorder.style.outlineColor=bg; 
     calcularMarco(id);
 });
 addFrame.addEventListener("click",function(){
