@@ -60,6 +60,7 @@ if(document.querySelector("#btnNew")){
         document.querySelector("#isColor").checked = false;
         document.querySelector("#isDblFrame").checked = false;
         document.querySelector("#isBocel").checked = false;
+        document.querySelector("#isVisible").checked = false;
         document.querySelector("#txtMargin").value = 5;
         modal.show();
     });
@@ -79,6 +80,8 @@ if(document.querySelector("#formItem")){
         let isColor = document.querySelector("#isColor").checked;
         let isDblFrame = document.querySelector("#isDblFrame").checked;
         let isBocel = document.querySelector("#isBocel").checked;
+        let isVisible = document.querySelector("#isVisible").checked;
+        let intOrderList = document.querySelector("#orderList").value;
         if(strName == "" || intStatus =="" || intProp ==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
@@ -90,7 +93,9 @@ if(document.querySelector("#formItem")){
         formData.append("is_color",isColor ? 1 : 0);
         formData.append("is_frame",isDblFrame ? 1 : 0);
         formData.append("is_bocel",isBocel ? 1 : 0);
+        formData.append("is_visible",isVisible ? 1 : 0);
         formData.append("margin",intMargin);
+        formData.append("order",intOrderList);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             
@@ -217,8 +222,15 @@ function editItem(id){
         document.querySelector("#isColor").checked = objData.data.is_color;
         document.querySelector("#isDblFrame").checked = objData.data.is_frame;
         document.querySelector("#isBocel").checked = objData.data.is_bocel;
+        document.querySelector("#isVisible").checked = objData.data.is_visible;
         document.querySelector("#txtMargin").value = objData.data.margin;
+        document.querySelector("#orderList").value = objData.data.order_view;
         document.querySelector(".modal-title").innerHTML = "Actualizar opción de propiedad";
+        if(objData.data.is_margin){
+            divMargin.classList.remove("d-none");
+        }else{
+            divMargin.classList.add("d-none");
+        }
         modal.show();
     });
 }

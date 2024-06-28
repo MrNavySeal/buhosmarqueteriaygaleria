@@ -351,7 +351,7 @@
             if(!empty($request)){
                 $total = count($request);
                 for ($i=0; $i < $total; $i++) { 
-                    $sql = "SELECT * FROM molding_options WHERE status = 1 AND prop_id = {$request[$i]['prop']} ORDER BY name";
+                    $sql = "SELECT * FROM molding_options WHERE status = 1 AND prop_id = {$request[$i]['prop']} ORDER BY order_view";
                     $sql_framing = "SELECT 
                     s.name,
                     f.framing_id

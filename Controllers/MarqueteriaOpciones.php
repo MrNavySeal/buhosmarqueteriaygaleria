@@ -91,15 +91,17 @@
                         $isColor = intval($_POST['is_color']);
                         $isFrame = intval($_POST['is_frame']);
                         $isBocel = intval($_POST['is_bocel']);
+                        $isVisible = intval($_POST['is_visible']);
+                        $intOrder = intval($_POST['order']);
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                $request= $this->model->insertOption($strName,$intStatus,$intProp,$isMargin,$isColor,$isFrame,$intMargin,$isBocel);
+                                $request= $this->model->insertOption($strName,$intStatus,$intProp,$isMargin,$isColor,$isFrame,$intMargin,$isBocel,$isVisible,$intOrder);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->updateOption($id,$strName,$intStatus,$intProp,$isMargin,$isColor,$isFrame,$intMargin,$isBocel);
+                                $request = $this->model->updateOption($id,$strName,$intStatus,$intProp,$isMargin,$isColor,$isFrame,$intMargin,$isBocel,$isVisible,$intOrder);
                             }
                         }
                         if(is_numeric($request) && $request > 0 ){
