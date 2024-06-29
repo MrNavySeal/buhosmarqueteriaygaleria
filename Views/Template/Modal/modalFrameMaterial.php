@@ -26,6 +26,7 @@
                                     <option value="completo">Completo</option>
                                     <option value="imagen">imagen</option>
                                 </select>
+                                <input type="number" class="form-control" id="txtNumber" placeholder="Digite un factor o multiplicador" value=1>
                                 <button type="button" class="btn btn-primary" onclick="addMaterial()"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
@@ -38,6 +39,7 @@
                             <th>Nombre</th>
                             <th>Cálculo</th>
                             <th>Tipo</th>
+                            <th>Factor</th>
                             <th>Opciones</th>
                         </thead>
                         <tbody id="tableMaterial"></tbody>
