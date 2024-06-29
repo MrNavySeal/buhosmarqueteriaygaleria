@@ -679,7 +679,8 @@ function showProps(data){
             if(optionsProps.length>0){
                 optionsProps.forEach(o=>{
                     selectOptions+=`<option value="${o.id}" data-margin="1" data-iscolor="${o.is_color}" 
-                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-id="${d.prop}" data-max="${o.margin}" data-isbocel="${o.is_bocel}">${o.name}</option>`
+                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-id="${d.prop}" data-max="${o.margin}" data-isbocel="${o.is_bocel}"
+                    data-tag="${o.tag}" data-tagframe="${o.tag_frame}">${o.name}</option>`
                 });
             }
             attributes.forEach(a => {
@@ -690,21 +691,21 @@ function showProps(data){
                     <span class="fw-bold">${d.name}</span>
                     <select class="form-select mt-3 mb-3 selectProp"  onchange="updateFramingConfig(this)" data-ismargin="${defaultOption.is_margin}" data-id="${d.prop}"
                     data-margin="0" data-max="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}"
-                    data-isbocel="${defaultOption.is_bocel}">${selectOptions}</select>
+                    data-isbocel="${defaultOption.is_bocel}" data-tag="${defaultOption.tag}" data-tagframe="${defaultOption.tag_frame}">${selectOptions}</select>
                 </div>
             `;
             if(data[0].prop == d.prop){
                 html+=`<div class="option--custom  mb-3">
                         <div class="d-none" id="isMargin" data-name="${defaultOption.is_margin}">
                             <div class="mb-3" >
-                                <span class="fw-bold">Medida del <span id="marginTitle">paspartú</span></span>
+                                <span class="fw-bold">Medida del <span id="marginTitle">${defaultOption.tag}</span></span>
                                 <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="${defaultOption.margin}" value="1" id="marginRange" 
                                 oninput="selectMargin(this.value)">
                                 <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
                             </div>
                             <div class="mb-3">
                                 <div class="fw-bold d-flex justify-content-between">
-                                    <span>Elige el color del <span id="colorMarginTitle">paspartú</span></span>
+                                    <span>Elige el color del <span id="colorMarginTitle">${defaultOption.tag}</span></span>
                                     <span id="marginColor"></span>
                                 </div>
                                 <div class="colors mt-3" id="colorsMargin">
@@ -717,7 +718,7 @@ function showProps(data){
                         <div class="d-none" id="isBorder" data-isframe="${defaultOption.is_margin}" data-isbocel="${defaultOption.is_bocel}">
                             <div class="mb-3 borderColor">
                                 <div class="fw-bold d-flex justify-content-between">
-                                    <span>Elige el color del <span id="colorBorderTitle">bocel</span></span>
+                                    <span>Elige el color del <span id="colorBorderTitle">${defaultOption.tag_frame}</span></span>
                                     <span id="borderColor"></span>
                                 </div>
                                 <div class="colors mt-3" id="colorsBorder">

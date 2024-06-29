@@ -295,12 +295,16 @@ function updateFramingConfig(select){
     const isFrame = element.getAttribute("data-isframe");
     const intMarginMax = element.getAttribute("data-max");
     const intMargin = parseInt(element.getAttribute("data-margin"));
+    const strTag = element.getAttribute("data-tag");
+    const strTagFrame = element.getAttribute("data-tagframe");
     select.setAttribute("data-ismargin",isMargin);
     select.setAttribute("data-iscolor",isColor);
     select.setAttribute("data-isbocel",isBocel);
     select.setAttribute("data-isframe",isFrame);
     select.setAttribute("data-margin",intMargin);
     select.setAttribute("data-max",intMarginMax);
+    select.setAttribute("data-tag",strTag);
+    select.setAttribute("data-tagframe",strTagFrame);
     if(document.querySelectorAll(".selectProp")[0].getAttribute("data-id") == select.getAttribute("data-id")){
         setDefaultConfig();
     }
@@ -423,6 +427,8 @@ function setDefaultConfig(){
     const isBocelStyle = selectFrameStyle.getAttribute("data-isbocel");
     const isFrameStyle = selectFrameStyle.getAttribute("data-isframe");
     const intMarginStyle = selectFrameStyle.getAttribute("data-margin");
+    const strTagStyle = selectFrameStyle.getAttribute("data-tag");
+    const strTagFrameStyle = selectFrameStyle.getAttribute("data-tagframe");
     selectMargin(0);
     if(isMarginStyle == 1){
         divMargin.classList.remove("d-none");
@@ -442,9 +448,9 @@ function setDefaultConfig(){
     if(isBocelStyle == 1 || isFrameStyle == 1){
         let borderW = isFrameStyle == 1 ? BORDERFLOTANTE: BORDERBOCEL;
         let borderR = isFrameStyle == 1 ? 0: BORDERRADIUS;
-        document.querySelector("#marginTitle").innerHTML = isFrameStyle == 1 ? "fondo" : "paspartú";
-        document.querySelector("#colorMarginTitle").innerHTML = isFrameStyle == 1 ? "fondo" : "paspartú";
-        document.querySelector("#colorBorderTitle").innerHTML = isFrameStyle == 1 ? "marco interno" : "bocel";
+        document.querySelector("#marginTitle").innerHTML = strTagStyle;
+        document.querySelector("#colorMarginTitle").innerHTML = strTagStyle;
+        document.querySelector("#colorBorderTitle").innerHTML = strTagFrameStyle;
         divBorder.classList.remove("d-none");
         if(!document.querySelector(".color--border.element--active")){
             colorBorder.classList.add("element--active");
@@ -456,9 +462,9 @@ function setDefaultConfig(){
         layoutImg.style.border=borderW+"px solid "+bb;
         layoutImg.style.borderRadius=borderR;
     }else{
-        document.querySelector("#marginTitle").innerHTML = "paspartú";
-        document.querySelector("#colorMarginTitle").innerHTML = "paspartú";
-        document.querySelector("#colorBorderTitle").innerHTML = "bocel";
+        document.querySelector("#marginTitle").innerHTML = strTagStyle;
+        document.querySelector("#colorMarginTitle").innerHTML = strTagStyle;
+        document.querySelector("#colorBorderTitle").innerHTML = strTagFrameStyle;
         layoutImg.style.border="none";
         divBorder.classList.add("d-none");
     }

@@ -65,11 +65,11 @@
                             $option = $e['option'];
                             $arrMaterial = $e['material'];
                             if($option['is_margin']){
-                                array_push($arrSpecs,array("name"=>$option['is_frame']== 1 ? "Medida del fondo" : "Medida del paspartú","value"=>$intMargin." cm"));
-                                array_push($arrSpecs,array("name"=>$option['is_frame']== 1 ? "Color del fondo" : "Color del paspartú","value"=>$strColorMargin));
+                                array_push($arrSpecs,array("name"=>"Medida del ".$option['tag'],"value"=>$intMargin." cm"));
+                                array_push($arrSpecs,array("name"=>"Color del ".$option['tag'],"value"=>$strColorMargin));
                             }
                             if($option['is_bocel'] || $option['is_frame']){
-                                array_push($arrSpecs,array("name"=>$option['is_frame']== 1 ? "Color del marco interno" : "Color del bocel","value"=>$strColorBorder));
+                                array_push($arrSpecs,array("name"=>"Color del ".$option['tag_frame'],"value"=>$strColorBorder));
                             }
                             
                             array_push($arrSpecs,array("name"=>$prop['name'],"value"=>$option['name']));
