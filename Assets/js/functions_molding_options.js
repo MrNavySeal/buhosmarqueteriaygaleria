@@ -55,6 +55,7 @@ if(document.querySelector("#btnNew")){
         document.querySelector(".modal-title").innerHTML = "Nueva opción de propiedad";
         document.querySelector("#id").value = "";
         document.querySelector("#txtName").value = "";
+        document.querySelector("#txtTag").value = "";
         document.querySelector("#statusList").value = 1;
         document.querySelector("#isMargin").checked = false;
         document.querySelector("#isColor").checked = false;
@@ -82,6 +83,7 @@ if(document.querySelector("#formItem")){
         let isBocel = document.querySelector("#isBocel").checked;
         let isVisible = document.querySelector("#isVisible").checked;
         let intOrderList = document.querySelector("#orderList").value;
+        let strTag = document.querySelector("#txtTag").value;
         if(strName == "" || intStatus =="" || intProp ==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
@@ -216,6 +218,7 @@ function editItem(id){
     request(base_url+"/MarqueteriaOpciones/getOption",formData,"post").then(function(objData){
         document.querySelector("#id").value = objData.data.id;
         document.querySelector("#txtName").value = objData.data.name;
+        document.querySelector("#txtTag").value = objData.data.tag;
         document.querySelector("#statusList").value = objData.data.status;
         document.querySelector("#propList").value = objData.data.prop_id;
         document.querySelector("#isMargin").checked = objData.data.is_margin;

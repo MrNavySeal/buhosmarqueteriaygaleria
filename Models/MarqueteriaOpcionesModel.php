@@ -11,11 +11,13 @@
         private $isBocel;
         private $isVisible;
         private $intOrder;
+        private $strTag;
         public function __construct(){
             parent::__construct();
         }
         /*************************Properties methods*******************************/
-        public function insertOption(string $strName, int $intStatus,int $intIdProp, int $isMargin,int $isColor, int $isFrame,int $intMargin, int $isBocel,int $isVisible,int $intOrder){
+        public function insertOption(string $strName, int $intStatus,int $intIdProp, int $isMargin,int $isColor, int $isFrame,
+        int $intMargin, int $isBocel,int $isVisible,int $intOrder,string $strTag){
 
 			$this->strName = $strName;
             $this->intStatus = $intStatus;
@@ -27,6 +29,7 @@
             $this->isBocel = $isBocel;
             $this->isVisible = $isVisible;
             $this->intOrder = $intOrder;
+            $this->strTag = $strTag;
 			$return = 0;
 
 			$sql = "SELECT * FROM molding_options WHERE 
@@ -34,10 +37,10 @@
 			$request = $this->select_all($sql);
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO molding_options(name,status,prop_id,is_margin,is_color,is_frame,margin,is_bocel,is_visible,order_view) 
-								  VALUES(?,?,?,?,?,?,?,?,?,?)";
+				$query_insert  = "INSERT INTO molding_options(name,status,prop_id,is_margin,is_color,is_frame,margin,is_bocel,is_visible,order_view,tag) 
+								  VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 	        	$arrData = array($this->strName,$this->intStatus,$this->intIdProp,
-                $this->isMargin,$this->isColor,$this->isFrame,$this->intMargin,$this->isBocel,$this->isVisible,$this->intOrder);
+                $this->isMargin,$this->isColor,$this->isFrame,$this->intMargin,$this->isBocel,$this->isVisible,$this->intOrder,$this->strTag);
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
 			}else{
@@ -45,7 +48,8 @@
 			}
 	        return $return;
 		}
-        public function updateOption(int $intId,string $strName, int $intStatus, int $intIdProp,int $isMargin,int $isColor, int $isFrame,int $intMargin,int $isBocel,int $isVisible,int $intOrder){
+        public function updateOption(int $intId,string $strName, int $intStatus, int $intIdProp,int $isMargin,int $isColor, 
+        int $isFrame,int $intMargin,int $isBocel,int $isVisible,int $intOrder,string $strTag){
             $this->intId = $intId;
             $this->strName = $strName;
             $this->intStatus = $intStatus;
@@ -57,15 +61,16 @@
             $this->isBocel = $isBocel;
             $this->isVisible = $isVisible;
             $this->intOrder = $intOrder;
+            $this->strTag = $strTag;
 			$sql = "SELECT * FROM molding_options WHERE name = '{$this->strName}' AND prop_id = $this->intIdProp AND id != $this->intId";
 			$request = $this->select_all($sql);
 
 			if(empty($request)){
 
-                $sql = "UPDATE molding_options SET name=?, status=? ,prop_id=?,is_margin=?,is_color=?,is_frame=?,margin=?,is_bocel=?,is_visible=?,order_view=? 
+                $sql = "UPDATE molding_options SET name=?, status=? ,prop_id=?,is_margin=?,is_color=?,is_frame=?,margin=?,is_bocel=?,is_visible=?,order_view=?,tag=? 
                 WHERE id = $this->intId";
                 $arrData = array($this->strName,$this->intStatus,$this->intIdProp,
-                $this->isMargin,$this->isColor,$this->isFrame,$this->intMargin,$this->isBocel,$this->isVisible,$this->intOrder);
+                $this->isMargin,$this->isColor,$this->isFrame,$this->intMargin,$this->isBocel,$this->isVisible,$this->intOrder,$this->strTag);
 				$request = intval($this->update($sql,$arrData));
 			}else{
 				$request = "exist";

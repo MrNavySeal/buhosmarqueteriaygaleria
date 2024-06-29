@@ -84,6 +84,7 @@
                     }else{ 
                         $id = intval($_POST['id']);
                         $strName = ucwords(strClean($_POST['txtName']));
+                        $strTag = ucwords(strClean($_POST['txtTag']));
                         $intStatus = intval($_POST['statusList']);
                         $intProp = intval($_POST['propList']);
                         $intMargin = intval($_POST['margin']);
@@ -96,12 +97,12 @@
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                $request= $this->model->insertOption($strName,$intStatus,$intProp,$isMargin,$isColor,$isFrame,$intMargin,$isBocel,$isVisible,$intOrder);
+                                $request= $this->model->insertOption($strName,$intStatus,$intProp,$isMargin,$isColor,$isFrame,$intMargin,$isBocel,$isVisible,$intOrder,$strTag);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->updateOption($id,$strName,$intStatus,$intProp,$isMargin,$isColor,$isFrame,$intMargin,$isBocel,$isVisible,$intOrder);
+                                $request = $this->model->updateOption($id,$strName,$intStatus,$intProp,$isMargin,$isColor,$isFrame,$intMargin,$isBocel,$isVisible,$intOrder,$strTag);
                             }
                         }
                         if(is_numeric($request) && $request > 0 ){
