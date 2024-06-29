@@ -95,6 +95,7 @@
             $total = 0;
             $type = $data['type'];
             $method = $data['method'];
+            $factor = $data['factor'];
             $priceMaterial = $data['price_purchase'];
             $arrVariables = $data['variables'];
             $wasteMaterial = 0;
@@ -118,10 +119,10 @@
             }
             if($type == "area"){
                 $areaMaterial = $widthMaterial * $heightMaterial;
-                $costMaterial = ceil($priceMaterial/$areaMaterial); 
+                $costMaterial = ceil(($priceMaterial/$areaMaterial)*$factor); 
                 $total+=$costMaterial*($heigth*$width); 
             }else{
-                $costMaterial = ceil(($priceMaterial/$lengthMaterial)*6); 
+                $costMaterial = ceil(($priceMaterial/$lengthMaterial)*$factor); 
                 $perimetro = (($heigth + $width)*2)+$wasteMaterial;
                 $total+=$costMaterial*($perimetro); 
             }

@@ -22,6 +22,7 @@
                     $sql = "SELECT
                     m.type,
                     m.method,
+                    m.factor,
                     m.product_id,
                     p.price_purchase,
                     p.name
