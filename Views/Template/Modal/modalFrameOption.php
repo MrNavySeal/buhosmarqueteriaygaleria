@@ -35,13 +35,19 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="txtTag" class="form-label">Etiqueta</label>
-                                <input type="text" class="form-control" id="txtTag" name="txtTag" required>
+                                <input type="text" class="form-control" id="txtTag" name="txtTag" >
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="txtTag" class="form-label">Etiqueta doblemarco</label>
+                                <input type="text" class="form-control" id="txtTagFrame" name="txtTagFrame" >
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
                                 <select class="form-control" aria-label="Default select example" id="statusList" name="statusList">
