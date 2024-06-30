@@ -187,17 +187,7 @@ function addMaterial(){
     material.type = document.querySelector("#selectCalc").value;
     material.method = document.querySelector("#selectType").value;
     material.factor = document.querySelector("#txtNumber").value;
-    if(arrSelectedMaterial.length > 0){
-        const flag = arrSelectedMaterial.filter(e=>e.idproduct == idMaterial).length > 0 ? true : false;
-        if(flag){
-            Swal.fire("Error","El material ya fue agregado","error");
-            return false;
-        }else{
-            arrSelectedMaterial.push(material);
-        }
-    }else{
-        arrSelectedMaterial.push(material);
-    }
+    arrSelectedMaterial.push(material);
     const html = `
         <td>${material.name}</td>
         <td>${material.type}</td>

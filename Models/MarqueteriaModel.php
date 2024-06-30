@@ -171,8 +171,9 @@
             $request = $this->select($sql);
             $sqlFraming = "SELECT s.idsubcategory as id, s.name, p.is_check
             FROM subcategory s
+            INNER JOIN category c ON s.categoryid = c.idcategory 
             LEFT JOIN molding_props_framing p ON s.idsubcategory = p.framing_id AND prop_id = $this->intIdCategory
-            WHERE s.name LIKE '%molduras%' ORDER BY s.idsubcategory DESC";
+            WHERE c.name LIKE '%molduras%' ORDER BY s.idsubcategory DESC";
             $request['framing'] = $this->select_all($sqlFraming);
             return $request;
         }

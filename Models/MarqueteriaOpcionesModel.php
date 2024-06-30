@@ -131,7 +131,7 @@
             for ($i=0; $i < $total ; $i++) { 
                 $intFactor = $data[$i]['factor'] > 0 ? $data[$i]['factor'] : 1;
                 $sql = "INSERT INTO molding_materials(option_id,product_id,type,method,factor) VALUES(?,?,?,?,?)";
-                $arrData = array($this->intId,$data[$i]['idproduct'],$data[$i]['type'],$data[$i]['method'],$data[$i]['factor']);
+                $arrData = array($this->intId,$data[$i]['idproduct'],$data[$i]['type'],$data[$i]['method'],$intFactor);
                 $request = $this->insert($sql,$arrData);
             }
             return $request;

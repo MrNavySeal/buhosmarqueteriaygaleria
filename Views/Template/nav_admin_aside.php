@@ -64,13 +64,13 @@
             </div>
             <?php } ?>
             <!-- Marquetería -->
-            <?php  if($_SESSION['permit'][11]['r']){ ?>
+            <?php  if($_SESSION['permit'][12]['r']){ ?>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-crop-alt"></i>Marquetería</a>
                 <div class="dropdown-menu bg-transparent border-0">
                     <a href="<?=base_url()?>/marqueteria/molduras" class="dropdown-item">Molduras</a>
                     <a href="<?=base_url()?>/marqueteria/colores" class="dropdown-item">Colores</a>
-                    <?php  if($_SESSION['permit'][11]['w']){ ?>
+                    <?php  if($_SESSION['permit'][12]['w']){ ?>
                     <a href="<?=base_url()?>/marqueteria/categorias" class="dropdown-item">Categorias</a>
                     <a href="<?=base_url()?>/marqueteria/propiedades" class="dropdown-item">Propiedades</a>
                     <a href="<?=base_url()?>/MarqueteriaOpciones/opciones" class="dropdown-item">Opciones de propiedades</a>

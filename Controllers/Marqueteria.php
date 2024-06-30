@@ -8,7 +8,7 @@
             }
             parent::__construct();
             sessionCookie();
-            getPermits(4);
+            getPermits(12);
             
         }
         public function categorias(){

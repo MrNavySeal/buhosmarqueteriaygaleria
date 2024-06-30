@@ -8,7 +8,7 @@
             }
             parent::__construct();
             sessionCookie();
-            getPermits(4);
+            getPermits(6);
             
         }
         public function calcularMarcoTotal(){
@@ -37,11 +37,15 @@
                         $frameLength = 290;
                         $framePainted = 2.87;
                         $frame = $request['frame'];
-                        $cost= $frame['name'] =="molduras importadas" ?  ceil($frame['price_purchase']/$frameLength) : ceil(($frame['price_purchase']/$frameLength)*$framePainted);
+                        $cost= 0;
                         $waste = $frame['waste'];
                         $data = $request['data'];
                         $totalCostMaterial = 0;
-
+                        if($frame['name'] =="molduras importadas" || $frame['name'] =="bastidores"){
+                            $cost = ceil($frame['price_purchase']/$frameLength);
+                        }else{
+                            $cost = ceil(($frame['price_purchase']/$frameLength)*$framePainted);
+                        }
                         $totalCostFrame = ((($intHeightM+$intWidthM)*2)+$waste)*$cost;
                         if( $frame['name'] !="molduras importadas"){
                             $perimetro = 2*($intHeightM+$intWidthM);
@@ -57,7 +61,7 @@
                             array("name"=>"Medida imagen","value"=>$intWidth." x ".$intHeight." cm"),
                             array("name"=>"Medida marco","value"=>$intWidthM." x ".$intHeightM." cm")
                         );
-                        if($frame['name'] !="molduras importadas"){
+                        if($frame['name'] !="molduras importadas" && $frame['name'] !="bastidores"){
                             array_push($arrSpecs,array("name"=>"Color del marco","value"=>$strColorFrame));
                         }
                         foreach ($data as $e ) {
