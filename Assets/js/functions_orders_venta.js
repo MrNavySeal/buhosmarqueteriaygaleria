@@ -662,7 +662,7 @@ async function getConfig(element,id){
     }else{
         Swal.fire("Error",objData.msg,"error");
     }
-    element.innerHTML=`Enmarcar`;
+    element.innerHTML=`Cotizar`;
     element.removeAttribute("disabled");
     
 }
