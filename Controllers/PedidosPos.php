@@ -125,7 +125,7 @@
                 $request = $this->model->selectMoldingCategories();
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
-                        $btn = '<button type="button" class="btn btn-primary" onclick="getConfig(this,'.$request[$i]['id'].')">Enmarcar</button>';
+                        $btn = '<button type="button" class="btn btn-primary" onclick="getConfig(this,'.$request[$i]['id'].')">Cotizar</button>';
                         $request[$i]['options'] = $btn;
                     }
                 }
