@@ -289,7 +289,7 @@
             s.idsubcategory
             FROM molding_config_frame f 
             INNER JOIN subcategory s ON f.prop = s.idsubcategory
-            WHERE f.topic = 1 AND f.config_id = $this->intId AND f.is_check = 1";
+            WHERE f.topic = 1 AND f.config_id = $this->intId AND f.is_check = 1 ORDER BY s.name";
             $request= $this->select_all($sql);
             if(!empty($request)){
                 $total = count($request);

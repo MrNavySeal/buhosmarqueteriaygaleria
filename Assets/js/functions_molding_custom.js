@@ -246,7 +246,7 @@ sortFrame.addEventListener("change",function(){
                 }
             }
         })
-        if(needle.includes("madera")){
+        if(needle.includes("madera") && !needle.includes("muestras")){
             colorFrame.classList.remove("d-none");
             document.querySelector("#frameColor").innerHTML = colorSelectedFrame.getAttribute("title");
         }else{

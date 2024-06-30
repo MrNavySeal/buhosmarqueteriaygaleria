@@ -170,9 +170,9 @@
             $sql = "SELECT * FROM molding_props WHERE id = $this->intIdCategory";
             $request = $this->select($sql);
             $sqlFraming = "SELECT s.idsubcategory as id, s.name, p.is_check
-            FROM molding_props_framing p
-            INNER JOIN subcategory s ON s.idsubcategory = p.framing_id
-            WHERE prop_id = $this->intIdCategory ORDER BY s.idsubcategory DESC";
+            FROM subcategory s
+            LEFT JOIN molding_props_framing p ON s.idsubcategory = p.framing_id AND prop_id = $this->intIdCategory
+            WHERE s.name LIKE '%molduras%' ORDER BY s.idsubcategory DESC";
             $request['framing'] = $this->select_all($sqlFraming);
             return $request;
         }
