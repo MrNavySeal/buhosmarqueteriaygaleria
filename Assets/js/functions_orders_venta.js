@@ -811,19 +811,18 @@ async function showDefaultFraming(id){
     if(!document.querySelector(".frame--item.element--active")){
         document.querySelectorAll(".frame--item")[0].classList.add("element--active");
     }
-    if(!document.querySelector(".color--frame.element--active")){
+    if(document.querySelector(".color--frame") && !document.querySelector(".color--frame.element--active")){
         document.querySelectorAll(".color--frame")[0].classList.add("element--active");
+        document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
     }
-    if(!document.querySelector(".color--margin.element--active")){
+    if(document.querySelector(".color--margin") && !document.querySelector(".color--margin.element--active")){
         document.querySelectorAll(".color--margin")[0].classList.add("element--active");
     }
-    if(!document.querySelector(".color--border.element--active")){
+    if(document.querySelector(".color--border") && !document.querySelector(".color--border.element--active")){
         document.querySelectorAll(".color--border")[0].classList.add("element--active");
     }
-    document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
     
-
-    let bg = getComputedStyle(colorFrame[0].children[0]).backgroundColor;
+    let bg = colorFrame.length > 0 ? getComputedStyle(colorFrame[0].children[0]).backgroundColor : "transparent";
     const defaultFrame = document.querySelector(".frame--item.element--active");
     const imgFrame = defaultFrame.getAttribute("data-frame");
     const waste = defaultFrame.getAttribute("data-waste");
@@ -841,7 +840,9 @@ async function showDefaultFraming(id){
     layoutImg.style.width = intWidth;
     layoutImg.style.border="none";
     layoutImg.style.borderRadius=0;*/
-    
+    const colorFrameTitle = document.querySelector(".color--frame") ? document.querySelector(".color--frame.element--active").getAttribute("title"): "";
+    const colorMarginTitle = document.querySelector(".color--margin") ? document.querySelector(".color--margin.element--active").getAttribute("title"): "";
+    const colorBorderTitle = document.querySelector(".color--border") ? document.querySelector(".color--border.element--active").getAttribute("title"): "";
     const formData = new FormData();
     formData.append("data",JSON.stringify(arrProps));
     formData.append("id",defaultFrame.getAttribute("data-id"));
@@ -850,9 +851,9 @@ async function showDefaultFraming(id){
     formData.append("margin",intMargin);
     formData.append("id_config",id);
     formData.append("orientation",document.querySelector(".orientation.element--active").getAttribute("data-name"));
-    formData.append("color_frame",document.querySelector(".color--frame.element--active").getAttribute("title"));
-    formData.append("color_margin",document.querySelector(".color--margin.element--active").getAttribute("title"));
-    formData.append("color_border",document.querySelector(".color--border.element--active").getAttribute("title"));
+    formData.append("color_frame",colorFrameTitle);
+    formData.append("color_margin",colorMarginTitle);
+    formData.append("color_border",colorBorderTitle);
     formData.append("img","");
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
     const objData = await response.json();

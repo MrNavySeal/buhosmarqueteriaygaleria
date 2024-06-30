@@ -495,6 +495,9 @@ async function calcularMarco(id=null){
     });
     const formData = new FormData();
     const defaultFrame = document.querySelector(".frame--item.element--active");
+    const colorFrameTitle = document.querySelector(".color--frame") ? document.querySelector(".color--frame.element--active").getAttribute("title"): "";
+    const colorMarginTitle = document.querySelector(".color--margin") ? document.querySelector(".color--margin.element--active").getAttribute("title"): "";
+    const colorBorderTitle = document.querySelector(".color--border") ? document.querySelector(".color--border.element--active").getAttribute("title"): "";
     formData.append("data",JSON.stringify(arrProps));
     formData.append("id",defaultFrame.getAttribute("data-id"));
     formData.append("height",intHeight.value);
@@ -502,9 +505,9 @@ async function calcularMarco(id=null){
     formData.append("margin",intMargin);
     formData.append("id_config",document.querySelector("#idCategory").value);
     formData.append("orientation",document.querySelector(".orientation.element--active").getAttribute("data-name"));
-    formData.append("color_frame",document.querySelector(".color--frame.element--active").getAttribute("title"));
-    formData.append("color_margin",document.querySelector(".color--margin.element--active").getAttribute("title"));
-    formData.append("color_border",document.querySelector(".color--border.element--active").getAttribute("title"));
+    formData.append("color_frame",colorFrameTitle);
+    formData.append("color_margin",colorMarginTitle);
+    formData.append("color_border",colorBorderTitle);
     document.querySelector(".totalFrame").innerHTML="Calculando...";
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData});
     const objData = await response.json();
