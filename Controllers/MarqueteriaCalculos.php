@@ -40,11 +40,11 @@
                         $cost= 0;
                         $waste = $frame['waste'];
                         $data = $request['data'];
-                        $totalCostMaterial = 0;
-                        if($frame['name'] =="molduras importadas" || $frame['name'] =="bastidores"){
-                            $cost = ceil($frame['price_purchase']/$frameLength);
-                        }else{
+                        $flag = strpos($frame['name'],"madera") > 0 ? true : false;
+                        if($flag){
                             $cost = ceil(($frame['price_purchase']/$frameLength)*$framePainted);
+                        }else{
+                            $cost = ceil($frame['price_purchase']/$frameLength);
                         }
                         $totalCostFrame = ((($intHeightM+$intWidthM)*2)+$waste)*$cost;
                         if( $frame['name'] !="molduras importadas"){
@@ -52,6 +52,7 @@
                             $varas = ceil(($perimetro)/($frameLength-$waste));
                             $totalCostFrame = ($perimetro+($waste*$varas))*$cost;
                         }
+                        $totalCostMaterial = 0;
                         $totalCost = 0;
                         $arrSpecs = [];
                         array_push($arrSpecs,
