@@ -124,9 +124,11 @@
             }
             if($type == "area"){
                 $areaMaterial = $widthMaterial * $heightMaterial;
+                $areaMaterial = $areaMaterial > 0 ? $areaMaterial : 1;
                 $costMaterial = ceil(($priceMaterial/$areaMaterial)*$factor); 
                 $total+=$costMaterial*($heigth*$width); 
             }else{
+                $lengthMaterial = $lengthMaterial > 0 ? $lengthMaterial : 1;
                 $costMaterial = ceil(($priceMaterial/$lengthMaterial)*$factor); 
                 $perimetro = (($heigth + $width)*2)+$wasteMaterial;
                 $total+=$costMaterial*($perimetro); 
