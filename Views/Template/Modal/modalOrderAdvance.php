@@ -14,21 +14,27 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="" class="form-label fw-bold">Fecha</label>
+                            <p class="text-break" id="strDateAdvance"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="" class="form-label fw-bold">Factura de venta</label>
+                            <p class="text-break" id="strIdAdvance"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="" class="form-label fw-bold">Valor crédito</label>
+                            <p class="text-break" id="strTotalAdvance"></p>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
-                    <table class="table text-nowrap text-start">
-                        <thead>
-                            <tr>
-                                <th>Fecha:</th>
-                                <td id="strDateAdvance"></td>
-                                <th>Factura de venta:</th>
-                                <td id="strIdAdvance"></td>
-                            </tr>
-                            <tr>
-                                <th>Valor crédito:</th>
-                                <td id="strTotalAdvance"></td>
-                            </tr>
-                        </thead>
-                    </table>
                     <table class="table align-middle text-nowrap">
                         <thead>
                             <tr>

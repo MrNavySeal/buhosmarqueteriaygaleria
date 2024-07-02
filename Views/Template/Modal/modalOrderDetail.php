@@ -17,50 +17,91 @@
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="navDetail">
                         <div class="table-responsive">
-                            <table class="table text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha de emisión:</th>
-                                        <td id="strDate"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Fecha de vencimiento:</th>
-                                        <td id="strDateBeat"></td>
-                                        <th>Factura de venta:</th>
-                                        <td id="strId"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Transacción:</th>
-                                        <td id="strCode"></td>
-                                        <th>Método de pago:</th>
-                                        <td id="strMethod"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Estado de pago:</th>
-                                        <td id="strStatus"></td>
-                                        <th>Estado de pedido:</th>
-                                        <td id="strStatusOrder"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Nombre:</th>
-                                        <td id="strName"></td>
-                                        <th>Dirección:</th>
-                                        <td id="strAddress"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Teléfono:</th>
-                                        <td id="strPhone"></td>
-                                        <th>Correo:</th>
-                                        <td id="strEmail"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>CC/NIT:</th>
-                                        <td id="strNit"></td>
-                                        <th>Notas:</th>
-                                        <td id="strNotes"></td>
-                                    </tr>
-                                </thead>
-                            </table>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Fecha de emisión</label>
+                                        <p class="text-break" id="strDate"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Fecha de vencimiento</label>
+                                        <p class="text-break" id="strDateBeat"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Factura de venta</label>
+                                        <p class="text-break" id="strId"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Transacción</label>
+                                        <p class="text-break" id="strCode"></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Estado de pago</label>
+                                        <p class="text-break" id="strStatus"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Estado de pedido</label>
+                                        <p class="text-break" id="strStatusOrder"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Método de pago</label>
+                                        <p class="text-break" id="strMethod"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Nombre</label>
+                                        <p class="text-break" id="strName"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Teléfono</label>
+                                        <p class="text-break" id="strPhone"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Correo</label>
+                                        <p class="text-break" id="strEmail"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">CC/NIT</label>
+                                        <p class="text-break" id="strNit"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Dirección</label>
+                                        <p class="text-break" id="strAddress"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label fw-bold">Notas</label>
+                                <p class="text-break" id="strNotes"></p>
+                            </div>
                             <table class="table text-nowrap">
                                 <thead>
                                     <tr>
@@ -94,21 +135,25 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="navAdvance">
-                        <div class="table-responsive">
-                            <table class="table text-nowrap text-start">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha:</th>
-                                        <td id="viewStrDateAdvance"></td>
-                                        <th>Factura de venta:</th>
-                                        <td id="viewStrIdAdvance"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Valor crédito:</th>
-                                        <td id="viewStrTotalAdvance"></td>
-                                    </tr>
-                                </thead>
-                            </table>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="" class="form-label fw-bold">Fecha</label>
+                                    <p class="text-break" id="viewStrDateAdvance"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="" class="form-label fw-bold">Factura de venta</label>
+                                    <p class="text-break" id="viewStrIdAdvance"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="" class="form-label fw-bold">Valor crédito</label>
+                                    <p class="text-break" id="viewStrTotalAdvance"></p>
+                                </div>
+                            </div>
                         </div>
                         <div class="table-responsive" style="max-height:40vh">
                             <table class="table text-nowrap">

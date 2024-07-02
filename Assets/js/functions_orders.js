@@ -55,6 +55,7 @@ function viewItem(id){
     let index = arrData.findIndex(e=>e.idorder==id);
     let order = arrData[index];
     let detail = order.detail;
+    console.log(detail);
     let tableDetail = document.querySelector("#tablePurchaseDetail");
     let subtotal = 0;
     for (let i = 0; i < detail.length; i++) {
@@ -72,22 +73,39 @@ function viewItem(id){
                 let borderStyle = description.style == "Flotante" ? "marco interno" : "bocel";
                 let glassStyle = description.idType == 4 ? "Bastidor" : "Tipo de vidrio";
                 let measureFrame = (description.width+(description.margin*2))+"cm X "+(description.height+(description.margin*2))+"cm"; 
-                productName = `
-                    ${description.name}
-                    <ul>
-                        <li><span class="fw-bold t-color-3">Referencia: </span>${description.reference}</li>
-                        <li><span class="fw-bold t-color-3">Color del marco: </span>${colorFrame}</li>
-                        <li><span class="fw-bold t-color-3">Material: </span>${material}</li>
-                        <li><span class="fw-bold t-color-3">Orientación: </span>${description.orientation}</li>
-                        <li><span class="fw-bold t-color-3">Estilo de enmarcación: </span>${description.style}</li>
-                        <li><span class="fw-bold t-color-3">${marginStyle}: </span>${description.margin}cm</li>
-                        <li><span class="fw-bold t-color-3">Medida imagen: </span>${description.width}cm X ${description.height}cm</li>
-                        <li><span class="fw-bold t-color-3">Medida marco: </span>${measureFrame}</li>
-                        <li><span class="fw-bold t-color-3">Color del ${marginStyle}: </span>${description.colormargin}</li>
-                        <li><span class="fw-bold t-color-3">Color del ${borderStyle}: </span>${description.colorborder}</li>
-                        <li><span class="fw-bold t-color-3">${glassStyle}: </span>${description.glass}</li>
-                    </ul>
-                `;
+                let img ="";
+                if(description.type){
+                    if(description.photo !=""){
+                        img = `<a href="${base_url+"/Assets/images/uploads/"+description.photo}" target="_blank">Ver imagen</a><br>`;
+                    }
+                    productName = `
+                        ${img}
+                        ${description.name}
+                        <ul>
+                            <li><span class="fw-bold t-color-3">Referencia: </span>${description.reference}</li>
+                            <li><span class="fw-bold t-color-3">Color del marco: </span>${colorFrame}</li>
+                            <li><span class="fw-bold t-color-3">Material: </span>${material}</li>
+                            <li><span class="fw-bold t-color-3">Orientación: </span>${description.orientation}</li>
+                            <li><span class="fw-bold t-color-3">Estilo de enmarcación: </span>${description.style}</li>
+                            <li><span class="fw-bold t-color-3">${marginStyle}: </span>${description.margin}cm</li>
+                            <li><span class="fw-bold t-color-3">Medida imagen: </span>${description.width}cm X ${description.height}cm</li>
+                            <li><span class="fw-bold t-color-3">Medida marco: </span>${measureFrame}</li>
+                            <li><span class="fw-bold t-color-3">Color del ${marginStyle}: </span>${description.colormargin}</li>
+                            <li><span class="fw-bold t-color-3">Color del ${borderStyle}: </span>${description.colorborder}</li>
+                            <li><span class="fw-bold t-color-3">${glassStyle}: </span>${description.glass}</li>
+                        </ul>
+                    `;
+                }else{
+                    if(description.img !=""){
+                        img = `<a href="${base_url+"/Assets/images/uploads/"+description.img}" target="_blank">Ver imagen</a><br>`;
+                    }
+                    let html ="";
+                    const detail = description.detail;
+                    detail.forEach(e => {
+                        html+=`<li><span class="fw-bold t-color-3">${e.name}: </span>${e.value}</li>`;
+                    });
+                    productName = `${img}${description.name}<ul>${html}</ul>`;
+                }
             }else{
                 let variantDetail = "";
                 for (let j = 0; j < description.detail.length; j++) {
