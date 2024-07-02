@@ -53,12 +53,15 @@
                     $detail = json_decode($data['description']);
                     $img ="";
                     if(isset($detail->type)){
+                        $intWidth = floatval($detail->width);
+                        $intHeight = floatval($detail->height);
+                        $intMargin = floatval($detail->margin);
                         $colorFrame =  $detail->colorframe ? $detail->colorframe : "";
                         $material = $detail->material ? $detail->material : "";
                         $marginStyle = $detail->style == "Flotante" || $detail->style == "Flotante sin marco interno" ? "Fondo" : "Paspartú";
                         $borderStyle = $detail->style == "Flotante" ? "marco interno" : "bocel";
                         $glassStyle = $detail->idType == 4 ? "Bastidor" : "Tipo de vidrio";
-                        $measureFrame = ($detail->width+($detail->margin*2))+"cm X "+($detail->height+($detail->margin*2))+"cm";
+                        $measureFrame = ($intWidth+($intMargin*2))+"cm X "+($intHeight+($intMargin*2))+"cm";
                         if($detail->photo !=""){
                             $img = '<a href="'.media().'/images/uploads/"'.$detail->photo.'" target="_blank">Ver imagen</a><br>';
                         }
