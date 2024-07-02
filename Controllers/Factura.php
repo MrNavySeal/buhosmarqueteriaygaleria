@@ -63,7 +63,7 @@
                         $glassStyle = $detail->idType == 4 ? "Bastidor" : "Tipo de vidrio";
                         $measureFrame = ($intWidth+($intMargin*2))."cm X ".($intHeight+($intMargin*2))."cm";
                         if($detail->photo !=""){
-                            $img = '<a href="'.media().'/images/uploads/"'.$detail->photo.'" target="_blank">Ver imagen</a><br>';
+                            $img = '<a href="'.media().'/images/uploads/'.$detail->photo.'" target="_blank">Ver imagen</a><br>';
                         }
                         $description.='
                                 '.$img.'
