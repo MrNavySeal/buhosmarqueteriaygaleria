@@ -70,7 +70,7 @@
                                 '.$detail->name.'
                                 <ul>
                                     <li><span class="fw-bold t-color-3">Referencia: </span>'.$detail->reference.'</li>
-                                    <li><span class="fw-bold t-color-3">Color del marco: </span>'.$colorFrame.'}</li>
+                                    <li><span class="fw-bold t-color-3">Color del marco: </span>'.$colorFrame.'</li>
                                     <li><span class="fw-bold t-color-3">Material: </span>'.$material.'</li>
                                     <li><span class="fw-bold t-color-3">Orientación: </span>'.$marginStyle.'</li>
                                     <li><span class="fw-bold t-color-3">Estilo de enmarcación: </span>'.$detail->style.'</li>
