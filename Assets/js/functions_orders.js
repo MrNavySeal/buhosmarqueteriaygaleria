@@ -55,7 +55,6 @@ function viewItem(id){
     let index = arrData.findIndex(e=>e.idorder==id);
     let order = arrData[index];
     let detail = order.detail;
-    console.log(detail);
     let tableDetail = document.querySelector("#tablePurchaseDetail");
     let subtotal = 0;
     for (let i = 0; i < detail.length; i++) {
@@ -96,7 +95,7 @@ function viewItem(id){
                         </ul>
                     `;
                 }else{
-                    if(description.img !=""){
+                    if(description.img !="" && description.img !=null){
                         img = `<a href="${base_url+"/Assets/images/uploads/"+description.img}" target="_blank">Ver imagen</a><br>`;
                     }
                     let html ="";
