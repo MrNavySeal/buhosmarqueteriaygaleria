@@ -48,7 +48,7 @@
             foreach ($request as $data) {
                 $subtotalProduct =$data['quantity']*$data['price'];
                 $subtotal+= $data['quantity']*$data['price'];
-                $description=$data['description'];
+                $description="";
                 if($data['topic'] == 1){
                     $detail = json_decode($data['description']);
                     $img ="";
@@ -94,6 +94,7 @@
                         $description = $img.$detail->name.'<ul>'.$htmlDetail.'</ul>';
                     }
                 }else{
+                    $description=$data['description'];
                     $flag = substr($data['description'], 0,1) == "{" ? true : false;
                     if($flag){
                         $arrData = json_decode($data['description'],true);
