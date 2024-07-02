@@ -1,19 +1,19 @@
 <?php 
-
 $order = $data['orderdata'];
 $detail = $data['orderdetail'];
+$arrRows = $detail['rows'];
 $discount = $order['coupon'];
 $total=0;
-$subtotal = 0;
+$subtotal = $detail['subtotal'];
 $status="";
 $rows =0;
 $arrAccount =$order['advance'];
 if($order['status'] =="pendent"){
-    $status = 'pendiente';
+    $status = 'crédito';
 }else if($order['status'] =="approved"){
     $status = 'pagado';
 }else if($order['status'] =="canceled"){
-    $status = 'rechazado';
+    $status = 'anulado';
 }
  ?>
 
@@ -174,7 +174,7 @@ if($order['status'] =="pendent"){
             </tr>
             <tr class="align-middle">
                 <td class="fw-bold bg-3">Notas</td>
-                <td colspan="5"><?=$order['note']?></td>
+                <td colspan="5" style="width:90%;"><?=$order['note']?></td>
             </tr>
         </tbody>
     </table>
@@ -187,125 +187,15 @@ if($order['status'] =="pendent"){
                 <td class="text-right">Cantidad</td>
                 <td class="text-right">Subtotal</td>
             </tr>
-            <?php 
-                if(count($detail) > 0){
-                    
-                    foreach ($detail as $product) {
-                        $subtotal+= $product['quantity']*$product['price'];
-            ?>
+            <?php foreach ($arrRows as $row) { ?>
             <tr>
-                <td class="text-start w10">
-                    <?=$product['reference']?><br>
-                </td>
-                <?php
-                    if($product['topic'] == 2 || $product['topic'] == 3){
-                        $flag = substr($product['description'], 0,1) == "{" ? true : false;
-                        if($flag){
-                            $arrData = json_decode($product['description'],true);
-                            $name = $arrData['name'];
-                            $varDetail = $arrData['detail'];
-                            $textDetail ="";
-                            foreach ($varDetail as $d) {
-                                $textDetail .= '<li><span class="fw-bold t-color-3">'.$d['name'].':</span> '.$d['option'].'</li>';
-                            }
-                            $product['description'] = $name.'<ul>'.$textDetail.'</ul>';
-                        }
-                ?>
-                <td class="text-start w55">
-                    <?=$product['description']?><br>
-                </td>
-                <?php 
-                    }else{ 
-                        $arrProducts = json_decode($product['description'],true);
-                ?>
-                <td class="text-start w55">
-                    <?=$arrProducts['name']?>
-                    <?php
-                        $borderStyle = $arrProducts['style'] == "Flotante" ? "marco interno" : "bocel";
-                        $marginStyle = $arrProducts['style'] == "Flotante" || $arrProducts['style'] == "Flotante sin marco interno" ? "fondo" : "paspartú";
-                        $glass = isset($arrProducts['glass']) ? '<li><span class="fw-bold t-color-3">Tipo de vidrio:</span> '.$arrProducts['glass'].'</li>' : "";
-                        $material = isset($arrProducts['material']) ? '<li><span class="fw-bold t-color-3">Material del marco:</span> '.$arrProducts['material'].'</li>' : "";
-                        $colorFrame = isset($arrProducts['colorframe']) ? '<li><span class="fw-bold t-color-3">Color del marco:</span> '.$arrProducts['colorframe'].'</li>' : "";
-                        $margen = $arrProducts['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Medida '.$marginStyle.':</span> '.$arrProducts['margin'].'cm</li>' : "";
-                        $colorMargen = $arrProducts['colormargin'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$marginStyle.':</span> '.$arrProducts['colormargin'].'</li>' : "";
-                        $colorBorder = $arrProducts['colorborder'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$borderStyle.':</span> '.$arrProducts['colorborder'].'</li>' : "";
-                        $medidas = $arrProducts['width']."cm X ".$arrProducts['height']."cm";
-                        $medidasMarco = ($arrProducts['width']+($arrProducts['margin']*2))."cm X ".($arrProducts['height']+($arrProducts['margin']*2))."cm"; 
-                    ?>
-                    <?php if($arrProducts['idType'] == 1 || $arrProducts['idType'] == 3){?>
-                    <ul>
-                        <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-                        <?=$colorFrame?>
-                        <?=$material?>
-                        <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-                        <li><span class="fw-bold t-color-3">Estilo de enmarcación:</span> <?=$arrProducts['style']?></li>
-                        <?=$margen?>
-                        <li><span class="fw-bold t-color-3">Medida imagen:</span> <?=$medidas?></li>
-                        <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
-                        <?=$colorMargen?>
-                        <?=$colorBorder?>
-                        <?=$glass?>
-                    </ul>
-                    <?php }else if($arrProducts['idType'] == 4){?>
-                    <ul>
-                        <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-                        <?=$colorFrame?>
-                        <?=$material?>
-                        <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-                        <li><span class="fw-bold t-color-3">Estilo de enmarcación:</span> <?=$arrProducts['style']?></li>
-                        <?=$margen?>
-                        <li><span class="fw-bold t-color-3">Medida imagen:</span> <?=$medidas?></li>
-                        <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
-                        <?=$colorMargen?>
-                        <?=$colorBorder?>
-                        <li><span class="fw-bold t-color-3">Bastidor:</span> <?=$arrProducts['glass']?></li>
-                    </ul>
-                    <?php }else if($arrProducts['idType'] == 5){?>
-                    <ul>
-                        <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-                        <?=$colorFrame?>
-                        <li><span class="fw-bold t-color-3">Material del marco:</span> <?=$arrProducts['material']?></li>
-                        <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-                        <li><span class="fw-bold t-color-3">Tipo de espejo:</span> <?=$arrProducts['style']?></li>
-                        <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
-                    </ul>
-                    <?php }else if($arrProducts['idType'] == 6){?>
-                        <ul>
-                            <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-                            <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-                            <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-                            <?=$margen?>
-                            <li><span class="fw-bold t-color-3">Medidas del marco:</span> <?=$medidasMarco?></li>
-                            <?=$colorMargen?>
-                        </ul>
-                    <?php }else if($arrProducts['idType'] == 8){?>
-                        <ul>
-                            <li><span class="fw-bold t-color-3">Impresión:</span> <?=$arrProducts['style']?></li>
-                            <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-                            <li><span class="fw-bold t-color-3">Color del borde:</span> <?=$arrProducts['colorborder']?></li>
-                        </ul>
-                    <?php }else if($arrProducts['idType'] == 9){?>
-                    <ul>
-                        <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-                        <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-                        <li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts['style']?></li>
-                        <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-                    </ul>
-                    <?php }?>
-                </td>
-            <?php }?>
-                <td class="text-right w10"><?=formatNum($product['price'],false)?></td>
-                <td class="text-right w10"><?= $product['quantity'] ?></td>
-                <td class="text-right w15"><?= formatNum($product['price']*$product['quantity'],false)?></td>
+                <td class="text-start w10"><?=$row['reference']?></td>
+                <td class="text-start w55"><?=$row['description']?></td>
+                <td class="text-right w10"><?=$row['price']?></td>
+                <td class="text-start w10"><?=$row['qty']?></td>
+                <td class="text-start w15"><?=$row['subtotal']?></td>
             </tr>
-            <?php 		
-                }
-            } 
-            ?>
-            <?php
-                if($order['idtransaction']!= ""){
-
-            ?>
+            <?php } ?>
             <tr>
                 <td colspan="4" class="text-right fw-bold bg-3">Subtotal:</td>
                 <td class="text-right"><?= formatNum($subtotal,false)?></td>
@@ -322,73 +212,6 @@ if($order['status'] =="pendent"){
                 <td colspan="4" class="text-right fw-bold bg-3">Total:</td>
                 <td class="text-right"><?= formatNum($order['amount'],false)?></td>
             </tr>
-            <?php } else{ if(!empty($arrAccount)){?>
-                
-                <tr>
-                    <td colspan="2" class="text-center fw-bold bg-3">Anticipos realizados</td>
-                    <td colspan="2" class="text-right fw-bold bg-3">Subtotal:</td>
-                    <td class="text-right"><?= formatNum($subtotal,false)?></td>
-                </tr>
-                <tr>
-                    <td class="fw-bold bg-3">Fecha</td>
-                    <td class="fw-bold bg-3">Anticipo</td>
-                    <td colspan="2" class="text-right fw-bold bg-3">Descuento:</td>
-                    <td class="text-right"><?= formatNum($discount)?></td>
-                </tr>
-                <?php
-                    $abonoTotal = 0;
-                    for ($i=0; $i < count($arrAccount) ; $i++) { 
-                        $abonoTotal+= intval($arrAccount[$i]['advance']);
-
-                        $td="";
-                        $td1="";
-                        if($i == 0){
-                            $td = '
-                            <td colspan="2" class="text-right fw-bold bg-3">Envio:</td>
-                            <td class="text-right">'.formatNum($order['shipping'],false).'</td>
-                            ';
-                        }else if($i == 1){
-                            $td = '
-                            <td colspan="2" class="text-right fw-bold bg-3">Total:</td>
-                            <td class="text-right">'.formatNum($order['amount'],false).'</td>
-                            ';
-                        }
-                        if(count($arrAccount) == 1){
-                            $td1 = '
-                            <td colspan="2" class="text-right fw-bold bg-3">Total:</td>
-                            <td class="text-right">'.formatNum($order['amount'],false).'</td>
-                            ';
-                        }
-                ?>
-                <tr>
-                    <td><?=$arrAccount[$i]['date']?></td>
-                    <td><?=formatNum($arrAccount[$i]['advance'])." (".$arrAccount[$i]['type'].")"?></td>
-                    <?=$td?>
-                </tr>
-                <?php }?>
-                <tr>
-                    <td class="fw-bold bg-3">Saldo total: </td>
-                    <td><?=formatNum($order['amount']-$abonoTotal)?></td>
-                     <?=$td1?>
-                </tr>
-                <?php }else{?>
-                    <tr>
-                    <td colspan="4" class="text-right fw-bold bg-3">Subtotal:</td>
-                    <td class="text-right"><?= formatNum($subtotal,false)?></td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="text-right fw-bold bg-3">Descuento:</td>
-                    <td class="text-right"><?= formatNum($discount)?></td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="text-right fw-bold bg-3">Envio:</td>
-                    <td class="text-right"><?= formatNum($order['shipping'],false)?></td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="text-right fw-bold bg-3">Total:</td>
-                    <td class="text-right"><?= formatNum($order['amount'],false)?></td>
-                </tr>
-            <?php } }?>
         </tbody>
     </table>
     <table class="text-center">
