@@ -65,7 +65,7 @@
                         $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
                         $requestPrices = $this->con->select($sqlV);
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
@@ -136,12 +136,13 @@
                         $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
                         $requestPrices = $this->con->select($sqlV);
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
-                        $request[$i]['price'] = $requestPrices['price_sell'];
-                        $request[$i]['discount'] = $requestPrices['price_offer'];
+                        $request[$i]['price'] = $requestPrices['price_sell'] !="" ? $requestPrices['price_sell'] : 0;
+                        $request[$i]['discount'] = $requestPrices['price_offer'] !="" ? $requestPrices['price_offer'] : 0;;
                         $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
+                        
                     }
                 }
             }
@@ -224,7 +225,7 @@
                         $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
                         $requestPrices = $this->con->select($sqlV);
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
@@ -315,7 +316,7 @@
                         $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
                         $requestPrices = $this->con->select($sqlV);
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
@@ -431,7 +432,7 @@
                         $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
                         $requestPrices = $this->con->select($sqlV);
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
@@ -522,7 +523,7 @@
                         $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
                         $requestPrices = $this->con->select($sqlV);
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
@@ -586,7 +587,7 @@
                         $stockCondition = $isStock ? " AND stock > 0" : "";
                         $sqlV = "SELECT price_sell,price_offer, name, stock
                         FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition)";
+                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
                         $requestPrices = $this->con->select($sqlV);
                         $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
                         $request[$i]['price'] = $requestPrices['price_sell'];
@@ -731,7 +732,7 @@
                     $sqlVariants = "SELECT variation FROM product_variations WHERE product_id = $this->intIdProduct";
                     $sqlV = "SELECT price_sell,price_offer, name, stock
                     FROM product_variations_options WHERE product_id =$this->intIdProduct AND status = 1 
-                    AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$this->intIdProduct AND status = 1 $stockCondition)";
+                    AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$this->intIdProduct AND status = 1)";
                     $requestPrices = $this->con->select($sqlV);
                     $request['price'] = $requestPrices['price_sell'];
                     $request['discount'] = $requestPrices['price_offer'];
