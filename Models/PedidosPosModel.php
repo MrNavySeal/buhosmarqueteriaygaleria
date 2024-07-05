@@ -153,7 +153,7 @@
             $request = $this->insert($sql,$arrData);
             //Insert detail
             if($request > 0){
-                $this->insertOrderDet($request,$this->arrCustomer['id'],$this->arrProducts);
+                $this->insertOrderDet($request,$this->arrCustomer['id'],$this->arrProducts,$this->arrCustomer['name']);
                 //insert income
                 if($data['type']!="credito"){
                     $this->insertIncome($request,3,1,"Venta de artículos y/o servicios",$data['total']['total'],
@@ -162,7 +162,7 @@
             }
             return $request;
         }
-        public function insertOrderDet(int $id,int $idCustom,array $data){
+        public function insertOrderDet(int $id,int $idCustom,array $data,string $customer){
             $this->intIdUser = $idCustom;
             $this->intId = $id;
             $this->arrData = $data;
@@ -188,7 +188,7 @@
                     );
                     $arrFrame =  $this->arrData[$i]['config'];
                     $sql_config = "INSERT INTO molding_examples(config,frame,margin,height,width,orientation,color_frame,color_margin,color_border,
-                    props) VALUE(?,?,?,?,?,?,?,?,?,?)";
+                    props,name,total) VALUE(?,?,?,?,?,?,?,?,?,?,?,?)";
                     $arrDataConfig = array(
                         $arrFrame['config'],
                         $arrFrame['frame'],
@@ -199,7 +199,9 @@
                         $arrFrame['color_frame'],
                         $arrFrame['color_margin'],
                         $arrFrame['color_border'],
-                        json_encode($arrFrame['props'],JSON_UNESCAPED_UNICODE)
+                        json_encode($arrFrame['props'],JSON_UNESCAPED_UNICODE),
+                        $customer,
+                        $this->arrData[$i]['price_sell']
                     );
                     $this->insert($sql_config,$arrDataConfig);
                 }
