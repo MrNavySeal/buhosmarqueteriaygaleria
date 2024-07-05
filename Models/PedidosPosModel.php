@@ -8,6 +8,7 @@
         private $arrData;
         private $arrProducts;
         private $arrCustomer;
+        private $arrConfig;
         public function __construct(){
             parent::__construct();
         }
@@ -170,7 +171,7 @@
             for ($i=0; $i < $total ; $i++) { 
                 $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
                 if($this->arrData[$i]['topic'] == 1){
-                    //dep($arrImg);
+                    
                     if($this->arrData[$i]['img'] != ""){
                         $imgData = $this->arrData[$i]['img'];
                         list($type,$imgData) = explode(";",$imgData);
@@ -185,6 +186,22 @@
                         array("name"=>$this->arrData[$i]['name'],"detail"=>$this->arrData[$i]['data'],"img"=>$this->strImg),
                         JSON_UNESCAPED_UNICODE
                     );
+                    $arrFrame =  $this->arrData[$i]['config'];
+                    $sql_config = "INSERT INTO molding_examples(config,frame,margin,height,width,orientation,color_frame,color_margin,color_border,
+                    props) VALUE(?,?,?,?,?,?,?,?,?,?)";
+                    $arrDataConfig = array(
+                        $arrFrame['config'],
+                        $arrFrame['frame'],
+                        $arrFrame['margin'],
+                        $arrFrame['height'],
+                        $arrFrame['width'],
+                        $arrFrame['orientation'],
+                        $arrFrame['color_frame'],
+                        $arrFrame['color_margin'],
+                        $arrFrame['color_border'],
+                        json_encode($arrFrame['props'],JSON_UNESCAPED_UNICODE)
+                    );
+                    $this->insert($sql_config,$arrDataConfig);
                 }
                 $sql = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference) VALUE(?,?,?,?,?,?,?,?)";
                 $arrData = array(

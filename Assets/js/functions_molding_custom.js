@@ -39,6 +39,7 @@ let PPI = 100;
 let colorMargin = document.querySelectorAll(".color--margin");
 let colorBorder = document.querySelectorAll(".color--border");
 let arrFrame = [];
+let arrConfigFrame = [];
 let totalFrame = 0;
 let nameTopic = "";
 let imageUrl ="";
@@ -495,9 +496,24 @@ async function calcularMarco(id=null){
     });
     const formData = new FormData();
     const defaultFrame = document.querySelector(".frame--item.element--active");
-    const colorFrameTitle = document.querySelector(".color--frame") ? document.querySelector(".color--frame.element--active").getAttribute("title"): "";
-    const colorMarginTitle = document.querySelector(".color--margin") ? document.querySelector(".color--margin.element--active").getAttribute("title"): "";
-    const colorBorderTitle = document.querySelector(".color--border") ? document.querySelector(".color--border.element--active").getAttribute("title"): "";
+    let colorFrameTitle = "";
+    let colorMarginTitle = "";
+    let colorBorderTitle = "";
+    let colorFrameId ="";
+    let colorMarginId ="";
+    let colorBorderId="";
+    if(document.querySelector(".color--frame")){
+        colorFrameTitle = document.querySelector(".color--frame.element--active").getAttribute("title");
+        colorFrameId = document.querySelector(".color--frame.element--active").getAttribute("data-id");
+    }
+    if(document.querySelector(".color--margin")){
+        colorMarginTitle = document.querySelector(".color--margin.element--active").getAttribute("title");
+        colorMarginId = document.querySelector(".color--margin.element--active").getAttribute("data-id");
+    }
+    if(document.querySelector(".color--border")){
+        colorBorderTitle = document.querySelector(".color--border.element--active").getAttribute("title");
+        colorBorderId = document.querySelector(".color--border.element--active").getAttribute("data-id");
+    }
     formData.append("data",JSON.stringify(arrProps));
     formData.append("id",defaultFrame.getAttribute("data-id"));
     formData.append("height",intHeight.value);
@@ -508,11 +524,15 @@ async function calcularMarco(id=null){
     formData.append("color_frame",colorFrameTitle);
     formData.append("color_margin",colorMarginTitle);
     formData.append("color_border",colorBorderTitle);
+    formData.append("color_frame_id",colorFrameId);
+    formData.append("color_margin_id",colorMarginId);
+    formData.append("color_border_id",colorBorderId);
     document.querySelector(".totalFrame").innerHTML="Calculando...";
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
         arrFrame = objData.specs;
+        arrConfigFrame = objData.config;
         totalFrame = objData.total_clean;
         nameTopic = objData.name;
         document.querySelector(".totalFrame").innerHTML = objData.total;

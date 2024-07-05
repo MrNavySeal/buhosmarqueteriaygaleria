@@ -255,6 +255,7 @@ function addProduct(product={},topic=2){
             }
         }
         obj.price_sell =totalFrame;
+        obj.config = arrConfigFrame;
         obj.data = product;
         obj.name = nameTopic;
         obj.img = imageUrl;
@@ -840,9 +841,24 @@ async function showDefaultFraming(id){
     layoutImg.style.width = intWidth;
     layoutImg.style.border="none";
     layoutImg.style.borderRadius=0;*/
-    const colorFrameTitle = document.querySelector(".color--frame") ? document.querySelector(".color--frame.element--active").getAttribute("title"): "";
-    const colorMarginTitle = document.querySelector(".color--margin") ? document.querySelector(".color--margin.element--active").getAttribute("title"): "";
-    const colorBorderTitle = document.querySelector(".color--border") ? document.querySelector(".color--border.element--active").getAttribute("title"): "";
+    let colorFrameTitle = "";
+    let colorMarginTitle = "";
+    let colorBorderTitle = "";
+    let colorFrameId ="";
+    let colorMarginId ="";
+    let colorBorderId="";
+    if(document.querySelector(".color--frame")){
+        colorFrameTitle = document.querySelector(".color--frame.element--active").getAttribute("title");
+        colorFrameId = document.querySelector(".color--frame.element--active").getAttribute("data-id");
+    }
+    if(document.querySelector(".color--margin")){
+        colorMarginTitle = document.querySelector(".color--margin.element--active").getAttribute("title");
+        colorMarginId = document.querySelector(".color--margin.element--active").getAttribute("data-id");
+    }
+    if(document.querySelector(".color--border")){
+        colorBorderTitle = document.querySelector(".color--border.element--active").getAttribute("title");
+        colorBorderId = document.querySelector(".color--border.element--active").getAttribute("data-id");
+    }
     const formData = new FormData();
     formData.append("data",JSON.stringify(arrProps));
     formData.append("id",defaultFrame.getAttribute("data-id"));
@@ -854,6 +870,9 @@ async function showDefaultFraming(id){
     formData.append("color_frame",colorFrameTitle);
     formData.append("color_margin",colorMarginTitle);
     formData.append("color_border",colorBorderTitle);
+    formData.append("color_frame_id",colorFrameId);
+    formData.append("color_margin_id",colorMarginId);
+    formData.append("color_border_id",colorBorderId);
     formData.append("img","");
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
     const objData = await response.json();

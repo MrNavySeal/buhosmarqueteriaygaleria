@@ -30,6 +30,9 @@
                         $strColorFrame = strClean($_POST['color_frame']);
                         $strColorMargin = strClean($_POST['color_margin']);
                         $strColorBorder = strClean($_POST['color_border']);
+                        $intIdColorFrame = intval($_POST['color_frame_id']);
+                        $intIdColorMargin = intval($_POST['color_margin_id']);
+                        $intIdColorBorder = intval($_POST['color_border_id']);
                         $request = $this->model->selectFrameConfig($intId,$arrData);
                         $request_config=$this->model->selectCategory($intIdConfig);
                         $isPrint = $request_config['is_print'];
@@ -89,7 +92,25 @@
                         }
                         $totalCost = $totalCostMaterial+$totalCostFrame;
                         $price = ceil((intval(UTILIDAD*((($totalCost)*COMISION)+TASA)))/1000)*1000;
-                        $arrResponse = array("status"=>true,"total"=>formatNum($price),"specs"=>$arrSpecs,"total_clean"=>$price,"name"=>$request_config['name']);
+                        $arrResponse = array(
+                            "status"=>true,
+                            "total"=>formatNum($price),
+                            "specs"=>$arrSpecs,
+                            "total_clean"=>$price,
+                            "name"=>$request_config['name'],
+                            "config"=>array(
+                                "frame"=>$intId,
+                                "config"=>$intIdConfig,
+                                "margin"=>$intMargin,
+                                "height"=>$intHeight,
+                                "width"=>$intWidth,
+                                "orientation"=>$strOrientation,
+                                "color_frame"=>$intIdColorFrame,
+                                "color_margin"=>$intIdColorMargin,
+                                "color_border"=>$intIdColorBorder,
+                                "props"=>$arrData,
+                            )
+                        );
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
