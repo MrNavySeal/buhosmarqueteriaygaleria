@@ -1,4 +1,9 @@
-<?php headerAdmin($data)?>
+<?php 
+headerAdmin($data);
+if($_SESSION['permitsModule']['w']){
+    getModal("modalFrameExample");
+}
+?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <h2 class="text-center"><?=$data['page_title']?></h2>
     <div class="d-flex justify-content-end">
@@ -15,8 +20,10 @@
             <tr>
                 <th>ID</th>
                 <th>Foto</th>
+                <th>Categoría</th>
                 <th>Cliente</th>
                 <th>Valor</th>
+                <th>Fecha</th>
                 <th>Estado</th>
                 <th>Opciones</th>
             </tr>
