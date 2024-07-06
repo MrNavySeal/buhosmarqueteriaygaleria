@@ -188,7 +188,7 @@
                     );
                     $arrFrame =  $this->arrData[$i]['config'];
                     $sql_config = "INSERT INTO molding_examples(config,frame,margin,height,width,orientation,color_frame,color_margin,color_border,
-                    props,name,total) VALUE(?,?,?,?,?,?,?,?,?,?,?,?)";
+                    props,name,total,type_frame) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     $arrDataConfig = array(
                         $arrFrame['config'],
                         $arrFrame['frame'],
@@ -201,7 +201,8 @@
                         $arrFrame['color_border'],
                         json_encode($arrFrame['props'],JSON_UNESCAPED_UNICODE),
                         $customer,
-                        $this->arrData[$i]['price_sell']
+                        $this->arrData[$i]['price_sell'],
+                        $arrFrame['type_frame']
                     );
                     $this->insert($sql_config,$arrDataConfig);
                 }

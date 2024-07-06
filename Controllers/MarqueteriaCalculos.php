@@ -33,6 +33,7 @@
                         $intIdColorFrame = intval($_POST['color_frame_id']);
                         $intIdColorMargin = intval($_POST['color_margin_id']);
                         $intIdColorBorder = intval($_POST['color_border_id']);
+                        $intIdTypeFrame = intval($_POST['type_frame']);
                         $request = $this->model->selectFrameConfig($intId,$arrData);
                         $request_config=$this->model->selectCategory($intIdConfig);
                         $isPrint = $request_config['is_print'];
@@ -109,6 +110,7 @@
                                 "color_margin"=>$intIdColorMargin,
                                 "color_border"=>$intIdColorBorder,
                                 "props"=>$arrData,
+                                "type_frame"=>$intIdTypeFrame
                             )
                         );
                     }

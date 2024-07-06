@@ -216,6 +216,8 @@ searchFrame.addEventListener('input',function() {
 
 sortFrame.addEventListener("change",function(){
     if(intWidth.value !="" && intHeight.value!=""){
+        const element = sortFrame.options[sortFrame.selectedIndex];
+        sortFrame.setAttribute("data-id",element.getAttribute("data-id"));
         const arrPropContent = Array.from(document.querySelectorAll(".selectPropContent"));
         const colorFrame = document.querySelector("#frame--color");
         const colorSelectedFrame = document.querySelector(".color--frame.element--active");
@@ -527,6 +529,7 @@ async function calcularMarco(id=null){
     formData.append("color_frame_id",colorFrameId);
     formData.append("color_margin_id",colorMarginId);
     formData.append("color_border_id",colorBorderId);
+    formData.append("type_frame",sortFrame.getAttribute("data-id"));
     document.querySelector(".totalFrame").innerHTML="Calculando...";
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData});
     const objData = await response.json();

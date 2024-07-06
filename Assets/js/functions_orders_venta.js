@@ -742,7 +742,7 @@ function showMolding(data,color){
     const colorFrame = document.querySelector("#frame--color");
     if(data.length > 0){
         data.forEach(e => {
-            html+=`<option value="${e.name}">${e.name}</option>`
+            html+=`<option value="${e.name}" data-id="${e.idsubcategory}">${e.name}</option>`
         });
         const frames = data[0].frames;
         const needle = data[0].name.toLowerCase();
@@ -775,6 +775,7 @@ function showMolding(data,color){
     document.querySelector("#colorsBorder").innerHTML = colorHtml;
     document.querySelector("#sortFrame").innerHTML = html;
     document.querySelector(".select--frames").innerHTML = contentFrames;
+    document.querySelector("#sortFrame").setAttribute("data-id",data[0].idsubcategory);
 
     const arrColorsMargin = Array.from(document.querySelector("#colorsMargin").children);
     const arrColorsBorder = Array.from(document.querySelector("#colorsBorder").children);
@@ -873,6 +874,7 @@ async function showDefaultFraming(id){
     formData.append("color_frame_id",colorFrameId);
     formData.append("color_margin_id",colorMarginId);
     formData.append("color_border_id",colorBorderId);
+    formData.append("type_frame",sortFrame.getAttribute("data-id"));
     formData.append("img","");
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
     const objData = await response.json();
