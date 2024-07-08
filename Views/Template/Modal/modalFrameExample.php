@@ -1,5 +1,5 @@
 <div class="modal fade" id="modalElement">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">Nueva categoría</h5>
@@ -30,13 +30,13 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="" class="form-label fw-bold">Cliente <span class="text-danger">*</span></label>
+                                        <label for="" class="form-label">Cliente <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="strName" name="strName" >
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="statusList" class="form-label fw-bold">Estado <span class="text-danger">*</span></label>
+                                        <label for="statusList" class="form-label">Estado <span class="text-danger">*</span></label>
                                         <select class="form-control" aria-label="Default select example" id="statusList" name="statusList" required>
                                             <option value="1">Activo</option>
                                             <option value="2">Inactivo</option>
