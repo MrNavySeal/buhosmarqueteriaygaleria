@@ -1,3 +1,5 @@
+let modalFrame = "";
+let objProduct = {};
 const modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
 const table = new DataTable("#tableData",{
     "dom": 'lfBrtip',
@@ -40,24 +42,47 @@ const table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
+
 if(document.querySelector("#btnNew")){
     document.querySelector("#btnNew").classList.remove("d-none");
     const btnNew = document.querySelector("#btnNew");
+    const modalFrameCategory = new bootstrap.Modal(document.querySelector("#modalFrameSetExample"));
+    modalFrame = new bootstrap.Modal(document.querySelector("#modalFrame"));
+    const tableMolding = new DataTable("#tableMolding",{
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "ajax":{
+            "url": " "+base_url+"/MarqueteriaEjemplos/getMoldingProducts",
+            "dataSrc":""
+        },
+        "initComplete":function( settings, json){
+            //arrProducts = json;
+        },
+        columns: [
+            { data: 'id' },
+            { data: 'name' },
+            { data: 'options' },
+        ],
+        responsive: true,
+        order: [[0, 'asc']],
+        pagingType: 'full',
+        scrollY:'400px',
+        //scrollX: true,
+        "aProcessing":true,
+        "aServerSide":true,
+        "iDisplayLength": 10,
+    });
     btnNew.addEventListener("click",function(){
-        /*document.querySelector(".modal-title").innerHTML = "Nueva opción de propiedad";
-        document.querySelector("#id").value = "";
-        document.querySelector("#txtName").value = "";
-        document.querySelector("#txtTag").value = "";
-        document.querySelector("#txtTagFrame").value = "";
-        document.querySelector("#statusList").value = 1;
-        document.querySelector("#isMargin").checked = false;
-        document.querySelector("#isColor").checked = false;
-        document.querySelector("#isDblFrame").checked = false;
-        document.querySelector("#isBocel").checked = false;
-        document.querySelector("#isVisible").checked = false;
-        document.querySelector("#txtMargin").value = 5;
-        modal.show();*/
-        modal.show();
+        document.querySelector("#idExample").value = 0;
+        document.querySelector(".modal-title").innerHTML = "Nuevo ejemplo";
+        document.querySelector("#strDate").value = new Date().toISOString().split('T')[0];
+        document.querySelector(".uploadImg img").setAttribute("src",base_url+"/assets/images/uploads/category.jpg");
+        document.querySelector("#orderList").value = 5;
+        document.querySelector("#isVisible").checked = 0;
+        document.querySelector("#strReview").value = "";
+        document.querySelector("#strName").value = "";
+        modalFrameCategory.show();
     });
 }
 if(document.querySelector("#formItem")){
@@ -69,8 +94,23 @@ if(document.querySelector("#formItem")){
     });
     form.addEventListener("submit",function(e){
         e.preventDefault();
+        let strName = document.querySelector("#strName").value;
+        let intId = document.querySelector("#idExample").value;
+        let isVisible = document.querySelector("#isVisible").checked;
+        if(strName == ""){
+            Swal.fire("Error","Los campos con (*) son obligatorios","error");
+            return false;
+        }
+        if(intId == 0){
+            if(!objProduct.name){
+                Swal.fire("Error","Debe realizar una emarcación para guardar el ejemplo","error");
+                return false;
+            }
+        }
         let url = base_url+"/MarqueteriaEjemplos/setExample";
         let formData = new FormData(form);
+        formData.append("frame",JSON.stringify(objProduct));
+        formData.append("is_visible",isVisible ? 1 : 0);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
@@ -87,6 +127,53 @@ if(document.querySelector("#formItem")){
             }
         });
     })
+}
+function addProduct(product={},topic=1){
+    const defaultFrame = document.querySelector(".frame--item.element--active");
+    const props = Array.from(document.querySelectorAll(".selectProp"));
+    const intMargin = parseInt(props[0].getAttribute("data-margin"));
+    let colorFrameId ="";
+    let colorMarginId ="";
+    let colorBorderId="";
+    if(document.querySelector(".color--frame")){
+        colorFrameId = document.querySelector(".color--frame.element--active").getAttribute("data-id");
+    }
+    if(document.querySelector(".color--margin")){
+        colorMarginId = document.querySelector(".color--margin.element--active").getAttribute("data-id");
+    }
+    if(document.querySelector(".color--border")){
+        colorBorderId = document.querySelector(".color--border.element--active").getAttribute("data-id");
+    }
+    objProduct.price_sell =totalFrame;
+    objProduct.config = arrConfigFrame.props;
+    objProduct.data = {name:nameTopic,detail:product};
+    objProduct.name =nameTopic;
+    objProduct.img = imageUrl;
+    objProduct.id=defaultFrame.getAttribute("data-id");
+    objProduct.height = intHeight.value;
+    objProduct.width = intWidth.value;
+    objProduct.margin = intMargin;
+    objProduct.id_config = document.querySelector("#idCategory").value;
+    objProduct.orientation = document.querySelector(".orientation.element--active").getAttribute("data-name");
+    objProduct.color_frame_id = colorFrameId;
+    objProduct.color_margin_id = colorMarginId;
+    objProduct.color_border_id = colorBorderId;
+    objProduct.type_frame = sortFrame.getAttribute("data-id");
+    const specs = product;
+    let html="";
+    specs.forEach(e => {
+        html+=`
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label for="" class="form-label fw-bold">${e.name}</label>
+                <p class="text-break" id="strDate">${e.value}</p>
+            </div>
+        </div>
+        `
+    });
+    document.querySelector("#frameDescription").innerHTML = html;
+    document.querySelector("#strType").innerHTML = objProduct.name;
+    modal.show();
 }
 function editItem(id){
     let formData = new FormData();
@@ -105,12 +192,30 @@ function editItem(id){
             </div>
             `
         });
-        document.querySelector("#id").value = data.id;
+        objProduct.price_sell =data.total;
+        objProduct.config = data.props;
+        objProduct.data = specs;
+        objProduct.id=data.frame;
+        objProduct.height = data.height;
+        objProduct.width = data.width;
+        objProduct.margin = data.margin;
+        objProduct.id_config = data.config;
+        objProduct.orientation = data.orientation;
+        objProduct.color_frame_id = data.color_frame;
+        objProduct.color_margin_id = data.color_margin;
+        objProduct.color_border_id = data.color_border;
+        objProduct.type_frame = data.type_frame;
+        console.log(objProduct);
+        document.querySelector("#idExample").value = data.id;
         document.querySelector(".uploadImg img").setAttribute("src",data.img);
-        document.querySelector("#strName").innerHTML = data.name;
-        document.querySelector("#strDate").innerHTML = data.date;
+        document.querySelector("#strName").value = data.name;
+        let arrDate = new String(data.date).split("/");
+        document.querySelector("#strDate").valueAsDate = new Date(arrDate[2]+"-"+arrDate[1]+"-"+arrDate[0]);
         document.querySelector("#strType").innerHTML = specs.name;
         document.querySelector("#statusList").value = data.status;
+        document.querySelector("#orderList").value = data.order_view;
+        document.querySelector("#isVisible").checked = data.is_visible;
+        document.querySelector("#strReview").value = data.description;
         document.querySelector("#frameDescription").innerHTML = html;
         document.querySelector(".modal-title").innerHTML = "Actualizar ejemplo";
         modal.show();

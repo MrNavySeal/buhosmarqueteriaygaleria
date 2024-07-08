@@ -2,6 +2,8 @@
 headerAdmin($data);
 if($_SESSION['permitsModule']['w']){
     getModal("modalFrameExample");
+    getModal("modalFrameCustom");
+    getModal("modalFrameSetExample");
 }
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">

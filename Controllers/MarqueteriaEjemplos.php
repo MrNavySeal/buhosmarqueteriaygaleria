@@ -17,6 +17,7 @@
                 $data['page_title'] = "Ejemplos | Marquetería";
                 $data['page_name'] = "ejemplos";
                 $data['panelapp'] = "functions_molding_example.js";
+                $data['framing'] = "functions_molding_custom.js";
                 $this->views->getView($this,"ejemplos",$data);
             }else{
                 header("location: ".base_url());
@@ -26,30 +27,35 @@
         public function setExample(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
-                    if(empty($_POST['statusList'])){
+                    if(empty($_POST['statusList']) || empty($_POST['strDate']) || empty($_POST['strName']) || empty($_POST['frame'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
-                        $id = intval($_POST['id']);
+                        $intId = intval($_POST['id']);
                         $intStatus = intval($_POST['statusList']);
+                        $strDate = $_POST['strDate'];
+                        $strName = ucwords(strClean($_POST['strName']));
+                        $strDescription = strClean($_POST['strReview']);
+                        $intOrder = intval($_POST['orderList']);
+                        $isVisible = intval($_POST['is_visible']);
+                        $arrFrame = json_decode($_POST['frame'],true);
                         $photo = "";
                         $photoCategory="";
-                        if($id == 0){
+                        if($intId == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                /*
+                                
                                 if($_FILES['txtImg']['name'] == ""){
                                     $photoCategory = "category.jpg";
                                 }else{
                                     $photo = $_FILES['txtImg'];
-                                    $photoCategory = 'moldingcategory_'.bin2hex(random_bytes(6)).'.png';
+                                    $photoCategory = 'frame_example_'.bin2hex(random_bytes(6)).'.png';
                                 }
-
-                                $request= $this->model->insertCategory($photoCategory,$strName,$strDescription,$route,$intStatus,$strButton,$isVisible);*/
+                                $request = $this->model->insertExample($photoCategory,$intStatus,$strDate,$strName,$arrFrame,$intOrder,$isVisible,$strDescription);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->selectExample($id);
+                                $request = $this->model->selectExample($intId);
                                 if($_FILES['txtImg']['name'] == ""){
                                     $img = $request['img'] !="" ? $request['img'] : "category.jpg";
                                     $photoCategory = $img;
@@ -60,7 +66,7 @@
                                     $photo = $_FILES['txtImg'];
                                     $photoCategory = 'frame_example_'.bin2hex(random_bytes(6)).'.png';
                                 }
-                                $request = $this->model->updateExample($id,$photoCategory,$intStatus);
+                                $request = $this->model->updateExample($intId,$photoCategory,$intStatus,$strDate,$strName,$arrFrame,$intOrder,$isVisible,$strDescription);
                             }
                         }
                         if($request > 0 ){
@@ -156,6 +162,41 @@
             }
             die();
         }
+        /*************************Molding methods*******************************/
+        public function getMoldingProducts(){
+            if($_SESSION['permitsModule']['w']){
+                $request = $this->model->selectMoldingCategories();
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+                        $btn = '<button type="button" class="btn btn-primary" data-bs-target="#modalFrameSetExample" data-bs-toggle="modal" onclick="getConfig(this,'.$request[$i]['id'].')">Enmarcar</button>';
+                        $request[$i]['options'] = $btn;
+                    }
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getConfig(){
+            if($_SESSION['permitsModule']['w']){
+                if($_POST){
+                    if(empty($_POST['id'])){
+                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    }else{
+                        $intId = intval($_POST['id']);
+                        $request = $this->model->selectConfig($intId);
+                        if(empty($request)){
+                            $arrResponse = array("status"=>false,"msg"=>"La categoria no está configurada");
+                        }else{
+                            $arrColors = $this->model->selectColors();
+                            $arrResponse = array("status"=>true,"data"=>$request,"color"=>$arrColors);
+                        }
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
+        }
+        
     }
 
 ?>
