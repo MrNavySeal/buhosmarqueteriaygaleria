@@ -292,7 +292,7 @@
             return $request;
         }
         public function selectColors(){
-            $sql = "SELECT * FROM moldingcolor WHERE status = 1 ORDER BY id DESC";       
+            $sql = "SELECT * FROM moldingcolor WHERE status = 1 ORDER BY order_view";       
             $request = $this->select_all($sql);
             return $request;
         }
