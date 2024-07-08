@@ -1,6 +1,7 @@
 let modalFrame = "";
 let objProduct = {};
 const modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
+const modalView = document.querySelector("#modalElementView") ? new bootstrap.Modal(document.querySelector("#modalElementView")) :"";
 const table = new DataTable("#tableData",{
     "dom": 'lfBrtip',
     "language": {
@@ -77,7 +78,7 @@ if(document.querySelector("#btnNew")){
     });
     btnNew.addEventListener("click",function(){
         document.querySelector("#idExample").value = 0;
-        document.querySelector(".modal-title").innerHTML = "Nuevo ejemplo";
+        document.querySelector("#modalTitleFrame").innerHTML = "Nuevo ejemplo";
         document.querySelector("#strDate").value = new Date().toISOString().split('T')[0];
         document.querySelector(".uploadImg img").setAttribute("src",base_url+"/assets/images/uploads/category.jpg");
         document.querySelector("#orderList").value = 5;
@@ -177,6 +178,36 @@ function addProduct(product={},topic=1){
     document.querySelector("#strType").innerHTML = objProduct.name;
     modal.show();
 }
+function viewItem(id){
+    let formData = new FormData();
+    formData.append("id",id);
+    request(base_url+"/MarqueteriaEjemplos/getExample",formData,"post").then(function(objData){
+        const data = objData.data;
+        const specs = data.specs;
+        let html="";
+        specs.detail.forEach(e => {
+            html+=`
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label for="" class="form-label fw-bold">${e.name}</label>
+                    <p class="text-break" id="strDate">${e.value}</p>
+                </div>
+            </div>
+            `
+        });
+        document.querySelector("#imgExampleView").setAttribute("src",data.img);
+        document.querySelector("#strNameView").innerHTML = data.name;
+        document.querySelector("#strDateView").innerHTML = data.date;
+        document.querySelector("#strTypeView").innerHTML = specs.name;
+        document.querySelector("#statusListView").innerHTML = data.status == 1 ? `<span class="badge me-1 bg-success">Activo</span>`: `<span class="badge me-1 bg-danger">Inactivo</span>` ;
+        document.querySelector("#orderListView").innerHTML = data.order_view;
+        document.querySelector("#isVisibleView").innerHTML = data.is_visible ? "Si" : "No";
+        document.querySelector("#strReviewView").innerHTML = data.description;
+        document.querySelector("#frameDescriptionView").innerHTML = html;
+        document.querySelector("#modalTitleFrameView").innerHTML = "Datos de enmarcación";
+        modalView.show();
+    });
+}
 function editItem(id){
     let formData = new FormData();
     formData.append("id",id);
@@ -207,7 +238,6 @@ function editItem(id){
         objProduct.color_margin_id = data.color_margin;
         objProduct.color_border_id = data.color_border;
         objProduct.type_frame = data.type_frame;
-        console.log(objProduct);
         document.querySelector("#idExample").value = data.id;
         document.querySelector(".uploadImg img").setAttribute("src",data.img);
         document.querySelector("#strName").value = data.name;
@@ -219,7 +249,7 @@ function editItem(id){
         document.querySelector("#isVisible").checked = data.is_visible;
         document.querySelector("#strReview").value = data.description;
         document.querySelector("#frameDescription").innerHTML = html;
-        document.querySelector(".modal-title").innerHTML = "Actualizar ejemplo";
+        document.querySelector("#modalTitleFrame").innerHTML = "Actualizar ejemplo";
         modal.show();
     });
 }

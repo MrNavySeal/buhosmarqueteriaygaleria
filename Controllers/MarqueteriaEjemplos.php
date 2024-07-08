@@ -117,6 +117,7 @@
                 if($total>0){
                     for ($i=0; $i < $total; $i++) { 
                         $arrSpecs = json_decode($request[$i]['specs'],true);
+                        $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['id'].')" ><i class="fas fa-eye"></i></button>';
                         $btnDelete="";
                         $btnEdit="";
                         $status="";
@@ -133,7 +134,7 @@
                         }
                         $request[$i]['category'] = $arrSpecs['name'];
                         $request[$i]['status'] = $status;
-                        $request[$i]['options'] = $btnEdit.$btnDelete;
+                        $request[$i]['options'] = $btnView.$btnEdit.$btnDelete;
                         $request[$i]['total'] = formatNum($request[$i]['total']);
                         $request[$i]['is_visible'] = $request[$i]['is_visible'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
                     }

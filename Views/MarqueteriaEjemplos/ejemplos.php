@@ -1,5 +1,6 @@
 <?php 
 headerAdmin($data);
+getModal("modalFrameExampleView");
 if($_SESSION['permitsModule']['w']){
     getModal("modalFrameExample");
     getModal("modalFrameCustom");
