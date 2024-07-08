@@ -52,7 +52,7 @@
                 $data['page_tag'] = "Colores";
                 $data['page_title'] = "Colores";
                 $data['page_name'] = "colores";
-                $data['panelapp'] = "functions_colors.js";
+                $data['panelapp'] = "functions_molding_colors.js";
                 $this->views->getView($this,"colores",$data);
             }else{
                 header("location: ".base_url());
@@ -855,6 +855,7 @@
                         }
                         $request[$i]['status'] = $status;
                         $request[$i]['options'] = $btnEdit.$btnDelete;
+                        $request[$i]['is_visible'] = $request[$i]['is_visible'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
@@ -891,17 +892,19 @@
                         $strName = ucwords(strClean($_POST['txtName']));
                         $strColor = strClean($_POST['txtColor']);
                         $intStatus = intval($_POST['statusList']);
+                        $isVisible = intval($_POST['is_visible']);
+                        $intOrder = intval($_POST['orderList']);
 
                         if($idColor == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
 
-                                $request= $this->model->insertColor($strName,$strColor,$intStatus);
+                                $request= $this->model->insertColor($strName,$strColor,$intStatus,$isVisible,$intOrder);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->updateColor($idColor,$strName,$strColor,$intStatus);
+                                $request = $this->model->updateColor($idColor,$strName,$strColor,$intStatus,$isVisible,$intOrder);
                             }
                         }
                         if($request > 0 ){

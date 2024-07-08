@@ -12,6 +12,7 @@ let table = new DataTable("#tableData",{
         "dataSrc":""
     },
     columns: [
+        { data: 'id'},
         { data: 'color',
             
             render: function (data, type, full, meta) {
@@ -20,6 +21,8 @@ let table = new DataTable("#tableData",{
         },
         { data: 'name'},
         { data: 'color' },
+        { data: 'order_view' },
+        { data: 'is_visible' },
         { data: 'status' },
         { data: 'options' },
     ],
@@ -32,7 +35,7 @@ let table = new DataTable("#tableData",{
             "className": "btn btn-success mt-2"
         }
     ],
-    order: [[1, 'asc']],
+    order: [[0, 'desc']],
     pagingType: 'full',
     scrollY:'400px',
     //scrollX: true,
@@ -49,6 +52,8 @@ if(document.querySelector("#btnNew")){
         document.querySelector("#txtColor").value = "";
         document.querySelector("#statusList").value =1;
         document.querySelector("#idColor").value ="";
+        document.querySelector("#orderList").value = 5;
+        document.querySelector("#isVisible").checked =0;
         modal.show();
     });
 }
@@ -59,7 +64,7 @@ if(document.querySelector("#formItem")){
         let strName = document.querySelector("#txtName").value;
         let strColor = document.querySelector("#txtColor").value;
         let intStatus = document.querySelector("#statusList").value;
-
+        let isVisible = document.querySelector("#isVisible").checked;
         if(strName == "" || strColor == "" || intStatus==""){
             Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
             return false;
@@ -68,6 +73,7 @@ if(document.querySelector("#formItem")){
         let url = base_url+"/Marqueteria/setColor";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
+        formData.append("is_visible",isVisible ? 1 : 0);
 
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
@@ -95,6 +101,8 @@ function editItem(id){
         document.querySelector("#txtName").value = objData.data.name;
         document.querySelector("#txtColor").value = objData.data.color;
         document.querySelector("#statusList").value = objData.data.status;
+        document.querySelector("#orderList").value = objData.data.order_view;
+        document.querySelector("#isVisible").checked = objData.data.is_visible;
         document.querySelector(".modal-title").innerHTML = "Actualizar color";
         modal.show();
 

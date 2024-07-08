@@ -395,7 +395,7 @@
             return $request;
         }
         /*************************Color methods*******************************/
-        public function insertColor(string $strName,string $strColor,int $intStatus){
+        public function insertColor(string $strName,string $strColor,int $intStatus,$isVisible,$intOrder){
 
 			$this->strColor = $strName;
 			$this->strHexColor = $strColor;
@@ -407,8 +407,8 @@
 
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO moldingcolor(name,color,status) VALUES(?,?,?)";	  
-	        	$arrData = array($this->strColor, $this->strHexColor,$this->intStatus);
+				$query_insert  = "INSERT INTO moldingcolor(name,color,status,is_visible,order_view) VALUES(?,?,?,?,?)";	  
+	        	$arrData = array($this->strColor, $this->strHexColor,$this->intStatus,$isVisible,$intOrder);
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
 			}else{
@@ -416,7 +416,7 @@
 			}
 	        return $return;
 		}
-        public function updateColor(int $intIdColor,string $strName,string $strColor,int $intStatus){
+        public function updateColor(int $intIdColor,string $strName,string $strColor,int $intStatus,$isVisible,$intOrder){
             $this->intIdColor = $intIdColor;
             $this->strColor = $strName;
 			$this->strHexColor = $strColor;
@@ -428,8 +428,8 @@
 
 			if(empty($request)){
 
-                $sql = "UPDATE moldingcolor SET name=?,color=?, status=? WHERE id = $this->intIdColor";
-                $arrData = array($this->strColor, $this->strHexColor,$this->intStatus);
+                $sql = "UPDATE moldingcolor SET name=?,color=?, status=?,is_visible=?,order_view=? WHERE id = $this->intIdColor";
+                $arrData = array($this->strColor, $this->strHexColor,$this->intStatus,$isVisible,$intOrder);
 				$request = $this->update($sql,$arrData);
 			}else{
 				$request = "exist";
