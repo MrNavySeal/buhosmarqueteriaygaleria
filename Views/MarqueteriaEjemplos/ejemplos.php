@@ -26,6 +26,8 @@ if($_SESSION['permitsModule']['w']){
                 <th>Cliente</th>
                 <th>Valor</th>
                 <th>Fecha</th>
+                <th>Orden</th>
+                <th>Cliente Visible</th>
                 <th>Estado</th>
                 <th>Opciones</th>
             </tr>

@@ -22,6 +22,8 @@ const table = new DataTable("#tableData",{
         { data: 'name'},
         { data: 'total'},
         { data: 'date'},
+        { data: 'order_view'},
+        { data: 'is_visible'},
         { data: 'status' },
         { data: 'options' },
     ],

@@ -135,6 +135,7 @@
                         $request[$i]['status'] = $status;
                         $request[$i]['options'] = $btnEdit.$btnDelete;
                         $request[$i]['total'] = formatNum($request[$i]['total']);
+                        $request[$i]['is_visible'] = $request[$i]['is_visible'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
