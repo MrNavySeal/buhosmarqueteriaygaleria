@@ -9,6 +9,7 @@
         private $intOrder;
         private $isVisible;
         private $strDescription;
+        private $strAddress;
         public function __construct(){
             parent::__construct();
         }
@@ -40,7 +41,7 @@
             $request['specs'] = json_decode($request['specs'],true);
             return $request;
         }
-        public function insertExample(string $strImg,int $intStatus,string $strDate,string $strName,array $arrData,int $intOrder,int $isVisible,string $strDescription){
+        public function insertExample(string $strImg,int $intStatus,string $strDate,string $strName,array $arrData,int $intOrder,int $isVisible,string $strDescription,string $strAddress){
             $this->intStatus = $intStatus;
             $this->strImg = $strImg;
             $this->strDate = $strDate;
@@ -49,6 +50,7 @@
             $this->intOrder = $intOrder;
             $this->isVisible = $isVisible;
             $this->strDescription = $strDescription;
+            $this->strAddress = $strAddress;
             $sql = "INSERT INTO molding_examples
             ( 
             config,
@@ -70,9 +72,10 @@
             specs,
             order_view,
             is_visible,
-            description
+            description,
+            address
             ) 
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             $arrData = array(
                 $this->arrData['id_config'],
                 $this->arrData['id'],
@@ -93,12 +96,13 @@
                 json_encode($this->arrData['data'],JSON_UNESCAPED_UNICODE),
                 $this->intOrder,
                 $this->isVisible,
-                $this->strDescription
+                $this->strDescription,
+                $this->strAddress
             );
             $request = $this->insert($sql,$arrData);
             return $request;
         }
-        public function updateExample(int $intId,string $strImg,int $intStatus,string $strDate,string $strName,array $arrData,int $intOrder,int $isVisible,string $strDescription){
+        public function updateExample(int $intId,string $strImg,int $intStatus,string $strDate,string $strName,array $arrData,int $intOrder,int $isVisible,string $strDescription,string $strAddress){
             $this->intId = $intId;
             $this->intStatus = $intStatus;
             $this->strImg = $strImg;
@@ -108,6 +112,7 @@
             $this->intOrder = $intOrder;
             $this->isVisible = $isVisible;
             $this->strDescription = $strDescription;
+            $this->strAddress = $strAddress;
             $sql = "UPDATE molding_examples SET 
             config=?,
             frame=?,
@@ -129,6 +134,7 @@
             order_view=?,
             is_visible=?,
             description=?,
+            address=?,
             updated_at=NOW()
             WHERE id = $this->intId";
             $arrData = array(
@@ -151,7 +157,8 @@
                 json_encode($this->arrData['data'],JSON_UNESCAPED_UNICODE),
                 $this->intOrder,
                 $this->isVisible,
-                $this->strDescription
+                $this->strDescription,
+                $this->strAddress
             );
             $request = $this->update($sql,$arrData);
             return $request;

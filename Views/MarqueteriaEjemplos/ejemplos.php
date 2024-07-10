@@ -25,6 +25,7 @@ if($_SESSION['permitsModule']['w']){
                 <th>Foto</th>
                 <th>Categoría</th>
                 <th>Cliente</th>
+                <th>Ubicación</th>
                 <th>Valor</th>
                 <th>Fecha</th>
                 <th>Orden</th>

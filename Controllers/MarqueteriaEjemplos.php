@@ -35,6 +35,7 @@
                         $strDate = $_POST['strDate'];
                         $strName = ucwords(strClean($_POST['strName']));
                         $strDescription = strClean($_POST['strReview']);
+                        $strAddress = ucwords(strtolower(strClean($_POST['strAddress'])));
                         $intOrder = intval($_POST['orderList']);
                         $isVisible = intval($_POST['is_visible']);
                         $arrFrame = json_decode($_POST['frame'],true);
@@ -50,7 +51,7 @@
                                     $photo = $_FILES['txtImg'];
                                     $photoCategory = 'frame_example_'.bin2hex(random_bytes(6)).'.png';
                                 }
-                                $request = $this->model->insertExample($photoCategory,$intStatus,$strDate,$strName,$arrFrame,$intOrder,$isVisible,$strDescription);
+                                $request = $this->model->insertExample($photoCategory,$intStatus,$strDate,$strName,$arrFrame,$intOrder,$isVisible,$strDescription,$strAddress);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
@@ -66,7 +67,7 @@
                                     $photo = $_FILES['txtImg'];
                                     $photoCategory = 'frame_example_'.bin2hex(random_bytes(6)).'.png';
                                 }
-                                $request = $this->model->updateExample($intId,$photoCategory,$intStatus,$strDate,$strName,$arrFrame,$intOrder,$isVisible,$strDescription);
+                                $request = $this->model->updateExample($intId,$photoCategory,$intStatus,$strDate,$strName,$arrFrame,$intOrder,$isVisible,$strDescription,$strAddress);
                             }
                         }
                         if($request > 0 ){

@@ -21,6 +21,7 @@ const table = new DataTable("#tableData",{
         },
         { data: 'category'},
         { data: 'name'},
+        { data: 'address'},
         { data: 'total'},
         { data: 'date'},
         { data: 'order_view'},
@@ -176,6 +177,7 @@ function addProduct(product={},topic=1){
     });
     document.querySelector("#frameDescription").innerHTML = html;
     document.querySelector("#strType").innerHTML = objProduct.name;
+    document.querySelector("#strTotal").innerHTML = "$"+formatNum(objProduct.price_sell,".");
     modal.show();
 }
 function viewItem(id){
@@ -203,6 +205,8 @@ function viewItem(id){
         document.querySelector("#orderListView").innerHTML = data.order_view;
         document.querySelector("#isVisibleView").innerHTML = data.is_visible ? "Si" : "No";
         document.querySelector("#strReviewView").innerHTML = data.description;
+        document.querySelector("#strAddressView").innerHTML = data.address;
+        document.querySelector("#strTotalView").innerHTML = "$"+formatNum(data.total,".");
         document.querySelector("#frameDescriptionView").innerHTML = html;
         document.querySelector("#modalTitleFrameView").innerHTML = "Datos de enmarcación";
         modalView.show();
@@ -248,6 +252,8 @@ function editItem(id){
         document.querySelector("#orderList").value = data.order_view;
         document.querySelector("#isVisible").checked = data.is_visible;
         document.querySelector("#strReview").value = data.description;
+        document.querySelector("#strAddress").value = data.address;
+        document.querySelector("#strTotal").innerHTML = "$"+formatNum(data.total,".");
         document.querySelector("#frameDescription").innerHTML = html;
         document.querySelector("#modalTitleFrame").innerHTML = "Actualizar ejemplo";
         modal.show();

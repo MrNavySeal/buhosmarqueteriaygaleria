@@ -43,6 +43,12 @@
                                     <p class="text-break" id="orderListView"></p>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="" class="form-label fw-bold">Ubicación</label>
+                                    <p class="text-break" id="strAddressView"></p>
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="strReview" class="form-label fw-bold">Descripción</label>
@@ -51,9 +57,19 @@
                     </div>
                     <div class="col-md-6">
                         <h2 class="text-center">Información de enmarcación</h2>
-                        <div class="mb-3">
-                            <label for="" class="form-label fw-bold">Tipo</label>
-                            <p class="text-break" id="strTypeView"></p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="" class="form-label fw-bold">Tipo</label>
+                                    <p class="text-break" id="strTypeView"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="" class="form-label fw-bold">Total</label>
+                                    <p class="text-break" id="strTotalView"></p>
+                                </div>
+                            </div>
                         </div>
                         <div class="row" id="frameDescriptionView"></div>
                     </div>

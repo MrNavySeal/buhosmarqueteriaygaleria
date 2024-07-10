@@ -24,7 +24,7 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="" class="form-label fw-bold">Fecha</label>
+                                        <label for="" class="form-label">Fecha</label>
                                         <input type="date" name="strDate" id="strDate" class="form-control">
                                     </div>
                                 </div>
@@ -57,14 +57,28 @@
                                 </div>
                             </div>
                             <div class="mb-3">
+                                <label for="" class="form-label">Ubicación</label>
+                                <input type="text" class="form-control" id="strAddress" name="strAddress" >
+                            </div>
+                            <div class="mb-3">
                                 <label for="strReview" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="strReview" name="strReview" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="" class="form-label fw-bold">Tipo</label>
-                                <p class="text-break" id="strType"></p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Tipo</label>
+                                        <p class="text-break" id="strType"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label fw-bold">Total</label>
+                                        <p class="text-break" id="strTotal"></p>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row" id="frameDescription"></div>
                         </div>
