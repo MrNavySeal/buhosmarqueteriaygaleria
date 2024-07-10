@@ -153,7 +153,7 @@
             $request = $this->insert($sql,$arrData);
             //Insert detail
             if($request > 0){
-                $this->insertOrderDet($request,$this->arrCustomer['id'],$this->arrProducts,$this->arrCustomer['name']);
+                $this->insertOrderDet($request,$this->arrCustomer['id'],$this->arrProducts,$this->arrCustomer['name'],$this->arrCustomer['address']);
                 //insert income
                 if($data['type']!="credito"){
                     $this->insertIncome($request,3,1,"Venta de artículos y/o servicios",$data['total']['total'],
@@ -162,11 +162,11 @@
             }
             return $request;
         }
-        public function insertOrderDet(int $id,int $idCustom,array $data,string $customer){
+        public function insertOrderDet(int $id,int $idCustom,array $data,string $customer,string $address){
             $this->intIdUser = $idCustom;
             $this->intId = $id;
             $this->arrData = $data;
-
+            $strAddress = explode("/",$address)[1];
             $total = count($this->arrData);
             for ($i=0; $i < $total ; $i++) { 
                 $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
@@ -188,7 +188,7 @@
                     );
                     $arrFrame =  $this->arrData[$i]['config'];
                     $sql_config = "INSERT INTO molding_examples(config,frame,margin,height,width,orientation,color_frame,color_margin,color_border,
-                    props,name,total,type_frame,specs) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    props,name,total,type_frame,specs,address) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     $arrDataConfig = array(
                         $arrFrame['config'],
                         $arrFrame['frame'],
@@ -203,7 +203,8 @@
                         $customer,
                         $this->arrData[$i]['price_sell'],
                         $arrFrame['type_frame'],
-                        $this->strDescription
+                        $this->strDescription,
+                        $strAddress
                     );
                     $this->insert($sql_config,$arrDataConfig);
                 }
