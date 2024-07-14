@@ -1,9 +1,89 @@
 <?php 
-
+$company = getCompanyInfo();
 $order = $data['order']['order'];
-$detail = $data['order']['detail'];
+$arrDet = $data['order']['detail'];
 $subtotal = 0;
 $discount = $order['coupon'];
+$html="";
+$arrRows = [];
+foreach ($arrDet as $data) {
+	$subtotalProduct =$data['quantity']*$data['price'];
+	$subtotal+= $data['quantity']*$data['price'];
+	$description="";
+	if($data['topic'] == 1){
+		$detail = json_decode($data['description']);
+		$img ="";
+		if(isset($detail->type)){
+			$intWidth = floatval($detail->width);
+			$intHeight = floatval($detail->height);
+			$intMargin = floatval($detail->margin);
+			$colorFrame =  $detail->colorframe ? $detail->colorframe : "";
+			$material = $detail->material ? $detail->material : "";
+			$marginStyle = $detail->style == "Flotante" || $detail->style == "Flotante sin marco interno" ? "Fondo" : "Paspartú";
+			$borderStyle = $detail->style == "Flotante" ? "marco interno" : "bocel";
+			$glassStyle = $detail->idType == 4 ? "Bastidor" : "Tipo de vidrio";
+			$measureFrame = ($intWidth+($intMargin*2))."cm X ".($intHeight+($intMargin*2))."cm";
+			if($detail->photo !=""){
+				$img = '<a href="'.media().'/images/uploads/'.$detail->photo.'" target="_blank">Ver imagen</a><br>';
+			}
+			$description.='
+					'.$img.'
+					'.$detail->name.'
+					<ul>
+						<li><span class="fw-bold t-color-3">Referencia: </span>'.$detail->reference.'</li>
+						<li><span class="fw-bold t-color-3">Color del marco: </span>'.$colorFrame.'</li>
+						<li><span class="fw-bold t-color-3">Material: </span>'.$material.'</li>
+						<li><span class="fw-bold t-color-3">Orientación: </span>'.$marginStyle.'</li>
+						<li><span class="fw-bold t-color-3">Estilo de enmarcación: </span>'.$detail->style.'</li>
+						<li><span class="fw-bold t-color-3">'.$marginStyle.': </span>'.$detail->margin.'cm</li>
+						<li><span class="fw-bold t-color-3">Medida imagen: </span>'.$detail->width.'cm X '.$detail->height.'cm</li>
+						<li><span class="fw-bold t-color-3">Medida marco: </span>'.$measureFrame.'</li>
+						<li><span class="fw-bold t-color-3">Color del '.$marginStyle.': </span>'.$detail->colormargin.'</li>
+						<li><span class="fw-bold t-color-3">Color del '.$borderStyle.': </span>'.$detail->colorborder.'</li>
+						<li><span class="fw-bold t-color-3">'.$glassStyle.': </span>'.$detail->glass.'</li>
+					</ul>
+			';
+		}else{
+			if($detail->img !="" && $detail->img !=null){
+				$img = '<a href="'.media().'/images/uploads/'.$detail->img.'" target="_blank">Ver imagen</a><br>';
+			}
+			$htmlDetail ="";
+			$arrDet = $detail->detail;
+			foreach ($arrDet as $d) {
+				$htmlDetail.='<li><span class="fw-bold t-color-3">'.$d->name.': </span>'.$d->value.'</li>';
+			}
+			$description = $img.$detail->name.'<ul>'.$htmlDetail.'</ul>';
+		}
+	}else{
+		$description=$data['description'];
+		$flag = substr($data['description'], 0,1) == "{" ? true : false;
+		if($flag){
+			$arrData = json_decode($data['description'],true);
+			$name = $arrData['name'];
+			$varDetail = $arrData['detail'];
+			$textDetail ="";
+			foreach ($varDetail as $d) {
+				$textDetail .= '<li><span class="fw-bold t-color-3">'.$d['name'].':</span> '.$d['option'].'</li>';
+			}
+			$description = $name.'<ul>'.$textDetail.'</ul>';
+		}
+	}
+	$row = array(
+		"reference"=>$data['reference'],
+		"description"=>$description,
+		"price"=>formatNum($data['price'],false),
+		"qty"=>$data['quantity'],
+		"subtotal"=>formatNum($subtotalProduct,false)
+	);
+	$html.='<td class="text-start w10">'.$data['reference'].'</td>';
+	$html.='<td class="text-start w55">'.$description.'</td>';
+	$html.='
+		<td class="text-right w10">'.formatNum($data['price'],false).'</td>
+		<td class="text-right w10">'.$data['quantity'].'</td>
+		<td class="text-right w15">'.formatNum($subtotalProduct,false).'</td>
+	';
+	array_push($arrRows,$row);
+}
  ?>
 
 <!DOCTYPE html>
@@ -57,11 +137,11 @@ $discount = $order['coupon'];
 				</td>
 				<td width="33.33%">
 					<div class="text-center">
-						<h4><strong><?= $data['company']['name'] ?></strong></h4>
+						<h4><strong><?= $company['name'] ?></strong></h4>
 						<p>
-							<?= $data['company']['addressfull']?> <br>
-							Teléfono: <?=$data['company']['phone']." ".$data['company']['phones'] ?> <br>
-							Email: <?= $data['company']['email'] ?>
+							<?= $company['addressfull']?> <br>
+							Teléfono: <?=$company['phone']." ".$company['phones'] ?> <br>
+							Email: <?= $company['email'] ?>
 						</p>
 					</div>
 				</td>
@@ -113,109 +193,15 @@ $discount = $order['coupon'];
 		  </thead>
 		  <tbody id="detalleOrden">
 			<tbody>
-			<?php 
-				if(count($detail) > 0){
-					
-					foreach ($detail as $product) {
-						$subtotal+= $product['quantity']*$product['price'];
-			?>
-			<tr>
-			<td class="text-start">
-				<?=$product['reference']?><br>
-			</td>
-				<?php
-					if($product['topic'] == 2 || $product['topic'] == 3){
-					$flag = substr($product['description'], 0,1) == "{" ? true : false;
-					if($flag){
-						$arrData = json_decode($product['description'],true);
-						$name = $arrData['name'];
-						$varDetail = $arrData['detail'];
-						$textDetail ="";
-						foreach ($varDetail as $d) {
-							$textDetail .= '<li><span class="fw-bold t-color-3">'.$d['name'].':</span> '.$d['option'].'</li>';
-						}
-						$product['description'] = $name.'<ul>'.$textDetail.'</ul>';
-					}
-				?>
-			<td class="text-start">
-				<?=$product['description']?><br>
-			</td>
-				<?php 
-					}else{ 
-						$arrProducts = json_decode($product['description'],true);
-						/*$photo = "";
-						if($arrProducts['photo']!=""){
-							$photo = '<img src="'.media()."/images/uploads/".$arrProducts['photo'].'" width="70" height="70"><br>';
-						}*/
-				?>
-				<td class="text-start">
-					<?=$arrProducts['name']?>
-				<?php
-					$borderStyle = $arrProducts['style'] == "Flotante" ? "marco interno" : "bocel";
-					$marginStyle = $arrProducts['style'] == "Flotante" ? "fondo" : "paspartú";
-					$colorFrame = $arrProducts['colorframe'] != "" ? '<li><span class="fw-bold t-color-3">Color del marco:</span> '.$arrProducts['colorframe'].'</li>' : "";
-					$margen = $arrProducts['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Medida '.$marginStyle.':</span> '.$arrProducts['margin'].'cm</li>' : "";
-					$colorMargen = $arrProducts['colormargin'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$marginStyle.':</span> '.$arrProducts['colormargin'].'</li>' : "";
-					$colorBorder = $arrProducts['colorborder'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$borderStyle.':</span> '.$arrProducts['colorborder'].'</li>' : "";
-					$medidas = $arrProducts['width']."cm X ".$arrProducts['height']."cm";
-					$medidasMarco = ($arrProducts['width']+($arrProducts['margin']*2))."cm X ".($arrProducts['height']+($arrProducts['margin']*2))."cm"; 
-				?>
-				<?php if($arrProducts['idType'] == 1 || $arrProducts['idType'] == 3){?>
-				<ul>
-					<li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-					<?=$colorFrame?>
-					<li><span class="fw-bold t-color-3">Material del marco:</span> <?=$arrProducts['material']?></li>
-					<li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-					<li><span class="fw-bold t-color-3">Estilo de enmarcación:</span> <?=$arrProducts['style']?></li>
-					<?=$margen?>
-					<li><span class="fw-bold t-color-3">Medida imagen:</span> <?=$medidas?></li>
-					<li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
-					<?=$colorMargen?>
-					<?=$colorBorder?>
-					<li><span class="fw-bold t-color-3">Tipo de vidrio:</span> <?=$arrProducts['glass']?></li>
-				</ul>
-				<?php }else if($arrProducts['idType'] == 5){?>
-				<ul>
-				<li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-					<?=$colorFrame?>
-					<li><span class="fw-bold t-color-3">Material del marco:</span> <?=$arrProducts['material']?></li>
-					<li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-					<li><span class="fw-bold t-color-3">Tipo de espejo:</span> <?=$arrProducts['style']?></li>
-					<li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
-				</ul>
-				<?php }else if($arrProducts['idType'] == 6){?>
-					<ul>
-						<li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-						<li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-						<li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-						<?=$margen?>
-						<li><span class="fw-bold t-color-3">Medidas del marco:</span> <?=$medidasMarco?></li>
-						<?=$colorMargen?>
-					</ul>
-				<?php }else if($arrProducts['idType'] == 8){?>
-					<ul>
-						<li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts['style']?></li>
-						<li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-						<?=$colorBorder?>
-					</ul>
-				<?php }else if($arrProducts['idType'] == 9){?>
-				<ul>
-					<li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts['reference']?></li>
-					<li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts['orientation']?></li>
-					<li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts['style']?></li>
-					<li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-				</ul>
-				<?php }?>
-				</td>
-			<?php }?>
-			<td class="text-right"><?=formatNum($product['price'],false)?></td>
-			<td class="text-center"><?= $product['quantity'] ?></td>
-			<td class="text-right"><?= formatNum($product['price']*$product['quantity'],false)?></td>
-			</tr>
-			<?php 		
-				}
-			} 
-			?>
+				<?php foreach ($arrRows as $row) { ?>
+				<tr>
+					<td class="text-start w10"><?=$row['reference']?></td>
+					<td class="text-start w55"><?=$row['description']?></td>
+					<td class="text-right w10"><?=$row['price']?></td>
+					<td class="text-start w10"><?=$row['qty']?></td>
+					<td class="text-start w15"><?=$row['subtotal']?></td>
+				</tr>
+				<?php } ?>
 		  </tbody>
 		  <tfoot>
 				<tr>
@@ -238,7 +224,7 @@ $discount = $order['coupon'];
 		</table>
 		<div class="text-center">
 			<h4>Gracias por tu compra!</h4>		
-			<p>Recuerda que puedes ver tu pedido en tu cuenta de usuario</p>	
+			<p>Recuerda que puedes ver tu pedido en tu perfil de usuario</p>	
 		</div>
 	</div>									
 </body>

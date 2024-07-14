@@ -1,6 +1,6 @@
 
 const DIMENSIONDEFAULT = 4;
-const MAXDIMENSION = 500;
+const MAXDIMENSION = 160;
 const BORDERBOCEL = 3;
 const BORDERFLOTANTE = 10;
 const BORDERRADIUS = 2;
@@ -96,6 +96,9 @@ intHeight.addEventListener("change",function(){
     }
     if(height >= MAXDIMENSION){
         intHeight.value = MAXDIMENSION;
+        intWidth.value = width >= 100 ? 100 : width;
+    }else if(height > 100){
+        intWidth.value = width >= 100 ? 100 : width;;
     }
     if(isPrint== 1){
         calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));
@@ -112,6 +115,9 @@ intWidth.addEventListener("change",function(){
     }
     if(width >= MAXDIMENSION){
         intWidth.value = MAXDIMENSION;
+        intHeight.value = height >= 100 ? 100 : height;
+    }else if(width > 100){
+        intHeight.value = height >= 100 ? 100 : height;
     }
     if(isPrint== 1){
         calcPpi(intHeight.value,intWidth.value,document.querySelector(".layout--img img"));

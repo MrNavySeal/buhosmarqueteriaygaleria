@@ -231,13 +231,13 @@
                 $company = getCompanyInfo();
                 $dataEmailOrden = array(
                     'asunto' => "Se ha generado un pedido",
-                    'email_usuario' => $_SESSION['userData']['email'], 
+                    'email_usuario' => $strEmail, 
                     'email_remitente'=>$company['email'],
                     'company'=>$company,
                     'email_copia' => $company['secondary_email'],
                     'order' => $orderInfo);
 
-                //sendEmail($dataEmailOrden,"email_order");
+                sendEmail($dataEmailOrden,"email_order");
                 $idOrder = openssl_encrypt($request,METHOD,KEY);
                 $idTransaction = openssl_encrypt($orderInfo['order']['idtransaction'],METHOD,KEY);
                 $orderData = array("order"=>$idOrder,"transaction"=>$idTransaction);

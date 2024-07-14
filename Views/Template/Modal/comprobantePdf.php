@@ -216,7 +216,6 @@ if($order['status'] =="pendent"){
     </table>
     <table class="text-center">
         <tbody>
-            <tr><td class="w100"><p class="fw-bold">Después de 30 días no se responde por trabajos o pedidos finalizados</p></td></tr>
             <tr><td class="w100"><p class="fw-bold">Esta factura de compra venta se asimila en todos sus efectos
                 legales a la letra de cambio de acuerdo al ART.774 del código de comercio
             </p></td></tr>
