@@ -140,7 +140,6 @@
             die();
         }
         /******************************Checkout methods************************************/
-        
         public function checkInfo(){
             if($_POST){
                 if(empty($_POST['txtNameOrder']) || empty($_POST['txtLastNameOrder']) || empty($_POST['txtEmailOrder'])
@@ -172,7 +171,8 @@
                         "note"=>$strNote,
                         "cupon"=>$cupon,
                         "situ"=>$situ,
-                        "document"=>$strDocument
+                        "document"=>$strDocument,
+                        "city"=>$strCity
                     );
                     $arrResponse = array("status"=>true,"msg"=>"Datos guardados");
                 }
@@ -188,6 +188,7 @@
             $strDocument = $arrData['document'];
             $strEmail = $arrData['email'];
             $strPhone = $arrData['phone'];
+            $strCity = $arrData['city'];
             $strAddress = $arrData['address'];
             $cupon = $arrData['cupon'];
             $strNote = $arrData['note'];
@@ -218,7 +219,13 @@
             //$total +=$envio;
             $request = $this->insertOrder($idUser, $idTransaction,$strName,$strDocument,$strEmail,$strPhone,$strAddress,$strNote,$cupon,$envio,$total,$status,$type,$statusOrder);          
             if($request>0){
-                $arrOrder = array("idorder"=>$request,"iduser"=>$_SESSION['idUser'],"products"=>$_SESSION['arrCart']);
+                $arrOrder = array(
+                    "idorder"=>$request,
+                    "iduser"=>$_SESSION['idUser'],
+                    "products"=>$_SESSION['arrCart'],
+                    "city"=>$strCity,
+                    "name"=>$strName
+                );
                 $requestDetail = $this->insertOrderDetail($arrOrder);
                 $orderInfo = $this->getOrder($request);
                 $company = getCompanyInfo();

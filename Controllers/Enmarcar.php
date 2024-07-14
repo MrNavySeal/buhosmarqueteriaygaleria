@@ -44,109 +44,121 @@
             }
             die();
         }
-        public function calcularMarcoTotal(){
-            if($_POST){
-                if(empty($_POST['id']) || empty($_POST['data']) || empty($_POST['height']) || empty($_POST['width']) || empty($_POST['id_config']) 
-                || empty($_POST['orientation'])){
+        public function calcularMarcoTotal($bypass=false,$arrInfo = array()){
+            if($_POST || $bypass){
+                if(!$bypass && (empty($_POST['id']) || empty($_POST['data']) || empty($_POST['height']) || empty($_POST['width']) || empty($_POST['id_config']) 
+                || empty($_POST['orientation']))){
+                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                }else if($bypass && empty($arrInfo)){
                     $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                 }else{
-                    $intId = intval($_POST['id']);
-                    $intIdConfig = intval($_POST['id_config']);
-                    $intMargin = intval($_POST['margin']);
-                    $intHeight = floatval($_POST['height']);
-                    $intWidth = floatval($_POST['width']);
+                    $intId = intval(!$bypass ? $_POST['id'] : $arrInfo['id']);
+                    $intIdConfig = intval(!$bypass ? $_POST['id_config'] : $arrInfo['id_config']);
+                    $intMargin = intval(!$bypass ? $_POST['margin'] : $arrInfo['margin']);
+                    $intHeight = floatval(!$bypass ? $_POST['height'] : $arrInfo['height']);
+                    $intWidth = floatval(!$bypass ? $_POST['width'] : $arrInfo['width']);
                     $intHeightM = $intHeight+$intMargin;
                     $intWidthM = $intWidth+$intMargin;
-                    $arrData = json_decode($_POST['data'],true);
-                    $strOrientation = strClean($_POST['orientation']);
-                    $strColorFrame = strClean($_POST['color_frame']);
-                    $strColorMargin = strClean($_POST['color_margin']);
-                    $strColorBorder = strClean($_POST['color_border']);
-                    $intIdColorFrame = intval($_POST['color_frame_id']);
-                    $intIdColorMargin = intval($_POST['color_margin_id']);
-                    $intIdColorBorder = intval($_POST['color_border_id']);
-                    $intIdTypeFrame = intval($_POST['type_frame']);
+                    $arrData = json_decode(!$bypass ? $_POST['data'] : $arrInfo['data'],true);
+                    $strOrientation = strClean(!$bypass ? $_POST['orientation'] : $arrInfo['orientation']);
+                    $strColorFrame = strClean(!$bypass ? $_POST['color_frame'] : $arrInfo['color_frame']);
+                    $strColorMargin = strClean(!$bypass ? $_POST['color_margin'] : $arrInfo['color_margin']);
+                    $strColorBorder = strClean(!$bypass ? $_POST['color_border'] : $arrInfo['color_border']);
+                    $intIdColorFrame = intval(!$bypass ? $_POST['color_frame_id'] : $arrInfo['color_frame_id']);
+                    $intIdColorMargin = intval(!$bypass ? $_POST['color_margin_id'] : $arrInfo['color_margin_id']);
+                    $intIdColorBorder = intval(!$bypass ? $_POST['color_border_id'] : $arrInfo['color_border_id']);
+                    $intIdTypeFrame = intval(!$bypass ? $_POST['type_frame'] : $arrInfo['type_frame']);
                     $request = $this->selectFrameConfig($intId,$arrData);
-                    $request_config=$this->selectCategory($intIdConfig);
-                    $isPrint = $request_config['is_print'];
-                    /************Frame variables************* */
-                    $frameLength = 290;
-                    $framePainted = 2.87;
-                    $frame = $request['frame'];
-                    $cost= 0;
-                    $waste = $frame['waste'];
-                    $data = $request['data'];
-                    $flag = strpos($frame['name'],"madera") > 0 ? true : false;
-                    if($flag){
-                        $cost = ceil(($frame['price_purchase']/$frameLength)*$framePainted);
+                    if(!empty($request)){
+                        $request_config=$this->selectCategory($intIdConfig);
+                        $isPrint = $request_config['is_print'];
+                        /************Frame variables************* */
+                        $frameLength = 290;
+                        $framePainted = 2.87;
+                        $frame = $request['frame'];
+                        $cost= 0;
+                        $waste = $frame['waste'];
+                        $data = $request['data'];
+                        $flag = strpos($frame['name'],"madera") > 0 ? true : false;
+                        if($flag){
+                            $cost = ceil(($frame['price_purchase']/$frameLength)*$framePainted);
+                        }else{
+                            $cost = ceil($frame['price_purchase']/$frameLength);
+                        }
+                        $totalCostFrame = ((($intHeightM+$intWidthM)*2)+$waste)*$cost;
+                        if( $frame['name'] !="molduras importadas"){
+                            $perimetro = 2*($intHeightM+$intWidthM);
+                            $varas = ceil(($perimetro)/($frameLength-$waste));
+                            $totalCostFrame = ($perimetro+($waste*$varas))*$cost;
+                        }
+                        $totalCostMaterial = 0;
+                        $totalCost = 0;
+                        $arrSpecs = [];
+                        array_push($arrSpecs,
+                            array("name"=>"Referencia","value"=>$frame['reference']),
+                            array("name"=>"Material","value"=>ucfirst($frame['name'])),
+                            array("name"=>"Orientación","value"=>$strOrientation),
+                            array("name"=>"Medida imagen","value"=>$intWidth." x ".$intHeight." cm"),
+                            array("name"=>"Medida marco","value"=>$intWidthM." x ".$intHeightM." cm")
+                        );
+                        if($frame['name'] !="molduras importadas" && $frame['name'] !="bastidores"){
+                            array_push($arrSpecs,array("name"=>"Color del marco","value"=>$strColorFrame));
+                        }
+                        foreach ($data as $e ) {
+                            $prop = $e['prop'];
+                            $option = $e['option'];
+                            $arrMaterial = $e['material'];
+                            if($option['is_margin']){
+                                array_push($arrSpecs,array("name"=>"Medida del ".$option['tag'],"value"=>$intMargin." cm"));
+                                array_push($arrSpecs,array("name"=>"Color del ".$option['tag'],"value"=>$strColorMargin));
+                            }
+                            if($option['is_bocel'] || $option['is_frame']){
+                                array_push($arrSpecs,array("name"=>"Color del ".$option['tag_frame'],"value"=>$strColorBorder));
+                            }
+                            
+                            array_push($arrSpecs,array("name"=>$prop['name'],"value"=>$option['name']));
+                            if($prop['is_material']){
+                                if($isPrint != 1){
+                                    $arrMaterial = array_filter($arrMaterial,function($e){return $e['name'] != "Impresion";});
+                                }
+                                foreach ($arrMaterial as $d ) {
+                                    $totalCostMaterial+=$this->calcularCostoMaterial($d,$intHeight,$intWidth,$intMargin);
+                                }
+                            }
+                        }
+                        $totalCost = $totalCostMaterial+$totalCostFrame;
+                        $price = ceil((intval(UTILIDAD*((($totalCost)*COMISION)+TASA)))/1000)*1000;
+                        $arrResponse = array(
+                            "status"=>true,
+                            "total"=>formatNum($price),
+                            "specs"=>$arrSpecs,
+                            "total_clean"=>$price,
+                            "name"=>$request_config['name'],
+                            "cat_img"=>$request_config['image'],
+                            "route"=>$request_config['route'],
+                            "config"=>array(
+                                "frame"=>$intId,
+                                "config"=>$intIdConfig,
+                                "margin"=>$intMargin,
+                                "height"=>$intHeight,
+                                "width"=>$intWidth,
+                                "orientation"=>$strOrientation,
+                                "color_frame"=>$intIdColorFrame,
+                                "color_margin"=>$intIdColorMargin,
+                                "color_border"=>$intIdColorBorder,
+                                "props"=>$arrData,
+                                "type_frame"=>$intIdTypeFrame
+                            )
+                        );
                     }else{
-                        $cost = ceil($frame['price_purchase']/$frameLength);
+                        $arrResponse = array("status"=>false,"msg"=>"Error, la moldura no existe.");
                     }
-                    $totalCostFrame = ((($intHeightM+$intWidthM)*2)+$waste)*$cost;
-                    if( $frame['name'] !="molduras importadas"){
-                        $perimetro = 2*($intHeightM+$intWidthM);
-                        $varas = ceil(($perimetro)/($frameLength-$waste));
-                        $totalCostFrame = ($perimetro+($waste*$varas))*$cost;
-                    }
-                    $totalCostMaterial = 0;
-                    $totalCost = 0;
-                    $arrSpecs = [];
-                    array_push($arrSpecs,
-                        array("name"=>"Referencia","value"=>$frame['reference']),
-                        array("name"=>"Material","value"=>ucfirst($frame['name'])),
-                        array("name"=>"Orientación","value"=>$strOrientation),
-                        array("name"=>"Medida imagen","value"=>$intWidth." x ".$intHeight." cm"),
-                        array("name"=>"Medida marco","value"=>$intWidthM." x ".$intHeightM." cm")
-                    );
-                    if($frame['name'] !="molduras importadas" && $frame['name'] !="bastidores"){
-                        array_push($arrSpecs,array("name"=>"Color del marco","value"=>$strColorFrame));
-                    }
-                    foreach ($data as $e ) {
-                        $prop = $e['prop'];
-                        $option = $e['option'];
-                        $arrMaterial = $e['material'];
-                        if($option['is_margin']){
-                            array_push($arrSpecs,array("name"=>"Medida del ".$option['tag'],"value"=>$intMargin." cm"));
-                            array_push($arrSpecs,array("name"=>"Color del ".$option['tag'],"value"=>$strColorMargin));
-                        }
-                        if($option['is_bocel'] || $option['is_frame']){
-                            array_push($arrSpecs,array("name"=>"Color del ".$option['tag_frame'],"value"=>$strColorBorder));
-                        }
-                        
-                        array_push($arrSpecs,array("name"=>$prop['name'],"value"=>$option['name']));
-                        if($prop['is_material']){
-                            if($isPrint != 1){
-                                $arrMaterial = array_filter($arrMaterial,function($e){return $e['name'] != "Impresion";});
-                            }
-                            foreach ($arrMaterial as $d ) {
-                                $totalCostMaterial+=$this->calcularCostoMaterial($d,$intHeight,$intWidth,$intMargin);
-                            }
-                        }
-                    }
-                    $totalCost = $totalCostMaterial+$totalCostFrame;
-                    $price = ceil((intval(UTILIDAD*((($totalCost)*COMISION)+TASA)))/1000)*1000;
-                    $arrResponse = array(
-                        "status"=>true,
-                        "total"=>formatNum($price),
-                        "specs"=>$arrSpecs,
-                        "total_clean"=>$price,
-                        "name"=>$request_config['name'],
-                        "config"=>array(
-                            "frame"=>$intId,
-                            "config"=>$intIdConfig,
-                            "margin"=>$intMargin,
-                            "height"=>$intHeight,
-                            "width"=>$intWidth,
-                            "orientation"=>$strOrientation,
-                            "color_frame"=>$intIdColorFrame,
-                            "color_margin"=>$intIdColorMargin,
-                            "color_border"=>$intIdColorBorder,
-                            "props"=>$arrData,
-                            "type_frame"=>$intIdTypeFrame
-                        )
-                    );
                 }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                if(!$bypass){
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }else{
+                    return $arrResponse;
+                }
             }
             die();
         }
@@ -188,6 +200,69 @@
                 $total+=$costMaterial*($perimetro); 
             }
             return $total;
+        }
+        public function addCart(){
+            //dep($_POST);exit;
+            //unset($_SESSION['arrCart']);exit;
+            if($_POST){
+                $arrData = $this->calcularMarcoTotal(true,$_POST);
+                $arrCart = [];
+                if($arrData['status']){
+                    $arrData['img'] = $_POST['img'];
+                    $arrData['topic'] = 1;
+                    $arrData['qty'] = 1;
+                    $arrData['price'] = $arrData['total_clean'];
+                    $pop = array(
+                        "name"=>$arrData['name'],
+                        "image"=>$arrData['img'] !="" ? $arrData['img'] : media()."/images/uploads/".$arrData['cat_img'],
+                        "route"=>base_url()."/enmarcar/personalizar/".$arrData['route']
+                    );
+                    if(isset($_SESSION['arrCart'])){
+                        $arrCart = $_SESSION['arrCart'];
+                        $flag = true;
+                        for ($i=0; $i < count($arrCart) ; $i++) { 
+                            if($arrCart[$i]['topic'] == 1){
+                                if($arrCart[$i]['name'] == $arrData['name'] && $arrCart[$i]['img'] == $arrData['img']){
+                                    $arrProductData = $arrCart[$i]['specs'];
+                                    $arrObjData = $arrData['specs'];
+                                    $flagFrame = false;
+                                    if(count($arrProductData) == count($arrObjData)){
+                                        for ($j = 0; $j < count($arrProductData); $j++) {
+                                            if($arrProductData[$j]['value'] == $arrObjData[$j]['value']){
+                                                $flagFrame = false;
+                                            }else{
+                                                $flagFrame = true;
+                                                break;
+                                            }
+                                        }
+                                        if(!$flagFrame){
+                                            $arrCart[$i]['qty'] +=$arrData['qty'];
+                                            $flag = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if($flag){
+                            array_push($arrCart,$arrData);
+                        }
+                        $_SESSION['arrCart'] = $arrCart;
+                    }else{
+                        array_push($arrCart,$arrData);
+                        $_SESSION['arrCart'] = $arrCart;
+                    }
+                    $qtyCart = 0;
+                    foreach ($_SESSION['arrCart'] as $quantity) {
+                        $qtyCart += $quantity['qty'];
+                    }
+                    $arrResponse = array("status"=>true,"msg"=>"Ha sido agregado a tu carrito.","qty"=>$qtyCart,"data"=>$pop);
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
         }
     }
 ?>

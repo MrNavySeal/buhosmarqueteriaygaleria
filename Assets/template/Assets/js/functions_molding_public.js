@@ -258,9 +258,6 @@ containerFrames.addEventListener("click",function(e){
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
     calcularMarco(id);
 });
-addFrame.addEventListener("click",function(){
-    addProduct(arrFrame,1);
-});
 
 /*********************FUNCTIONS************************ */
 function updateFramingConfig(select){ 
@@ -512,7 +509,20 @@ async function calcularMarco(id=null){
         totalFrame = objData.total_clean;
         nameTopic = objData.name;
         document.querySelector(".totalFrame").innerHTML = objData.total;
+        showSpecs();
     }
+}
+function showSpecs(){
+    let html="";
+    arrFrame.forEach(function(e){
+        html+=`
+            <tr>
+                <td class="bg-light w-50" >${e.name}</td>
+                <td>${e.value}</td>
+            </tr>
+        `;
+    });
+    document.querySelector("#tableSpecs").innerHTML = html;
 }
 function calcDimension(picture){
     if(uploadPicture.value !=""){
@@ -564,6 +574,92 @@ function uploadImg(img,location){
         let route = objectUrl.createObjectURL(fileUpload[0]);
         document.querySelector(location).setAttribute("src",route);
     }
+}
+async function addProduct(){
+    if(intHeight.value =="" || intWidth.value==""){
+        Swal.fire("Error","Por favor, ingresa las medidas","error");
+        return false;
+    }
+    if(!document.querySelector(".frame--item.element--active")){
+        Swal.fire("Error","Por favor, seleccione la moldura","error");
+        return false;
+    }
+    const isPrint = document.querySelector("#isPrint").getAttribute("data-print");
+    if(isPrint== 1){
+        if(uploadPicture.value == ""){
+            Swal.fire("Error","Por favor, sube la imagen a imprimir","error");
+            return false;
+        }
+    }
+    const props = Array.from(document.querySelectorAll(".selectProp"));
+    const intMargin = parseInt(props[0].getAttribute("data-margin"));
+    const arrProps = [];
+    props.forEach(e=>{
+        const arrAttributes = Array.from(e.parentElement.attributes).filter(a=>a.name.includes("data"));
+        for (let i = 0; i < arrAttributes.length; i++) {
+            const element = arrAttributes[i];
+            if(element.value == sortFrame.value){
+                arrProps.push({
+                    prop:e.getAttribute("data-id"),
+                    option_prop:e.value
+                });
+                break;
+            }
+        }
+    });
+    const formData = new FormData();
+    const defaultFrame = document.querySelector(".frame--item.element--active");
+    let colorFrameTitle = "";
+    let colorMarginTitle = "";
+    let colorBorderTitle = "";
+    let colorFrameId ="";
+    let colorMarginId ="";
+    let colorBorderId="";
+    if(document.querySelector(".color--frame")){
+        colorFrameTitle = document.querySelector(".color--frame.element--active").getAttribute("title");
+        colorFrameId = document.querySelector(".color--frame.element--active").getAttribute("data-id");
+    }
+    if(document.querySelector(".color--margin")){
+        colorMarginTitle = document.querySelector(".color--margin.element--active").getAttribute("title");
+        colorMarginId = document.querySelector(".color--margin.element--active").getAttribute("data-id");
+    }
+    if(document.querySelector(".color--border")){
+        colorBorderTitle = document.querySelector(".color--border.element--active").getAttribute("title");
+        colorBorderId = document.querySelector(".color--border.element--active").getAttribute("data-id");
+    }
+    formData.append("data",JSON.stringify(arrProps));
+    formData.append("id",defaultFrame.getAttribute("data-id"));
+    formData.append("height",intHeight.value);
+    formData.append("width",intWidth.value);
+    formData.append("margin",intMargin);
+    formData.append("id_config",idCategory);
+    formData.append("orientation",document.querySelector(".orientation.element--active").getAttribute("data-name"));
+    formData.append("color_frame",colorFrameTitle);
+    formData.append("color_margin",colorMarginTitle);
+    formData.append("color_border",colorBorderTitle);
+    formData.append("color_frame_id",colorFrameId);
+    formData.append("color_margin_id",colorMarginId);
+    formData.append("color_border_id",colorBorderId);
+    formData.append("type_frame",sortFrame.getAttribute("data-id"));
+    formData.append("img",imageUrl);
+    addFrame.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    addFrame.setAttribute("disabled","");
+    const response = await fetch(base_url+"/Enmarcar/addCart",{method:"POST",body:formData});
+    const objData = await response.json();
+    if(objData.status){
+        document.querySelector("#qtyCart").innerHTML=objData.qty;
+        document.querySelector("#qtyCartbar").innerHTML=objData.qty;
+        const toast = new bootstrap.Toast(toastLiveExample);
+        toast.show();
+        
+        document.querySelector(".toast-header img").src=objData.data.image;
+        document.querySelector(".toast-header img").alt=objData.data.name;
+        document.querySelector("#toastProduct").innerHTML=objData.data.name;
+        document.querySelector(".toast-body").innerHTML=objData.msg;
+    }
+    addFrame.innerHTML=`<i class="fas fa-shopping-cart"></i> Agregar`;
+    addFrame.removeAttribute("disabled");
+
 }
 /*************************Molding functions*******************************/
 async function getConfig(){
@@ -815,5 +911,6 @@ async function showDefaultFraming(id,params){
     const objData = await response.json();
     if(objData.status){
         document.querySelector(".totalFrame").innerHTML = objData.total;
+        calcularMarco();
     }
 }

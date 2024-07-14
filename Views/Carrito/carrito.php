@@ -68,19 +68,15 @@
                                     $totalPerProduct=0;
                                     $totalPerProduct = formatNum($price*$arrProducts[$i]['qty'],false);
                                     if($arrProducts[$i]['topic'] == 1){
-                                        $img = $arrProducts[$i]['img'];
+                                        $img = $arrProducts[$i]['img'] != "" ? $arrProducts[$i]['img'] : $img = media()."/images/uploads/".$arrProducts[$i]['cat_img'];
                                     }elseif ($arrProducts[$i]['topic'] == 1 && $arrProducts[$i]['photo']!="") {
                                         $img = media()."/images/uploads/".$arrProducts[$i]['photo'];
                                     }else{
                                         $img = $arrProducts[$i]['image'];
                                     }
-                            ?>     
+                            ?>  
+                            <tr data-id = "<?=$i?>" class="row-product-cart">   
                             <?php if($arrProducts[$i]['topic'] == 1){?>
-                            <tr data-id="<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>" data-h="<?=$arrProducts[$i]['height']?>"
-                        data-w="<?=$arrProducts[$i]['width']?>" data-m="<?=$arrProducts[$i]['margin']?>" data-s="<?=$arrProducts[$i]['style']?>" 
-                        data-mc="<?=$arrProducts[$i]['colormargin']?>" data-bc="<?=$arrProducts[$i]['colorborder']?>" data-t="<?=$arrProducts[$i]['idType']?>" 
-                        data-r="<?=$arrProducts[$i]['reference']?>" data-f="<?=$arrProducts[$i]['photo']?>" data-material="<?=$arrProducts[$i]['material']?>"
-                        data-fc="<?=$arrProducts[$i]['colorframe']?>" data-glass="<?=$arrProducts[$i]['glass']?>">
                             <?php }else if($arrProducts[$i]['topic'] == 2){?>
                                 <?php if($arrProducts[$i]['producttype']){
                                     $arrVariant = explode("-",$arrProducts[$i]['variant']['name']); 
@@ -100,9 +96,6 @@
                                     }
                                     $variant = '<ul>'.$htmlComb.'</ul>';
                                 ?>
-                                    <tr data-id = "<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>" data-variant ="<?=$arrProducts[$i]['variant']['name']?>">
-                                <?php }else{?>
-                                    <tr data-id = "<?=$arrProducts[$i]['id']?>" data-topic ="<?=$arrProducts[$i]['topic']?>">
                                 <?php }?>
                             <?php }?>
                             <td>
@@ -112,68 +105,17 @@
                                 </div>
                             </td>
                             <td>
-                                <a class="w-100"href="<?=$arrProducts[$i]['url']?>"><?=$arrProducts[$i]['reference']?> <?=$arrProducts[$i]['name']?></a>
+                                <a class="w-100" href="<?=$arrProducts[$i]['url']?>"><?=$arrProducts[$i]['name']?></a>
                                 <?=$variant?>
                                 <?php
                                     if($arrProducts[$i]['topic'] == 1){
-                                        $borderStyle = $arrProducts[$i]['style'] == "Flotante" ? "marco interno" : "bocel";
-                                        $marginStyle = $arrProducts[$i]['style'] == "Flotante" ? "fondo" : "paspartú";
-                                        $margen = $arrProducts[$i]['margin'] > 0 ? '<li><span class="fw-bold t-color-3">Medida '.$marginStyle.':</span> '.$arrProducts[$i]['margin'].'cm</li>' : "";
-                                        $colorMargen = $arrProducts[$i]['colormargin'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$marginStyle.':</span> '.$arrProducts[$i]['colormargin'].'</li>' : "";
-                                        $colorBorder = $arrProducts[$i]['colorborder'] != "" ? '<li><span class="fw-bold t-color-3">Color del '.$borderStyle.':</span> '.$arrProducts[$i]['colorborder'].'</li>' : "";
-                                        $colorFrame = $arrProducts[$i]['colorframe'] != "" ? '<li><span class="fw-bold t-color-3">Color del marco:</span> '.$arrProducts[$i]['colorframe'].'</li>' : "";
-                                        $medidas = $arrProducts[$i]['width']."cm X ".$arrProducts[$i]['height']."cm";
-                                        $medidasMarco = ($arrProducts[$i]['width']+($arrProducts[$i]['margin']*2))."cm X ".($arrProducts[$i]['height']+($arrProducts[$i]['margin']*2))."cm"; 
-
+                                        $arrSpecs = $arrProducts[$i]['specs'];
                                 ?>
-                                <?php if($arrProducts[$i]['idType'] == 1 || $arrProducts[$i]['idType'] == 3){?>
                                 <ul>
-                                    <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts[$i]['reference']?></li>
-                                    <?=$colorFrame?>
-                                    <li><span class="fw-bold t-color-3">Material del marco:</span> <?=$arrProducts[$i]['material']?></li>
-                                    <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts[$i]['orientation']?></li>
-                                    <li><span class="fw-bold t-color-3">Estilo de enmarcación:</span> <?=$arrProducts[$i]['style']?></li>
-                                    <?=$margen?>
-                                    <li><span class="fw-bold t-color-3">Medida imagen:</span> <?=$medidas?></li>
-                                    <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
-                                    <?=$colorMargen?>
-                                    <?=$colorBorder?>
-                                    <li><span class="fw-bold t-color-3">Tipo de vidrio:</span> <?=$arrProducts[$i]['glass']?></li>
+                                    <?php foreach ($arrSpecs as $e) {?>
+                                    <li><span class="fw-bold t-color-3"><?=$e['name']?></span> <?=$e['value']?></li>
+                                    <?php }?>
                                 </ul>
-                                <?php }else if($arrProducts[$i]['idType'] == 5){?>
-                                <ul>
-                                <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts[$i]['reference']?></li>
-                                    <?=$colorFrame?>
-                                    <li><span class="fw-bold t-color-3">Material del marco:</span> <?=$arrProducts[$i]['material']?></li>
-                                    <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts[$i]['orientation']?></li>
-                                    <li><span class="fw-bold t-color-3">Tipo de espejo:</span> <?=$arrProducts[$i]['style']?></li>
-                                    <li><span class="fw-bold t-color-3">Medida Marco:</span> <?=$medidasMarco?></li>
-                                    
-                                </ul>
-                                <?php }else if($arrProducts[$i]['idType'] == 6){?>
-                                    <ul>
-                                        <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts[$i]['reference']?></li>
-                                        <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts[$i]['orientation']?></li>
-                                        <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-                                        <?=$margen?>
-                                        <li><span class="fw-bold t-color-3">Medidas del marco:</span> <?=$medidasMarco?></li>
-                                        <?=$colorMargen?>
-                                    </ul>
-                                <?php }else if($arrProducts[$i]['idType'] == 8){?>
-                                    <ul>
-                                        
-                                        <li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts[$i]['style']?></li>
-                                        <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-                                        <?=$colorBorder?>
-                                    </ul>
-                                <?php }else if($arrProducts[$i]['idType'] == 9){?>
-                                   <ul>
-                                        <li><span class="fw-bold t-color-3">Referencia:</span> <?=$arrProducts[$i]['reference']?></li>
-                                        <li><span class="fw-bold t-color-3">Orientación:</span> <?=$arrProducts[$i]['orientation']?></li>
-                                        <li><span class="fw-bold t-color-3">Estilo:</span> <?=$arrProducts[$i]['style']?></li>
-                                        <li><span class="fw-bold t-color-3">Medidas:</span> <?=$medidas?></li>
-                                   </ul>
-                                <?php }?>
                                 <?php }?>
                             </td>
                             <td><?=formatNum($price,false)?></td>
@@ -181,7 +123,7 @@
                                 <div class="d-flex justify-content-center align-items-center flex-wrap">
                                     <div class="btn-qty-1">
                                         <button class="btn cartDecrement" onclick="cartDecrement(this)"><i class="fas fa-minus"></i></button>
-                                        <input type="number" name="txtQty" class="inputCart" oninput="cartInput(this)" min="1" value ="<?=$arrProducts[$i]['qty']?>">
+                                        <input type="number" name="txtQty" class="inputCart" onchange="cartInput(this)" min="1" value ="<?=$arrProducts[$i]['qty']?>">
                                         <button class="btn cartIncrement" onclick="cartIncrement(this)"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </div>

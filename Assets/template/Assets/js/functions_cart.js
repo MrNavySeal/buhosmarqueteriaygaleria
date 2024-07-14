@@ -111,8 +111,6 @@ if(document.querySelector("#btnCoupon")){
 function cartIncrement(element){
     let parent = element.parentElement.parentElement.parentElement.parentElement;
     let id = parent.getAttribute("data-id");
-    let topic = parent.getAttribute("data-topic");
-    let variant = parent.getAttribute("data-variant") ? parent.getAttribute("data-variant") : null ;
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
@@ -132,36 +130,10 @@ function cartIncrement(element){
     let qty = input.value;
     let formData = new FormData();
     formData.append("id",id);
-    formData.append("topic",topic);
     formData.append("qty",qty);
     formData.append("cupon",cupon);
     formData.append("city",city);
-    formData.append("variant",variant);
     formData.append("situ",situ);
-    if(topic == 1){
-        let height = parent.getAttribute("data-h");
-        let width = parent.getAttribute("data-w");
-        let margin = parent.getAttribute("data-m");
-        let style = parent.getAttribute("data-s");
-        let colorMargin = parent.getAttribute("data-mc");
-        let colorBorder = parent.getAttribute("data-bc");
-        let idType = parent.getAttribute("data-t");
-        let reference = parent.getAttribute("data-r");
-        let frameColor = parent.getAttribute("data-fc");
-        let material = parent.getAttribute("data-material");
-        let glass = parent.getAttribute("data-glass");
-        formData.append("height",height);
-        formData.append("width",width);
-        formData.append("margin",margin);
-        formData.append("style",style);
-        formData.append("colormargin",colorMargin);
-        formData.append("colorborder",colorBorder);
-        formData.append("idType",idType);
-        formData.append("reference",reference);
-        formData.append("framecolor",frameColor);
-        formData.append("glass",glass);
-        formData.append("material",material);
-    }
     if(document.querySelector("#cuponTotal")){
         document.querySelector("#cuponTotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
     }
@@ -183,8 +155,6 @@ function cartIncrement(element){
 function cartDecrement(element){
     let parent = element.parentElement.parentElement.parentElement.parentElement;
     let id = parent.getAttribute("data-id");
-    let topic = parent.getAttribute("data-topic");
-    let variant = parent.getAttribute("data-variant") ? parent.getAttribute("data-variant") : null ;
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
@@ -208,36 +178,10 @@ function cartDecrement(element){
     let qty = input.value;
     let formData = new FormData();
     formData.append("id",id);
-    formData.append("topic",topic);
     formData.append("qty",qty);
     formData.append("cupon",cupon);
     formData.append("city",city);
-    formData.append("variant",variant);
     formData.append("situ",situ);
-    if(topic == 1){
-        let height = parent.getAttribute("data-h");
-        let width = parent.getAttribute("data-w");
-        let margin = parent.getAttribute("data-m");
-        let style = parent.getAttribute("data-s");
-        let colorMargin = parent.getAttribute("data-mc");
-        let colorBorder = parent.getAttribute("data-bc");
-        let idType = parent.getAttribute("data-t");
-        let reference = parent.getAttribute("data-r");
-        let frameColor = parent.getAttribute("data-fc");
-        let material = parent.getAttribute("data-material");
-        let glass = parent.getAttribute("data-glass");
-        formData.append("height",height);
-        formData.append("width",width);
-        formData.append("margin",margin);
-        formData.append("style",style);
-        formData.append("colormargin",colorMargin);
-        formData.append("colorborder",colorBorder);
-        formData.append("idType",idType);
-        formData.append("reference",reference);
-        formData.append("framecolor",frameColor);
-        formData.append("glass",glass);
-        formData.append("material",material);
-    }
     if(document.querySelector("#cuponTotal")){
         document.querySelector("#cuponTotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
     }
@@ -259,8 +203,6 @@ function cartDecrement(element){
 function cartInput(input){
     let parent = input.parentElement.parentElement.parentElement.parentElement;
     let id = parent.getAttribute("data-id");
-    let topic = parent.getAttribute("data-topic");
-    let variant = parent.getAttribute("data-variant") ? parent.getAttribute("data-variant") : null ;
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
@@ -282,36 +224,10 @@ function cartInput(input){
     let qty = input.value;
     let formData = new FormData();
     formData.append("id",id);
-    formData.append("topic",topic);
     formData.append("qty",qty);
     formData.append("cupon",cupon);
     formData.append("city",city);
-    formData.append("variant",variant);
     formData.append("situ",situ);
-    if(topic == 1){
-        let height = parent.getAttribute("data-h");
-        let width = parent.getAttribute("data-w");
-        let margin = parent.getAttribute("data-m");
-        let style = parent.getAttribute("data-s");
-        let colorMargin = parent.getAttribute("data-mc");
-        let colorBorder = parent.getAttribute("data-bc");
-        let idType = parent.getAttribute("data-t");
-        let reference = parent.getAttribute("data-r");
-        let frameColor = parent.getAttribute("data-fc");
-        let material = parent.getAttribute("data-material");
-        let glass = parent.getAttribute("data-glass");
-        formData.append("height",height);
-        formData.append("width",width);
-        formData.append("margin",margin);
-        formData.append("style",style);
-        formData.append("colormargin",colorMargin);
-        formData.append("colorborder",colorBorder);
-        formData.append("idType",idType);
-        formData.append("reference",reference);
-        formData.append("framecolor",frameColor);
-        formData.append("glass",glass);
-        formData.append("material",material);
-    }
     if(document.querySelector("#cuponTotal")){
         document.querySelector("#cuponTotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
     }
@@ -340,8 +256,6 @@ function delCart(elements){
             let situ="";
             let data = element.parentElement.parentElement.parentElement;
             let formData = new FormData();
-            let variant = data.getAttribute("data-variant") ? data.getAttribute("data-variant") : null ;
-            let topic = data.getAttribute("data-topic");
             let id = data.getAttribute("data-id");
             let city="";
             if(params.get("situ")){
@@ -353,45 +267,18 @@ function delCart(elements){
             if(document.querySelector("#selectCity")){
                 city = document.querySelector("#selectCity").value;
             }
-            formData.append("variant",variant);
-            formData.append("topic",topic);
             formData.append("id",id);
             formData.append("situ",situ);
             formData.append("cupon",cupon);
             formData.append("city",city);
-            if(topic == 1){
-                let photo = data.getAttribute("data-f");
-                let height = data.getAttribute("data-h");
-                let width = data.getAttribute("data-w");
-                let margin = data.getAttribute("data-m");
-                let marginColor = data.getAttribute("data-mc");
-                let borderColor = data.getAttribute("data-bc");
-                let style = data.getAttribute("data-s");
-                let type = data.getAttribute("data-t");
-                let reference = data.getAttribute("data-r");
-                let frameColor = data.getAttribute("data-fc");
-                let material = data.getAttribute("data-material");
-                let glass = data.getAttribute("data-glass");
-                formData.append("height",height);
-                formData.append("width",width);
-                formData.append("margin",margin);
-                formData.append("margincolor",marginColor);
-                formData.append("bordercolor",borderColor);
-                formData.append("style",style);
-                formData.append("type",type);
-                formData.append("photo",photo);
-                formData.append("reference",reference);
-                formData.append("framecolor",frameColor);
-                formData.append("glass",glass);
-                formData.append("material",material);
-        
-            }
+
             element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             element.setAttribute("disabled","");
             request(base_url+"/carrito/delCart",formData,"post").then(function(objData){
                 element.innerHTML=`<i class="fas fa-times"></i>`;
                 element.removeAttribute("disabled");
                 if(objData.status){
+                    
                     document.querySelector("#subtotal").innerHTML = objData.subtotal;
                     document.querySelector("#totalProducts").innerHTML = objData.total;
                     data.remove();
@@ -406,8 +293,12 @@ function delCart(elements){
                     if(document.querySelector("#cuponTotal")){
                         document.querySelector("#cuponTotal").innerHTML = objData.cupon;
                     }
-                    //window.location.href=base_url+"/carrito"+cupon+situ;
-                    //updateCart();
+                    const arrProducts = Array.from(document.querySelectorAll(".row-product-cart"));
+                    let cont = 0;
+                    arrProducts.forEach(e => {e.setAttribute("data-id",cont);cont++;});
+                    if(objData.qty == 0){
+                        window.location.href=base_url+"/carrito";
+                    }
                 }
             });
         });

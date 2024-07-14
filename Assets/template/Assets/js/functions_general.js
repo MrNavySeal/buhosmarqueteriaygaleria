@@ -655,38 +655,8 @@ function delProduct(elements){
         let element = elements[i];
         element.addEventListener("click",function(){
             let formData = new FormData();
-            let topic = element.parentElement.getAttribute("data-topic");
             let id = element.parentElement.getAttribute("data-id");
-            let variant = element.parentElement.getAttribute("data-variant") ? element.parentElement.getAttribute("data-variant") : null;
-            formData.append("topic",topic);
             formData.append("id",id);
-            formData.append("variant",variant);
-            if(topic == 1){
-                let photo = element.parentElement.getAttribute("data-f");
-                let height = element.parentElement.getAttribute("data-h");
-                let width = element.parentElement.getAttribute("data-w");
-                let margin = element.parentElement.getAttribute("data-m");
-                let marginColor = element.parentElement.getAttribute("data-mc");
-                let borderColor = element.parentElement.getAttribute("data-bc");
-                let frameColor = element.parentElement.getAttribute("data-fc");
-                let material = element.parentElement.getAttribute("data-material");
-                let glass = element.parentElement.getAttribute("data-glass");
-                let style = element.parentElement.getAttribute("data-s");
-                let type = element.parentElement.getAttribute("data-t");
-                let reference = element.parentElement.getAttribute("data-r");
-                formData.append("height",height);
-                formData.append("width",width);
-                formData.append("margin",margin);
-                formData.append("margincolor",marginColor);
-                formData.append("bordercolor",borderColor);
-                formData.append("style",style);
-                formData.append("type",type);
-                formData.append("photo",photo);
-                formData.append("reference",reference);
-                formData.append("framecolor",frameColor);
-                formData.append("glass",glass);
-                formData.append("material",material);
-            }
             element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             element.setAttribute("disabled","");
             request(base_url+"/carrito/delCart",formData,"post").then(function(objData){

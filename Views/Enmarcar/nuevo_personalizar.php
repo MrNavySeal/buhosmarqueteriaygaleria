@@ -102,7 +102,7 @@
                     <div class="mb-3" id="contentProps"></div>
                     <div class="text-center">
                         <div class="fw-bold fs-2 t-color-1 mt-3 totalFrame">$ 0.00</div>
-                        <button type="button" class="btn btn-bg-1 mt-2" id="addFrame">Agregar</button>
+                        <button type="button" class="btn btn-bg-1 mt-2" id="addFrame" onclick="addProduct()"><i class="fas fa-shopping-cart"></i> Agregar</button>
                     </div>
                 </div>
             </div>
@@ -126,53 +126,7 @@
         <div class="tab-content" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-specification" role="tabpanel" aria-labelledby="pills-specification-tab" tabindex="0">
                 <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <td class="bg-light w-50" >Referencia</td>
-                            <td id="spcReference">N/A</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Color del marco</td>
-                            <td id="spcFrameColor">N/A</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Material del marco</td>
-                            <td id="spcFrameMaterial">Madera</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Orientación</td>
-                            <td id="spcOrientation">N/A</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Estilo de enmarcación</td>
-                            <td id="spcStyle">Directo</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Medida paspartú</td>
-                            <td id="spcMeasureP">0cm</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Medida imagen</td>
-                            <td id="spcMeasureImg">10x10</td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="bg-light w-50" >Medida Marco</td>
-                            <td id="spcMeasureFrame">N/A</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Color del paspartú</td>
-                            <td id="spcColorP">N/A</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Color del bocel</td>
-                            <td id="spcColorB">N/A</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light w-50" >Tipo de vidrio</td>
-                            <td id="spcGlass">Antireflejante</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="tableSpecs"></tbody>
                 </table>
             </div>
             <div class="tab-pane fade" id="pills-tiempo" role="tabpanel" aria-labelledby="pills-tiempo-tab" tabindex="0">

@@ -145,26 +145,42 @@
             foreach ($products as $pro) {
                 $this->intIdProduct = openssl_decrypt($pro['id'],METHOD,KEY);
                 $reference = isset($pro['reference']) ? $pro['reference'] : " ";
-                $price = $pro['price'];
                 if($pro['topic'] == 1){
-                    $description = json_encode(array(
-                        "name"=>$pro['name'],
-                        "type"=>$pro['type'],
-                        "idType"=>$pro['idType'],
-                        "orientation"=>$pro['orientation'],
-                        "style"=>$pro['style'],
-                        "reference"=>$pro['reference'],
-                        "height"=>$pro['height'],
-                        "width"=>$pro['width'],
-                        "margin"=>$pro['margin'],
-                        "colormargin"=>$pro['colormargin'],
-                        "colorborder"=>$pro['colorborder'],
-                        "colorframe"=>$pro['colorframe'],
-                        "material"=>$pro['material'],
-                        "glass"=>$pro['glass'],
-                        "img"=>$pro['img'],
-                        "photo"=>$pro['photo']
-                    ));
+                    if($products['img'] != ""){
+                        $imgData = $products['img'];
+                        list($type,$imgData) = explode(";",$imgData);
+                        list(,$imgData)=explode(",",$imgData);
+                        $img = base64_decode($imgData);
+                        $name = "frame_print_".bin2hex(random_bytes(6))."_".$this->intId.'.png';
+                        $route = "Assets/images/uploads/".$name;
+                        $this->strImg = $name;
+                        file_put_contents($route, $img);
+                    }
+                    $description = json_encode(
+                        array("name"=>$products['name'],"detail"=>$products['data'],"img"=>$this->strImg),
+                        JSON_UNESCAPED_UNICODE
+                    );
+                    $arrFrame =  $products['config'];
+                    $sql_config = "INSERT INTO molding_examples(config,frame,margin,height,width,orientation,color_frame,color_margin,color_border,
+                    props,name,total,type_frame,specs,address) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    $arrDataConfig = array(
+                        $arrFrame['config'],
+                        $arrFrame['frame'],
+                        $arrFrame['margin'],
+                        $arrFrame['height'],
+                        $arrFrame['width'],
+                        $arrFrame['orientation'],
+                        $arrFrame['color_frame'],
+                        $arrFrame['color_margin'],
+                        $arrFrame['color_border'],
+                        json_encode($arrFrame['props'],JSON_UNESCAPED_UNICODE),
+                        $arrOrder['name'],
+                        $products['price_sell'],
+                        $arrFrame['type_frame'],
+                        $description,
+                        $arrOrder['city']
+                    );
+                    $this->insert($sql_config,$arrDataConfig);
                 }else{
                     $stock = $this->selectStock($this->intIdProduct,$pro['variant']);
                     $description = $pro['name'];

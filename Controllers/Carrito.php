@@ -175,26 +175,11 @@
             die();
         }
         public function updateCart(){
+            //unset($_SESSION['arrCart']);exit;
             if($_POST){
                 $id = $_POST['id'];
-                $topic = intval($_POST['topic']);
                 $code = strClean($_POST['cupon']);
                 $situ = strtolower(strClean($_POST['situ']));
-                
-                $variant = $_POST['variant'] != null ? $_POST['variant'] : null;
-                if($topic == 1){
-                    $height = floatval($_POST['height']);
-                    $width = floatval($_POST['width']);
-                    $margin = intval($_POST['margin']);
-                    $style = strClean($_POST['style']);
-                    $colorMargin = strClean($_POST['colormargin']);
-                    $colorBorder = strClean($_POST['colorborder']);
-                    $idType = intval($_POST['idType']);
-                    $reference = strClean($_POST['reference']);
-                    $material = strClean($_POST['material']);
-                    $glass = strClean($_POST['glass']);
-                    $frameColor = $_POST['framecolor'];
-                }
                 $total =0;
                 $totalPrice = 0;
                 $subtotal = 0;
@@ -202,46 +187,19 @@
                 $city = intval($_POST['city']);
                 if($qty > 0){
                     $arrProducts = $_SESSION['arrCart'];
-                    
-                    for ($i=0; $i < count($arrProducts) ; $i++) { 
-                        
-                        if($arrProducts[$i]['topic'] == 1 && $topic == 1){
-                            if($arrProducts[$i]['style'] == $style && $arrProducts[$i]['height'] == $height &&
-                            $arrProducts[$i]['width'] == $width && $arrProducts[$i]['margin'] == $margin && $glass == $arrProducts[$i]['glass'] 
-                            && $frameColor == $arrProducts[$i]['colorframe'] && $material == $arrProducts[$i]['material'] &&
-                            $arrProducts[$i]['colormargin'] == $colorMargin && $arrProducts[$i]['colorborder'] == $colorBorder && 
-                            $arrProducts[$i]['idType'] == $idType && $arrProducts[$i]['reference'] == $reference){
-                                $arrProducts[$i]['qty'] = $qty;
-                                $totalPrice =$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
-                                break;
-                            }
-                        }else if($arrProducts[$i]['topic'] == 2 && $topic == 2){
-                            if($arrProducts[$i]['id'] == $id && $arrProducts[$i]['producttype'] == 1 
-                            && $arrProducts[$i]['variant']['name'] == $variant){
-                                $idProduct = intval(openssl_decrypt($id,METHOD,KEY));
-                                
-                                $request = $this->getProductT($idProduct,$variant);
-                                if($request['is_stock'] && $qty >= $request['stock'] ){
-                                    $qty = $request['stock'];
-                                }
-                                $arrProducts[$i]['qty'] = $qty;
-                                
-                                $totalPrice =$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
-                                break;
-                            }else if($arrProducts[$i]['id'] == $id && $arrProducts[$i]['producttype'] != 1 ){
-                                $idProduct = intval(openssl_decrypt($id,METHOD,KEY));
-                                $request = $this->getProductT($idProduct,$variant);
-                                if($request['is_stock'] && $qty >= $request['stock'] ){
-                                    $qty = $request['stock'];
-                                }
-                                
-                                $arrProducts[$i]['qty'] = $qty;
-                                $totalPrice =$arrProducts[$i]['qty']*$arrProducts[$i]['price'];
-                                break;
-                            }
-                            //dep($arrProducts[$i]);exit;
+                    $product = array_values(array_filter($arrProducts,function($e) use($id) {return $e['index'] == $id;}))[0];
+                    $index = $product['index'];
+                    if($product['topic'] == 2){
+                        $idProduct = intval(openssl_decrypt($product['id'],METHOD,KEY));
+                        $variant = $product['producttype']== 1 ? $product['variant']['name'] : "";
+                        $request = $this->getProductT($idProduct,$variant);
+                        if($request['is_stock'] && $qty >= $request['stock'] ){
+                            $qty = $request['stock'];
                         }
                     }
+                    $arrProducts[$index]['qty'] = $qty;
+                    $totalPrice =$qty*$product['price'];
+
                     $_SESSION['arrCart'] = $arrProducts;
                     $shipping = $this->calcTotalCart($_SESSION['arrCart'],$code,$city,$situ);
                     $subtotal = $shipping['subtotal'];
@@ -263,64 +221,22 @@
             die();
         }
         public function delCart(){
-            //dep($_POST);exit;
             if($_POST){
                 $id = $_POST['id'];
-                $topic = intval($_POST['topic']);
                 $code = isset($_POST['cupon']) ? strClean($_POST['cupon']) : "";
                 $situ = isset($_POST['situ'])  ? strtolower(strClean($_POST['situ'])):"";
                 $city = isset($_POST['city']) ? intval($_POST['city']) : 0;
                 $total=0;
                 $qtyCart=0;
                 $arrCart = $_SESSION['arrCart'];
-                $variant = $_POST['variant'] != null ? $_POST['variant'] : null;
-                if($topic == 1){
-                    $height = floatval($_POST['height']);
-                    $width = floatval($_POST['width']);
-                    $margin = intval($_POST['margin']);
-                    $style = $_POST['style'];
-                    $type = intval($_POST['type']);
-                    $borderColor = $_POST['bordercolor'];
-                    $marginColor = $_POST['margincolor'];
-                    $frameColor = $_POST['framecolor'];
-                    $reference = $_POST['reference'];
-                    $photo = $_POST['photo'];
-                    $material = strClean($_POST['material']);
-                    $glass = strClean($_POST['glass']);
-                }
+                $index = array_values(array_filter($arrCart,function($e) use($id) {return $e['index'] == $id;}))[0]['index'];
+                unset($arrCart[$index]);
+                $arrCart = array_values($arrCart);
                 for ($i=0; $i < count($arrCart) ; $i++) { 
-                    if($topic == 1){
-                        if($id == $arrCart[$i]['id'] && $height == $arrCart[$i]['height'] && $glass == $arrCart[$i]['glass'] 
-                        && $frameColor == $arrCart[$i]['colorframe'] && $material == $arrCart[$i]['material']
-                        && $width == $arrCart[$i]['width'] && $margin == $arrCart[$i]['margin'] && $style == $arrCart[$i]['style']
-                        && $type == $arrCart[$i]['idType'] && $borderColor == $arrCart[$i]['colorborder'] && $marginColor == $arrCart[$i]['colormargin']
-                        && $photo == $arrCart[$i]['photo'] && $reference == $arrCart[$i]['reference']){
-                            if($photo!="" && $photo !="retablo.png"){
-                                deleteFile($photo);
-                            }
-                            unset($arrCart[$i]);
-                            break;
-                        }
-                    }else if($topic == 2){
-                        if($id == $arrCart[$i]['id']){
-                            if($arrCart[$i]['producttype'] == 1){
-                                if($arrCart[$i]['variant']['name'] == $variant){
-                                    unset($arrCart[$i]);
-                                    break;
-                                }
-                            }else if($arrCart[$i]['producttype'] == 0){
-                                unset($arrCart[$i]);
-                                break;
-                            }
-                        }
-                    }
+                    $qtyCart += $arrCart[$i]['qty'];
+                    $arrCart[$i]['index'] = $i;
                 }
-                
-                sort($arrCart);
                 $_SESSION['arrCart'] = $arrCart;
-                foreach ($_SESSION['arrCart'] as $quantity) {
-                    $qtyCart += $quantity['qty'];
-                }
                 $shipping = $this->calcTotalCart($_SESSION['arrCart'],$code,$city,$situ);
                 $cupon = $shipping['cupon'];
                 $subtotal = $shipping['subtotal'];
@@ -341,19 +257,18 @@
                 $arrProducts = $_SESSION['arrCart'];
                 $html="";
                 for ($i=0; $i < count($arrProducts) ; $i++) { 
+                    $arrProducts[$i]['index'] = $i;
                     if($arrProducts[$i]['topic'] == 1){
-                        $photo = $arrProducts[$i]['photo'] != "" ? media()."/images/uploads/".$arrProducts[$i]['photo'] : $arrProducts[$i]['img'];
+                        $photo = $arrProducts[$i]['img'] != "" ? $arrProducts[$i]['img'] : media()."/images/uploads/".$arrProducts[$i]['cat_img'];
+                        $url = base_url()."/enmarcar/personalizar/".$arrProducts[$i]['route'];
+                        $arrProducts[$i]['url'] = $url;
                         $html.= '
-                        <li class="cartlist--item" data-id="'.$arrProducts[$i]['id'].'" data-topic ="'.$arrProducts[$i]['topic'].'" data-h="'.$arrProducts[$i]['height'].'"
-                        data-w="'.$arrProducts[$i]['width'].'" data-m="'.$arrProducts[$i]['margin'].'" data-s="'.$arrProducts[$i]['style'].'" 
-                        data-mc="'.$arrProducts[$i]['colormargin'].'" data-bc="'.$arrProducts[$i]['colorborder'].'" data-t="'.$arrProducts[$i]['idType'].'" data-f="'.$arrProducts[$i]['photo'].'"
-                        data-r="'.$arrProducts[$i]['reference'].'" data-fc="'.$arrProducts[$i]['colorframe'].'" data-glass="'.$arrProducts[$i]['glass'].'"
-                        data-material="'.$arrProducts[$i]['material'].'">
-                            <a href="'.$arrProducts[$i]['url'].'">
+                        <li class="cartlist--item" data-id="'.$i.'">
+                            <a href="'.$url.'">
                                 <img src="'.$photo.'" alt="'.$arrProducts[$i]['name'].'">
                             </a>
                             <div class="item--info">
-                                <a href="'.$arrProducts[$i]['url'].'">'.$arrProducts[$i]['name'].'</a>
+                                <a href="'.$url.'">'.$arrProducts[$i]['name'].'</a>
                                 <div class="item--qty">
                                     <span>
                                         <span class="fw-bold">'.$arrProducts[$i]['qty'].' x</span>
@@ -362,13 +277,13 @@
                                 </div>
                                 <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
                             </div>
-                            <span class="delItem"><i class="fas fa-times"></i></span>
+                            <span class="delItem" ><i class="fas fa-times"></i></span>
                         </li>
                         ';
                     }else if($arrProducts[$i]['topic'] == 2){
                         if($arrProducts[$i]['producttype'] != 1){
                             $html.= '
-                            <li class="cartlist--item" data-id="'.$arrProducts[$i]['id'].'" data-topic ="'.$arrProducts[$i]['topic'].'">
+                            <li class="cartlist--item" data-id="'.$i.'">
                                 <a href="'.$arrProducts[$i]['url'].'">
                                     <img src="'.$arrProducts[$i]['image'].'" alt="'.$arrProducts[$i]['name'].'">
                                 </a>
@@ -402,7 +317,7 @@
                                 }
                             }
                             $html.= '
-                            <li class="cartlist--item" data-id="'.$arrProducts[$i]['id'].'" 
+                            <li class="cartlist--item" data-id="'.$i.'" 
                             data-topic ="'.$arrProducts[$i]['topic'].'" data-variant="'.$arrProducts[$i]['variant']['name'].'">
                                 <a href="'.$arrProducts[$i]['url'].'">
                                     <img src="'.$arrProducts[$i]['image'].'" alt="'.$arrProducts[$i]['name'].'">
@@ -424,6 +339,7 @@
                         }
                     }
                 }
+                $_SESSION['arrCart'] = $arrProducts;
                 $total =0;
                 $qty = 0;
                 foreach ($arrProducts as $pro) {

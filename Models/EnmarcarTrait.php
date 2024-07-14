@@ -213,7 +213,7 @@
         public function selectCategory(int $intId){
             $this->con = new Mysql();
             $this->intId = $intId;
-            $sql = "SELECT m.is_print,c.name
+            $sql = "SELECT m.is_print,c.name,c.image,c.route
             FROM molding_config m 
             INNER JOIN moldingcategory c ON c.id = m.category_id
             WHERE m.category_id = $this->intId";
