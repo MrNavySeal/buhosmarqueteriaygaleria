@@ -133,6 +133,7 @@
                 if($request>0){
                     $this->updateDateBeat($request);
                     $this->insertIncome($request,3,1,"Venta de producto",$total,1);
+                    $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
                 }
             }
             return $request;
@@ -143,24 +144,25 @@
             $this->intIdOrder = $arrOrder['idorder'];
             $products = $arrOrder['products'];
             foreach ($products as $pro) {
-                $this->intIdProduct = openssl_decrypt($pro['id'],METHOD,KEY);
+                $this->intIdProduct = $pro['topic'] == 1 ? 0 : openssl_decrypt($pro['id'],METHOD,KEY);
                 $reference = isset($pro['reference']) ? $pro['reference'] : " ";
                 if($pro['topic'] == 1){
-                    if($products['img'] != ""){
-                        $imgData = $products['img'];
+                    $strImg="";
+                    if($pro['img'] != ""){
+                        $imgData = $pro['img'];
                         list($type,$imgData) = explode(";",$imgData);
                         list(,$imgData)=explode(",",$imgData);
                         $img = base64_decode($imgData);
-                        $name = "frame_print_".bin2hex(random_bytes(6))."_".$this->intId.'.png';
+                        $name = "frame_print_".bin2hex(random_bytes(6)).'.png';
                         $route = "Assets/images/uploads/".$name;
-                        $this->strImg = $name;
+                        $strImg = $name;
                         file_put_contents($route, $img);
                     }
                     $description = json_encode(
-                        array("name"=>$products['name'],"detail"=>$products['data'],"img"=>$this->strImg),
+                        array("name"=>$pro['name'],"detail"=>$pro['specs'],"img"=>$strImg),
                         JSON_UNESCAPED_UNICODE
                     );
-                    $arrFrame =  $products['config'];
+                    $arrFrame =  $pro['config'];
                     $sql_config = "INSERT INTO molding_examples(config,frame,margin,height,width,orientation,color_frame,color_margin,color_border,
                     props,name,total,type_frame,specs,address) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     $arrDataConfig = array(
@@ -175,12 +177,12 @@
                         $arrFrame['color_border'],
                         json_encode($arrFrame['props'],JSON_UNESCAPED_UNICODE),
                         $arrOrder['name'],
-                        $products['price_sell'],
+                        $pro['price'],
                         $arrFrame['type_frame'],
                         $description,
                         $arrOrder['city']
                     );
-                    $this->insert($sql_config,$arrDataConfig);
+                    $this->con->insert($sql_config,$arrDataConfig);
                 }else{
                     $stock = $this->selectStock($this->intIdProduct,$pro['variant']);
                     $description = $pro['name'];
@@ -335,14 +337,34 @@
         }
         public function insertIncome(int $id, int $intType,int $intTopic,string $strName,int $intAmount,int $intStatus){
             $this->con = new Mysql();
-            $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status) VALUES(?,?,?,?,?,?)";		  
+            $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?,?)";		  
             $arrData = array(
                 $id,
                 $intType,
                 $intTopic,
                 $strName,
                 $intAmount,
-                $intStatus
+                $intStatus,
+                "mercadopago"
+            );
+            $request = $this->con->insert($sql,$arrData);
+	        return $request;
+		}
+        public function insertEgress(int $id, int $intType,int $intTopic,string $strName,int $intStatus,string $idTransaction){
+            $objTransaction = array();
+            $urlTransaction ="https://api.mercadopago.com/v1/payments/".$idTransaction;
+            $objTransaction = curlConnectionGet($urlTransaction,"application/json");
+            $comision = $objTransaction->fee_details[0]->amount;
+            $this->con = new Mysql();
+            $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?,?)";		  
+            $arrData = array(
+                $id,
+                $intType,
+                $intTopic,
+                $strName,
+                $comision,
+                $intStatus,
+                "mercadopago"
             );
             $request = $this->con->insert($sql,$arrData);
 	        return $request;
