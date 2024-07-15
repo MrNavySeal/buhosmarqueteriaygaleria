@@ -46,9 +46,12 @@
                         $request_frames[$i]['frames'] = $arrFrames;
                     }
                 }
-                $request['detail']['molding'] = $request_frames;
-                $request['detail']['props'] = $this->selectConfigProps($request['id']);
-                $request['url'] = media()."/images/uploads/".$request['img'];
+                $arrProps = $this->selectConfigProps($request['id']);
+                if(!empty($arrProps)){
+                    $request['detail']['molding'] = $request_frames;
+                    $request['detail']['props'] = $arrProps;
+                    $request['url'] = media()."/images/uploads/".$request['img'];
+                }
             }
             return $request;
         }
@@ -126,20 +129,25 @@
             if(!empty($request)){
                 $total = count($request);
                 for ($i=0; $i < $total; $i++) { 
-                    $sql = "SELECT * FROM molding_options WHERE status = 1 AND prop_id = {$request[$i]['prop']} ORDER BY order_view";
+                    $sql = "SELECT * FROM molding_options WHERE status = 1 AND is_visible=1 AND prop_id = {$request[$i]['prop']} ORDER BY order_view";
                     $sql_framing = "SELECT 
                     s.name,
                     f.framing_id
                     FROM molding_props_framing f
                     INNER JOIN subcategory s ON f.framing_id = s.idsubcategory
                     WHERE f.prop_id = {$request[$i]['prop']} AND is_check = 1";
+                    $arrOptions = $this->con->select_all($sql);
+                    if(!empty($arrOptions)){
+                        $request[$i]['options'] = $arrOptions;
+                        $arrPropsConfig = $this->con->select_all($sql_framing);
+                        for ($j=0; $j < count($arrPropsConfig) ; $j++) { 
+                            $arrPropsConfig[$j]['attribute'] = 'data-'.$j.'="'.$arrPropsConfig[$j]['name'].'"';
+                        }
+                        $request[$i]['attributes'] = $arrPropsConfig;
+                    }else{
 
-                    $request[$i]['options'] = $this->con->select_all($sql);
-                    $arrPropsConfig = $this->con->select_all($sql_framing);
-                    for ($j=0; $j < count($arrPropsConfig) ; $j++) { 
-                        $arrPropsConfig[$j]['attribute'] = 'data-'.$j.'="'.$arrPropsConfig[$j]['name'].'"';
+                        $request[$i] = [];
                     }
-                    $request[$i]['attributes'] = $arrPropsConfig;
                 }
             }
             return $request;

@@ -39,6 +39,8 @@
             $request = $this->selectConfig($params);
             if(!empty($request)){
                 $arrColors = $this->selectColors();
+                $arrProps = array_values(array_filter($request['detail']['props'],function($e){return isset($e['topic']);}));
+                $request['detail']['props'] = $arrProps;
                 $arrResponse = array("status"=>true,"data"=>$request,"color"=>$arrColors);
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
