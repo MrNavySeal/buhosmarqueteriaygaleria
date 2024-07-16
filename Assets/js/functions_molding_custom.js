@@ -548,7 +548,6 @@ function calcDimension(picture){
     
         let height = Math.round((realHeight*2.54)/PPI) < 10 ? 10 :  Math.round((realHeight*2.54)/PPI);
         let width = Math.round((realWidth*2.54)/PPI) < 10 ? 10 :  Math.round((realWidth*2.54)/PPI);
-        PPI = height > width ? height : width;
         if(height > MAXDIMENSION){
             height = Math.round((realHeight*2.54)/PPI);
         }

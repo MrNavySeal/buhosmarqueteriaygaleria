@@ -1,6 +1,6 @@
 
 const DIMENSIONDEFAULT = 4;
-const MAXDIMENSION = 160;
+const MAXDIMENSION = 180;
 const BORDERBOCEL = 3;
 const BORDERFLOTANTE = 10;
 const BORDERRADIUS = 2;
@@ -195,61 +195,7 @@ searchFrame.addEventListener('input',function() {
 });
 
 sortFrame.addEventListener("change",function(){
-    if(intWidth.value !="" && intHeight.value!=""){
-        const element = sortFrame.options[sortFrame.selectedIndex];
-        sortFrame.setAttribute("data-id",element.getAttribute("data-id"));
-        const arrPropContent = Array.from(document.querySelectorAll(".selectPropContent"));
-        const colorFrame = document.querySelector("#frame--color");
-        const colorSelectedFrame = document.querySelector(".color--frame.element--active");
-        let bgSelectedFrame = getComputedStyle(colorSelectedFrame.children[0]).backgroundColor;
-        const data = arrDataMolding.filter(e=>e.name == sortFrame.value)[0];
-        const frames = data.frames
-        const needle = data.name.toLowerCase();
-        let contentFrames ="";
-        frames.forEach(e=>{
-            contentFrames+=`
-                <div class="mb-3 frame--container" data-r="${e.reference}">
-                    <div class="frame--item frame-main element--hover" data-id="${e.idproduct}" data-frame="${e.framing_img}" data-waste = "${e.waste}"
-                    onclick="selectActive(this,'.frame-main')">
-                        <img src="${e.image}">
-                        <p>REF: ${e.reference}</p>
-                    </div>
-                </div>
-            `;
-        });
-        arrPropContent.forEach(e=>{
-            const arrAttributes = Array.from(e.attributes).filter(a=>a.name.includes("data"));
-            for (let i = 0; i < arrAttributes.length; i++) {
-                const element = arrAttributes[i];
-                if(element.value == sortFrame.value){
-                    e.classList.remove("d-none");
-                    break;
-                }else{
-                    e.classList.add("d-none");
-                }
-            }
-        })
-        if(needle.includes("madera") && !needle.includes("muestras")){
-            colorFrame.classList.remove("d-none");
-            document.querySelector("#frameColor").innerHTML = colorSelectedFrame.getAttribute("title");
-        }else{
-            colorFrame.classList.add("d-none");
-            bgSelectedFrame = "transparent";
-        }
-
-        document.querySelector(".select--frames").innerHTML = contentFrames;
-        document.querySelectorAll(".frame--item")[0].classList.add("element--active");
-        const defaultFrame = document.querySelector(".frame--item.element--active");
-        const imgFrame = defaultFrame.getAttribute("data-frame");
-        const waste = defaultFrame.getAttribute("data-waste");
-        layoutMargin.style.borderImage= imgFrame;
-        layoutMargin.style.borderWidth = (waste/1.5)+"px";
-        layoutMargin.style.boxShadow = `0px 0px 5px ${waste/1.6}px rgba(0,0,0,0.75)`;
-        layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
-        layoutBorder.style.outlineWidth = (waste/1.6)+"px";
-        layoutBorder.style.outlineColor=bgSelectedFrame; 
-        calcularMarco();
-    }
+    selectTypeFrame();
 });
 
 containerFrames.addEventListener("click",function(e){
@@ -518,6 +464,91 @@ async function calcularMarco(id=null){
         showSpecs();
     }
 }
+function selectTypeFrame(){
+    if(intWidth.value !="" && intHeight.value!=""){
+        const element = sortFrame.options[sortFrame.selectedIndex];
+        sortFrame.setAttribute("data-id",element.getAttribute("data-id"));
+        const arrPropContent = Array.from(document.querySelectorAll(".selectPropContent"));
+        const colorFrame = document.querySelector("#frame--color");
+        const colorSelectedFrame = document.querySelector(".color--frame.element--active");
+        let bgSelectedFrame = getComputedStyle(colorSelectedFrame.children[0]).backgroundColor;
+        const data = arrDataMolding.filter(e=>e.name == sortFrame.value)[0];
+        const frames = data.frames
+        const needle = data.name.toLowerCase();
+        let contentFrames ="";
+        frames.forEach(e=>{
+            contentFrames+=`
+                <div class="mb-3 frame--container" data-r="${e.reference}">
+                    <div class="frame--item frame-main element--hover" data-id="${e.idproduct}" data-frame="${e.framing_img}" data-waste = "${e.waste}"
+                    onclick="selectActive(this,'.frame-main')">
+                        <img src="${e.image}">
+                        <p>REF: ${e.reference}</p>
+                    </div>
+                </div>
+            `;
+        });
+        arrPropContent.forEach(e=>{
+            const arrAttributes = Array.from(e.attributes).filter(a=>a.name.includes("data"));
+            for (let i = 0; i < arrAttributes.length; i++) {
+                const element = arrAttributes[i];
+                if(element.value == sortFrame.value){
+                    e.classList.remove("d-none");
+                    break;
+                }else{
+                    e.classList.add("d-none");
+                }
+            }
+        })
+        if(needle.includes("madera") && !needle.includes("muestras")){
+            colorFrame.classList.remove("d-none");
+            document.querySelector("#frameColor").innerHTML = colorSelectedFrame.getAttribute("title");
+        }else{
+            colorFrame.classList.add("d-none");
+            bgSelectedFrame = "transparent";
+        }
+
+        document.querySelector(".select--frames").innerHTML = contentFrames;
+        document.querySelectorAll(".frame--item")[0].classList.add("element--active");
+        const defaultFrame = document.querySelector(".frame--item.element--active");
+        const imgFrame = defaultFrame.getAttribute("data-frame");
+        const waste = defaultFrame.getAttribute("data-waste");
+        layoutMargin.style.borderImage= imgFrame;
+        layoutMargin.style.borderWidth = (waste/1.5)+"px";
+        layoutMargin.style.boxShadow = `0px 0px 5px ${waste/1.6}px rgba(0,0,0,0.75)`;
+        layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
+        layoutBorder.style.outlineWidth = (waste/1.6)+"px";
+        layoutBorder.style.outlineColor=bgSelectedFrame; 
+        calcularMarco();
+    }
+}
+function copyStyle(data,flag){
+    const frame = data.frame;
+    const typeFrame = data.type_frame;
+    const props = data.props;
+    const margin = data.margin;
+    const height = data.height;
+    const width = data.width;
+    const orientation = data.orientation;
+    const colorFrame = data.color_frame;
+    const colorMargin = data.color_margin;
+    const colorBorder = data.color_border;
+    sortFrame.value=typeFrame;
+    if(flag){
+        intHeight.value = height;
+        intWidth.value = width;
+        let items = document.querySelectorAll(".orientation");
+        for (let i = 0; i < items.length; i++) {
+            items[i].classList.remove("element--active");
+        }
+        if(orientation == "horizontal"){
+            document.querySelectorAll(".orientation")[0].classList.add("element--active");
+        }else{
+            document.querySelectorAll(".orientation")[1].classList.add("element--active");
+        }
+        resizeFrame(intWidth.value, intHeight.value);
+    }
+    selectTypeFrame();
+}
 function showSpecs(){
     let html="";
     arrFrame.forEach(function(e){
@@ -534,10 +565,12 @@ function calcDimension(picture){
     if(uploadPicture.value !=""){
         let realHeight = picture.naturalHeight;
         let realWidth = picture.naturalWidth;
+        console.log(realHeight+" "+realWidth);
     
         let height = Math.round((realHeight*2.54)/PPI) < 10 ? 10 :  Math.round((realHeight*2.54)/PPI);
         let width = Math.round((realWidth*2.54)/PPI) < 10 ? 10 :  Math.round((realWidth*2.54)/PPI);
-        PPI = height > width ? height : width;
+        console.log(height+" "+width);
+        //PPI = height > width ? height : width;
         if(height > MAXDIMENSION){
             height = Math.round((realHeight*2.54)/PPI);
         }
