@@ -36,7 +36,7 @@
         }
         public function selectExample($id){
             $this->intId = $id;
-            $sql = "SELECT *,DATE_FORMAT(created_at,'%d/%m/%Y') as date FROM molding_examples WHERE id = $this->intId";
+            $sql = "SELECT *,created_at as date FROM molding_examples WHERE id = $this->intId";
             $request = $this->select($sql);
             $request['specs'] = json_decode($request['specs'],true);
             return $request;
@@ -86,7 +86,7 @@
                 $this->arrData['color_frame_id'],
                 $this->arrData['color_margin_id'],
                 $this->arrData['color_border_id'],
-                json_encode($this->arrData['config'],JSON_UNESCAPED_UNICODE),
+                $this->arrData['config'],
                 $this->strImg,
                 $this->intStatus,
                 $this->strDate,
@@ -147,7 +147,7 @@
                 $this->arrData['color_frame_id'],
                 $this->arrData['color_margin_id'],
                 $this->arrData['color_border_id'],
-                json_encode($this->arrData['config'],JSON_UNESCAPED_UNICODE),
+                $this->arrData['config'],
                 $this->strImg,
                 $this->intStatus,
                 $this->strDate,

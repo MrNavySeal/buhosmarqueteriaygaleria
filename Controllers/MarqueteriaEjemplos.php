@@ -27,12 +27,12 @@
         public function setExample(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
-                    if(empty($_POST['statusList']) || empty($_POST['strDate']) || empty($_POST['strName']) || empty($_POST['frame'])){
+                    if(empty($_POST['statusList']) || empty($_POST['strName']) || empty($_POST['frame'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $intId = intval($_POST['id']);
                         $intStatus = intval($_POST['statusList']);
-                        $strDate = $_POST['strDate'];
+                        $strDate = !empty($_POST['strDate']) ? $_POST['strDate'] : date("Y-m-d");
                         $strName = ucwords(strClean($_POST['strName']));
                         $strDescription = strClean($_POST['strReview']);
                         $strAddress = ucwords(strtolower(strClean($_POST['strAddress'])));
