@@ -147,7 +147,7 @@
                 $this->arrData['color_frame_id'],
                 $this->arrData['color_margin_id'],
                 $this->arrData['color_border_id'],
-                $this->arrData['config'],
+                json_encode($this->arrData['config'],JSON_UNESCAPED_UNICODE),
                 $this->strImg,
                 $this->intStatus,
                 $this->strDate,

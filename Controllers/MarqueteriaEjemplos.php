@@ -39,6 +39,7 @@
                         $intOrder = intval($_POST['orderList']);
                         $isVisible = intval($_POST['is_visible']);
                         $arrFrame = json_decode($_POST['frame'],true);
+                        $arrFrame['config'] = is_array($arrFrame['config']) ? $arrFrame['config'] : json_decode($arrFrame['config'],true);
                         $photo = "";
                         $photoCategory="";
                         if($intId == 0){
