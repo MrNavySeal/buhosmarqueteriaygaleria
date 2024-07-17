@@ -17,6 +17,13 @@
             $request = $this->con->select($sql);
             return $request;
         }
+        public function selectExamples(int $intId){
+            $this->intId = $intId;
+            $this->con = new Mysql();
+            $sql = "SELECT * FROM molding_examples WHERE status = 1 AND config = $this->intId ORDER BY order_view";
+            $request = $this->con->select_all($sql);
+            return $request;
+        }
         public function selectConfig(string $strRoute){
             $this->con = new Mysql();
             $this->strRoute = $strRoute;

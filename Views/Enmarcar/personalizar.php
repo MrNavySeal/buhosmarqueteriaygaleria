@@ -1,5 +1,6 @@
 <?php
     headerPage($data);
+    $arrExamples = $data['examples'];
 ?>
 <div id="modalPoup"></div>
 <main class="container mb-3">
@@ -117,17 +118,68 @@
     <section class="mt-3 container">
         <ul class="nav nav-pills mb-3" id="product-tab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="pills-specification-tab" data-bs-toggle="pill" data-bs-target="#pills-specification" type="button" role="tab" aria-controls="pills-specification" aria-selected="true">Especificaciones</button>
+                <button class="nav-link " id="pills-specification-tab" data-bs-toggle="pill" data-bs-target="#pills-specification" type="button" role="tab" aria-controls="pills-specification" aria-selected="true">Especificaciones</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="pills-examples-tab" data-bs-toggle="pill" data-bs-target="#pills-examples" type="button" role="tab" aria-controls="pills-examples" aria-selected="true">Ejemplos</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="pills-tiempo-tab" data-bs-toggle="pill" data-bs-target="#pills-tiempo" type="button" role="tab" aria-controls="pills-tiempo" aria-selected="false">Tiempo y despacho</button>
             </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-specification" role="tabpanel" aria-labelledby="pills-specification-tab" tabindex="0">
+            <div class="tab-pane fade " id="pills-specification" role="tabpanel" aria-labelledby="pills-specification-tab" tabindex="0">
                 <table class="table table-bordered">
                     <tbody id="tableSpecs"></tbody>
                 </table>
+            </div>
+            <div class="tab-pane fade show active" id="pills-examples" role="tabpanel" aria-labelledby="pills-examples-tab" tabindex="0">
+                <div class="row">
+                    <?php
+                    if(!empty($arrExamples)){
+                        foreach ($arrExamples as $e) {
+                            $strName = !$e['is_visible'] ? "" :'<p class="mb-0 fw-bold">'.$e['name'].'</p>';
+                            $strAddress =$e['address'];
+                            $url = media()."/images/uploads/".$e['img'];
+                            $arrConfig = array(
+                                "frame"=>$e['frame'],
+                                "margin"=>$e['margin'],
+                                "height"=>$e['height'],
+                                "width"=>$e['width'],
+                                "orientation"=>$e['orientation'],
+                                "color_frame"=>$e['color_frame'],
+                                "color_margin"=>$e['color_margin'],
+                                "color_border"=>$e['color_border'],
+                                "props"=>json_decode($e['props'],true),
+                                "type_frame_id"=>$e['type_frame'],
+                                "type_frame"=>ucwords(json_decode($e['specs'],true)['detail'][1]['value'])
+                            );
+                            $objConfig = json_encode($arrConfig,JSON_UNESCAPED_UNICODE);
+                    ?>
+                    <div class="col-12 col-lg-3 col-md-6" data-id="<?=$e['frame']?>" data-margin="<?=$e['margin']?>" data-height="<?=$e['height']?>"
+                    data-width="<?=$e['width']?>" data-orientation="<?=$e['orientation']?>" data-colorframe="<?=$e['color_frame']?>"
+                    data-colormargin="<?=$e['color_margin']?>" data-colorborder="<?=$e['color_border']?>" data-typeframe="<?=$e['type_frame']?>"
+                    data-props="'<?=$e['props']?>'">
+                        <div class="card--product">
+                            <div class="card--product-img">
+                                <a href="">
+                                    <img src="<?=$url?>" alt="<?=$data['name']?>">
+                                </a>
+                            </div>
+                            <div class="card--product-info">
+                                <?=$strName?>
+                                <p><?=$strAddress?></p>
+                            </div>
+                            <div class="card--product-btns">
+                                <div class="d-flex flex-column">
+                                    <a href="#frame" class="btn btn-sm btn-bg-1 mb-2" onclick='copyStyle(<?=$objConfig?>,false)'>Copiar estilos</a>
+                                    <a href="#frame" class="btn btn-sm btn-bg-1" onclick='copyStyle(<?=$objConfig?>,true)'>Copiar con medidas</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php } }?>
+                </div>
             </div>
             <div class="tab-pane fade" id="pills-tiempo" role="tabpanel" aria-labelledby="pills-tiempo-tab" tabindex="0">
                 Realizamos envíos con diferentes transportadoras del país, buscando siempre la mejor opción para nuestros clientes, los tiempos pueden variar de 3 días hasta 5 días hábiles según la ciudad o municipio destino, normalmente en ciudades principales las transportadoras entregan máximo en 3 días hábiles.

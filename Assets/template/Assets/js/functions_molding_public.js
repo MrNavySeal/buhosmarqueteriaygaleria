@@ -200,6 +200,11 @@ sortFrame.addEventListener("change",function(){
 
 containerFrames.addEventListener("click",function(e){
     let id = e.target.parentElement.getAttribute("data-id");
+    selectFrame(id);
+});
+
+/*********************FUNCTIONS************************ */
+function selectFrame(id){
     const defaultFrame = document.querySelector(".frame--item.element--active");
     const imgFrame = defaultFrame.getAttribute("data-frame");
     const waste = defaultFrame.getAttribute("data-waste");
@@ -209,9 +214,7 @@ containerFrames.addEventListener("click",function(e){
     layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
     calcularMarco(id);
-});
-
-/*********************FUNCTIONS************************ */
+}
 function updateFramingConfig(select){ 
     const element = select.options[select.selectedIndex];
     const isMargin = element.getAttribute("data-ismargin");
@@ -255,7 +258,7 @@ function selectColor(element=null,option=null){
             layoutImg.style.borderRadius="0";
         }
     }
-    calcularMarco();
+    //calcularMarco();
 }
 function selectOrientation(element){
     let items = document.querySelectorAll(".orientation");
@@ -266,7 +269,7 @@ function selectOrientation(element){
     document.querySelectorAll(".measures--input")[0].removeAttribute("disabled");
     document.querySelectorAll(".measures--input")[1].removeAttribute("disabled");
     btnNext.classList.remove("d-none");
-    resizeFrame(intWidth.value, intHeight.value);
+    //resizeFrame(intWidth.value, intHeight.value);
 }
 function selectActive(element =null,elements=null){
     let items = document.querySelectorAll(`${elements}`);
@@ -279,6 +282,7 @@ function selectMargin(value){
     const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
     selectFrameStyle.setAttribute("data-margin",value);
     document.querySelector("#marginRange").setAttribute("max",selectFrameStyle.getAttribute("data-max"));
+    document.querySelector("#marginRange").value = value;
     margin = parseFloat(value);
     height = parseFloat(intHeight.value);
     width = parseFloat(intWidth.value);
@@ -339,7 +343,7 @@ function selectColorFrame(element){
     let bg = getComputedStyle(element.children[0]).backgroundColor;
     layoutBorder.style.outlineColor=bg;
     document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
-    calcularMarco();
+    //calcularMarco();
 }
 function setDefaultConfig(){
     colorMargin = document.querySelectorAll(".color--margin")[0];
@@ -533,13 +537,42 @@ function copyStyle(data,flag){
     const colorMargin = data.color_margin;
     const colorBorder = data.color_border;
     sortFrame.value=typeFrame;
+    selectTypeFrame();
+    let frames = Array.from(document.querySelectorAll(".frame--item"));
+    let arrColorFrame = Array.from(document.querySelectorAll(".color--frame"));
+    let arrColorMargin = Array.from(document.querySelectorAll(".color--margin"));
+    let arrColorBorder = Array.from(document.querySelectorAll(".color--border"));
+    let arrProps = Array.from(document.querySelectorAll(".selectProp"));
+
+    arrProps.forEach(function(e){
+        props.forEach(f => {
+            if(e.getAttribute("data-id") == f.prop){
+                e.value = f.option_prop;
+                updateFramingConfig(e);
+            }
+        });
+    });
+
+    frames.forEach(function(e){e.classList.remove("element--active");});
+    arrColorFrame.forEach(function(e){e.classList.remove("element--active");});
+    arrColorMargin.forEach(function(e){e.classList.remove("element--active");});
+    arrColorBorder.forEach(function(e){e.classList.remove("element--active");});
+
+    let selectedFrame = frames.filter(function(e){return e.getAttribute("data-id") == frame})[0];
+    let selectedColorFrame = arrColorFrame.filter(function(e){return e.getAttribute("data-id") == colorFrame})[0];
+    let selectedColorMargin = arrColorMargin.filter(function(e){return e.getAttribute("data-id") == colorMargin})[0];
+    let selectedColorBorder= arrColorBorder.filter(function(e){return e.getAttribute("data-id") == colorBorder})[0];
+    
+    selectedFrame.classList.add("element--active");
+    selectedColorFrame.classList.add("element--active");
+    selectedColorMargin.classList.add("element--active");
+    selectedColorBorder.classList.add("element--active");
+    
     if(flag){
         intHeight.value = height;
         intWidth.value = width;
-        let items = document.querySelectorAll(".orientation");
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove("element--active");
-        }
+        let items = Array.from(document.querySelectorAll(".orientation"));
+        items.forEach(function(e){e.classList.remove("element--active");});
         if(orientation == "horizontal"){
             document.querySelectorAll(".orientation")[0].classList.add("element--active");
         }else{
@@ -547,7 +580,14 @@ function copyStyle(data,flag){
         }
         resizeFrame(intWidth.value, intHeight.value);
     }
-    selectTypeFrame();
+    if(sortFrame.value == "Molduras En Madera"){
+        selectColorFrame(selectedColorFrame);
+    }
+    selectFrame(frame);
+    selectMargin(margin);
+    selectColor(selectedColorMargin,"margin");
+    selectColor(selectedColorBorder,"border");
+    
 }
 function showSpecs(){
     let html="";

@@ -27,6 +27,7 @@
                 $data['page_tag'] = 'Enmarcar '.$request['name'].' | '.$company['name'];
                 $data['page_title'] = 'Enmarcar '.$request['name'].' | '.$company['name'];
                 $data['page_name'] = "personalizar";
+                $data['examples'] = $this->selectExamples($request['id']);
                 $data['name'] = $request['name'];
                 $data['app'] = "functions_molding_public.js";
                 $this->views->getView($this,"personalizar",$data);
