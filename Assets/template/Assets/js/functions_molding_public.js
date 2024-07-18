@@ -234,7 +234,7 @@ function updateFramingConfig(select,flag=true){
     select.setAttribute("data-tag",strTag);
     select.setAttribute("data-tagframe",strTagFrame);
     if(document.querySelectorAll(".selectProp")[0].getAttribute("data-id") == select.getAttribute("data-id")){
-        setDefaultConfig();
+        setDefaultConfig(false);
     }
     if(flag)calcularMarco();
     
@@ -346,7 +346,7 @@ function selectColorFrame(element){
     document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
     //calcularMarco();
 }
-function setDefaultConfig(){
+function setDefaultConfig(flag = true){
     colorMargin = document.querySelectorAll(".color--margin")[0];
     colorBorder = document.querySelectorAll(".color--border")[0];
     const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
@@ -359,7 +359,7 @@ function setDefaultConfig(){
     const intMarginStyle = selectFrameStyle.getAttribute("data-margin");
     const strTagStyle = selectFrameStyle.getAttribute("data-tag");
     const strTagFrameStyle = selectFrameStyle.getAttribute("data-tagframe");
-    selectMargin(0);
+    if(flag)selectMargin(0);
     if(isMarginStyle == 1){
         divMargin.classList.remove("d-none");
         if(!document.querySelector(".color--margin.element--active")){
@@ -371,7 +371,7 @@ function setDefaultConfig(){
         let bm = getComputedStyle(colorMargin.children[0]).backgroundColor;
         layoutMargin.style.backgroundColor=bm;
         document.querySelector("#marginRange").value=intMarginStyle;
-        selectMargin(intMarginStyle);
+        if(flag)selectMargin(intMarginStyle);
     }else{
         divMargin.classList.add("d-none");
     }
@@ -589,6 +589,13 @@ function copyStyle(data,flag){
     selectColor(selectedColorMargin,"margin");
     selectColor(selectedColorBorder,"border");
     calcularMarco(frame);
+    if(!btnNext.classList.contains("d-none")){
+        btnNext.classList.add("d-none");
+        btnBack.classList.remove("d-none");
+        page++;
+        pages[0].classList.add("d-none");
+        pages[page].classList.remove("d-none");
+    }
     
 }
 function showSpecs(){
