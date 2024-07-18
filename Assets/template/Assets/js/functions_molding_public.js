@@ -204,7 +204,7 @@ containerFrames.addEventListener("click",function(e){
 });
 
 /*********************FUNCTIONS************************ */
-function selectFrame(id){
+function selectFrame(id,flag=true){
     const defaultFrame = document.querySelector(".frame--item.element--active");
     const imgFrame = defaultFrame.getAttribute("data-frame");
     const waste = defaultFrame.getAttribute("data-waste");
@@ -213,9 +213,9 @@ function selectFrame(id){
     layoutMargin.style.boxShadow = `0px 0px 5px ${waste/1.6}px rgba(0,0,0,0.75)`;
     layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
-    calcularMarco(id);
+    if(flag)calcularMarco(id);
 }
-function updateFramingConfig(select){ 
+function updateFramingConfig(select,flag=true){ 
     const element = select.options[select.selectedIndex];
     const isMargin = element.getAttribute("data-ismargin");
     const isColor = element.getAttribute("data-iscolor");
@@ -236,7 +236,8 @@ function updateFramingConfig(select){
     if(document.querySelectorAll(".selectProp")[0].getAttribute("data-id") == select.getAttribute("data-id")){
         setDefaultConfig();
     }
-    calcularMarco();
+    if(flag)calcularMarco();
+    
 }
 function selectColor(element=null,option=null){
     const select = document.querySelectorAll(".selectProp")[0];
@@ -278,7 +279,7 @@ function selectActive(element =null,elements=null){
     }
     element.classList.add("element--active");
 }
-function selectMargin(value){
+function selectMargin(value,flag=true){
     const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
     selectFrameStyle.setAttribute("data-margin",value);
     document.querySelector("#marginRange").setAttribute("max",selectFrameStyle.getAttribute("data-max"));
@@ -293,9 +294,9 @@ function selectMargin(value){
     layoutBorder.style.height = `${marginHeight}px`;
     layoutBorder.style.width = `${marginWidth}px`;
     document.querySelector("#marginData").innerHTML= margin+" cm";
-    calcularMarco();
+    if(flag)calcularMarco();
 }
-function resizeFrame(width,height){
+function resizeFrame(width,height,flag=true){
     let margin = 0;
     if(document.querySelector(".selectProp")){
         const selectStyle = document.querySelectorAll(".selectProp")[0];
@@ -325,7 +326,7 @@ function resizeFrame(width,height){
     layoutMargin.style.width = `${widthM}px`;
     layoutBorder.style.height = `${heightM}px`;
     layoutBorder.style.width = `${widthM}px`;
-    calcularMarco();
+    if(flag)calcularMarco();
 }
 function selectColorFrame(element){
     const colorFrame = document.querySelectorAll(".color--frame");
@@ -468,7 +469,7 @@ async function calcularMarco(id=null){
         showSpecs();
     }
 }
-function selectTypeFrame(){
+function selectTypeFrame(flag = true){
     if(intWidth.value !="" && intHeight.value!=""){
         const element = sortFrame.options[sortFrame.selectedIndex];
         sortFrame.setAttribute("data-id",element.getAttribute("data-id"));
@@ -522,7 +523,7 @@ function selectTypeFrame(){
         layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
         layoutBorder.style.outlineWidth = (waste/1.6)+"px";
         layoutBorder.style.outlineColor=bgSelectedFrame; 
-        calcularMarco();
+        if(flag)calcularMarco();
     }
 }
 function copyStyle(data,flag){
@@ -537,7 +538,7 @@ function copyStyle(data,flag){
     const colorMargin = data.color_margin;
     const colorBorder = data.color_border;
     sortFrame.value=typeFrame;
-    selectTypeFrame();
+    selectTypeFrame(false);
     let frames = Array.from(document.querySelectorAll(".frame--item"));
     let arrColorFrame = Array.from(document.querySelectorAll(".color--frame"));
     let arrColorMargin = Array.from(document.querySelectorAll(".color--margin"));
@@ -548,7 +549,7 @@ function copyStyle(data,flag){
         props.forEach(f => {
             if(e.getAttribute("data-id") == f.prop){
                 e.value = f.option_prop;
-                updateFramingConfig(e);
+                updateFramingConfig(e,false);
             }
         });
     });
@@ -578,15 +579,16 @@ function copyStyle(data,flag){
         }else{
             document.querySelectorAll(".orientation")[1].classList.add("element--active");
         }
-        resizeFrame(intWidth.value, intHeight.value);
+        resizeFrame(intWidth.value, intHeight.value,false);
     }
     if(sortFrame.value == "Molduras En Madera"){
         selectColorFrame(selectedColorFrame);
     }
-    selectFrame(frame);
-    selectMargin(margin);
+    selectFrame(frame,false);
+    selectMargin(margin,false);
     selectColor(selectedColorMargin,"margin");
     selectColor(selectedColorBorder,"border");
+    calcularMarco(frame);
     
 }
 function showSpecs(){
