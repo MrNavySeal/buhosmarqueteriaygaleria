@@ -115,6 +115,26 @@
             }
             return $request;
         }
+        public function selectDetailOrders($idPerson){
+            $whre="";
+            if($idPerson!="")$whre=" WHERE cab.personid=$idPerson";
+            $sql = "SELECT 
+            cab.idorder,
+            cab.idtransaction,
+            cab.name,
+            cab.identification,
+            DATE_FORMAT(cab.date, '%d/%m/%Y') as date,
+            det.description,
+            det.quantity,
+            det.price,
+            det.reference,
+            det.topic
+            FROM orderdata as cab  
+            INNER JOIN orderdetail as det ON cab.idorder = det.orderid
+            $whre ORDER BY cab.idorder DESC";      
+            $request = $this->select_all($sql);
+            return $request;
+        }
         public function selectTransaction(string $intIdTransaction,$idPerson){
             $objTransaction = array();
             $this->intIdUser = $idPerson;

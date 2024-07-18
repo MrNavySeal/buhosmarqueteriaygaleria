@@ -38,6 +38,18 @@
                 die();
             }
         }
+        public function detalle(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "pedido";
+                $data['page_title'] = "Detalle de pedidos | Panel";
+                $data['page_name'] = "creditos";
+                $data['panelapp'] = "functions_orders_detail.js";
+                $this->views->getView($this,"detalle",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
         public function transaccion($idTransaction){
             if($_SESSION['permitsModule']['r']){
                 $idPerson ="";
@@ -184,6 +196,87 @@
                         $request[$i]['format_pendent'] = formatNum($request[$i]['total_pendent']);
                         $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
                         $request[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
+                    }
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getDetailOrders(){
+            if($_SESSION['permitsModule']['r']){
+                $idPersona = "";
+                if($_SESSION['userData']['roleid'] == 2){
+                    $idPersona = $_SESSION['idUser'];
+                }
+                $request = $this->model->selectDetailOrders($idPersona);
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+                        $data = $request[$i];
+                        $description="";
+                        if($data['topic'] == 1){
+                            $detail = json_decode($data['description']);
+                            
+                            $img ="";
+                            if(isset($detail->type)){
+                                $intWidth = floatval($detail->width);
+                                $intHeight = floatval($detail->height);
+                                $intMargin = floatval($detail->margin);
+                                $colorFrame =  isset($detail->colorframe) ? $detail->colorframe : "";
+                                $material = isset($detail->material) ? $detail->material : "";
+                                $marginStyle = isset($detail->style) && $detail->style == "Flotante" || isset($detail->style) && $detail->style == "Flotante sin marco interno" ? "Fondo" : "Paspartú";
+                                $borderStyle = isset($detail->style) && $detail->style == "Flotante" ? "marco interno" : "bocel";
+                                $glassStyle = isset($detail->idType) && $detail->idType  == 4 ? "Bastidor" : "Tipo de vidrio";
+                                $measureFrame = ($intWidth+($intMargin*2))."cm X ".($intHeight+($intMargin*2))."cm";
+                                if($detail->photo !=""){
+                                    $img = '<a href="'.media().'/images/uploads/'.$detail->photo.'" target="_blank">Ver imagen</a><br>';
+                                }
+                                $description.='
+                                        '.$img.'
+                                        '.$detail->name.'
+                                        <ul>
+                                            <li><span class="fw-bold t-color-3">Referencia: </span>'.$detail->reference.'</li>
+                                            <li><span class="fw-bold t-color-3">Color del marco: </span>'.$colorFrame.'</li>
+                                            <li><span class="fw-bold t-color-3">Material: </span>'.$material.'</li>
+                                            <li><span class="fw-bold t-color-3">Orientación: </span>'.$marginStyle.'</li>
+                                            <li><span class="fw-bold t-color-3">Estilo de enmarcación: </span>'.$detail->style.'</li>
+                                            <li><span class="fw-bold t-color-3">'.$marginStyle.': </span>'.(isset($detail->margin) ? $detail->margin : "nada").'cm</li>
+                                            <li><span class="fw-bold t-color-3">Medida imagen: </span>'.$detail->width.'cm X '.$detail->height.'cm</li>
+                                            <li><span class="fw-bold t-color-3">Medida marco: </span>'.$measureFrame.'</li>
+                                            <li><span class="fw-bold t-color-3">Color del '.$marginStyle.': </span>'.$detail->colormargin.'</li>
+                                            <li><span class="fw-bold t-color-3">Color del '.$borderStyle.': </span>'.$detail->colorborder.'</li>
+                                            <li><span class="fw-bold t-color-3">'.$glassStyle.': </span>'.(isset($detail->glass) ? $detail->glass : "").'</li>
+                                        </ul>
+                                ';
+                            }else{
+                                if($detail->img !="" && $detail->img !=null){
+                                    $img = '<a href="'.media().'/images/uploads/'.$detail->img.'" target="_blank">Ver imagen</a><br>';
+                                }
+                                $htmlDetail ="";
+                                $arrDet = $detail->detail;
+                                foreach ($arrDet as $d) {
+                                    $htmlDetail.='<li><span class="fw-bold t-color-3">'.$d->name.': </span>'.$d->value.'</li>';
+                                }
+                                $description = $img.$detail->name.'<ul>'.$htmlDetail.'</ul>';
+                            }
+                        }else{
+                            $description=$data['description'];
+                            $flag = substr($data['description'], 0,1) == "{" ? true : false;
+                            if($flag){
+                                $arrData = json_decode($data['description'],true);
+                                $name = $arrData['name'];
+                                $varDetail = $arrData['detail'];
+                                $textDetail ="";
+                                foreach ($varDetail as $d) {
+                                    $textDetail .= '<li><span class="fw-bold t-color-3">'.$d['name'].':</span> '.$d['option'].'</li>';
+                                }
+                                $description = $name.'<ul>'.$textDetail.'</ul>';
+                            }
+                        }
+                        $total = $data['price'] * $data['quantity'];
+                        $request[$i] = $data;
+                        $request[$i]['total'] = formatNum($total);
+                        $request[$i]['price'] = formatNum($request[$i]['price']);
+                        $request[$i]['description'] = $description;
                     }
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);

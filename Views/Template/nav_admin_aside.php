@@ -100,6 +100,7 @@
                     <div class="dropdown-menu bg-transparent border-0">
                         <a href="<?=base_url()?>/pedidos" class="dropdown-item">Pedidos</a>
                         <a href="<?=base_url()?>/pedidos/creditos" class="dropdown-item">Pedidos a crédito</a>
+                        <a href="<?=base_url()?>/pedidos/detalle" class="dropdown-item">Detalle pedidos</a>
                         <?php if($_SESSION['permit'][6]['w']){ ?>
                         <a href="<?=base_url()?>/PedidosPos/venta" class="dropdown-item">Punto de venta</a>
                         <?php } ?>
