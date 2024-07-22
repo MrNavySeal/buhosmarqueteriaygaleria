@@ -22,6 +22,7 @@
                 $data['page_tag'] = "Productos masivos";
                 $data['page_title'] = "Productos | Creación & Edición masiva";
                 $data['page_name'] = "masivos";
+                $data['categories'] = $this->model->selectFullCategories();
                 $data['panelapp'] = "functions_products_mass.js";
                 $this->views->getView($this,"productos",$data);
             }else{
@@ -31,9 +32,10 @@
         }
 
         public function plantilla(){
+            
             //Set default config
             $rowCount = 2;
-            $lastRowSheet = 200;
+            $lastRowSheet = 1000;
 
             $nextId = $this->model->selectNextId();
             $categories = $this->model->selectCategories();
@@ -77,13 +79,14 @@
             $spreadsheet->addSheet(new Worksheet($spreadsheet,"imagenes"),1);
             $spreadsheet->addSheet(new Worksheet($spreadsheet,"variantes"),2);
             $spreadsheet->addSheet(new Worksheet($spreadsheet,"caracteristicas"),3);
+            $spreadsheet->addSheet(new Worksheet($spreadsheet,"variantes_info"),4);
             $spreadsheet->setActiveSheetIndexByName("productos");
             
             $sheetProduct = $spreadsheet->getSheetByName("productos");
             $sheetImg = $spreadsheet->getSheetByName("imagenes");
             $sheetVariant = $spreadsheet->getSheetByName("variantes");
+            $sheetVariantData = $spreadsheet->getSheetByName("variantes_info");
             $sheetSpc = $spreadsheet->getSheetByName("caracteristicas");
-
             //Delete sheet
             $sheetIndex = $spreadsheet->getIndex(
                 $spreadsheet->getSheetByName('Worksheet')
@@ -281,7 +284,26 @@
             for ($i=0; $i < $totalVar ; $i++) { 
                 $sheetVariant->setCellValue($colSub.'1',$variants[$i]['name']);
                 $options = $variants[$i]['options'];
-                $implode = implode(',', $options);
+                $totalOptions = count($options);
+                $lastRowVariantOption = 0;
+                for ($j=0; $j < $totalOptions; $j++) { 
+                    $lastRowVariantOption = $j+1;
+                    $sheetVariantData->setCellValue($colSub.$lastRowVariantOption,$options[$j]);
+                    $formula = '\'variantes_info\'!$'.$colSub.'$1:$'.$colSub.'$'.$lastRowVariantOption.'';
+                    $rowVariantOptionStart = 2;
+                    for ($k=0; $k < $lastRowSheet; $k++) { 
+                        $validation = $sheetVariant->getCell($colSub.$rowVariantOptionStart)->getDataValidation();
+                        $validation->setType(DataValidation::TYPE_LIST)
+                        ->setErrorStyle(DataValidation::STYLE_INFORMATION)
+                        ->setAllowBlank(false)
+                        ->setShowInputMessage(true)
+                        ->setShowErrorMessage(true)
+                        ->setShowDropDown(true)
+                        ->setFormula1($formula);
+                        $rowVariantOptionStart++;
+                    }
+                }
+                /*$implode = implode(',', $options);
                 for ($j=$rowCount; $j < $lastRowSheet ; $j++) { 
                     $validation = $sheetVariant->getCell($colSub.$j)->getDataValidation();
                     $validation->setType(DataValidation::TYPE_LIST)
@@ -295,7 +317,7 @@
                     ->setPromptTitle('Elegir opción')
                     ->setPrompt('Por favor, elige una opción de la lista')
                     ->setFormula1('"'.$implode.'"');
-                }
+                }*/
                 $colSub++;
             }
             foreach (range('A','Z') as $col) {
@@ -303,6 +325,11 @@
                 $sheetVariant->getColumnDimension($col)->setAutoSize(true); 
                 $sheetImg->getColumnDimension($col)->setAutoSize(true); 
                 $sheetSpc->getColumnDimension($col)->setAutoSize(true); 
+            }
+            if($_POST){
+                $idCategory = intval($_POST['category']);
+                $idSubcategory = intval($_POST['subcategory']);
+                $arrProducts = $this->model->selectProducts($idCategory,$idSubcategory);
             }
             $writer = new Xlsx($spreadsheet);
             ob_end_clean();
@@ -312,7 +339,6 @@
             $writer->save('php://output');
             die();
         }
-        
         public function uploadProducts(){
             if($_SESSION['permitsModule']['r']){
                 if($_FILES){

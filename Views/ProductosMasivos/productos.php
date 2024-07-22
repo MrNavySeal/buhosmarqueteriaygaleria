@@ -1,4 +1,11 @@
-<?php headerAdmin($data)?>
+<?php 
+    headerAdmin($data);
+    $categories = $data['categories'];
+    $selectCategories ='<option value="0">Todos</option>';
+    foreach ($categories as $e) {
+        $selectCategories.='<option value="'.$e['idcategory'].'">'.$e['name'].'</option>';
+    }
+?>
 <div id="modalItem"></div>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <div class="d-flex align-items-center">
@@ -33,7 +40,41 @@
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="social" role="tabpanel" aria-labelledby="social-tab"></div>
+        <div class="tab-pane fade" id="social" role="tabpanel" aria-labelledby="social-tab">
+            <div class="mb-3">
+                <h4>Paso 1 - Seleccionar artículos</h4>
+                <p class="text-secondary">Seleccione los artículos por categoria o todos</p>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="categoryList" class="form-label">Categorías (<span class="text-danger">*</span>)</label>
+                        <select class="form-control" onchange="changeCategory()" aria-label="Default select example" id="categoryList" name="categoryList" required>
+                            <?=$selectCategories?>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4" id="subCategoryContent">
+                    <div class="mb-3">
+                        <label for="subcategoryList" class="form-label">Subcategorias (opcional)</label>
+                        <select class="form-control" aria-label="Default select example" id="subcategoryList" name="subcategoryList" required></select>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <h4>Paso 2 - Descargar excel</h4>
+                <p class="text-secondary">Descarga nuestra plantilla de excel</p>
+                <button type="button" class="btn btn-success" id="btnDownloadEdit"> Descargar</button>
+            </div>
+            <div class="mb-3">
+                <h4>Paso 3 - Subir excel</h4>
+                <p class="text-secondary">Sube el excel una vez que hayas terminado de editar la información de los productos.</p>
+                <div class="d-flex mb-3 align-items-center">
+                    <input class="form-control w-50" type="file" accept=".xlsx" id="formFileEdit">
+                    <button type="button" id="btnAddEdit" class="btn btn-primary text-white"> Cargar archivo</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <?php footerAdmin($data)?> 

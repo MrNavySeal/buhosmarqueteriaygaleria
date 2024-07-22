@@ -11,6 +11,11 @@
             $request = $this->select($sql)['id']+1;
             return $request;
         }
+        public function selectFullCategories(){
+            $sql = "SELECT name,idcategory FROM category WHERE status = 1";
+            $request = $this->select_all($sql);
+            return $request;
+        }
         public function selectCategories(){
             $sql = "SELECT name,idcategory FROM category WHERE status = 1";
             $request = $this->select_all($sql);
