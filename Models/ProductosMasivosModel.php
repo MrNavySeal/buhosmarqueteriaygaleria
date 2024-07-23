@@ -1,4 +1,5 @@
 <?php 
+ini_set('max_execution_time', 30000);
     class ProductosMasivosModel extends Mysql{
         private $arrData;
         private $intIdProduct;
@@ -204,6 +205,63 @@
                 ));
             }
             return $arrNew;
+        }
+        public function selectProducts($idCategory, $idSubCategory){
+            $strCategory = $idCategory != "" && $idCategory > 0 ? " AND p.categoryid = $idCategory" : "";
+            $strSubCategory = $idSubCategory != "" && $idSubCategory > 0 ? " AND p.subcategoryid = $idSubCategory" : "";
+            $sql = "SELECT 
+                p.idproduct,
+                p.categoryid,
+                p.subcategoryid,
+                p.reference,
+                p.name,
+                p.shortdescription,
+                p.description,
+                p.price,
+                p.discount,
+                p.price_purchase,
+                p.min_stock,
+                p.import,
+                p.stock,
+                p.status,
+                p.product_type,
+                c.name as category,
+                s.name as subcategory,
+                p.is_stock,
+                p.is_product,
+                p.is_ingredient,
+                p.is_combo,
+                m.name as measure
+            FROM product p
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
+            LEFT JOIN measures m ON p.measure = m.id_measure
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory $strCategory $strSubCategory
+            ORDER BY p.idproduct DESC";
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                $total = count($request);
+                for ($i=0; $i < $total; $i++) { 
+                    $product = $request[$i];
+                    $sqlImg = "SELECT * FROM productimage WHERE productid = $product[idproduct]";
+                    $product['images'] = $this->select_all($sqlImg);
+                    if($product['product_type'] == 1){
+                        $sqlVariants = "SELECT variation FROM product_variations WHERE product_id = $product[idproduct]";
+                        $sqlV = "SELECT *
+                        FROM product_variations_options WHERE product_id =$product[idproduct]";
+                        $requestVariants = $this->select_all($sqlV);
+                        $product['variation'] = json_decode($this->select($sqlVariants)['variation'],true);;
+                        $product['combinations'] = $requestVariants;
+                    }
+                    $sqlSpecs = "SELECT s.value,sp.name,s.specification_id FROM product_specs s 
+                        INNER JOIN specifications sp 
+                        ON s.specification_id = sp.id_specification
+                        WHERE s.product_id = $product[idproduct]";
+                    $product['specs'] = $this->select_all($sqlSpecs);
+                    $request[$i]=$product;
+                }
+            }
+            return $request;
         }
     }
 ?>

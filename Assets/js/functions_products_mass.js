@@ -36,11 +36,11 @@ btnAdd.addEventListener("click",function(){
     });
 });
 btnDownloadEdit.addEventListener("click",function(){
-    let formData = new FormData();
-    formData.append("category",categoryList.value);
-    formData.append("subcategory",subcategoryList.value);
-    formData.append("action","editar");
-    request(base_url+"/ProductosMasivos/plantilla",formData,"post").then(function(objData){});
+    if(categoryList.value == 0){
+        subcategoryList.value ="";
+    }
+    data = "category="+categoryList.value+"&subcategory="+subcategoryList.value;
+    window.open(base_url+"/ProductosMasivos/plantilla?"+data,"_blank");
 })
 function changeCategory(){
     if(categoryList.value != 0){

@@ -32,7 +32,14 @@
         }
 
         public function plantilla(){
+            $arrProducts = [];
             
+            if($_GET['category']){
+                $idCategory = intval($_GET['category']);
+                $idSubcategory = intval($_GET['subcategory']);
+                $arrProducts = $this->model->selectProducts($idCategory,$idSubcategory);
+            }
+            $totalProducts = count($arrProducts);
             //Set default config
             $rowCount = 2;
             $lastRowSheet = 1000;
@@ -134,6 +141,60 @@
             $sheetVariant->setCellValue('A2', $nextId);
             $sheetSpc->setCellValue('A2', $nextId);
 
+            if($totalProducts > 0 ){
+                $productIndex = 0;
+                $rowImg = 2;
+                for ($i=$rowCount; $i < $lastRowSheet; $i++) { 
+                    if($totalProducts > $productIndex){
+                        $productImg = $arrProducts[$productIndex]['images'];
+                        $productSpecs = $arrProducts[$productIndex]['specs'];
+                        $measure =$arrProducts[$productIndex]['measure'] !="" ? $arrProducts[$productIndex]['measure'] : "";
+                        $sheetProduct->setCellValue("A$i", $arrProducts[$productIndex]['idproduct']);
+                        $sheetProduct->setCellValue("B$i", $arrProducts[$productIndex]['name']);
+                        $sheetProduct->setCellValue("C$i", $arrProducts[$productIndex]['reference']);
+                        $sheetProduct->setCellValue("D$i", $arrProducts[$productIndex]['shortdescription']);
+                        $sheetProduct->setCellValue("E$i", $arrProducts[$productIndex]['description']);
+                        $sheetProduct->setCellValue("F$i", $arrProducts[$productIndex]['is_product'] == 1 ? "Si" : "No");
+                        $sheetProduct->setCellValue("G$i", $arrProducts[$productIndex]['is_ingredient'] == 1 ? "Si" : "No");
+                        $sheetProduct->setCellValue("H$i", $arrProducts[$productIndex]['is_combo'] == 1 ? "Si" : "No");
+                        $sheetProduct->setCellValue("I$i", $measure);
+                        $sheetProduct->setCellValue("J$i", $arrProducts[$productIndex]['is_stock'] == 1 ? "Si" : "No");
+                        $sheetProduct->setCellValue("K$i", $arrProducts[$productIndex]['stock']);
+                        $sheetProduct->setCellValue("L$i", $arrProducts[$productIndex]['min_stock']);
+                        $sheetProduct->setCellValue("M$i", $arrProducts[$productIndex]['import']);
+                        $sheetProduct->setCellValue("N$i", $arrProducts[$productIndex]['price_purchase']);
+                        $sheetProduct->setCellValue("O$i", $arrProducts[$productIndex]['price']);
+                        $sheetProduct->setCellValue("P$i", $arrProducts[$productIndex]['discount']);
+                        $sheetProduct->setCellValue("Q$i", $arrProducts[$productIndex]['status'] == 1 ? "Si" : "No");
+                        $sheetProduct->setCellValue("R$i", $arrProducts[$productIndex]['category']);
+                        //Setting subCategories
+                        $colSub = 'S';
+                        $totalCat = count($arrCategories);
+                        for ($cat=0; $cat < $totalCat ; $cat++) { 
+                            $subcategories = $arrSubcategories[$cat][$arrCategories[$cat]];
+                            $totalSub = count($subcategories);
+                            for ($sub=0; $sub < $totalSub; $sub++) { 
+                                if($subcategories[$sub] == $arrProducts[$productIndex]['subcategory'] && $arrCategories[$cat] == $arrProducts[$productIndex]['category']){
+                                    $sheetProduct->setCellValue($colSub.$i, $subcategories[$sub]);
+                                    break;
+                                }
+                            }
+                            $colSub++;
+                        }
+                        //Setting images
+                        
+                        foreach ($productImg as $img) {
+                            $url = media()."/images/uploads/".$img['name'];
+                            $sheetImg->setCellValue("A".$rowImg, $arrProducts[$productIndex]['idproduct']);
+                            $sheetImg->setCellValue("B".$rowImg, $url);
+                            $rowImg++;
+                        }
+                        //Setting specs
+                        $productIndex++;
+                    }
+                }
+            }
+
             //Set categories
             $colSub = 'S';
             $totalCat = count($arrCategories);
@@ -148,10 +209,6 @@
                     ->setShowInputMessage(true)
                     ->setShowErrorMessage(true)
                     ->setShowDropDown(true)
-                    ->setErrorTitle('Error')
-                    ->setError('Valor no válido')
-                    ->setPromptTitle('Elegir opción')
-                    ->setPrompt('Por favor, elige una opción de la lista')
                     ->setFormula1('"'.implode(',', $subcategories).'"');
                 }
                 $colSub++;
@@ -166,10 +223,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrBool).'"');
 
                 $validation = $sheetProduct->getCell("I$i")->getDataValidation();
@@ -179,10 +232,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrMeasures).'"');
 
                 $validation = $sheetProduct->getCell("J$i")->getDataValidation();
@@ -192,10 +241,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrBool).'"');
 
                 $validation = $sheetProduct->getCell("G$i")->getDataValidation();
@@ -205,10 +250,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrBool).'"');
 
                 $validation = $sheetProduct->getCell("M$i")->getDataValidation();
@@ -218,10 +259,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrImport).'"');
                 //Status
                 $validation = $sheetProduct->getCell("Q$i")->getDataValidation();
@@ -231,10 +268,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrBool).'"');
                 //Category
                 $validation = $sheetProduct->getCell("F$i")->getDataValidation();
@@ -244,10 +277,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrBool).'"');
                 //Categories
                 $validation = $sheetProduct->getCell("R$i")->getDataValidation();
@@ -257,10 +286,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrCategories).'"');
 
                 $validation = $sheetSpc->getCell("B$i")->getDataValidation();
@@ -270,10 +295,6 @@
                 ->setShowInputMessage(true)
                 ->setShowErrorMessage(true)
                 ->setShowDropDown(true)
-                ->setErrorTitle('Error')
-                ->setError('Valor no válido')
-                ->setPromptTitle('Elegir opción')
-                ->setPrompt('Por favor, elige una opción de la lista')
                 ->setFormula1('"'.implode(',', $arrSpecs).'"');
 
             }
@@ -320,17 +341,14 @@
                 }*/
                 $colSub++;
             }
+            
             foreach (range('A','Z') as $col) {
                 $sheetProduct->getColumnDimension($col)->setAutoSize(true); 
                 $sheetVariant->getColumnDimension($col)->setAutoSize(true); 
                 $sheetImg->getColumnDimension($col)->setAutoSize(true); 
                 $sheetSpc->getColumnDimension($col)->setAutoSize(true); 
             }
-            if($_POST){
-                $idCategory = intval($_POST['category']);
-                $idSubcategory = intval($_POST['subcategory']);
-                $arrProducts = $this->model->selectProducts($idCategory,$idSubcategory);
-            }
+            
             $writer = new Xlsx($spreadsheet);
             ob_end_clean();
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
