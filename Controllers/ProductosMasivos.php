@@ -33,11 +33,12 @@
 
         public function plantilla(){
             $arrProducts = [];
-            
-            if($_GET['category']){
+            $fileName = "plantilla_crear";
+            if(isset($_GET['action'])){
                 $idCategory = intval($_GET['category']);
                 $idSubcategory = intval($_GET['subcategory']);
                 $arrProducts = $this->model->selectProducts($idCategory,$idSubcategory);
+                $fileName = "plantilla_editar";
             }
             $totalProducts = count($arrProducts);
             //Set default config
@@ -47,7 +48,6 @@
             $nextId = $this->model->selectNextId();
             $categories = $this->model->selectCategories();
             
-            $fileName = "plantilla";
             //Dropdowns 
             $arrBool = array("Si","No");
             $arrImport = array(0,19);

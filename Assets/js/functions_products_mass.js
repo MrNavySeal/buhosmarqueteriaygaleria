@@ -39,7 +39,7 @@ btnDownloadEdit.addEventListener("click",function(){
     if(categoryList.value == 0){
         subcategoryList.value ="";
     }
-    data = "category="+categoryList.value+"&subcategory="+subcategoryList.value;
+    data = "action=editar&category="+categoryList.value+"&subcategory="+subcategoryList.value;
     window.open(base_url+"/ProductosMasivos/plantilla?"+data,"_blank");
 })
 function changeCategory(){
