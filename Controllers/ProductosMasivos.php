@@ -55,7 +55,8 @@
             $arrSpecs = $this->model->selectSpecs();
             $arrCategories = $categories['categories'];
             $arrSubcategories = $categories['subcategories'];
-
+            $variants = $this->model->selectVariants();
+            $totalVar = count($variants);
             //Headers
             $headProduct = array(
                 "id_producto",
@@ -140,10 +141,13 @@
             $sheetImg->setCellValue('A2', $nextId);
             $sheetVariant->setCellValue('A2', $nextId);
             $sheetSpc->setCellValue('A2', $nextId);
-
+            //dep($arrProducts);exit;
             if($totalProducts > 0 ){
                 $productIndex = 0;
                 $rowImg = 2;
+                $rowSpc = 2;
+                $rowVariant = 2;
+                $lastRowVariantOption = 2;
                 for ($i=$rowCount; $i < $lastRowSheet; $i++) { 
                     if($totalProducts > $productIndex){
                         $productImg = $arrProducts[$productIndex]['images'];
@@ -182,7 +186,6 @@
                             $colSub++;
                         }
                         //Setting images
-                        
                         foreach ($productImg as $img) {
                             $url = media()."/images/uploads/".$img['name'];
                             $sheetImg->setCellValue("A".$rowImg, $arrProducts[$productIndex]['idproduct']);
@@ -190,6 +193,49 @@
                             $rowImg++;
                         }
                         //Setting specs
+                        foreach ($productSpecs as $spc) {
+                            $sheetSpc->setCellValue("A".$rowSpc, $arrProducts[$productIndex]['idproduct']);
+                            $sheetSpc->setCellValue("B".$rowSpc, $spc['specification_id']."_".$spc['name']);
+                            $sheetSpc->setCellValue("C".$rowSpc, $spc['value']);
+                            $rowSpc++;
+                        }
+                        if($arrProducts[$productIndex]['product_type'] == 1){
+                            $productVariants = $arrProducts[$productIndex]['variation'];
+                            $productCombinations = $arrProducts[$productIndex]['combinations'];
+                            $rowsComb = count($productCombinations);
+                            for ($m=0; $m < $rowsComb ; $m++) { 
+                                $combination = $productCombinations[$m];
+                                $colVariant = "H";
+                                for ($n=0; $n < $totalVar ; $n++) { 
+                                    $variant = $variants[$n];
+                                    $productVariant = array_values(array_filter($productVariants,function($e)use($variant){
+                                        return $e['id'] == $variant['id_variation'];
+                                    }));
+                                    if(!empty($productVariant)){
+                                        $productVariant = $productVariant[0];
+                                        $optionsProduct = $productVariant['options'];
+                                        $totalOptionsProduct = count($optionsProduct);
+                                        for ($opt=0; $opt < $totalOptionsProduct ; $opt++) { 
+                                            $option = $optionsProduct[$opt];
+                                            $arrCombName = explode("-",$productCombinations[$m]['name']);
+                                            $flag = !empty(array_filter($arrCombName,function($e)use($option){return $e==$option;})) ? 1 : 0;
+                                            if($flag){
+                                                $sheetVariant->setCellValue($colVariant.$rowVariant,$productVariant['id']."_".$optionsProduct[$opt]);
+                                            }
+                                        }
+                                    }
+                                    $colVariant++;
+                                }
+                                $sheetVariant->setCellValue("A".$rowVariant,$combination['product_id']);
+                                $sheetVariant->setCellValue("B".$rowVariant,$combination['sku']);
+                                $sheetVariant->setCellValue("C".$rowVariant,$combination['price_purchase']);
+                                $sheetVariant->setCellValue("D".$rowVariant,$combination['price_sell']);
+                                $sheetVariant->setCellValue("E".$rowVariant,$combination['price_offer']);
+                                $sheetVariant->setCellValue("F".$rowVariant,$combination['stock']);
+                                $sheetVariant->setCellValue("G".$rowVariant,$combination['min_stock']);
+                                $rowVariant++;
+                            }
+                        }
                         $productIndex++;
                     }
                 }
@@ -299,8 +345,6 @@
 
             }
             //Set variants
-            $variants = $this->model->selectVariants();
-            $totalVar = count($variants);
             $colSub = 'H';
             for ($i=0; $i < $totalVar ; $i++) { 
                 $sheetVariant->setCellValue($colSub.'1',$variants[$i]['name']);
