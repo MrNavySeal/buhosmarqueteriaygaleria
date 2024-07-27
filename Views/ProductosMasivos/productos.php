@@ -36,7 +36,7 @@
                 <p class="text-secondary">Sube el excel una vez que hayas terminado de completar la información de los productos.</p>
                 <div class="d-flex mb-3 align-items-center">
                     <input class="form-control w-50" type="file" accept=".xlsx" id="formFile">
-                    <button type="button" id="btnAdd" class="btn btn-primary text-white"> Cargar archivo</button>
+                    <button type="button" onclick="uploadFile(this,1)" class="btn btn-primary text-white"> Cargar archivo</button>
                 </div>
             </div>
         </div>
@@ -71,7 +71,7 @@
                 <p class="text-secondary">Sube el excel una vez que hayas terminado de editar la información de los productos.</p>
                 <div class="d-flex mb-3 align-items-center">
                     <input class="form-control w-50" type="file" accept=".xlsx" id="formFileEdit">
-                    <button type="button" id="btnAddEdit" class="btn btn-primary text-white"> Cargar archivo</button>
+                    <button type="button" onclick="uploadFile(this,2)" class="btn btn-primary text-white"> Cargar archivo</button>
                 </div>
             </div>
         </div>

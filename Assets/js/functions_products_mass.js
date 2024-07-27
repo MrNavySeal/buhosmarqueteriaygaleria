@@ -1,4 +1,4 @@
-const inputFile = document.querySelector("#formFile");
+
 const btnAdd = document.querySelector("#btnAdd");
 const btnDownloadEdit = document.querySelector("#btnDownloadEdit");
 const categoryList = document.querySelector("#categoryList");
@@ -10,7 +10,15 @@ if(categoryList.value == 0){
     subCategoryContent.classList.remove("d-none");
 }
 
-btnAdd.addEventListener("click",function(){
+btnDownloadEdit.addEventListener("click",function(){
+    if(categoryList.value == 0){
+        subcategoryList.value ="";
+    }
+    data = "action=editar&category="+categoryList.value+"&subcategory="+subcategoryList.value;
+    window.open(base_url+"/ProductosMasivos/plantilla?"+data,"_blank");
+})
+function uploadFile(element,type){
+    let inputFile = type == 1 ? document.querySelector("#formFile") : document.querySelector("#formFileEdit") ;
     if(inputFile.files.length == 0){
         Swal.fire("Error","Debe subir la plantilla.","error");
         return false;
@@ -23,25 +31,19 @@ btnAdd.addEventListener("click",function(){
     }
     let formData = new FormData();
     formData.append("template",file);
+    formData.append("type",type);
 
-    btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Espere...`;  
-    btnAdd.setAttribute("disabled","");
+    element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Espere...`;  
+    element.setAttribute("disabled","");
     request(base_url+"/ProductosMasivos/uploadProducts",formData,"post").then(function(objData){
-        btnAdd.innerHTML="Cargar archivo";
-        btnAdd.removeAttribute("disabled","");
+        element.innerHTML="Cargar archivo";
+        element.removeAttribute("disabled","");
         if(objData.status){
             inputFile.files[0] = "";
             Swal.fire("",objData.msg,"success");
         }
     });
-});
-btnDownloadEdit.addEventListener("click",function(){
-    if(categoryList.value == 0){
-        subcategoryList.value ="";
-    }
-    data = "action=editar&category="+categoryList.value+"&subcategory="+subcategoryList.value;
-    window.open(base_url+"/ProductosMasivos/plantilla?"+data,"_blank");
-})
+}
 function changeCategory(){
     if(categoryList.value != 0){
         subCategoryContent.classList.remove("d-none");

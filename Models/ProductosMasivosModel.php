@@ -147,11 +147,14 @@ ini_set('max_execution_time', 30000);
                 $request = $this->insert($sql,$arrData);
             }
         }
-        public function insertImages($id,$photos){
+        public function insertImages($id,$photos,$type=1){
+            if($type == 2){
+                $this->delete("DELETE FROM productimage WHERE productid=$id");
+            }
             for ($i=0; $i < count($photos) ; $i++) { 
                 $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
                 $arrImg = array($id,$photos[$i]);
-                $requestImg = $this->insert($sqlImg,$arrImg);
+                $this->insert($sqlImg,$arrImg);
             }
         }
         public function insertSpecs($id,$specs){
@@ -166,6 +169,56 @@ ini_set('max_execution_time', 30000);
                 }
             }
         }
+        public function updateProduct(array $data){
+            $this->arrData = $data;
+            $name = $this->arrData['name'];
+            $reference="";
+            if($this->arrData['reference']){
+                $reference = $this->arrData['reference'];
+                $reference = "AND reference = '$reference'";
+            }
+			$sql = "SELECT * FROM product WHERE name='$name' AND idproduct != {$this->arrData['id']} $reference";
+			$request = $this->select_all($sql);
+            if(empty($request)){
+                $sql =  "UPDATE product SET categoryid=?,
+                subcategoryid=?,reference=?,name=?,shortdescription=?,description=?,measure=?,
+                price=?,price_purchase=?,discount=?,stock=?,min_stock=?,status=?,route=?,
+                product_type=?,import=?,is_product=?,is_ingredient=?,is_combo=?,is_stock=?
+                WHERE idproduct = {$this->arrData['id']}";
+                
+                $arrData = array(
+                    $this->arrData['category'],
+                    $this->arrData['subcategory'],
+                    $this->arrData['reference'],
+                    $this->arrData['name'],
+                    $this->arrData['short_description'],
+                    $this->arrData['description'],
+                    $this->arrData['measure'],
+                    $this->arrData['price_sell'],
+                    $this->arrData['price_purchase'],
+                    $this->arrData['price_offer'],
+                    $this->arrData['stock'],
+                    $this->arrData['min_stock'],
+                    $this->arrData['status'],
+                    $this->arrData['route'],
+                    $this->arrData['product_type'],
+                    $this->arrData['import'],
+                    $this->arrData['is_product'],
+                    $this->arrData['is_ingredient'],
+                    $this->arrData['is_combo'],
+                    $this->arrData['is_stock']
+                );
+                $request = $this->update($sql,$arrData);
+                $this->insertImages($this->arrData['id'],$this->arrData['images'],2);
+                if(!empty($this->arrData['specs'])){
+                    $this->insertSpecs($this->arrData['id'],$this->arrData['specs']);
+                }
+                if(!empty($this->arrData['variants'])){
+                    $this->insertVariants($this->arrData['id'],$this->arrData['variants'],1);
+                }
+            }
+	        return $request;
+		}
         public function selectVariants(){
             $sql = "SELECT name,id_variation FROM variations WHERE status = 1";
             $request = $this->select_all($sql);

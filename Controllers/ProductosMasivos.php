@@ -409,6 +409,7 @@
                     if($extension != "xlsx"){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos.");
                     }else{
+                        $type = intval($_POST['type']);
                         $reader = IOFactory::createReader(ucwords($extension));
                         $spreadsheet = $reader->load($template['tmp_name']);
                         $sheetProduct = $spreadsheet->getSheetByName("productos");
@@ -556,7 +557,7 @@
                             array_push($arrProducts,$product);
                             $index ++;
                         }
-                        $this->setProducts($arrProducts);
+                        $this->setProducts($arrProducts,$type);
                         $arrResponse = array("status"=>true,"msg"=>"Productos cargados correctamente.");
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
@@ -564,7 +565,8 @@
             }
             die();
         }
-        public function setProducts($data){
+        public function setProducts($data,$type){
+            //dep($data);exit;
             $total = count($data);
             for ($i=0; $i < $total; $i++) {
                 $images = $data[$i]['images'];
@@ -573,6 +575,12 @@
                     for ($j=0; $j < $totalImg; $j++) { 
                         $img = file_get_contents($images[$j]);
                         $name = "product_".bin2hex(random_bytes(6)).'.png';
+                        if($type == 2){
+                            $arrImg = explode("/",$images[$j]);
+                            if(isset($arrImg[7])){
+                                $name = $arrImg[7];
+                            }
+                        }
                         $route = "Assets/images/uploads/".$name;
                         $data[$i]['images'][$j] = $name;
                         file_put_contents($route, $img);
@@ -580,7 +588,11 @@
                 }else{
                     $data[$i]['images'][0] = "category.jpg";
                 }
-                $this->model->insertProduct($data[$i]);
+                if($type == 1){
+                    $this->model->insertProduct($data[$i]);
+                }else{
+                    $this->model->updateProduct($data[$i]);
+                }
             }
         }
     }
