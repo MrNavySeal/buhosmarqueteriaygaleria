@@ -138,10 +138,6 @@
 
             //Set idproduct
             $sheetProduct->setCellValue('A2', $nextId);
-            $sheetImg->setCellValue('A2', $nextId);
-            $sheetVariant->setCellValue('A2', $nextId);
-            $sheetSpc->setCellValue('A2', $nextId);
-            //dep($arrProducts);exit;
             if($totalProducts > 0 ){
                 $productIndex = 0;
                 $rowImg = 2;
