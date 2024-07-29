@@ -355,18 +355,17 @@
             $urlTransaction ="https://api.mercadopago.com/v1/payments/".$idTransaction;
             $objTransaction = curlConnectionGet($urlTransaction,"application/json");
             $comision = $objTransaction->fee_details[0]->amount;
+            $retencion = $objTransaction->taxes_amount;
             $this->con = new Mysql();
             $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?,?)";		  
-            $arrData = array(
-                $id,
-                $intType,
-                $intTopic,
-                $strName,
-                $comision,
-                $intStatus,
-                "mercadopago"
-            );
+            $arrData = array( $id,$intType,$intTopic,$strName,$comision,$intStatus,"mercadopago");
             $request = $this->con->insert($sql,$arrData);
+
+            if($retencion > 0){
+                $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?,?)";		  
+                $arrData = array( $id,$intType,25,"Retencion ICA y fuente",$retencion,$intStatus,"mercadopago");
+                $request = $this->con->insert($sql,$arrData);
+            }
 	        return $request;
 		}
         public function updateDateBeat($idOrder){
