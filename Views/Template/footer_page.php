@@ -111,7 +111,7 @@ for ($i=0; $i < count($social) ; $i++) {
     <div class="row m-0">
         <div class="col-md-12 p-0">
             <div class="footer--bar">
-                <p>Copyright © 2022 <?=$company['name']?></p>
+                <p>Copyright © <?=date("Y")." ".$company['name']?></p>
                 <ul>
                     <li><a href="<?=base_url()?>">Inicio</a></li>
                     <li><a href="<?=base_url()?>/politicas/terminos">Términos y condiciones</a></li>
