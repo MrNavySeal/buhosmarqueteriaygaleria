@@ -42,6 +42,8 @@
             statusorder,
             coupon,
             note,
+            send_by,
+            number_guide,
             DATE_FORMAT(date, '%d/%m/%Y') as date,
             DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat  
             FROM orderdata $whre ORDER BY idorder DESC";      
@@ -88,6 +90,8 @@
             statusorder,
             coupon,
             note,
+            send_by,
+            number_guide,
             DATE_FORMAT(date, '%d/%m/%Y') as date,
             DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat  
             FROM orderdata WHERE (type = 'credito' OR status = 'pendent') $whre ORDER BY idorder DESC";      
@@ -161,9 +165,9 @@
             $request = $this->update($sql,array("canceled","anulado"));
             return $request;
         }
-        public function updateOrder(int $id,string $statusOrder){
-            $sql = "UPDATE orderdata SET statusorder =? WHERE idorder = $id";
-            $request = $this->update($sql,array($statusOrder));
+        public function updateOrder(int $id,string $statusOrder,string $strSendBy,string $strGuide){
+            $sql = "UPDATE orderdata SET statusorder =?, send_by =?,number_guide =?  WHERE idorder = $id";
+            $request = $this->update($sql,array($statusOrder,$strSendBy,$strGuide));
             return $request;
         }
         /*************************Advance methods*******************************/

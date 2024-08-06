@@ -48,7 +48,18 @@ let table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-
+window.addEventListener("load",function(){
+    if(document.querySelector("#modalEdit")){
+        const statusOrder = document.querySelector("#statusOrder");
+        statusOrder.addEventListener("change",function(){
+            if(statusOrder.value == "enviado"){
+                document.querySelector("#divSend").classList.remove("d-none");
+            }else{
+                document.querySelector("#divSend").classList.add("d-none");
+            }
+        });
+    }
+});
 function viewItem(id){
     document.querySelector("#tablePurchaseDetail").innerHTML ="";
     const arrData = table.rows().data().toArray();
@@ -193,13 +204,37 @@ function editItem(id){
     let order = arrData[index];
     document.querySelector("#statusOrder").value = order.statusorderval;
     document.querySelector("#idOrder").value = order.idorder;
+    document.querySelector("#sendList").value = order.send_by;
+    document.querySelector("#txtGuide").value = order.number_guide;
+    if(order.statusorderval == "enviado"){
+        document.querySelector("#divSend").classList.remove("d-none");
+    }
     openModal("edit");
 }
 async function updateItem(){
+    let statusOrder = document.querySelector("#statusOrder").value;
+    let sendList = document.querySelector("#sendList").value;
+    let strGuide = document.querySelector("#txtGuide").value;
+    let isEmail = document.querySelector("#isEmail").checked;
+    let intId = document.querySelector("#idOrder").value;
+
+    const arrData = table.rows().data().toArray();
+    let index = arrData.findIndex(e=>e.idorder==intId);
+    let order = arrData[index];
+
+    if(statusOrder == "enviado" && (sendList == "" || strGuide =="")){
+        Swal.fire("Error","Debe seleccionar la empresa de mensajería y escribir el número de guía","error");
+        return false;
+    }
     const btnAdd = document.querySelector("#btnAdd");
     const formData = new FormData();
-    formData.append("id", document.querySelector("#idOrder").value);
-    formData.append("status_order",document.querySelector("#statusOrder").value);
+    formData.append("id", intId);
+    formData.append("status_order",statusOrder);
+    formData.append("guide",strGuide);
+    formData.append("send_by",sendList);
+    formData.append("is_email",isEmail ? 1 : 0);
+    formData.append("email",order.email);
+    formData.append("name",order.name);
     btnAdd.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
     const response = await fetch(base_url+"/pedidos/updateOrder",{method:"POST",body:formData});

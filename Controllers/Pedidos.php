@@ -103,7 +103,7 @@
                             $statusOrder = '<span class="badge bg-warning text-black">En preparacion</span>';
                         }else if($request[$i]['statusorder'] =="preparado"){
                             $statusOrder = '<span class="badge bg-info text-white">Preparado</span>';
-                        }else if($request[$i]['statusorder'] =="entregado"){
+                        }else if($request[$i]['statusorder'] =="entregado" || $request[$i]['statusorder'] =="enviado"){
                             $statusOrder = '<span class="badge bg-success text-white">Entregado</span>';
                         }else if($request[$i]['statusorder'] =="rechazado" || $request[$i]['statusorder'] =="anulado"){
                             $statusOrder = '<span class="badge bg-danger text-white">Anulado</span>';
@@ -301,11 +301,31 @@
                 if($_POST){
                     if(empty($_POST['id']) || empty($_POST['status_order'])){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    }else if($_POST['status_order'] == "enviado" && (empty($_POST['send_by']) || empty($_POST['guide']) || empty($_POST['email']) ) ){
+                        $arrResponse = array("status"=>false,"msg"=>"Faltan los datos de envio.");
                     }else{
                         $id = intval($_POST['id']);
                         $statusOrder = strClean($_POST['status_order']);
-                        $request = $this->model->updateOrder($id,$statusOrder);
+                        $strSendBy = strClean($_POST['send_by']);
+                        $strGuide = strClean($_POST['guide']);
+                        $isEmail = intval($_POST['is_email']);
+                        $strEmail = strClean($_POST['email']);
+                        $strName = strClean($_POST['name']);
+                        $request = $this->model->updateOrder($id,$statusOrder,$strSendBy,$strGuide);
                         if($request > 0){
+                            if($statusOrder == "enviado" && $isEmail){
+                                $company = getCompanyInfo();
+                                $arrResponse = array("status" => true,"msg"=>"Se ha registrado con éxito.");
+                                $data = array(
+                                    'nombreUsuario'=> $strName, 
+                                    'email_remitente' => $company['email'], 
+                                    'email_usuario'=>$strEmail, 
+                                    'company'=>$company,
+                                    'send_by'=>$strSendBy,
+                                    'guide'=>$strGuide,
+                                    'asunto' =>"¡Tu pedido está en camino!");
+                                sendEmail($data,"email_send_by");
+                            }
                             $arrResponse = array("status"=>true,"msg"=>"Pedido actualizado");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No se ha podido actualizar, inténtelo de nuevo.");
