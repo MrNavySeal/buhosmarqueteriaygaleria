@@ -127,7 +127,7 @@
                         <p class="mb-3"><?=$product['shortdescription']?></p>
                         <?=$reference?>
                         <a href="<?=base_url()."/tienda/categoria/".$product['routec']?>" class="m-0">Categoría:<strong> <?=$product['category']?></strong></a><br>
-                        <a href="<?=base_url()."/tienda/categoria/".$product['routes']?>" class="m-0">Subcategoría:<strong> <?=$product['subcategory']?></strong></a>
+                        <a href="<?=base_url()."/tienda/categoria/".$product['routec']."/".$product['routes']?>" class="m-0">Subcategoría:<strong> <?=$product['subcategory']?></strong></a>
                         
                         <div class="mt-4 mb-4 d-flex align-items-center">
                             <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
