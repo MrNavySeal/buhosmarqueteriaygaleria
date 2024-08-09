@@ -208,6 +208,8 @@ function editItem(id){
     document.querySelector("#txtGuide").value = order.number_guide;
     if(order.statusorderval == "enviado"){
         document.querySelector("#divSend").classList.remove("d-none");
+    }else{
+        document.querySelector("#divSend").classList.add("d-none");
     }
     openModal("edit");
 }

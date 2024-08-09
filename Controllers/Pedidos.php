@@ -103,8 +103,10 @@
                             $statusOrder = '<span class="badge bg-warning text-black">En preparacion</span>';
                         }else if($request[$i]['statusorder'] =="preparado"){
                             $statusOrder = '<span class="badge bg-info text-white">Preparado</span>';
-                        }else if($request[$i]['statusorder'] =="entregado" || $request[$i]['statusorder'] =="enviado"){
+                        }else if($request[$i]['statusorder'] =="entregado"){
                             $statusOrder = '<span class="badge bg-success text-white">Entregado</span>';
+                        }else if($request[$i]['statusorder'] =="enviado"){
+                            $statusOrder = '<span class="badge bg-success text-white">Enviado</span>';
                         }else if($request[$i]['statusorder'] =="rechazado" || $request[$i]['statusorder'] =="anulado"){
                             $statusOrder = '<span class="badge bg-danger text-white">Anulado</span>';
                         }
