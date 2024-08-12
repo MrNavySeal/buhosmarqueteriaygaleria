@@ -94,9 +94,20 @@
                             $varas = ceil(($perimetro)/($frameLength-$waste));
                             $totalCostFrame = ($perimetro+($waste*$varas))*$cost;
                         }
+                        $totalCostFrame = ceil(($totalCostFrame)/1000)*1000;
                         $totalCostMaterial = 0;
                         $totalCost = 0;
                         $arrSpecs = [];
+                        $arrCostData = [];
+                        $htmlCostData = "";
+                        $htmlSpecs ="";
+                        $price = ceil((UTILIDAD*$totalCostFrame)/1000)*1000;
+                        $htmlCostData ='<tr>
+                            <td>Marco '.$frame['reference'].'</td>
+                            <td class="text-end">'.formatNum($totalCostFrame).'</td>
+                            <td class="text-end">'.formatNum(ceil((UTILIDAD*$totalCostFrame)/1000)*1000).'</td>
+                        </tr>';
+                        array_push($arrCostData,array("name"=>"Referencia","value"=>$frame['reference']));
                         array_push($arrSpecs,
                             array("name"=>"Referencia","value"=>$frame['reference']),
                             array("name"=>"Material","value"=>ucfirst($frame['name'])),
@@ -104,8 +115,15 @@
                             array("name"=>"Medida imagen","value"=>$intWidth." x ".$intHeight." cm"),
                             array("name"=>"Medida marco","value"=>$intWidthM." x ".$intHeightM." cm")
                         );
+                        $htmlSpecs.='<tr><td>Referencia</td><td>'.$frame['reference'].'</td></tr>';
+                        $htmlSpecs.='<tr><td>Material</td><td>'.ucfirst($frame['name']).'</td></tr>';
+                        $htmlSpecs.='<tr><td>Orientación</td><td>'.$strOrientation.'</td></tr>';
+                        $htmlSpecs.='<tr><td>Medida imagen</td><td>'.$intWidth." x ".$intHeight." cm".'</td></tr>';
+                        $htmlSpecs.='<tr><td>Medida marco</td><td>'.$intWidthM." x ".$intHeightM." cm".'</td></tr>';
+                        
                         if($frame['name'] !="molduras importadas" && $frame['name'] !="bastidores"){
                             array_push($arrSpecs,array("name"=>"Color del marco","value"=>$strColorFrame));
+                            $htmlSpecs.='<tr><td>Color del marco</td><td>'.$strColorFrame.'</td></tr>';
                         }
                         foreach ($data as $e ) {
                             $prop = $e['prop'];
@@ -114,27 +132,44 @@
                             if($option['is_margin']){
                                 array_push($arrSpecs,array("name"=>"Medida del ".$option['tag'],"value"=>$intMargin." cm"));
                                 array_push($arrSpecs,array("name"=>"Color del ".$option['tag'],"value"=>$strColorMargin));
+                                $htmlSpecs.='<tr><td>'."Medida del ".$option['tag'].'</td><td>'.$intMargin.'</td></tr>';
+                                $htmlSpecs.='<tr><td>'."Color del ".$option['tag'].'</td><td>'.$strColorMargin.'</td></tr>';
                             }
                             if($option['is_bocel'] || $option['is_frame']){
                                 array_push($arrSpecs,array("name"=>"Color del ".$option['tag_frame'],"value"=>$strColorBorder));
+                                $htmlSpecs.='<tr><td>'."Color del ".$option['tag_frame'].'</td><td>'.$strColorBorder.'</td></tr>';
                             }
                             
                             array_push($arrSpecs,array("name"=>$prop['name'],"value"=>$option['name']));
+                            $htmlSpecs.='<tr><td>'.$prop['name'].'</td><td>'.$option['name'].'</td></tr>';
                             if($prop['is_material']){
                                 if($isPrint != 1){
                                     $arrMaterial = array_filter($arrMaterial,function($e){return $e['name'] != "Impresion";});
                                 }
                                 foreach ($arrMaterial as $d ) {
-                                    $totalCostMaterial+=$this->calcularCostoMaterial($d,$intHeight,$intWidth,$intMargin);
+                                    $totalMaterial = $this->calcularCostoMaterial($d,$intHeight,$intWidth,$intMargin);
+                                    $totalCostMaterial+= $totalMaterial;
+                                    $price+=ceil((UTILIDAD*$totalMaterial)/1000)*1000;
+                                    array_push($arrCostData,array("name"=>$d['name'], "total"=>$totalMaterial ));
+                                    $htmlCostData.='
+                                    <tr>
+                                        <td>'.$d['name'].'</td>
+                                        <td class="text-end">'.formatNum($totalMaterial).'</td>
+                                        <td class="text-end">'.formatNum(ceil((UTILIDAD*$totalMaterial)/1000)*1000).'</td>
+                                    </tr>';
                                 }
                             }
                         }
                         $totalCost = $totalCostMaterial+$totalCostFrame;
-                        $price = ceil((intval(UTILIDAD*((($totalCost)*COMISION)+TASA)))/1000)*1000;
                         $arrResponse = array(
                             "status"=>true,
                             "total"=>formatNum($price),
+                            "total_cost"=>formatNum($totalCost),
                             "specs"=>$arrSpecs,
+                            "cost"=>$arrCostData,
+                            "html_cost"=>$htmlCostData,
+                            "html_specs"=>$htmlSpecs,
+                            "total_cost_clean"=>$totalCost,
                             "total_clean"=>$price,
                             "name"=>$request_config['name'],
                             "cat_img"=>$request_config['image'],
@@ -202,6 +237,7 @@
                 $perimetro = (($heigth + $width)*2)+$wasteMaterial;
                 $total+=$costMaterial*($perimetro); 
             }
+            $total = ceil($total/1000)*1000;
             return $total;
         }
         public function addCart(){
