@@ -66,8 +66,8 @@
                         $price = ceil((UTILIDAD*$totalCostFrame)/1000)*1000;
                         $htmlCostData ='<tr>
                             <td>Marco '.$frame['reference'].'</td>
-                            <td>'.formatNum($totalCostFrame).'</td>
-                            <td>'.formatNum(ceil((UTILIDAD*$totalCostFrame)/1000)*1000).'</td>
+                            <td class="text-end">'.formatNum($totalCostFrame).'</td>
+                            <td class="text-end">'.formatNum(ceil((UTILIDAD*$totalCostFrame)/1000)*1000).'</td>
                         </tr>';
                         array_push($arrCostData,array("name"=>"Referencia","value"=>$frame['reference']));
                         array_push($arrSpecs,
@@ -116,8 +116,8 @@
                                     $htmlCostData.='
                                     <tr>
                                         <td>'.$d['name'].'</td>
-                                        <td>'.formatNum($totalMaterial).'</td>
-                                        <td>'.formatNum(ceil((UTILIDAD*$totalMaterial)/1000)*1000).'</td>
+                                        <td class="text-end">'.formatNum($totalMaterial).'</td>
+                                        <td class="text-end">'.formatNum(ceil((UTILIDAD*$totalMaterial)/1000)*1000).'</td>
                                     </tr>';
                                 }
                             }
