@@ -538,6 +538,10 @@ async function calcularMarco(id=null){
         arrConfigFrame = objData.config;
         totalFrame = objData.total_clean;
         nameTopic = objData.name;
+        document.querySelector("#tableCostMaterial").innerHTML = objData.html_cost;
+        document.querySelector("#tableSpecs").innerHTML = objData.html_specs;
+        document.querySelector("#totalCustomCost").innerHTML = `<span class="text-danger fw-bold">Total: ${objData.total_cost}</span>`;
+        document.querySelector("#totalCustomPrice").innerHTML = `<span class="text-success fw-bold">Total: ${objData.total}</span>`;
         document.querySelector(".totalFrame").innerHTML = objData.total;
     }
 }
@@ -830,14 +834,6 @@ async function showDefaultFraming(id){
     layoutMargin.style.borderImageOutset = (waste/1.6)+"px";
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
     layoutBorder.style.outlineColor=bg; 
-    /*layoutMargin.style.height = intHeight;
-    layoutMargin.style.width = intWidth;
-    layoutBorder.style.height = intHeight;
-    layoutBorder.style.width = intWidth;
-    layoutImg.style.height = intHeight;
-    layoutImg.style.width = intWidth;
-    layoutImg.style.border="none";
-    layoutImg.style.borderRadius=0;*/
     let colorFrameTitle = "";
     let colorMarginTitle = "";
     let colorBorderTitle = "";
@@ -875,6 +871,14 @@ async function showDefaultFraming(id){
     const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
     const objData = await response.json();
     if(objData.status){
+        arrFrame = objData.specs;
+        arrConfigFrame = objData.config;
+        totalFrame = objData.total_clean;
+        nameTopic = objData.name;
+        document.querySelector("#tableCostMaterial").innerHTML = objData.html_cost;
+        document.querySelector("#tableSpecs").innerHTML = objData.html_specs;
+        document.querySelector("#totalCustomCost").innerHTML = `Total: ${objData.total_cost}</span>`;
+        document.querySelector("#totalCustomPrice").innerHTML = `Total: ${objData.total}</span>`;
         document.querySelector(".totalFrame").innerHTML = objData.total;
     }
 }
