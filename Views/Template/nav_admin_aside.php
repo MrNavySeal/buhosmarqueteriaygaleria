@@ -68,7 +68,6 @@
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-crop-alt"></i>Marquetería</a>
                 <div class="dropdown-menu bg-transparent border-0">
-                    <a href="<?=base_url()?>/marqueteria/molduras" class="dropdown-item">Molduras</a>
                     <a href="<?=base_url()?>/marqueteria/colores" class="dropdown-item">Colores</a>
                     <?php  if($_SESSION['permit'][12]['w']){ ?>
                     <a href="<?=base_url()?>/marqueteria/categorias" class="dropdown-item">Categorias</a>
@@ -76,7 +75,6 @@
                     <a href="<?=base_url()?>/MarqueteriaOpciones/opciones" class="dropdown-item">Opciones de propiedades</a>
                     <a href="<?=base_url()?>/MarqueteriaConfiguracion/configuracion" class="dropdown-item">Configurar categorías</a>
                     <?php } ?>
-                    <a href="<?=base_url()?>/Marqueteria/calculadora" class="dropdown-item">Calculadora de costos</a>
                     <a href="<?=base_url()?>/MarqueteriaEjemplos/ejemplos" class="dropdown-item">Ejemplos</a>
                 </div>
             </div>
