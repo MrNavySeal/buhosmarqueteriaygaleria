@@ -60,8 +60,8 @@
                     $intMargin = intval(!$bypass ? $_POST['margin'] : $arrInfo['margin']);
                     $intHeight = floatval(!$bypass ? $_POST['height'] : $arrInfo['height']);
                     $intWidth = floatval(!$bypass ? $_POST['width'] : $arrInfo['width']);
-                    $intHeightM = $intHeight+$intMargin;
-                    $intWidthM = $intWidth+$intMargin;
+                    $intHeightM = $intHeight+($intMargin*2);
+                    $intWidthM = $intWidth+($intMargin*2);
                     $arrData = json_decode(!$bypass ? $_POST['data'] : $arrInfo['data'],true);
                     $strOrientation = strClean(!$bypass ? $_POST['orientation'] : $arrInfo['orientation']);
                     $strColorFrame = strClean(!$bypass ? $_POST['color_frame'] : $arrInfo['color_frame']);

@@ -23,8 +23,8 @@
                         $intMargin = intval($_POST['margin']);
                         $intHeight = floatval($_POST['height']);
                         $intWidth = floatval($_POST['width']);
-                        $intHeightM = $intHeight+$intMargin;
-                        $intWidthM = $intWidth+$intMargin;
+                        $intHeightM = $intHeight+($intMargin*2);
+                        $intWidthM = $intWidth+($intMargin*2);
                         $arrData = json_decode($_POST['data'],true);
                         $strOrientation = strClean($_POST['orientation']);
                         $strColorFrame = strClean($_POST['color_frame']);
