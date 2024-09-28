@@ -61,5 +61,49 @@
             }
             return $arrProducts;
         }
+        public function selectPurchaseDet(){
+            $sql = "SELECT 
+            cab.idpurchase as document,
+            cab.date,
+            det.qty,
+            p.idproduct as id,
+            det.price_purchase as price,
+            CONCAT(p.name,' ',det.variant_name) as name
+            FROM purchase_det det 
+            INNER JOIN purchase cab ON cab.idpurchase = det.purchase_id
+            INNER JOIN product p ON p.idproduct = det.product_id
+            WHERE cab.status = 1 AND p.is_stock = 1";
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectOrderDet(){
+            $sql = "SELECT 
+            cab.idorder as document,
+            cab.date,
+            det.quantity as qty,
+            p.name,
+            p.price,
+            p.idproduct as id,
+            det.description
+            FROM orderdetail det 
+            INNER JOIN orderdata cab ON cab.idorder = det.orderid
+            INNER JOIN product p ON p.idproduct = det.productid
+            WHERE cab.status != 'canceled' AND det.topic = 2 AND p.is_stock = 1";
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                $total = count($request);
+                for ($i=0; $i < $total ; $i++) { 
+                    $e = $request[$i];
+                    $description = json_decode($e['description'],true);
+                    if(is_array($description)){
+                        $arrDet = $description['detail'];
+                        $variantName = implode("-",array_values(array_column($arrDet,"option")));
+                        $e['name'] = $e['name']." ".$variantName;
+                    }
+                    $request[$i] = $e;
+                }
+            }
+            return $request;
+        }
     }
 ?>
