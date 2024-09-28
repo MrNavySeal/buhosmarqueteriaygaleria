@@ -161,9 +161,36 @@
         }
         public function deleteOrder($id){
             $this->intIdOrder = $id;
+            $sql = "SELECT * FROM orderdetail WHERE orderid  = $this->intIdOrder AND topic = 2";
+            $request = $this->select_all($sql);
             $sql = "UPDATE orderdata SET status=?,statusorder =? WHERE idorder = $this->intIdOrder;DELETE FROM count_amount WHERE order_id = $this->intIdOrder";
-            $request = $this->update($sql,array("canceled","anulado"));
-            return $request;
+            $return = $this->update($sql,array("canceled","anulado"));
+            if(!empty($request)){
+                foreach ($request as $e) {
+                    $description = json_decode($e['description'],true);
+                    if(is_array($description)){
+                        $arrDet = $description['detail'];
+                        $variantName = implode("-",array_values(array_column($arrDet,"option")));
+                        $sqlProduct = "SELECT pv.stock,p.is_stock
+                        FROM product_variations_options pv
+                        INNER JOIN product p ON p.idproduct = pv.product_id
+                        WHERE pv.name='$variantName' AND pv.product_id = $e[productid]";
+                        $requestProduct = $this->select($sqlProduct);
+                        if($requestProduct['is_stock']){
+                            $stock = $requestProduct['stock']+$e['quantity'];
+                            $this->update("UPDATE product_variations_options SET stock =? WHERE name='$variantName' AND product_id = $e[productid]",[$stock]);
+                        }
+                    }else{
+                        $sqlProduct = "SELECT stock,is_stock FROM product WHERE idproduct = $e[productid]";
+                        $requestProduct = $this->select($sqlProduct);
+                        if($requestProduct['is_stock']){
+                            $stock = $requestProduct['stock']+$e['quantity'];
+                            $this->update("UPDATE product SET stock =? WHERE idproduct = $e[productid]",[$stock]);
+                        }
+                    }
+                }
+            }
+            return $return;
         }
         public function updateOrder(int $id,string $statusOrder,string $strSendBy,string $strGuide){
             $sql = "UPDATE orderdata SET statusorder =?, send_by =?,number_guide =?  WHERE idorder = $id";

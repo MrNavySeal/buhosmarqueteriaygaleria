@@ -85,9 +85,34 @@
         }
         public function deletePurchase($id){
             $this->intId = $id;
+            $sql = "SELECT * FROM purchase_det WHERE purchase_id = $this->intId";
+            $request = $this->select_all($sql);
             $sql = "UPDATE purchase SET status = ? WHERE idpurchase = $this->intId;DELETE FROM count_amount WHERE purchase_id = $this->intId";
             $arrData = array(2);
             $return = $this->update($sql,$arrData);
+            if(!empty($request)){
+                foreach ($request as $e) {
+                    if($e['variant_name'] != ""){
+                        $sqlProduct = "SELECT pv.stock,p.is_stock
+                        FROM product_variations_options pv
+                        INNER JOIN product p ON p.idproduct = pv.product_id
+                        WHERE pv.name='$e[variant_name]' AND pv.product_id = $e[product_id]";
+                        $requestProduct = $this->select($sqlProduct);
+                        if($requestProduct['is_stock']){
+                            $stock = $requestProduct['stock']-$e['qty'];
+                            $this->update("UPDATE product_variations_options SET stock =? WHERE name='$e[variant_name]' AND product_id = $e[product_id]",[$stock]);
+                        }
+                    }else{
+                        $sqlProduct = "SELECT stock,is_stock FROM product WHERE idproduct = $e[product_id]";
+                        $requestProduct = $this->select($sqlProduct);
+                        if($requestProduct['is_stock']){
+                            $stock = $requestProduct['stock']-$e['qty'];
+                            $this->update("UPDATE product SET stock =? WHERE idproduct = $e[product_id]",[$stock]);
+                        }
+                    }
+                }
+            }
+            
             return $return;
         }
         public function selectPurchases(){
