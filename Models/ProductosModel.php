@@ -161,7 +161,6 @@
                 p.product_type,
                 p.route,
                 p.is_stock,
-                p.is_stock,
                 p.is_product,
                 p.is_ingredient,
                 p.is_combo,
@@ -320,6 +319,90 @@
             $this->intIdProduct = $id;
             $sql = "DELETE FROM productimage WHERE productid=$this->intIdProduct";
             $request = $this->delete($sql);
+            return $request;
+        }
+        public function selectInsumos(){
+            $sql = "SELECT 
+                p.idproduct,
+                p.reference,
+                p.name,
+                p.price_purchase as price,
+                p.discount,
+                p.stock,
+                p.product_type,
+                p.is_stock
+            FROM product p
+            INNER JOIN category c, subcategory s
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
+            AND p.is_ingredient = 1 AND p.status = 1 AND is_stock = 1 ORDER BY p.idproduct DESC";
+            $request = $this->select_all($sql);
+            $arrProducts = [];
+            if(count($request)> 0){
+                for ($i=0; $i < count($request); $i++) { 
+                    $isStock = $request[$i]['is_stock'];
+                    $stock = $request[$i]['stock'];
+
+                    $idProduct = $request[$i]['idproduct'];
+                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
+                    $requestImg = $this->select_all($sqlImg);
+                    if(count($requestImg)>0){
+                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
+                    }else{
+                        $request[$i]['image'] = media()."/images/uploads/image.png";
+                    }
+                    if($request[$i]['product_type'] == 1){
+                        $stockCondition = $isStock ? " AND stock > 0" : "";
+                        $sqlV = "SELECT MIN(price_sell) AS sell,MIN(price_offer) AS offer,MIN(price_purchase) AS purchase
+                        FROM product_variations_options WHERE product_id =$idProduct $stockCondition";
+                        $requestPrices = $this->select($sqlV);
+                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND stock >= 0";
+                        $stock = $this->select($sqlTotal)['total'];
+                        $request[$i]['price_sell'] = $requestPrices['purchase'];
+                        $request[$i]['price'] = $requestPrices['purchase'];
+                        $request[$i]['discount'] = $requestPrices['offer'];
+                        $request[$i]['stock'] = $stock;
+                    }
+                    if(!$isStock || ($isStock && $stock > 0)){
+                        array_push($arrProducts,$request[$i]);
+                    }
+                }
+            }
+            return $arrProducts;
+        }
+        public function selectInsumo($id){
+            $this->intIdProduct = $id;
+            $sql = "SELECT 
+                p.idproduct,
+                p.name,
+                p.reference,
+                p.price as price_sell,
+                p.discount as price_offer,
+                p.price_purchase,
+                p.product_type,
+                p.is_stock,
+                p.stock,
+                p.import
+            FROM product p
+            INNER JOIN category c, subcategory s
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
+            AND p.is_ingredient = 1 AND p.status = 1 AND p.idproduct = $this->intIdProduct";
+            $request = $this->select($sql);
+            if(!empty($request)){
+                if($request['product_type'] == 1){
+                    $stockCondition = $request['is_stock'] ? " AND stock > 0" :"";
+                    $sqlVariations = "SELECT * FROM product_variations WHERE product_id = $this->intIdProduct";
+                    $sqlVarOptions ="SELECT * FROM product_variations_options WHERE product_id = $this->intIdProduct";
+                    $request['variation'] = $this->select($sqlVariations);
+                    $request['variation']['variation'] = json_decode($request['variation']['variation'],true);
+                    $options = $this->select_all($sqlVarOptions);
+                    $totalOptions = count($options);
+                    for ($i=0; $i < $totalOptions ; $i++) {
+                        $options[$i]['format_price'] = "$".number_format($options[$i]['price_purchase'],0,",",".");
+                    }
+                    $request['options'] = $options;
+                }
+            }
+            //dep($request);exit;
             return $request;
         }
         /*************************Temp methods*******************************/

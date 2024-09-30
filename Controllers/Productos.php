@@ -42,7 +42,55 @@
                 die();
             }
         }
+        public function insumo($params){
+            if($_SESSION['permitsModule']['w']){
+                $data['page_tag'] = "Asignar insumos";
+                $data['page_title'] = "Asignar insumos";
+                $data['page_name'] = "insumoos";
+                $data['panelapp'] = "functions_productos_insumos.js";
+                $data['id'] = intval(strClean($params));
+                $data['data'] = $this->model->selectProduct($data['id']);
+                $this->views->getView($this,"insumo",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
         /*************************Product methods*******************************/
+        public function getInsumo(){
+            if($_SESSION['permitsModule']['w']){
+                if($_POST['id']){
+                    $id = intval($_POST['id']);
+                    $request = $this->model->selectInsumo($id);
+                    if(!empty($request)){
+                        $arrResponse = array("status"=>true,"data"=>$request);
+                    }else{
+                        $arrResponse = array("status"=>false,"msg"=>"El artículo no existe");
+                    }
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getInsumos(){
+            if($_SESSION['permitsModule']['u']){
+                $request = $this->model->selectInsumos();
+                if(count($request)>0){
+                    for ($i=0; $i < count($request); $i++) { 
+                        $price = formatNum($request[$i]['price']);
+                        $btn = '<button type="button" class="btn btn-primary" onclick="getProduct(this,'.$request[$i]['idproduct'].')"><i class="fas fa-plus"></i></button>';
+                        $request[$i]['stock'] = !$request[$i]['is_stock'] ? "N/A" : $request[$i]['stock'];
+                        $variant = $request[$i]['product_type'] == 1 ? "Desde " : "";
+                        $request[$i]['format_price'] = $variant.$price;
+                        $request[$i]['options'] = $btn;
+                    }
+                }
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
         public function getProducts(){
             if($_SESSION['permitsModule']['r']){
                 $request = $this->model->selectProducts();

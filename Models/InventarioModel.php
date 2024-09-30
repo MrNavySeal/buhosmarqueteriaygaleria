@@ -65,9 +65,10 @@
             $sql = "SELECT 
             cab.idpurchase as document,
             cab.date,
+            DATE_FORMAT(cab.date,'%d/%m/%Y') as date_format,
             det.qty,
             p.idproduct as id,
-            det.price_purchase as price,
+            COALESCE(det.price_purchase,0) as price,
             CONCAT(p.name,' ',det.variant_name) as name
             FROM purchase_det det 
             INNER JOIN purchase cab ON cab.idpurchase = det.purchase_id
@@ -80,9 +81,10 @@
             $sql = "SELECT 
             cab.idorder as document,
             cab.date,
+            DATE_FORMAT(cab.date,'%d/%m/%Y') as date_format,
             det.quantity as qty,
             p.name,
-            p.price,
+            COALESCE(p.price,0) AS price,
             p.idproduct as id,
             det.description
             FROM orderdetail det 

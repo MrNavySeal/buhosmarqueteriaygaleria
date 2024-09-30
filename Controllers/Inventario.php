@@ -23,6 +23,18 @@
                 die();
             }
         }
+        public function kardex(){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_tag'] = "Kardex";
+                $data['page_title'] = "Kardex | Panel";
+                $data['page_name'] = "kardex";
+                $data['panelapp'] = "functions_kardex.js";
+                $this->views->getView($this,"kardex",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
         public function getProducts(){
             if($_SESSION['permitsModule']['r']){
                 $request = $this->model->selectProducts();
@@ -35,6 +47,8 @@
                 $arrPurchase = $this->model->selectPurchaseDet();
                 $arrOrder = $this->model->selectOrderDet();
                 $arrData = [];
+                $arrResponse = [];
+                $html ="";
                 if(!empty($arrPurchase)){
                     foreach ($arrPurchase as $e) {
                         $e['type_move'] = 1;
@@ -70,10 +84,72 @@
                         array_push($arrData,$arrProduct);
                     }
                     $arrData = $this->orderData($arrData);
-                    dep($arrData);exit;
+                    $html = $this->getKardexHtml($arrData);
                 }
-                return $arrData;
+                $arrResponse = array("html"=>$html,"data"=>$arrData);
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
+            die();
+        }
+        public function getKardexHtml($data){
+            $html ="";
+            foreach ($data as $e) {
+                $detail = $e['detail'];
+                $lastStock = 0;
+                $lastTotal = 0;
+                $html.= '
+                    <tr>
+                        <td colspan="4" class="table-secondary">'.$e['name'].'</td>
+                        <td colspan="3" class="text-center table-secondary">Entradas</td>
+                        <td colspan="3" class="text-center table-secondary">Salidas</td>
+                        <td colspan="3" class="text-center table-secondary">Saldo</td>
+                    </tr>
+                    <tr>
+                        <td class="table-light text-center">Fecha</td>
+                        <td class="table-light text-center">Factura</td>
+                        <td class="table-light text-center">Movimiento</td>
+                        <td class="table-light text-center">Unidad</td>
+                        <td class="table-light text-center">Valor</td>
+                        <td class="table-light text-center">Cantidad</td>
+                        <td class="table-light text-center">Saldo</td>
+                        <td class="table-light text-center">Valor</td>
+                        <td class="table-light text-center">Cantidad</td>
+                        <td class="table-light text-center">Saldo</td>
+                        <td class="table-light text-center">Valor</td>
+                        <td class="table-light text-center">Cantidad</td>
+                        <td class="table-light text-center">Saldo</td>
+                    </tr>
+                ';
+                foreach ($detail as $f) {
+                    $html.='
+                        <tr>
+                            <td class="text-center">'.$f['date_format'].'</td>
+                            <td>'.$f['document'].'</td>
+                            <td>'.$f['move'].'</td>
+                            <td></td>
+                            <td class="text-end">'.formatNum($f['price']).'</td>
+                            <td class="text-center">'.$f['input'].'</td>
+                            <td class="text-end">'.formatNum($f['input_total']).'</td>
+                            <td class="text-end">'.formatNum($f['price']).'</td>
+                            <td class="text-center">'.$f['output'].'</td>
+                            <td class="text-end">'.formatNum($f['output_total']).'</td>
+                            <td class="text-end">'.formatNum($f['price']).'</td>
+                            <td class="text-center">'.$f['balance'].'</td>
+                            <td class="text-end">'.formatNum($f['balance_total']).'</td>
+                        </tr>
+                    ';
+                    $lastStock = $f['balance'];
+                    $lastTotal = $f['balance_total'];
+                }
+                $html.='
+                    <tr>
+                        <td colspan="11" class="fw-bold text-end">Total:</td>
+                        <td class="text-center">'.$lastStock.'</td>
+                        <td class="text-end">'.formatNum($lastTotal).'</td>
+                    </tr>
+                ';
+            }
+            return $html;
         }
         public function orderData(array $data){
             $arrData = [];
@@ -81,7 +157,8 @@
             foreach ($data as $e) {
                 $total = count($e);
                 $arrProduct = [];
-                $price = array_values(array_filter($e,function($f){return $f['price'] > 0;}))[0]['price'];
+                $price = array_values(array_filter($e,function($f){return $f['price'] > 0;}));
+                $price = !empty($price) ? $price[0]['price'] : 0;
                 for ($i=0; $i < $total ; $i++) { 
                     $e[$i]['price'] = $price;
                     if($i == 0){
