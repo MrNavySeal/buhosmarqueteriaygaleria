@@ -129,7 +129,7 @@
                             <td class="text-center">'.$f['date_format'].'</td>
                             <td>'.$f['document'].'</td>
                             <td>'.$f['move'].'</td>
-                            <td></td>
+                            <td class="text-center">'.$f['measure'].'</td>
                             <td class="text-end">'.formatNum($f['price']).'</td>
                             <td class="text-center">'.$f['input'].'</td>
                             <td class="text-end">'.formatNum($f['input_total']).'</td>
@@ -155,6 +155,7 @@
             return $html;
         }
         public function orderData(array $data){
+            
             $arrData = [];
             $total = count($data);
             foreach ($data as $e) {
