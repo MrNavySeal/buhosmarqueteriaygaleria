@@ -61,36 +61,40 @@
             }
             return $arrProducts;
         }
-        public function selectPurchaseDet(){
+        public function selectPurchaseDet(string $strInitialDate,string $strFinalDate,string $strSearch){
             $sql = "SELECT 
             cab.idpurchase as document,
             cab.date,
             DATE_FORMAT(cab.date,'%d/%m/%Y') as date_format,
             det.qty,
             p.idproduct as id,
+            p.reference,
             COALESCE(det.price_purchase,0) as price,
             CONCAT(p.name,' ',det.variant_name) as name
             FROM purchase_det det 
             INNER JOIN purchase cab ON cab.idpurchase = det.purchase_id
             INNER JOIN product p ON p.idproduct = det.product_id
-            WHERE cab.status = 1 AND p.is_stock = 1";
+            WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
+            BETWEEN '$strInitialDate' AND '$strFinalDate' AND p.name like '$strSearch%'";
             $request = $this->select_all($sql);
             return $request;
         }
-        public function selectOrderDet(){
+        public function selectOrderDet(string $strInitialDate,string $strFinalDate,string $strSearch){
             $sql = "SELECT 
             cab.idorder as document,
             cab.date,
             DATE_FORMAT(cab.date,'%d/%m/%Y') as date_format,
             det.quantity as qty,
             p.name,
+            p.reference,
             COALESCE(p.price,0) AS price,
             p.idproduct as id,
             det.description
             FROM orderdetail det 
             INNER JOIN orderdata cab ON cab.idorder = det.orderid
             INNER JOIN product p ON p.idproduct = det.productid
-            WHERE cab.status != 'canceled' AND det.topic = 2 AND p.is_stock = 1";
+            WHERE cab.status != 'canceled' AND det.topic = 2 AND p.is_stock = 1 
+            AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate' AND p.name like '$strSearch%'";
             $request = $this->select_all($sql);
             if(!empty($request)){
                 $total = count($request);

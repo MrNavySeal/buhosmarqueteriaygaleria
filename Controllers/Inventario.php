@@ -44,8 +44,11 @@
         }
         public function getKardex(){
             if($_SESSION['permitsModule']['r']){
-                $arrPurchase = $this->model->selectPurchaseDet();
-                $arrOrder = $this->model->selectOrderDet();
+                $strInitialDate = strClean($_POST['initial_date']);
+                $strFinalDate = strClean($_POST['final_date']);
+                $strSearch = clear_cadena(strClean($_POST['search']));
+                $arrPurchase = $this->model->selectPurchaseDet($strInitialDate,$strFinalDate,$strSearch);
+                $arrOrder = $this->model->selectOrderDet($strInitialDate,$strFinalDate,$strSearch);
                 $arrData = [];
                 $arrResponse = [];
                 $html ="";
