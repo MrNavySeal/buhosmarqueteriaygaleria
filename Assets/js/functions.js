@@ -267,6 +267,13 @@ function fntValidEmail(){
 		});
 	});
 }
+function addField(name,value,type,form){
+    const input = document.createElement("input");
+    input.type=type;
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+}
 if(document.querySelector("#exportExcel")){
     document.querySelector("#exportExcel").addEventListener("click",function(){
         let id = document.querySelector("#exportExcel").getAttribute('data-name');
