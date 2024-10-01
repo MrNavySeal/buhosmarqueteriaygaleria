@@ -274,12 +274,6 @@ function addField(name,value,type,form){
     input.value = value;
     form.appendChild(input);
 }
-if(document.querySelector("#exportExcel")){
-    document.querySelector("#exportExcel").addEventListener("click",function(){
-        let id = document.querySelector("#exportExcel").getAttribute('data-name');
-        exportToExcel(id);
-    })
-}
 window.addEventListener('load', function() {
     if(document.querySelector("#filter")){
         let filter = document.querySelector("#filter");
