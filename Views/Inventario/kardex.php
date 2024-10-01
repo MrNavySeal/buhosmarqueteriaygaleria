@@ -3,8 +3,8 @@
     <h2 class="text-center"><?=$data['page_title']?></h2>
     <div class="row">
         <div class="col-md-12 mb-1">
-            <button class="btn btn-sm btn-success"><i class='fas fa-file-excel'></i> Excel</button>
-            <button class="btn btn-sm btn-danger"><i class="fas fa-file-pdf"></i> PDF</button>
+            <button class="btn btn-sm btn-success" id="exportExcel"><i class='fas fa-file-excel'></i> Excel</button>
+            <button class="btn btn-sm btn-danger" id="exportPDF"><i class="fas fa-file-pdf"></i> PDF</button>
         </div>
         <div class="col-md-6">
             <div class="row">

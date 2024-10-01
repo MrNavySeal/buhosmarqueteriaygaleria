@@ -100,9 +100,10 @@
                 $detail = $e['detail'];
                 $lastStock = 0;
                 $lastTotal = 0;
+                $bg = "";
                 $html.= '
                     <tr>
-                        <td colspan="4" class="table-secondary">'.$e['name'].'</td>
+                        <td colspan="4" class="table-primary">'.$e['name'].'</td>
                         <td colspan="3" class="text-center table-secondary">Entradas</td>
                         <td colspan="3" class="text-center table-secondary">Salidas</td>
                         <td colspan="3" class="text-center table-secondary">Saldo</td>
@@ -144,11 +145,15 @@
                     $lastStock = $f['balance'];
                     $lastTotal = $f['balance_total'];
                 }
+                
+                if($lastStock < 0){
+                    $bg = "bg-warning ";
+                }
                 $html.='
                     <tr>
-                        <td colspan="11" class="fw-bold text-end">Total:</td>
-                        <td class="text-center">'.$lastStock.'</td>
-                        <td class="text-end">'.formatNum($lastTotal).'</td>
+                        <td colspan="11" class="'.$bg.'fw-bold text-end">Total:</td>
+                        <td class="'.$bg.'text-center">'.$lastStock.'</td>
+                        <td class="'.$bg.'text-end">'.formatNum($lastTotal).'</td>
                     </tr>
                 ';
             }

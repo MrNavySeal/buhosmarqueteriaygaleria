@@ -1,6 +1,8 @@
 const initialDateHtml = document.querySelector("#txtInitialDate");
 const finallDateHtml = document.querySelector("#txtFinalDate");
 const searchHtml = document.querySelector("#txtSearch");
+const exportExcel = document.querySelector("#exportExcel");
+const exportPDF = document.querySelector("#exportPDF");
 let arrData = [];
 window.addEventListener("load",function(e){
     const initialDate = new Date();
@@ -24,3 +26,32 @@ async function getKardex(){
 initialDateHtml.addEventListener("input",function(){getKardex();});
 finallDateHtml.addEventListener("input",function(){getKardex();});
 searchHtml.addEventListener("input",function(){getKardex();});
+
+exportExcel.addEventListener("click",function(){
+    if(arrData.length == 0){
+        Swal.fire("Error","No hay datos generados para exportar.","error");
+        return false;
+    }
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    addField("data",JSON.stringify(arrData),"hidden",form);
+    form.target="_blank";
+    form.method="POST";
+    form.action=base_url+"/InventarioExport/excel";
+    form.submit();
+    form.remove();
+});
+exportPDF.addEventListener("click",async function(){
+    if(arrData.length == 0){
+        Swal.fire("Error","No hay datos generados para exportar.","error");
+        return false;
+    }
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    addField("data",JSON.stringify(arrData),"hidden",form);
+    form.target="_blank";
+    form.method="POST";
+    form.action=base_url+"/InventarioExport/pdf";
+    form.submit();
+    form.remove();
+});
