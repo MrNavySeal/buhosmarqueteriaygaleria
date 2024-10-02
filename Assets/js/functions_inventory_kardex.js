@@ -35,6 +35,8 @@ exportExcel.addEventListener("click",function(){
     const form = document.createElement("form");
     document.body.appendChild(form);
     addField("data",JSON.stringify(arrData),"hidden",form);
+    addField("strInititalDate",initialDateHtml.value,"hidden",form);
+    addField("strFinalDate",finallDateHtml.value,"hidden",form);
     form.target="_blank";
     form.method="POST";
     form.action=base_url+"/InventarioExport/excel";
@@ -49,6 +51,8 @@ exportPDF.addEventListener("click",async function(){
     const form = document.createElement("form");
     document.body.appendChild(form);
     addField("data",JSON.stringify(arrData),"hidden",form);
+    addField("strInititalDate",initialDateHtml.value,"hidden",form);
+    addField("strFinalDate",finallDateHtml.value,"hidden",form);
     form.target="_blank";
     form.method="POST";
     form.action=base_url+"/InventarioExport/pdf";

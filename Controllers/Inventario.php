@@ -28,7 +28,7 @@
                 $data['page_tag'] = "Kardex";
                 $data['page_title'] = "Kardex | Panel";
                 $data['page_name'] = "kardex";
-                $data['panelapp'] = "functions_kardex.js";
+                $data['panelapp'] = "functions_inventory_kardex.js";
                 $this->views->getView($this,"kardex",$data);
             }else{
                 header("location: ".base_url());
@@ -110,7 +110,7 @@
                     </tr>
                     <tr>
                         <td class="table-light text-center">Fecha</td>
-                        <td class="table-light text-center">Factura</td>
+                        <td class="table-light text-center">Documento</td>
                         <td class="table-light text-center">Movimiento</td>
                         <td class="table-light text-center">Unidad</td>
                         <td class="table-light text-center">Valor</td>
