@@ -16,6 +16,7 @@
         private $intCity;
         private $strClient;
         private $strSecret;
+        private $strNit;
 
         public function __construct(){
             parent::__construct();
@@ -43,7 +44,8 @@
             //dep($data);exit;
             return $data;
         }
-        public function updateCompany($logo,$strName,$intCurrency,$strCompanyEmail,$strEmail,$strPassword,$intCountry,$intState,$intCity,$strPhone,$strAddress,$strKeywords,$strDescription,$phoneS){
+        public function updateCompany($logo,$strName,$intCurrency,$strCompanyEmail,$strEmail,$strPassword,$intCountry,
+        $intState,$intCity,$strPhone,$strAddress,$strKeywords,$strDescription,$phoneS,$strNit){
             
             $this->logo = $logo;
             $this->strName = $strName;
@@ -59,10 +61,11 @@
             $this->intState = $intState;
             $this->intCity = $intCity;
             $this->strPhoneS = $phoneS;
+            $this->strNit = $strNit;
             $phonecode = $this->select("SELECT phonecode FROM countries WHERE id = $this->intCountry");
             $code = $phonecode['phonecode'];
 
-            $sql = "UPDATE company SET logo=?, name=?, currency=?,email=?,secondary_email=?,password=?,country=?,state=?,city=?,phonecode=?,phone=?,address=?,keywords=?,description=?,phones=?";
+            $sql = "UPDATE company SET logo=?, name=?, currency=?,email=?,secondary_email=?,password=?,country=?,state=?,city=?,phonecode=?,phone=?,address=?,keywords=?,description=?,phones=?,nit=?,website=?";
             $arrData = array(
                 $this->logo,
                 $this->strName,
@@ -78,7 +81,9 @@
                 $this->strAddress,
                 $this->strKeywords,
                 $this->strDescription,
-                $this->strPhoneS
+                $this->strPhoneS,
+                $this->strNit,
+                BASE_URL
             );
             $request = $this->update($sql,$arrData);
             return $request;

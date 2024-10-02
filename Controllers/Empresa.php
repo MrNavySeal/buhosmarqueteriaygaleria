@@ -36,7 +36,7 @@
                 if($_POST){
                     if(empty($_POST['txtName']) || empty($_POST['currencyList']) || empty($_POST['txtCompanyEmail']) || empty($_POST['txtEmail']) || empty($_POST['txtPhone']) 
                     || empty($_POST['txtAddress']) || empty($_POST['countryList']) || empty($_POST['stateList']) || empty($_POST['cityList']) || empty($_POST['txtPassword'])
-                    || empty($_POST['txtPhoneS'])){
+                    || empty($_POST['txtPhoneS']) || empty($_POST['txtNit'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $strName = strClean($_POST['txtName']);
@@ -52,6 +52,7 @@
                         $intCountry = intval($_POST['countryList']);
                         $intState = intval($_POST['stateList']);
                         $intCity = intval($_POST['cityList']);
+                        $intNit = intval($_POST['txtNit']);
                         $photo = "";
                         $logo="";
 
@@ -81,7 +82,7 @@
                             $strAddress,
                             $strKeywords,
                             $strDescription,
-                            $strPhoneS);
+                            $strPhoneS,$intNit);
                         if($request > 0 ){
                             if($photo!=""){
                                 uploadImage($photo,$logo);

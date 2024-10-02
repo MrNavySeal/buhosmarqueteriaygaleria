@@ -56,13 +56,19 @@
                     <input class="d-none" type="file" id="txtImg" name="txtImg" accept="image/*"> 
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="mb-3">
                             <label for="txtName" class="form-label">Nombre de empresa <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="txtName" name="txtName" value="<?=$data['company']['name']?>" required>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="txtNit" class="form-label">CC/NIT <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="txtNit" name="txtNit" value="<?=$data['company']['nit']?>" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="mb-3">
                             <label for="currencyList" class="form-label">Divisa <span class="text-danger">*</span></label>
                             <select class="form-control" aria-label="Default select example" id="currencyList" name="currencyList" required><?=$currencies?></select>
