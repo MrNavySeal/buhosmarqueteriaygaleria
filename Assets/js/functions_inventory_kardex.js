@@ -39,7 +39,7 @@ exportExcel.addEventListener("click",function(){
     addField("strFinalDate",finallDateHtml.value,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/InventarioExport/excel";
+    form.action=base_url+"/InventarioExport/kardexExcel";
     form.submit();
     form.remove();
 });
@@ -55,7 +55,7 @@ exportPDF.addEventListener("click",async function(){
     addField("strFinalDate",finallDateHtml.value,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/InventarioExport/pdf";
+    form.action=base_url+"/InventarioExport/kardexPdf";
     form.submit();
     form.remove();
 });

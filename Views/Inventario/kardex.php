@@ -2,7 +2,7 @@
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <h2 class="text-center"><?=$data['page_title']?></h2>
     <div class="row">
-        <div class="col-md-12 mb-1">
+        <div class="col-md-12 mb-2">
             <button class="btn btn-sm btn-success" id="exportExcel"><i class='fas fa-file-excel'></i> Excel</button>
             <button class="btn btn-sm btn-danger" id="exportPDF"><i class="fas fa-file-pdf"></i> PDF</button>
         </div>
