@@ -1,53 +1,59 @@
+const searchHtml = document.querySelector("#txtSearch");
+const exportExcel = document.querySelector("#exportExcel");
+const exportPDF = document.querySelector("#exportPDF");
+const perPage = document.querySelector("#perPage");
+let arrData = [];
+let strTotal ="";
 window.addEventListener("load",function(e){
-    let table = new DataTable("#tableData",{
-        "dom": 'lfBrtip',
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        },
-        "ajax":{
-            "url": " "+base_url+"/Inventario/getProducts",
-            "dataSrc":''
-        },
-        initComplete: function (settings, json) {
-            const text = document.querySelector(".dataTables_info").innerHTML;
-            let total = 0;
-            json.forEach(e => {
-                total+= e.total;
-            });
-            document.querySelector(".dataTables_info").innerHTML = `
-                <div class="d-flex flex-column-reverse px-4">
-                    <span >${text}</span>
-                    <span class="text-end"><strong>Costo total: </strong>$${formatNum(total,".")}</span>
-                </div>
-            `;
-        },
-        columns: [
-            
-            { data: 'idproduct'},
-            { data: 'reference' },
-            { data: 'name' },
-            { data: 'category' },
-            { data: 'subcategory' },
-            { data: 'stock' },
-            { data: 'price_purchase_format' },
-            { data: 'total_format' }
-        ],
-        responsive: true,
-        buttons: [
-            {
-                "extend": "excelHtml5",
-                "text": "<i class='fas fa-file-excel'></i> Excel",
-                "titleAttr":"Exportar a Excel",
-                "className": "btn btn-success mt-2"
-            }
-        ],
-        order: [[0, 'desc']],
-        pagingType: 'full',
-        scrollY:'400px',
-        //scrollX: true,
-        "aProcessing":true,
-        "aServerSide":true,
-        "iDisplayLength": 10,
-    });
-    
+    getData()
 })
+searchHtml.addEventListener("input",function(){getData();});
+perPage.addEventListener("change",function(){getData();});
+
+async function getData(page = 1){
+    const formData = new FormData();
+    formData.append("page",page);
+    formData.append("perpage",perPage.value);
+    formData.append("search",searchHtml.value);
+    const response = await fetch(base_url+"/inventario/getProducts",{method:"POST",body:formData});
+    const objData = await response.json();
+    const arrHtml = objData.html;
+    arrData = objData.data;
+    strTotal = objData.total;
+    document.querySelector("#pagination").innerHTML = arrHtml.pages;
+    document.querySelector("#totalInventory").innerHTML = strTotal;
+    document.querySelector("#tableData").innerHTML =arrHtml.products;
+    document.querySelector("#tableData").innerHTML =arrHtml.products;
+    document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
+}
+
+exportExcel.addEventListener("click",function(){
+    if(arrData.length == 0){
+        Swal.fire("Error","No hay datos generados para exportar.","error");
+        return false;
+    }
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    addField("data",JSON.stringify(arrData),"hidden",form);
+    form.target="_blank";
+    form.method="POST";
+    form.action=base_url+"/InventarioExport/inventarioExcel";
+    form.submit();
+    form.remove();
+});
+exportPDF.addEventListener("click",async function(){
+    if(arrData.length == 0){
+        Swal.fire("Error","No hay datos generados para exportar.","error");
+        return false;
+    }
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    addField("data",JSON.stringify(arrData),"hidden",form);
+    addField("strInititalDate",initialDateHtml.value,"hidden",form);
+    addField("strFinalDate",finallDateHtml.value,"hidden",form);
+    form.target="_blank";
+    form.method="POST";
+    form.action=base_url+"/InventarioExport/inventarioPdf";
+    form.submit();
+    form.remove();
+});

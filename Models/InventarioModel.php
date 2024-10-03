@@ -4,7 +4,7 @@
         public function __construct(){
             parent::__construct();
         }
-        public function selectProducts(){
+        public function selectTotalInventory(string $strSearch){
             $arrProducts = [];
             $sql = "SELECT 
             p.idproduct,
@@ -14,52 +14,102 @@
             p.product_type,
             p.price_purchase,
             c.name as category,
-            s.name as subcategory 
+            s.name as subcategory,
+            v.name as variant_name,
+            v.price_purchase as variant_purchase,
+            v.stock as variant_stock,
+            v.sku as variant_sku,
+            m.initials as measure
             FROM product p
             INNER JOIN category c ON c.idcategory = p.categoryid
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
-            WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1";
+            LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
+            LEFT JOIN measures m ON m.id_measure = p.measure
+            WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')";
             $request = $this->select_all($sql);
+            $total = 0;
             if(!empty($request)){
                 foreach ($request as $pro) {
-                    if($pro['product_type']){
-                        $sql = "SELECT name, price_purchase,stock,sku 
-                        FROM product_variations_options 
-                        WHERE product_id = '$pro[idproduct]'";
-                        $requestVariants = $this->select_all($sql);
-                        if(!empty($requestVariants)){
-                            foreach ($requestVariants as $var) {
-                                array_push($arrProducts,array(
-                                    "idproduct"=>$pro['idproduct'],
-                                    "reference"=>$var['sku'],
-                                    "name"=>$pro['name']." ".$var['name'],
-                                    "price_purchase"=>$var['price_purchase'],
-                                    "price_purchase_format"=>formatNum($var['price_purchase']),
-                                    "category"=>$pro['category'],
-                                    "subcategory"=>$pro['subcategory'],
-                                    "stock"=>$var['stock'],
-                                    "total"=>$var['stock']*$var['price_purchase'],
-                                    "total_format"=>formatNum($var['stock']*$var['price_purchase'])
-                                ));
-                            }
-                        }
-                    }else{
-                        array_push($arrProducts,array(
-                            "idproduct"=>$pro['idproduct'],
-                            "reference"=>$pro['reference'],
-                            "name"=>$pro['name'],
-                            "price_purchase"=>$pro['price_purchase'],
-                            "price_purchase_format"=>formatNum($pro['price_purchase']),
-                            "category"=>$pro['category'],
-                            "subcategory"=>$pro['subcategory'],
-                            "stock"=>$pro['stock'],
-                            "total"=>$pro['stock']*$pro['price_purchase'],
-                            "total_format"=>formatNum($pro['stock']*$pro['price_purchase'])
-                        ));
-                    }
+                    array_push($arrProducts,array(
+                        "id"=>$pro['idproduct'],
+                        "reference"=>$pro['variant_sku'] != "" ? $pro['variant_sku'] : $pro['reference'],
+                        "name"=>$pro['variant_name'] != "" ? $pro['name']." ".$pro['variant_name'] : $pro['name'],
+                        "price_purchase"=>$pro['variant_name'] != "" ? $pro['variant_purchase'] : $pro['price_purchase'],
+                        "price_purchase_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_purchase']) : formatNum($pro['price_purchase']),
+                        "category"=>$pro['category'],
+                        "subcategory"=>$pro['subcategory'],
+                        "measure"=>$pro['measure'],
+                        "stock"=>$pro['variant_name'] != "" ? $pro['variant_stock'] : $pro['stock'],
+                        "total"=>$pro['variant_name'] != "" ? $pro['variant_stock'] *$pro['variant_purchase']:  $pro['stock']*$pro['price_purchase'],
+                        "total_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_stock'] *$pro['variant_purchase']):  formatNum($pro['stock']*$pro['price_purchase'])
+                    ));
+                }
+                foreach ($arrProducts as $pro) {
+                    $total+=$pro['total'];
                 }
             }
-            return $arrProducts;
+            return array("total"=>$total,"products"=>$arrProducts);
+        }
+        public function selectProducts(string $strSearch,int $intPerPage,int $intPageNow){
+            $start = ($intPageNow-1)*$intPerPage;
+            $arrProducts = [];
+            $sql = "SELECT 
+            p.idproduct,
+            p.reference,
+            p.name,
+            p.stock,
+            p.product_type,
+            p.price_purchase,
+            c.name as category,
+            s.name as subcategory,
+            v.name as variant_name,
+            v.price_purchase as variant_purchase,
+            v.stock as variant_stock,
+            v.sku as variant_sku,
+            m.initials as measure
+            FROM product p
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
+            LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
+            LEFT JOIN measures m ON m.id_measure = p.measure
+            WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
+            LIMIT $start,$intPerPage";
+            $request = $this->select_all($sql);
+
+            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            FROM product p
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
+            LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
+            WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')";
+
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;
+            if(!empty($request)){
+                foreach ($request as $pro) {
+                    array_push($arrProducts,array(
+                        "id"=>$pro['idproduct'],
+                        "reference"=>$pro['variant_sku'] != "" ? $pro['variant_sku'] : $pro['reference'],
+                        "name"=>$pro['variant_name'] != "" ? $pro['name']." ".$pro['variant_name'] : $pro['name'],
+                        "price_purchase"=>$pro['variant_name'] != "" ? $pro['variant_purchase'] : $pro['price_purchase'],
+                        "price_purchase_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_purchase']) : formatNum($pro['price_purchase']),
+                        "category"=>$pro['category'],
+                        "subcategory"=>$pro['subcategory'],
+                        "stock"=>$pro['variant_name'] != "" ? $pro['variant_stock'] : $pro['stock'],
+                        "total"=>$pro['variant_name'] != "" ? $pro['variant_stock'] *$pro['variant_purchase']:  $pro['stock']*$pro['price_purchase'],
+                        "total_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_stock'] *$pro['variant_purchase']):  formatNum($pro['stock']*$pro['price_purchase']),
+                        "measure"=>$pro['measure']
+                    ));
+                }
+            }
+            return array("products"=>$arrProducts,"pages"=>$totalPages);
         }
         public function selectPurchaseDet(string $strInitialDate,string $strFinalDate,string $strSearch){
             $sql = "SELECT 

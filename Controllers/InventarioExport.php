@@ -50,7 +50,7 @@
             getPermits(4);
             
         }
-        public function excel(){
+        public function kardexExcel(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     $arrData = json_decode($_POST['data'],true);
@@ -209,7 +209,7 @@
             }
             die();
         }
-        public function pdf(){
+        public function kardexPdf(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     $arrData = json_decode($_POST['data'],true);
