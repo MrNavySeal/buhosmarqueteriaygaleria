@@ -28,7 +28,7 @@
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
             OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
-            AND (p.stock > 0 OR v.stock > 0)";
+            AND (v.stock > 0 OR p.stock > 0)";
             $request = $this->select_all($sql);
             $total = 0;
             if(!empty($request)){
@@ -78,7 +78,7 @@
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
             OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
-            AND (p.stock > 0 OR v.stock > 0) LIMIT $start,$intPerPage";
+            AND (v.stock > 0 OR p.stock > 0) LIMIT $start,$intPerPage";
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
@@ -89,7 +89,7 @@
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
             OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
-            AND (p.stock > 0 OR v.stock > 0)";
+            AND (v.stock > 0 OR p.stock > 0)";
 
 
             $totalRecords = $this->select($sqlTotal)['total'];
