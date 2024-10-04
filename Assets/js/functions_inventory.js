@@ -3,7 +3,7 @@ const exportExcel = document.querySelector("#exportExcel");
 const exportPDF = document.querySelector("#exportPDF");
 const perPage = document.querySelector("#perPage");
 let arrData = [];
-let strTotal ="";
+let floatTotal ="";
 window.addEventListener("load",function(e){
     getData()
 })
@@ -19,9 +19,9 @@ async function getData(page = 1){
     const objData = await response.json();
     const arrHtml = objData.html;
     arrData = objData.data;
-    strTotal = objData.total;
+    floatTotal = objData.total;
     document.querySelector("#pagination").innerHTML = arrHtml.pages;
-    document.querySelector("#totalInventory").innerHTML = strTotal;
+    document.querySelector("#totalInventory").innerHTML = objData.total_format;
     document.querySelector("#tableData").innerHTML =arrHtml.products;
     document.querySelector("#tableData").innerHTML =arrHtml.products;
     document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
@@ -35,9 +35,10 @@ exportExcel.addEventListener("click",function(){
     const form = document.createElement("form");
     document.body.appendChild(form);
     addField("data",JSON.stringify(arrData),"hidden",form);
+    addField("total",floatTotal,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/InventarioExport/inventarioExcel";
+    form.action=base_url+"/InventarioExport/excel";
     form.submit();
     form.remove();
 });
@@ -49,11 +50,10 @@ exportPDF.addEventListener("click",async function(){
     const form = document.createElement("form");
     document.body.appendChild(form);
     addField("data",JSON.stringify(arrData),"hidden",form);
-    addField("strInititalDate",initialDateHtml.value,"hidden",form);
-    addField("strFinalDate",finallDateHtml.value,"hidden",form);
+    addField("total",floatTotal,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/InventarioExport/inventarioPdf";
+    form.action=base_url+"/InventarioExport/pdf";
     form.submit();
     form.remove();
 });

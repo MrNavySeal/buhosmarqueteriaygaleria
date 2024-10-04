@@ -47,7 +47,8 @@
                 $arrData = array(
                     "data"=>$arrInventory['products'],
                     "html"=>$this->getInventoryHtml($arrProducts,$intTotalPages,$intPageNow),
-                    "total"=>formatNum($arrInventory['total']),
+                    "total"=>$arrInventory['total'],
+                    "total_format"=>formatNum($arrInventory['total']),
                     "total_records"=>count($arrInventory['products'])
                 );
                 echo json_encode($arrData,JSON_UNESCAPED_UNICODE);

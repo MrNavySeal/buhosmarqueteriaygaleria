@@ -27,7 +27,8 @@
             LEFT JOIN measures m ON m.id_measure = p.measure
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')";
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
+            AND (p.stock > 0 OR v.stock > 0)";
             $request = $this->select_all($sql);
             $total = 0;
             if(!empty($request)){
@@ -77,7 +78,7 @@
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
             OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
-            LIMIT $start,$intPerPage";
+            AND (p.stock > 0 OR v.stock > 0) LIMIT $start,$intPerPage";
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
@@ -87,7 +88,8 @@
             LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')";
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
+            AND (p.stock > 0 OR v.stock > 0)";
 
 
             $totalRecords = $this->select($sqlTotal)['total'];
