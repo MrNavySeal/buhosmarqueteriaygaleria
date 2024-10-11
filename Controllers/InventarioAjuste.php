@@ -70,7 +70,6 @@
                 $html.='
                     <tr role="button" onclick="addProduct('.$pro['id'].','."'".$pro['variant_name']."'".','.$pro['product_type'].')">
                         <td class="text-center">'.$pro['stock'].'</td>
-                        <td>'.$pro['reference'].'</td>
                         <td>'.$pro['name'].'</td>
                         <td class="text-end">'.$pro['price_purchase_format'].'</td>
                     </tr>
@@ -89,6 +88,32 @@
                 </li>
             ';
             return array("products"=>$html,"pages"=>$htmlPages);
+        }
+        public function setAdjustment(){
+            if($_SESSION['permitsModule']['w']){
+                if($_POST){
+                    $arrData = json_decode($_POST['products'],true);
+                    if(is_array($arrData)){
+                        $strConcept = strClean(clear_cadena($_POST['concept']));
+                        $floatTotal = floatval($_POST['total']);
+                        $request = $this->model->insertCab($strConcept,$floatTotal);
+                        if($request > 0){
+                            $requestDet = $this->model->insertDet($request,$arrData);
+                            if($requestDet > 0){
+                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
+                            }else{
+                                $arrResponse = array("status"=>false,"msg"=>"Error en el detalle");
+                            }
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"Error en la cabecera");
+                        }
+                    }else{
+                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
         }
     }
 

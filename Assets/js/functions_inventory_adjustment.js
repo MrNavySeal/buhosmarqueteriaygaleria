@@ -3,19 +3,11 @@ const tablePurchase = document.querySelector("#tablePurchase");
 const tableProducts = document.querySelector("#tableProducts");
 const searchHtml = document.querySelector("#txtSearch");
 const perPage = document.querySelector("#perPage");
-const modalVariant = new bootstrap.Modal(document.querySelector("#modalVariant"));
-const modalPurchase = new bootstrap.Modal(document.querySelector("#modalPurchase"));
-const modalSelectvariants = document.querySelector("#modalSelectvariants");
-const modalVariantCost = document.querySelector("#modalVariantCost");
-const modalVariantName = document.querySelector("#modalVariantName");
-const btnAdd = document.querySelector("#btnAdd");
-const btnPurchase = document.querySelector("#btnPurchase");
+const btnSave = document.querySelector("#btnSave");
 const btnClean = document.querySelector("#btnClean");
-const btnSetPurchase = document.querySelector("#btnSetPurchase");
 const searchItems = document.querySelector("#searchItems");
 const selectItems = document.querySelector("#selectItems");
 const items = document.querySelector("#items");
-const formSetOrder = document.querySelector("#formSetOrder");
 let product;
 let arrProducts = [];
 let arrData = [];
@@ -23,69 +15,42 @@ window.addEventListener("load",function(){
     getProducts();
 });
 
-btnPurchase.addEventListener("click",function(){
-    //modalPurchase.show();
-});
-btnClean.addEventListener("click",function(){
-    arrProducts = [];
-    tablePurchase.innerHTML ="";
-    document.querySelector("#subtotalProducts").innerHTML = "$0";
-    document.querySelector("#ivaProducts").innerHTML = "$0";
-    document.querySelector("#discountProducts").innerHTML = "$0";
-    document.querySelector("#totalProducts").innerHTML = "$0";
-});
-formSetOrder.addEventListener("submit",function(e){
-    e.preventDefault();
-
-    if(document.querySelector("#id").value == ""){
-        Swal.fire("Error","Debe seleccionar el proveedor","error");
+btnSave.addEventListener("click",function(){
+    if(arrProducts.length == 0){
+        Swal.fire("Atención!","Debe agregar al menos un artículo.","warning");
         return false;
     }
-    
-    let url = base_url+"/Compras/setPurchase";
-    let formData = new FormData(formSetOrder);
+    let url = base_url+"/InventarioAjuste/setAdjustment";
+    let formData = new FormData();
+    formData.append("concept",document.querySelector("#txtNote").value);
     formData.append("products",JSON.stringify(arrProducts));
-    formData.append("total",JSON.stringify(currentTotal()));
-    btnSetPurchase.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    btnSetPurchase.setAttribute("disabled","");
+    formData.append("total",currentTotal());
+    btnSave.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnSave.setAttribute("disabled","");
     request(url,formData,"post").then(function(objData){
-        btnSetPurchase.innerHTML=`<i class="fas fa-save"></i> Guardar`;
-        btnSetPurchase.removeAttribute("disabled");
+        btnSave.innerHTML=`<i class="fas fa-save"></i> Guardar`;
+        btnSave.removeAttribute("disabled");
         if(objData.status){
             Swal.fire("Guardado",objData.msg,"success");
-            formSetOrder.reset();
             arrProducts = [];
             tablePurchase.innerHTML ="";
-            document.querySelector("#subtotalProducts").innerHTML = "$0";
-            document.querySelector("#ivaProducts").innerHTML = "$0";
-            document.querySelector("#discountProducts").innerHTML = "$0";
+            document.querySelector("#txtNote").value = "";
             document.querySelector("#totalProducts").innerHTML = "$0";
-            searchItems.parentElement.classList.remove("d-none");
-            document.querySelector("#id").value = 0;
-            document.querySelector("#selectedItem").innerHTML="";
-            modalPurchase.hide();
             getProducts();
         }else{
             Swal.fire("Error",objData.msg,"error");
         }
     });
-})
+});
+btnClean.addEventListener("click",function(){
+    arrProducts = [];
+    tablePurchase.innerHTML ="";
+    document.querySelector("#totalProducts").innerHTML = "$0";
+});
+
 searchHtml.addEventListener("input",function(){getProducts();});
 perPage.addEventListener("change",function(){getProducts();});
-/*************************functions to select item from search suppliers*******************************/
-function addItem(element){
-    element.setAttribute("onclick","delItem(this)");
-    element.classList.add("border","border-primary");
-    document.querySelector("#selectedItem").appendChild(element);
-    document.querySelector("#items").innerHTML = "";
-    document.querySelector("#id").value = element.getAttribute("data-id");
-    searchItems.parentElement.classList.add("d-none");
-}
-function delItem(element){
-    searchItems.parentElement.classList.remove("d-none");
-    document.querySelector("#id").value = 0;
-    element.remove();
-}
+
 /*************************functions to get products*******************************/
 async function getProducts(page = 1){
     const formData = new FormData();
@@ -119,7 +84,6 @@ function addProduct(id,variantName,productType){
         "reference":product.reference,
         "name":product.product_name,
         "variant_name":variantName,
-        "variant_detail":product.variant_html,
         "product_type":productType,
     };
     if(arrProducts.length > 0){
@@ -171,8 +135,17 @@ function updateProduct(element,option,id,variantName){
                         arrProducts[i].qty_result =  arrProducts[i].stock-arrProducts[i].qty ;
                         arrProducts[i].subtotal =  arrProducts[i].qty* arrProducts[i].price_purchase;
                     }
+                }else if(option=="price"){
+                    arrProducts[i].price_purchase = parseFloat(element.value);
+                    if(arrProducts[i].type==1){
+                        arrProducts[i].qty_result =  arrProducts[i].stock+arrProducts[i].qty ;
+                        arrProducts[i].subtotal =  arrProducts[i].qty* arrProducts[i].price_purchase;
+                    }else{
+                        arrProducts[i].qty_result =  arrProducts[i].stock-arrProducts[i].qty ;
+                        arrProducts[i].subtotal =  arrProducts[i].qty* arrProducts[i].price_purchase;
+                    }
                 }else{
-                    arrProducts[i].qty = parseInt(element.value);
+                    arrProducts[i].qty = parseFloat(element.value);
                     if(arrProducts[i].type==1){
                         arrProducts[i].qty_result =  arrProducts[i].stock+arrProducts[i].qty ;
                         arrProducts[i].subtotal =  arrProducts[i].qty* arrProducts[i].price_purchase;
@@ -193,8 +166,17 @@ function updateProduct(element,option,id,variantName){
                     arrProducts[i].qty_result =  arrProducts[i].stock-arrProducts[i].qty ;
                     arrProducts[i].subtotal =  arrProducts[i].qty* arrProducts[i].price_purchase;
                 }
+            }else if(option=="price"){
+                arrProducts[i].price_purchase = parseFloat(element.value);
+                if(arrProducts[i].type==1){
+                    arrProducts[i].qty_result =  arrProducts[i].stock+arrProducts[i].qty ;
+                    arrProducts[i].subtotal =  arrProducts[i].qty* arrProducts[i].price_purchase;
+                }else{
+                    arrProducts[i].qty_result =  arrProducts[i].stock-arrProducts[i].qty ;
+                    arrProducts[i].subtotal =  arrProducts[i].qty* arrProducts[i].price_purchase;
+                }
             }else{
-                arrProducts[i].qty = parseInt(element.value);
+                arrProducts[i].qty = parseFloat(element.value);
                 if(arrProducts[i].type==1){
                     arrProducts[i].qty_result =  arrProducts[i].stock+arrProducts[i].qty ;
                     arrProducts[i].subtotal =  arrProducts[i].qty* arrProducts[i].price_purchase;
@@ -253,12 +235,13 @@ function showProducts(){
         tr.innerHTML = `
             <td>
                 <p class="m-0 mb-1">${pro.name}</p>
-                <p class="text-secondary m-0 mb-1">${pro.reference}</p>
-                ${pro.product_type ? pro.variant_detail : ""}
+                <p class="text-secondary m-0 mb-1">${pro.product_type ? pro.variant_name : ""}</p>
             </td>
             <td  class="text-center">${pro.stock}</td>
-            <td class="text-center">$${formatNum(pro.price_purchase,".")}</td>
-            <td style="width: 100%;">
+            <td class="text-center">
+                <input class="form-control text-end" onchange="updateProduct(this,'price','${pro.id}','${pro.variant_name}')" value="${pro.price_purchase}" type="number">
+            </td>
+            <td>
                 <select class="form-select" onchange="updateProduct(this,'type','${pro.id}','${pro.variant_name}')" type="number">
                     <option value="1">Adición</option>
                     <option value="2">Reducción</option>
@@ -272,7 +255,4 @@ function showProducts(){
         tablePurchase.appendChild(tr);
     });
     currentTotal();
-}
-function openModal(option){
-    modalVariant.show();
 }

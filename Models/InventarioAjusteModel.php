@@ -1,6 +1,8 @@
 <?php 
     class InventarioAjusteModel extends Mysql{
         private $intId;
+        private $strConcept;
+        private $floatTotal;
         public function __construct(){
             parent::__construct();
         }
@@ -12,8 +14,7 @@
             LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
-            AND ((p.product_type = 1 AND v.stock > 0) OR (p.product_type = 0 AND p.stock > 0))";
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')";
             $request = $this->select($sql)['total'];
             return $request;
         }
@@ -43,8 +44,7 @@
             LEFT JOIN product_variations va ON va.id = v.product_variation_id
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
-            AND ((p.product_type = 1 AND v.stock > 0) OR (p.product_type = 0 AND p.stock > 0)) LIMIT $start,$intPerPage";
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%') LIMIT $start,$intPerPage";
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
@@ -54,15 +54,14 @@
             LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')
-            AND ((p.product_type = 1 AND v.stock > 0) OR (p.product_type = 0 AND p.stock > 0))";
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')";
 
 
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;
             if(!empty($request)){
                 foreach ($request as $pro) {
-                    $variantHtml = "";
+                    /*$variantHtml = "";
                     if($pro['product_type']){
                         $arrVariantName = explode("-",$pro['variant_name']);
                         $variantHtml = "<ul>";
@@ -82,7 +81,7 @@
                             $variantHtml.= '<li ><span class="fw-bold">'.$var['name'].': </span>'.$option.'</li>';
                         }
                         $variantHtml.='</ul>';
-                    }
+                    }*/
                     array_push($arrProducts,array(
                         "id"=>$pro['idproduct'],
                         "reference"=>$pro['variant_sku'] != "" ? $pro['variant_sku'] : $pro['reference'],
@@ -98,8 +97,7 @@
                         "measure"=>$pro['measure'],
                         "variation"=>$pro['variation'],
                         "variant_name"=>$pro['variant_name'],
-                        "product_type"=>$pro['product_type'],
-                        "variant_html"=>$variantHtml
+                        "product_type"=>$pro['product_type']
                     ));
                 }
             }
@@ -181,6 +179,56 @@
                     }
                     $request['options'] = $options;
                 }
+            }
+            return $request;
+        }
+        public function insertCab(string $strConcept,float $floatTotal){
+            $this->strConcept = $strConcept;
+            $this->floatTotal = $floatTotal;
+            $sql = "INSERT INTO adjustment_cab(concept,total) VALUES (?,?)";
+            $request = $this->insert($sql,[$this->strConcept,$this->floatTotal]);
+            return $request;
+        }
+        public function insertDet(int $intId,array $arrData){
+            $this->intId = $intId;
+            foreach ($arrData as $data) {
+                $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
+                $arrValues = [
+                    $this->intId,
+                    $data['id'],
+                    $data['stock'],
+                    $data['qty'],
+                    $data['price_purchase'],
+                    $data['type'],
+                    $data['qty_result'],
+                    $data['variant_name'],
+                    $data['subtotal']
+                ];
+                $request = $this->insert($sql,$arrValues);
+                //Update products
+                $sqlPurchase = "SELECT COALESCE(AVG(price_purchase),0) as price_purchase FROM purchase_det WHERE product_id = $data[id]";
+                $sqlAdjust = "SELECT COALESCE(AVG(price),0) as price_purchase FROM adjustment_det WHERE product_id = $data[id]";
+                $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
+                WHERE idproduct = $data[id]";
+                if($data['product_type']){
+                    $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
+                    WHERE product_id = $data[id] AND name = '$data[variant_name]'";
+                    $sqlPurchase = "SELECT COALESCE(AVG(price_purchase),0) as price_purchase
+                    FROM purchase_det 
+                    WHERE product_id = $data[id] 
+                    AND variant_name = '$data[variant_name]'";
+
+                    $sqlAdjust = "SELECT COALESCE(AVG(price),0) as price_purchase
+                    FROM adjustment_det 
+                    WHERE product_id = $data[id] 
+                    AND variant_name = '$data[variant_name]'";
+                } 
+                $price_purchase = $this->select($sqlPurchase)['price_purchase'];
+                if($price_purchase == 0){
+                    $price_purchase = $this->select($sqlAdjust)['price_purchase'];
+                    if($price_purchase == 0)$price_purchase = $data['price_purchase'];
+                }
+                $this->update($sqlProduct,[$data['qty_result'],$price_purchase]);
             }
             return $request;
         }
