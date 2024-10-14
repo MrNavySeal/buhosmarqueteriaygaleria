@@ -148,10 +148,10 @@
                                 $sheetReport->setCellValue("E$row",$det['price']);
                                 $sheetReport->setCellValue("F$row",$det['input']);
                                 $sheetReport->setCellValue("G$row",$det['input_total']);
-                                $sheetReport->setCellValue("H$row",$det['price']);
+                                $sheetReport->setCellValue("H$row",$det['last_price']);
                                 $sheetReport->setCellValue("I$row",$det['output']);
                                 $sheetReport->setCellValue("J$row",$det['output_total']);
-                                $sheetReport->setCellValue("K$row",$det['price']);
+                                $sheetReport->setCellValue("K$row",$det['last_price']);
                                 $sheetReport->setCellValue("L$row",$det['balance']);
                                 $sheetReport->setCellValue("M$row",$det['balance_total']);
                                 $sheetReport->getStyle("B$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
@@ -310,10 +310,10 @@
                                 $pdf->MultiCell(22, 5,formatNum($pro['price']), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M");  
                                 $pdf->MultiCell(20, 5,$pro['input'], "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                                 $pdf->MultiCell(20, 5,formatNum($pro['input_total']), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M");  
-                                $pdf->MultiCell(22, 5,formatNum($pro['price']), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M");  
+                                $pdf->MultiCell(22, 5,formatNum($pro['last_price']), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M");  
                                 $pdf->MultiCell(20, 5,$pro['output'], "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                                 $pdf->MultiCell(20, 5,formatNum($pro['output_total']), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M");  
-                                $pdf->MultiCell(21, 5,formatNum($pro['price']), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M");  
+                                $pdf->MultiCell(21, 5,formatNum($pro['last_price']), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M");  
                                 $pdf->MultiCell(20, 5,$pro['balance'], "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                                 $pdf->MultiCell(20, 5,formatNum($pro['balance_total']), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M"); 
                                 $pdf->ln();

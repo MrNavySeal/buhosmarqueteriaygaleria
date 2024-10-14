@@ -149,6 +149,43 @@
             }
             return $request;
         }
+        public function selectAdjustmentDet(string $strInitialDate,string $strFinalDate,string $strSearch){
+            $sql = "SELECT 
+            cab.id as document,
+            cab.date,
+            DATE_FORMAT(cab.date,'%d/%m/%Y') as date_format,
+            det.adjustment as qty,
+            p.idproduct as id,
+            p.reference,
+            det.type,
+            m.initials as measure,
+            det.variant_name,
+            COALESCE(det.price,0) as price,
+            CONCAT(p.name,' ',det.variant_name) as name
+            FROM adjustment_det det 
+            INNER JOIN adjustment_cab cab ON cab.id = det.adjustment_id
+            INNER JOIN product p ON p.idproduct = det.product_id
+            LEFT JOIN measures m ON m.id_measure = p.measure
+            WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
+            BETWEEN '$strInitialDate' AND '$strFinalDate' AND p.name like '$strSearch%'";
+            $request = $this->select_all($sql);
+            if(!empty($request)){
+                $total = count($request);
+                for ($i=0; $i < $total ; $i++) { 
+                    $e = $request[$i];
+                    if($e['variant_name'] != ""){
+                        $sql = "SELECT sku as reference FROM product_variations_options WHERE product_id ='$e[id]' AND name = '$e[variant_name]'";
+                        $arrData = $this->select($sql);
+                        $strReference = !empty($arrData) ? $arrData['reference'] : "";
+                        $strName = strtoupper($strReference)." ".$e['name'];
+                        $e['name'] = $strName;
+                    }
+                    $request[$i]=$e;
+                }
+                
+            }
+            return $request;
+        }
         public function selectOrderDet(string $strInitialDate,string $strFinalDate,string $strSearch){
             $sql = "SELECT 
             cab.idorder as document,

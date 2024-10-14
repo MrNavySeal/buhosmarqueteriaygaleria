@@ -116,6 +116,7 @@
                 $strSearch = clear_cadena(strClean($_POST['search']));
                 $arrPurchase = $this->model->selectPurchaseDet($strInitialDate,$strFinalDate,$strSearch);
                 $arrOrder = $this->model->selectOrderDet($strInitialDate,$strFinalDate,$strSearch);
+                $arrAdjustment = $this->model->selectAdjustmentDet($strInitialDate,$strFinalDate,$strSearch);
                 $arrData = [];
                 $arrResponse = [];
                 $html ="";
@@ -123,9 +124,33 @@
                     foreach ($arrPurchase as $e) {
                         $e['type_move'] = 1;
                         $e['input'] = $e['qty'];
+                        $e['input_total'] = 0;
                         $e['output'] = 0;
+                        $e['output_total'] = 0;
                         $e['balance'] = 0;
                         $e['move'] ="Entrada por compra";
+                        array_push($arrData,$e);
+                    }
+                }
+                if(!empty($arrAdjustment)){
+                    foreach ($arrAdjustment as $e) {
+                        if($e['type'] == 1){
+                            $e['type_move'] = 1;
+                            $e['input'] = $e['qty'];
+                            $e['input_total'] = 0;
+                            $e['output'] = 0;
+                            $e['output_total'] = 0;
+                            $e['balance'] = 0;
+                            $e['move'] ="Entrada por ajuste";
+                        }else{
+                            $e['type_move'] = 2;
+                            $e['output'] = $e['qty'];
+                            $e['output_total'] = 0;
+                            $e['input'] = 0;
+                            $e['input_total'] = 0;
+                            $e['balance'] = 0;
+                            $e['move'] ="Salida por ajuste";
+                        }
                         array_push($arrData,$e);
                     }
                 }
@@ -133,7 +158,9 @@
                     foreach ($arrOrder as $e) {
                         $e['type_move'] = 2;
                         $e['output'] = $e['qty'];
+                        $e['output_total'] = 0;
                         $e['input'] = 0;
+                        $e['input_total'] = 0;
                         $e['balance'] = 0;
                         $e['move'] ="Salida por venta";
                         array_push($arrData,$e);
@@ -201,10 +228,10 @@
                             <td class="text-end">'.formatNum($f['price']).'</td>
                             <td class="text-center">'.$f['input'].'</td>
                             <td class="text-end">'.formatNum($f['input_total']).'</td>
-                            <td class="text-end">'.formatNum($f['price']).'</td>
+                            <td class="text-end">'.formatNum($f['last_price']).'</td>
                             <td class="text-center">'.$f['output'].'</td>
                             <td class="text-end">'.formatNum($f['output_total']).'</td>
-                            <td class="text-end">'.formatNum($f['price']).'</td>
+                            <td class="text-end">'.formatNum($f['last_price']).'</td>
                             <td class="text-center">'.$f['balance'].'</td>
                             <td class="text-end">'.formatNum($f['balance_total']).'</td>
                         </tr>
@@ -227,25 +254,37 @@
             return $html;
         }
         public function orderData(array $data){
-            
             $arrData = [];
             $total = count($data);
             foreach ($data as $e) {
                 $total = count($e);
                 $arrProduct = [];
-                $price = array_values(array_filter($e,function($f){return $f['price'] > 0;}));
-                $price = !empty($price) ? $price[0]['price'] : 0;
+                $totalCostBalance = 0;
                 for ($i=0; $i < $total ; $i++) { 
-                    $e[$i]['price'] = $price;
+                    $price = $e[$i]['price'];
+                    $e[$i]['last_price'] = $e[$i]['price'];
                     if($i == 0){
                         $e[$i]['balance'] = $e[$i]['input'] - $e[$i]['output'];
+                        $e[$i]['balance_total'] = $e[$i]['balance']*$price;
+                        $e[$i]['output_total'] = $e[$i]['output'] * $price;
                     }else{
-                        $lastBalance = $e[$i-1]['balance'];
-                        $e[$i]['balance'] = $lastBalance+$e[$i]['input']-$e[$i]['output'];
+                        $lastRow = $e[$i-1];
+                        $lastBalance = $lastRow['balance'];
+                        $totalBalance = $lastBalance+$e[$i]['input']-$e[$i]['output'];
+                        $totalCostBalance = $lastRow['balance_total'];
+                        $e[$i]['balance'] = $totalBalance;
+                        if($e[$i]['type_move'] == 1){
+                            $totalCostBalance+=$e[$i]['input'] * $e[$i]['last_price'];
+                            $lastPrice = $totalBalance > 0 ? $totalCostBalance/$totalBalance : 0;
+                            $e[$i]['last_price'] = $lastPrice;
+                            $e[$i]['balance_total'] = $e[$i]['balance']*$lastPrice;
+                        }else{
+                            $e[$i]['last_price'] =  $lastRow['last_price'];
+                            $e[$i]['output_total'] = $e[$i]['output'] * $lastRow['last_price'];
+                            $e[$i]['balance_total'] = $e[$i]['balance']*$lastRow['last_price'];
+                        }
                     }
-                    $e[$i]['output_total'] = $e[$i]['output'] * $price;
                     $e[$i]['input_total'] = $e[$i]['input'] * $price;
-                    $e[$i]['balance_total'] = $e[$i]['balance']*$price;
                     array_push($arrProduct,$e[$i]);
                 }
                 $lastData = $arrProduct[count($arrProduct)-1];
