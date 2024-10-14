@@ -185,8 +185,8 @@
         public function insertCab(string $strConcept,float $floatTotal){
             $this->strConcept = $strConcept;
             $this->floatTotal = $floatTotal;
-            $sql = "INSERT INTO adjustment_cab(concept,total) VALUES (?,?)";
-            $request = $this->insert($sql,[$this->strConcept,$this->floatTotal]);
+            $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
+            $request = $this->insert($sql,[$this->strConcept,$this->floatTotal,$_SESSION['userData']['idperson']]);
             return $request;
         }
         public function insertDet(int $intId,array $arrData){
@@ -231,6 +231,133 @@
                 $this->update($sqlProduct,[$data['qty_result'],$price_purchase]);
             }
             return $request;
+        }
+        public function selectAdjustment(string $strInitialDate,string $strFinalDate,string $strSearch,int $intPerPage,int $intPageNow){
+            $totalPages = 0;
+            $totalRecords = 0;
+            $requestTotal = [];
+            $start = ($intPageNow-1)*$intPerPage;
+            $sql = "SELECT 
+            cab.id,
+            cab.concept, 
+            cab.total, 
+            DATE_FORMAT(cab.date,'%d/%m/%Y') as date_created, 
+            DATE_FORMAT(cab.date_updated,'%d/%m/%Y') as date_updated,
+            cab.status,
+            CONCAT(u.firstname,' ',u.lastname) as user
+            FROM adjustment_cab cab
+            LEFT JOIN person u ON cab.user = u.idperson
+            WHERE cab.date BETWEEN '$strInitialDate' AND '$strFinalDate' AND 
+            (cab.concept LIKE '$strSearch%' OR cab.id LIKE '$strSearch%' OR u.firstname LIKE '$strSearch%' OR u.lastname LIKE '$strSearch%')
+            ORDER BY cab.id DESC LIMIT $start,$intPerPage ";
+            $request = $this->select_all($sql);
+            $total = count($request);
+            if($total > 0){
+                $sqlTotal = "SELECT 
+                cab.id,
+                cab.concept, 
+                cab.total, 
+                DATE_FORMAT(cab.date,'%d/%m/%Y') as date_created, 
+                DATE_FORMAT(cab.date_updated,'%d/%m/%Y') as date_updated,
+                cab.status,
+                CONCAT(u.firstname,' ',u.lastname) as user
+                FROM adjustment_cab cab
+                LEFT JOIN person u ON cab.user = u.idperson
+                WHERE cab.date BETWEEN '$strInitialDate' AND '$strFinalDate' 
+                AND (cab.concept LIKE '$strSearch%' OR cab.id LIKE '$strSearch%' OR u.firstname LIKE '$strSearch%' OR u.lastname LIKE '$strSearch%') ORDER BY cab.id DESC";
+                $requestTotal = $this->select_all($sqlTotal);
+                $total = count($request);
+                if(!empty($request)){
+                    for ($i=0; $i < $total ; $i++) { 
+                        $id = $request[$i]['id'];
+                        $sqlDet = "SELECT DISTINCT
+                        det.product_id,
+                        det.current,
+                        det.price,
+                        det.type,
+                        det.result,
+                        det.variant_name,
+                        det.subtotal,
+                        det.adjustment,
+                        p.name,
+                        p.reference,
+                        pv.sku as variant_reference
+                        FROM adjustment_det det
+                        INNER JOIN product p ON p.idproduct = det.product_id
+                        LEFT JOIN product_variations_options pv ON pv.product_id = det.product_id
+                        WHERE det.adjustment_id = '$id'";
+                        $requestDet = $this->select_all($sqlDet);
+                        $request[$i]['det'] = $requestDet;
+                    }
+                }
+                $totalRecords = $total;
+                $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;
+            }
+            return array("products"=>$request,"pages"=>$totalPages,"data"=>$requestTotal,"total_records"=>$totalRecords);
+        }
+        public function selectAdjustmentDet(string $strInitialDate,string $strFinalDate,string $strSearch,int $intPerPage,int $intPageNow){
+            $totalPages = 0;
+            $totalRecords = 0;
+            $requestTotal  = [];
+            $start = ($intPageNow-1)*$intPerPage;
+            $sql = "SELECT DISTINCT
+            cab.id,
+            det.id as id_det,
+            DATE_FORMAT(cab.date,'%d/%m/%Y') as date_created, 
+            CONCAT(u.firstname,' ',u.lastname) as user,
+            det.product_id,
+            det.current,
+            det.price,
+            det.type,
+            det.result,
+            det.variant_name,
+            det.subtotal,
+            det.adjustment,
+            p.name,
+            p.reference,
+            pv.sku as variant_reference
+            FROM adjustment_det det
+            INNER JOIN adjustment_cab cab ON cab.id = det.adjustment_id
+            INNER JOIN product p ON p.idproduct = det.product_id
+            LEFT JOIN person u ON cab.user = u.idperson
+            LEFT JOIN product_variations_options pv ON pv.product_id = det.product_id
+            WHERE cab.date BETWEEN '$strInitialDate' AND '$strFinalDate' AND 
+            (cab.id LIKE '$strSearch%' OR u.firstname LIKE '$strSearch%' OR u.lastname LIKE '$strSearch%'
+            OR p.name LIKE '$strSearch%' OR p.reference LIKE '$strSearch%' OR pv.sku LIKE '$strSearch%' OR det.variant_name LIKE '$strSearch%')
+            ORDER BY cab.id DESC LIMIT $start,$intPerPage";
+            $request = $this->select_all($sql);
+            $total = count($request);
+            if($total > 0){
+                $sql = "SELECT DISTINCT
+                cab.id,
+                det.id as id_det,
+                DATE_FORMAT(cab.date,'%d/%m/%Y') as date_created, 
+                CONCAT(u.firstname,' ',u.lastname) as user,
+                det.product_id,
+                det.current,
+                det.price,
+                det.type,
+                det.result,
+                det.variant_name,
+                det.subtotal,
+                det.adjustment,
+                p.name,
+                p.reference,
+                pv.sku as variant_reference
+                FROM adjustment_det det
+                INNER JOIN adjustment_cab cab ON cab.id = det.adjustment_id
+                INNER JOIN product p ON p.idproduct = det.product_id
+                LEFT JOIN person u ON cab.user = u.idperson
+                LEFT JOIN product_variations_options pv ON pv.product_id = det.product_id
+                WHERE cab.date BETWEEN '$strInitialDate' AND '$strFinalDate' AND 
+                (cab.id LIKE '$strSearch%' OR u.firstname LIKE '$strSearch%' OR u.lastname LIKE '$strSearch%'
+                OR p.name LIKE '$strSearch%' OR p.reference LIKE '$strSearch%' OR pv.sku LIKE '$strSearch%' OR det.variant_name LIKE '$strSearch%')
+                ORDER BY cab.id DESC";
+                $requestTotal = $this->select_all($sql);
+                $totalRecords = count($requestTotal);
+                $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;
+            }
+            return array("products"=>$request,"pages"=>$totalPages,"data"=>$requestTotal,"total_records"=>$totalRecords);
         }
     }
 ?>

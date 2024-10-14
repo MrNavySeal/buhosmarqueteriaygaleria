@@ -135,7 +135,7 @@ function uploadMultipleImg(img,parent,arrClass=["col-6","col-lg-3","upload-image
     }
     document.querySelector("#formFile").reset();
 }
-function formatNum(num,mil){
+function formatNum(num,mil="."){
     let numero = num;
     let format = mil;
 
