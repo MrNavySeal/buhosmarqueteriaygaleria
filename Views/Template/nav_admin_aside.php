@@ -87,7 +87,8 @@
                         <a href="<?=base_url()?>/inventario" class="dropdown-item">Inventario</a>
                         <a href="<?=base_url()?>/inventario/kardex" class="dropdown-item">Kardex</a>
                         <a href="<?=base_url()?>/InventarioAjuste/ajuste" class="dropdown-item">Ajuste de inventario</a>
-                        <a href="<?=base_url()?>/InventarioAjuste/ajustes" class="dropdown-item">Historial de ajustes</a>
+                        <a href="<?=base_url()?>/InventarioAjuste/reporte" class="dropdown-item">Reporte ajustes</a>
+                        <a href="<?=base_url()?>/InventarioAjuste/reporteDetalle" class="dropdown-item">Reporte ajustes por detalle</a>
                     </div>
                 </div>
             <?php } ?>
