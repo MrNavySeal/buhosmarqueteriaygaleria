@@ -178,8 +178,8 @@
                         // set document information
                         $pdf->SetCreator(PDF_CREATOR);
                         $pdf->SetAuthor($arrCompany['name']);
-                        $pdf->SetTitle('Reporte | Inventario');
-                        $pdf->SetSubject('Reporte inventario');
+                        $pdf->SetTitle('Reporte ajuste de inventario por detalle | Inventario');
+                        $pdf->SetSubject('Reporte ajuste de inventario por detalle');
                         $pdf->SetKeywords('reporte');
             
                         // set default header data
