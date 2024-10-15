@@ -33,18 +33,26 @@
             $total = 0;
             if(!empty($request)){
                 foreach ($request as $pro) {
+                    $finalPrice = getLastPrice($pro['idproduct'],$pro['variant_name']);
+                    if($finalPrice == 0){
+                        if($pro['variant_name'] != ""){
+                            $finalPrice = $pro['variant_purchase'];
+                        }else{
+                            $finalPrice = $pro['price_purchase'];
+                        }
+                    }
                     array_push($arrProducts,array(
                         "id"=>$pro['idproduct'],
                         "reference"=>$pro['variant_sku'] != "" ? $pro['variant_sku'] : $pro['reference'],
                         "name"=>$pro['variant_name'] != "" ? $pro['name']." ".$pro['variant_name'] : $pro['name'],
-                        "price_purchase"=>$pro['variant_name'] != "" ? $pro['variant_purchase'] : $pro['price_purchase'],
-                        "price_purchase_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_purchase']) : formatNum($pro['price_purchase']),
+                        "price_purchase"=>$finalPrice,
+                        "price_purchase_format"=>formatNum($finalPrice),
                         "category"=>$pro['category'],
                         "subcategory"=>$pro['subcategory'],
-                        "measure"=>$pro['measure'],
                         "stock"=>$pro['variant_name'] != "" ? $pro['variant_stock'] : $pro['stock'],
-                        "total"=>$pro['variant_name'] != "" ? $pro['variant_stock'] *$pro['variant_purchase']:  $pro['stock']*$pro['price_purchase'],
-                        "total_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_stock'] *$pro['variant_purchase']):  formatNum($pro['stock']*$pro['price_purchase'])
+                        "total"=>$pro['variant_name'] != "" ? $pro['variant_stock'] *$finalPrice:  $pro['stock']*$finalPrice,
+                        "total_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_stock'] *$finalPrice):  formatNum($pro['stock']*$finalPrice),
+                        "measure"=>$pro['measure']
                     ));
                 }
                 foreach ($arrProducts as $pro) {
@@ -96,17 +104,25 @@
             $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;
             if(!empty($request)){
                 foreach ($request as $pro) {
+                    $finalPrice = getLastPrice($pro['idproduct'],$pro['variant_name']);
+                    if($finalPrice == 0){
+                        if($pro['variant_name'] != ""){
+                            $finalPrice = $pro['variant_purchase'];
+                        }else{
+                            $finalPrice = $pro['price_purchase'];
+                        }
+                    }
                     array_push($arrProducts,array(
                         "id"=>$pro['idproduct'],
                         "reference"=>$pro['variant_sku'] != "" ? $pro['variant_sku'] : $pro['reference'],
                         "name"=>$pro['variant_name'] != "" ? $pro['name']." ".$pro['variant_name'] : $pro['name'],
-                        "price_purchase"=>$pro['variant_name'] != "" ? $pro['variant_purchase'] : $pro['price_purchase'],
-                        "price_purchase_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_purchase']) : formatNum($pro['price_purchase']),
+                        "price_purchase"=>$finalPrice,
+                        "price_purchase_format"=>formatNum($finalPrice),
                         "category"=>$pro['category'],
                         "subcategory"=>$pro['subcategory'],
                         "stock"=>$pro['variant_name'] != "" ? $pro['variant_stock'] : $pro['stock'],
-                        "total"=>$pro['variant_name'] != "" ? $pro['variant_stock'] *$pro['variant_purchase']:  $pro['stock']*$pro['price_purchase'],
-                        "total_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_stock'] *$pro['variant_purchase']):  formatNum($pro['stock']*$pro['price_purchase']),
+                        "total"=>$pro['variant_name'] != "" ? $pro['variant_stock'] *$finalPrice:  $pro['stock']*$finalPrice,
+                        "total_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_stock'] *$finalPrice):  formatNum($pro['stock']*$finalPrice),
                         "measure"=>$pro['measure']
                     ));
                 }

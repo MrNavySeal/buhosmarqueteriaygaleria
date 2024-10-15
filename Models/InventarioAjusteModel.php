@@ -13,8 +13,8 @@
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
-            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')";
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch')";
             $request = $this->select($sql)['total'];
             return $request;
         }
@@ -43,8 +43,8 @@
             LEFT JOIN measures m ON m.id_measure = p.measure
             LEFT JOIN product_variations va ON va.id = v.product_variation_id
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
-            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%') LIMIT $start,$intPerPage";
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch') LIMIT $start,$intPerPage";
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
@@ -53,35 +53,14 @@
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
             WHERE p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 
-            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%' 
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%')";
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch')";
 
 
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;
             if(!empty($request)){
                 foreach ($request as $pro) {
-                    /*$variantHtml = "";
-                    if($pro['product_type']){
-                        $arrVariantName = explode("-",$pro['variant_name']);
-                        $variantHtml = "<ul>";
-                        $variation = json_decode($pro['variation'],true);
-                        foreach ($variation as $var) {
-                            $option ="";
-                            $arrOptions = $var['options'];
-                            $totalVariantName = count($arrVariantName);
-                            for ($i=0; $i < $totalVariantName ; $i++) { 
-                                $element = $arrVariantName[$i];
-                                $optionFilter = array_values(array_filter($arrOptions,function($e)use($element){return $element == $e;}));
-                                if(count($optionFilter) > 0){
-                                    $option = $optionFilter[0];
-                                    break;
-                                }
-                            } 
-                            $variantHtml.= '<li ><span class="fw-bold">'.$var['name'].': </span>'.$option.'</li>';
-                        }
-                        $variantHtml.='</ul>';
-                    }*/
                     array_push($arrProducts,array(
                         "id"=>$pro['idproduct'],
                         "reference"=>$pro['variant_sku'] != "" ? $pro['variant_sku'] : $pro['reference'],
@@ -206,27 +185,15 @@
                 ];
                 $request = $this->insert($sql,$arrValues);
                 //Update products
-                $sqlPurchase = "SELECT COALESCE(AVG(price_purchase),0) as price_purchase FROM purchase_det WHERE product_id = $data[id]";
-                $sqlAdjust = "SELECT COALESCE(AVG(price),0) as price_purchase FROM adjustment_det WHERE product_id = $data[id]";
                 $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
                 WHERE idproduct = $data[id]";
                 if($data['product_type']){
                     $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
                     WHERE product_id = $data[id] AND name = '$data[variant_name]'";
-                    $sqlPurchase = "SELECT COALESCE(AVG(price_purchase),0) as price_purchase
-                    FROM purchase_det 
-                    WHERE product_id = $data[id] 
-                    AND variant_name = '$data[variant_name]'";
-
-                    $sqlAdjust = "SELECT COALESCE(AVG(price),0) as price_purchase
-                    FROM adjustment_det 
-                    WHERE product_id = $data[id] 
-                    AND variant_name = '$data[variant_name]'";
                 } 
-                $price_purchase = $this->select($sqlPurchase)['price_purchase'];
+                $price_purchase = getLastPrice($this->intId,$data['variant_name']);
                 if($price_purchase == 0){
-                    $price_purchase = $this->select($sqlAdjust)['price_purchase'];
-                    if($price_purchase == 0)$price_purchase = $data['price_purchase'];
+                    $price_purchase = $data['price_purchase'];
                 }
                 $this->update($sqlProduct,[$data['qty_result'],$price_purchase]);
             }
