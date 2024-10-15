@@ -86,7 +86,9 @@
                     <div class="dropdown-menu bg-transparent border-0">
                         <a href="<?=base_url()?>/inventario" class="dropdown-item">Inventario</a>
                         <a href="<?=base_url()?>/inventario/kardex" class="dropdown-item">Kardex</a>
+                        <?php if($_SESSION['permit'][4]['w']){ ?>
                         <a href="<?=base_url()?>/InventarioAjuste/ajuste" class="dropdown-item">Ajuste de inventario</a>
+                        <?php } ?>
                         <a href="<?=base_url()?>/InventarioAjuste/reporte" class="dropdown-item">Reporte ajustes</a>
                         <a href="<?=base_url()?>/InventarioAjuste/reporteDetalle" class="dropdown-item">Reporte ajustes por detalle</a>
                     </div>
