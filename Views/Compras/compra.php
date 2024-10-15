@@ -40,7 +40,7 @@
                             <th class="text-nowrap">IVA</th>
                             <th class="text-nowrap">Valor compra</th>
                             <th class="text-nowrap">Valor venta</th>
-                            <th class="text-nowrap">Descuento</th>
+                            <th class="text-nowrap">Descuento (%)</th>
                             <th class="text-nowrap">Subtotal</th>
                             <th></th>
                         </tr>
