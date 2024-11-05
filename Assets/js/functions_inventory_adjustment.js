@@ -245,7 +245,7 @@ function showProducts(){
                 <select class="form-select" onchange="updateProduct(this,'type','${pro.id}','${pro.variant_name}')" type="number">
                     <option value="1">Adición</option>
                     <option value="2">Reducción</option>
-                <select/>
+                </select>
             </td>
             <td><input class="form-control text-center" onchange="updateProduct(this,'qty','${pro.id}','${pro.variant_name}')" value="${pro.qty}" type="number"></td>
             <td class="text-center">${pro.qty_result}</td>
