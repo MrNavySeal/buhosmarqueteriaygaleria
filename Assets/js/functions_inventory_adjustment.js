@@ -156,7 +156,7 @@ function updateProduct(element,option,id,variantName){
                 }
                 break;
              }
-        }else if(arrProducts[i].id == obj.id && arrProducts[i].reference == obj.reference && arrProducts[i].name == obj.name){
+        }else if(arrProducts[i].id == id){
             if(option == "type"){
                 arrProducts[i].type = element.value;
                 if(arrProducts[i].type==1){
