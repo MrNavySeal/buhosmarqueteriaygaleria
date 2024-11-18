@@ -88,6 +88,7 @@
             }
             foreach ($data as $pro) {
                 $price = '<span>'.$pro['price_sell_format'].'</span>';
+                $stock = $pro['is_stock'] ? $pro['stock'] : "N/A";
                 if($pro['price_offer'] > 0){
                     $price = '<span class="text-decoration-line-through">'.$pro['price_sell_format'].
                     '</span> <span class="text-danger">'.$pro['price_offer_format'].'</span>';
@@ -95,7 +96,7 @@
                 $html.='
                     <tr role="button" onclick="addProduct({},2,'.$pro['id'].','."'".$pro['variant_name']."'".','.$pro['product_type'].')">
                         <td class="text-center"><img src="'.$pro['url'].'" height="50"></td>
-                        <td class="text-center">'.$pro['stock'].'</td>
+                        <td class="text-center">'.$stock.'</td>
                         <td>'.$pro['reference'].'</td>
                         <td>'.$pro['name'].'</td>
                         <td class="text-end">'.$price.'</td>
