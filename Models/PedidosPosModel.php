@@ -13,64 +13,128 @@
             parent::__construct();
         }
         /*************************methods to get products*******************************/
-        public function selectProducts(){
-            $sql = "SELECT 
-                p.idproduct,
-                p.reference,
-                p.name,
-                p.price,
-                p.discount,
-                p.stock,
-                p.product_type,
-                p.is_stock
+        public function selectTotalInventory(string $strSearch){
+            $sql = "SELECT coalesce(count(*),0) as total
             FROM product p
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
-            AND (p.is_product =1 OR p.is_combo=1) AND p.status = 1 
-            ORDER BY p.idproduct DESC
-            ";
-            $request = $this->select_all($sql);
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
+            LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
+            WHERE p.status = 1 AND c.status = 1 AND s.status = 1 AND (p.is_product =1 OR p.is_combo=1)
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch')";
+            $request = $this->select($sql)['total'];
+            return $request;
+        }
+        public function selectProducts(string $strSearch,int $intPerPage,int $intPageNow){
+            $start = ($intPageNow-1)*$intPerPage;
             $arrProducts = [];
-            if(count($request)> 0){
-                for ($i=0; $i < count($request); $i++) { 
-                    $isStock = $request[$i]['is_stock'];
-                    $stock = $request[$i]['stock'];
+            $sql = "SELECT 
+            p.idproduct,
+            p.reference,
+            p.name,
+            p.stock,
+            p.product_type,
+            p.is_stock,
+            p.price_purchase,
+            p.price as price_sell,
+            p.discount as price_offer,
+            c.name as category,
+            s.name as subcategory,
+            v.name as variant_name,
+            v.price_purchase as variant_purchase,
+            v.price_sell as variant_sell,
+            v.price_offer as variant_offer,
+            v.stock as variant_stock,
+            v.sku as variant_sku,
+            m.initials as measure,
+            va.variation
+            FROM product p
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
+            LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
+            LEFT JOIN measures m ON m.id_measure = p.measure
+            LEFT JOIN product_variations va ON va.id = v.product_variation_id
+            WHERE p.status = 1 AND c.status = 1 AND s.status = 1 AND (p.is_product =1 OR p.is_combo=1)
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch') LIMIT $start,$intPerPage";
+            $request = $this->select_all($sql);
 
-                    $idProduct = $request[$i]['idproduct'];
+            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            FROM product p
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
+            LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
+            WHERE p.status = 1 AND c.status = 1 AND s.status = 1 AND (p.is_product =1 OR p.is_combo=1)
+            AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch')";
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;
+            if(!empty($request)){
+                foreach ($request as $pro) {
+                    $idProduct = $pro['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
+                    $url = media()."/images/uploads/image.png";
                     if(count($requestImg)>0){
-                        $request[$i]['image'] = media()."/images/uploads/".$requestImg[0]['name'];
-                    }else{
-                        $request[$i]['image'] = media()."/images/uploads/image.png";
+                        $url = media()."/images/uploads/".$requestImg[0]['name'];
                     }
-                    if($request[$i]['product_type'] == 1){
-                        $stockCondition = $isStock ? " AND stock > 0" : "";
-                        $sqlV = "SELECT MIN(price_sell) AS sell,MIN(price_offer) AS offer,MIN(price_purchase) AS purchase
-                        FROM product_variations_options WHERE product_id =$idProduct $stockCondition";
-                        $requestPrices = $this->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND stock >= 0";
-                        $stock = $this->select($sqlTotal)['total'];
-                        $request[$i]['price_sell'] = $requestPrices['purchase'];
-                        $request[$i]['price'] = $requestPrices['sell'];
-                        $request[$i]['discount'] = $requestPrices['offer'];
-                        $request[$i]['stock'] = $stock;
+                    $variation ="";
+                    if($pro['product_type']){
+                        $arrVariantName = explode("-",$pro['variant_name']);
+                        $arrVariants = json_decode($pro['variation'],true);
+                        $arrVariantDetail = [];
+                        foreach ($arrVariantName as $name) {
+                            foreach ($arrVariants as $variant) {
+                                $arrOptions = $variant['options'];
+                                foreach ($arrOptions as $option) {
+                                    if($option ==$name){
+                                        array_push($arrVariantDetail,array(
+                                            "name"=>$variant['name'],
+                                            "option"=>$name,
+                                        ));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        $arrCombination = array(
+                            "name"=>$pro['name'],
+                            "detail"=>$arrVariantDetail
+                        );
+                        $variation = json_encode($arrCombination,JSON_UNESCAPED_UNICODE);
                     }
-                    if(!$isStock || ($isStock && $stock > 0)){
-                        array_push($arrProducts,$request[$i]);
-                    }
+                    array_push($arrProducts,array(
+                        "url"=>$url,
+                        "id"=>$pro['idproduct'],
+                        "reference"=>$pro['variant_sku'] != "" ? $pro['variant_sku'] : $pro['reference'],
+                        "product_name"=>$pro['name'],
+                        "name"=>$pro['variant_name'] != "" ? $pro['name']." ".$pro['variant_name'] : $pro['name'],
+                        "price_sell"=>$pro['variant_name'] != "" ? $pro['variant_sell'] : $pro['price_sell'],
+                        "price_sell_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_sell']) : formatNum($pro['price_sell']),
+                        "price_offer"=>$pro['variant_name'] != "" ? $pro['variant_offer'] : $pro['price_offer'],
+                        "price_offer_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_offer']) : formatNum($pro['price_offer']),
+                        "category"=>$pro['category'],
+                        "subcategory"=>$pro['subcategory'],
+                        "stock"=>$pro['variant_name'] != "" ? $pro['variant_stock'] : $pro['stock'],
+                        "measure"=>$pro['measure'],
+                        "variation"=>$variation,
+                        "variant_name"=>$pro['variant_name'],
+                        "product_type"=>$pro['product_type'],
+                        "is_stock"=>$pro['is_stock']
+                    ));
                 }
             }
-            return $arrProducts;
+            return array("products"=>$arrProducts,"pages"=>$totalPages);
         }
         public function selectProduct($id){
-            $this->intIdProduct = $id;
+            $this->intId = $id;
             $sql = "SELECT 
                 p.idproduct,
                 p.name,
                 p.reference,
-                p.price as price_sell,
-                p.discount as price_offer,
+                p.price_purchase,
+                p.price,
                 p.product_type,
                 p.is_stock,
                 p.stock,
@@ -78,26 +142,20 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
-            AND (p.is_product =1 OR p.is_combo=1) AND p.status = 1 
-            AND p.idproduct = $this->intIdProduct";
+            AND p.is_stock = 1 AND p.status = 1 AND p.idproduct = $this->intId";
             $request = $this->select($sql);
             if(!empty($request)){
                 if($request['product_type'] == 1){
-                    $stockCondition = $request['is_stock'] ? " AND stock > 0" :"";
-                    $sqlVariations = "SELECT * FROM product_variations WHERE product_id = $this->intIdProduct";
-                    $sqlVarOptions ="SELECT * FROM product_variations_options WHERE product_id = $this->intIdProduct";
-                    $request['variation'] = $this->select($sqlVariations);
-                    $request['variation']['variation'] = json_decode($request['variation']['variation'],true);
-                    $options = $this->select_all($sqlVarOptions);
+                    $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intId");
+                    $request['variation']['variation'] = json_decode($request['variation']['variation']);
+                    $options = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intId");
                     $totalOptions = count($options);
-                    for ($i=0; $i < $totalOptions ; $i++) {
-                        $options[$i]['format_offer'] = "$".number_format($options[$i]['price_offer'],0,",",".");
-                        $options[$i]['format_price'] = "$".number_format($options[$i]['price_sell'],0,",",".");
+                    for ($i=0; $i < $totalOptions ; $i++) { 
+                        $options[$i]['format_purchase'] = "$".number_format($options[$i]['price_purchase'],0,",",".");
                     }
                     $request['options'] = $options;
                 }
             }
-            //dep($request);exit;
             return $request;
         }
         /*************************methods to get customers*******************************/
@@ -169,7 +227,7 @@
             $strAddress = explode("/",$address)[1];
             $total = count($this->arrData);
             for ($i=0; $i < $total ; $i++) { 
-                $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
+                $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? $this->arrData[$i]['variant_detail'] : $this->arrData[$i]['name'];
                 if($this->arrData[$i]['topic'] == 1){
                     
                     if($this->arrData[$i]['img'] != ""){

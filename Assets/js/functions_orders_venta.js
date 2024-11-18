@@ -1,6 +1,5 @@
 'use strict';
 
-const modalVariant = new bootstrap.Modal(document.querySelector("#modalVariant"));
 const modalPurchase = new bootstrap.Modal(document.querySelector("#modalPurchase"));
 const modalFrame = new bootstrap.Modal(document.querySelector("#modalFrame"));
 const btnAdd = document.querySelector("#btnAdd");
@@ -12,42 +11,15 @@ const selectItems = document.querySelector("#selectItems");
 const items = document.querySelector("#items");
 const formSetOrder = document.querySelector("#formSetOrder");
 const tablePurchase = document.querySelector("#tablePurchase");
+const searchHtml = document.querySelector("#txtSearch");
+const perPage = document.querySelector("#perPage");
+const tableProducts = document.querySelector("#tableProducts");
 let arrDataMolding = [];
 let arrProducts = [];
 let arrCustomers = [];
 let product;
-let table = new DataTable("#tableData",{
-    "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-    },
-    "ajax":{
-        "url": " "+base_url+"/PedidosPos/getProducts",
-        "dataSrc":""
-    },
-    "initComplete":function( settings, json){
-        //arrProducts = json;
-    },
-    columns: [
-        { 
-            data: 'image',
-            render: function (data, type, full, meta) {
-                return '<img src="'+data+'" class="rounded" height="50" width="50">';
-            }
-        },
-        { data: 'stock' },
-        { data: 'name' },
-        { data: 'format_price' },
-        { data: 'options' },
-    ],
-    responsive: true,
-    order: [[0, 'desc']],
-    pagingType: 'full',
-    scrollY:'400px',
-    //scrollX: true,
-    "aProcessing":true,
-    "aServerSide":true,
-    "iDisplayLength": 10,
-});
+let arrData = [];
+
 let tableMolding = new DataTable("#tableMolding",{
     "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -76,12 +48,28 @@ let tableMolding = new DataTable("#tableMolding",{
 
 window.addEventListener("load",function(){
     getCustomers();
+    getProducts();
 });
+
+searchHtml.addEventListener("input",function(){getProducts();});
+perPage.addEventListener("change",function(){getProducts();});
+
+/*************************functions to get products*******************************/
+async function getProducts(page = 1){
+    const formData = new FormData();
+    formData.append("page",page);
+    formData.append("perpage",perPage.value);
+    formData.append("search",searchHtml.value);
+    const response = await fetch(base_url+"/PedidosPos/getProducts",{method:"POST",body:formData});
+    const objData = await response.json();
+    const arrHtml = objData.html;
+    arrData = objData.data;
+    tableProducts.innerHTML =arrHtml.products;
+    document.querySelector("#pagination").innerHTML = arrHtml.pages;
+    document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
+}
+
 /*************************Events*******************************/
-btnAdd.addEventListener("click",function(){
-    addProduct(product);
-    //modalVariant.hide();
-});
 btnPurchase.addEventListener("click",function(){
     modalPurchase.show();
 });
@@ -145,7 +133,6 @@ formSetOrder.addEventListener("submit",function(e){
             document.querySelector("#id").value = 0;
             document.querySelector("#selectedItem").innerHTML="";
             modalPurchase.hide();
-            table.ajax.reload();
         }else{
             Swal.fire("Error",objData.msg,"error");
         }
@@ -170,30 +157,8 @@ function getCustomers(){
         arrCustomers = res;
     });
 }
-/*************************functions to get products*******************************/
-function getProduct(element,id){
-    const formData = new FormData();
-    formData.append("id",id);
-    element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;  
-    element.setAttribute("disabled","");
-    request(base_url+"/PedidosPos/getProduct",formData,"post").then(function(res){
-        element.innerHTML='<i class="fas fa-plus"></i>';
-        element.removeAttribute("disabled","");
-        if(res.status){
-            product = res.data;
-            if(product.product_type){
-                displayVariants(product);
-            }else{
-                addProduct(product)
-            }
-        }else{
-            Swal.fire("Error",res.msg,"error");
-        }
-
-    });
-}
 /*************************functions to add and update products*******************************/
-function addProduct(product={},topic=2){
+function addProduct(product={},topic=2,id="",variantName="",productType=""){
     let obj = {
         "id":"",
         "is_stock":false,
@@ -212,28 +177,23 @@ function addProduct(product={},topic=2){
         "variant_detail":{}
     };
     if(topic == 2){
-        obj.id=product.idproduct
-        obj.is_stock = product.is_stock
-        obj.stock =product.stock
-        obj.qty =1
-        obj.price_sell =product.price_sell
-        obj.price_offer =product.price_offer
-        obj.discount = product.price_offer > 0 ? product.price_sell -product.price_offer : 0
-        obj.reference =product.reference
-        obj.product_type =product.product_type
-        obj.name =product.name
-        obj.import =product.import
-        obj.subtotal = 0
-        obj.variant_name =""
-        obj.topic =topic
-        if(product.product_type == 1){
-            if(product.is_stock && product.stock<= 0){
-                Swal.fire("Error","El artículo está agotado, pruebe con otro","error");
-                return false;
+        const product = arrData.filter((e)=>{
+            if(productType){
+                return e.id == id && variantName == e.variant_name;
+            }else{
+                return e.id == id;
             }
-            obj.variant_name = product.variant_name;
-            obj.variant_detail = product.variant_detail;
-        }
+        })[0];
+            obj.id = id;
+            obj.stock = product.stock;
+            obj.qty = 1;
+            obj.price_sell = product.price_sell;
+            obj.price_offer = product.price_offer;
+            obj.reference=product.reference;
+            obj.name=product.product_name;
+            obj.variant_name=variantName;
+            obj.product_type =product.product_type;
+            obj.variant_detail = product.variation;
     }else if(topic==3){
         let name = document.querySelector("#txtService").value;
         let qty = document.querySelector("#intQty").value;
@@ -528,95 +488,6 @@ function currentProducts(){
     }
     showProducts();
 }
-/*************************functions to display product variants*******************************/
-function displayVariants(data){
-    const variants = data.variation.variation;
-    const option = data.options;
-    modalSelectvariants.innerHTML ="";
-    for (let i = 0; i < variants.length; i++) {
-        let html="";
-        let options = variants[i].options;
-        let div = document.createElement("div");
-        div.classList.add("mb-3");
-        for (let j = 0; j < options.length; j++) {
-            let active = j==0? "btn-primary" : "btn-secondary";
-            html+=`<button type="button" class="btn ${active} m-1 btnVariant" onclick="selectVariant(this)" data-variant="${variants[i].name}" data-name="${options[j]}">${options[j]}</button>`;
-        }
-        div.innerHTML = `
-        <p class="t-color-3 m-0">${variants[i].name}</p>
-        <div class="flex">${html}</div>
-        `;
-        modalSelectvariants.appendChild(div);
-    }
-    let price = `Precio: <span>${option[0].format_price}</span>`;
-    if(option[0].price_offer > 0){
-        price =`Precio: <span class="text-decoration-line-through me-1">${option[0].format_price}</span>
-        <span class="text-danger">${option[0].format_offer}</span>`;
-    }
-    if(data.is_stock && option[0].stock <= 0){
-        price =`<span class="text-danger">Agotado</span>`;
-    }
-    modalVariantCost.innerHTML = price;
-    modalVariantName.innerHTML = data.reference!="" ? data.reference+" "+data.name : data.name;
-    let selectedVariants = document.querySelectorAll(".btn-primary.btnVariant");
-    let arrSelected = [];
-    let arrVariantsDetail = [];
-    selectedVariants.forEach(element => {
-        arrSelected.push(element.getAttribute("data-name"));
-        arrVariantsDetail.push({
-            "name":element.getAttribute("data-variant"),
-            "option":element.getAttribute("data-name")
-        })
-    });
-    
-    //Agrego al producto la variante escogida por defecto
-    let variant = arrSelected.join("-");
-    let selectedOption = data.options.filter(op=>op.name == variant)[0];
-    product['variant_name'] = variant;
-    product['price_sell'] = selectedOption.price_sell;
-    product['price_offer'] = selectedOption.price_offer;
-    product['stock'] = selectedOption.stock;
-    product['variant_detail'] = {"name":product.name,"detail":arrVariantsDetail}
-    openModal();
-} 
-/*************************functions to set product variant*******************************/
-function selectVariant(element){
-    let options = product.options;
-    let contentVariants = element.parentElement;
-    let variants = contentVariants.children;
-    for (let i = 0; i < variants.length; i++) {
-        variants[i].classList.replace("btn-primary","btn-secondary");
-    }
-    element.classList.replace("btn-secondary","btn-primary");
-    let selectedVariants = document.querySelectorAll(".btn-primary.btnVariant");
-    let arrSelected = [];
-    let arrVariantsDetail = [];
-    selectedVariants.forEach(element => {
-        arrSelected.push(element.getAttribute("data-name"));
-        arrVariantsDetail.push({
-            "name":element.getAttribute("data-variant"),
-            "option":element.getAttribute("data-name")
-        })
-    });
-    //Agrego al producto la variante escogida
-    let variant = arrSelected.join("-");
-    let selectedOption = options.filter(op=>op.name == variant)[0];
-    let price = `<span>${selectedOption.format_price}</span>`;
-    if(selectedOption.price_offer > 0){
-        price =`<span class="text-decoration-line-through me-1">${selectedOption.format_price}</span>
-        <span class="text-danger">${selectedOption.format_offer}</span>`;
-    }
-    if(product.is_stock && selectedOption.stock <= 0){
-        price =`<span class="text-danger">Agotado</span>`;
-    }
-    modalVariantCost.innerHTML = price;
-    product['variant_name'] = variant;
-    product['price_sell'] = selectedOption.price_sell;
-    product['price_offer'] = selectedOption.price_offer;
-    product['stock'] = selectedOption.stock;
-    product['variant_detail'] = {"name":product.name,"detail":arrVariantsDetail}
-}
-
 function openModal(){
     modalVariant.show();
 }

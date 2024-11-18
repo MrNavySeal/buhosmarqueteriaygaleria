@@ -44,22 +44,77 @@
             die();
         }
         public function getProducts(){
-            if($_SESSION['permitsModule']['w']){
-                $request = $this->model->selectProducts();
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-                        $priceOffer = '<span class="text-decoration-line-through">'.formatNum($request[$i]['price']).'</span>'.'<span class="text-danger">'.formatNum($request[$i]['discount']).'</span>';
-                        $price = $request[$i]['discount']>0 ? $priceOffer : formatNum($request[$i]['price']);
-                        $btn = '<button type="button" class="btn btn-primary" onclick="getProduct(this,'.$request[$i]['idproduct'].')"><i class="fas fa-plus"></i></button>';
-                        $request[$i]['stock'] = !$request[$i]['is_stock'] ? "N/A" : $request[$i]['stock'];
-                        $variant = $request[$i]['product_type'] == 1 ? "Desde " : "";
-                        $request[$i]['format_price'] = $variant.$price;
-                        $request[$i]['options'] = $btn;
-                    }
-                }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            if($_SESSION['permitsModule']['r']){
+                $strSearch = strClean($_POST['search']);
+                $intPerPage = intval($_POST['perpage']);
+                $intPageNow = intval($_POST['page']);
+                $request = $this->model->selectProducts($strSearch,$intPerPage,$intPageNow);
+                $arrProducts = $request['products'];
+                $intTotalPages = $request['pages'];
+                $total = $this->model->selectTotalInventory($strSearch);
+                $arrData = array(
+                    "html"=>$this->getInventoryHtml($arrProducts,$intTotalPages,$intPageNow),
+                    "total_records"=>$total,
+                    "data"=>$arrProducts
+                );
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             }
             die();
+        }
+        public function getInventoryHtml(array $data,int $pages,$page){
+            $maxButtons = 4;
+            $totalPages = $pages;
+            $startPage = max(1, $page - floor($maxButtons / 2));
+            if ($startPage + $maxButtons - 1 > $totalPages) {
+                $startPage = max(1, $totalPages - $maxButtons + 1);
+            }
+            $html ="";
+            $htmlPages = '
+                <li class="page-item">
+                    <a class="page-link text-secondary" href="#" onclick="getProducts(1)" aria-label="First">
+                        <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-secondary" href="#" onclick="getProducts('.max(1, $page-1).')" aria-label="Previous">
+                        <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                    </a>
+                </li>
+            ';
+            for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
+                $htmlPages .= '<li class="page-item">
+                    <a class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getProducts('.$i.')">'.$i.'</a>
+                </li>';
+            }
+            foreach ($data as $pro) {
+                $price = '<span>'.$pro['price_sell_format'].'</span>';
+                if($pro['price_offer'] > 0){
+                    $price = '<span class="text-decoration-line-through">'.$pro['price_sell_format'].
+                    '</span> <span class="text-danger">'.$pro['price_offer_format'].'</span>';
+                }
+                $html.='
+                    <tr role="button" onclick="addProduct({},2,'.$pro['id'].','."'".$pro['variant_name']."'".','.$pro['product_type'].')">
+                        <td class="text-center"><img src="'.$pro['url'].'" height="50"></td>
+                        <td class="text-center">'.$pro['stock'].'</td>
+                        <td>'.$pro['reference'].'</td>
+                        <td>'.$pro['name'].'</td>
+                        <td class="text-end">'.$price.'</td>
+                    </tr>
+                ';
+            }
+            $htmlPages .= '
+                <li class="page-item">
+                    <a class="page-link text-secondary" href="#" onclick="getProducts('.min($totalPages, $page+1).')" aria-label="Next">
+                        <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-secondary" href="#" onclick="getProducts('.($pages).')" aria-label="Last">
+                        <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                    </a>
+                </li>
+            ';
+            return array("products"=>$html,"pages"=>$htmlPages);
         }
         public function getCustomers(){
             if($_SESSION['permitsModule']['w']){
