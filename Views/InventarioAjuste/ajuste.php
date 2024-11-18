@@ -33,7 +33,9 @@
                     <table class="table align-middle table-hover">
                         <thead>
                             <tr>
+                                <th>Portada</th>
                                 <th>Stock</th>
+                                <th>Referencia</th>
                                 <th>Artículo</th>
                                 <th>Costo</th>
                             </tr>
@@ -77,6 +79,7 @@
                 <table class="table align-middle">
                     <thead>
                         <tr>
+                            <th class="text-nowrap text-center">Referencia</th>
                             <th class="text-nowrap text-center">Artículo</th>
                             <th class="text-nowrap text-center">Actual</th>
                             <th class="text-nowrap text-center">Costo</th>
@@ -90,7 +93,7 @@
                     <tbody id="tablePurchase"></tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="6" class="text-end fw-bold">Total:</td>
+                            <td colspan="7" class="text-end fw-bold">Total:</td>
                             <td class="text-end" id="totalProducts">$0</td>
                         </tr>
                     </tfoot>

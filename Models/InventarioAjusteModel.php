@@ -61,7 +61,15 @@
             $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;
             if(!empty($request)){
                 foreach ($request as $pro) {
+                    $idProduct = $pro['idproduct'];
+                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
+                    $requestImg = $this->select_all($sqlImg);
+                    $url = media()."/images/uploads/image.png";
+                    if(count($requestImg)>0){
+                        $url = media()."/images/uploads/".$requestImg[0]['name'];
+                    }
                     array_push($arrProducts,array(
+                        "url"=>$url,
                         "id"=>$pro['idproduct'],
                         "reference"=>$pro['variant_sku'] != "" ? $pro['variant_sku'] : $pro['reference'],
                         "product_name"=>$pro['name'],

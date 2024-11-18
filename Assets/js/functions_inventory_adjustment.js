@@ -233,6 +233,7 @@ function showProducts(){
         let tr = document.createElement("tr");
         tr.classList.add("productToBuy");
         tr.innerHTML = `
+            <td>${pro.reference}</td>
             <td>
                 <p class="m-0 mb-1">${pro.name}</p>
                 <p class="text-secondary m-0 mb-1">${pro.product_type ? pro.variant_name : ""}</p>
