@@ -142,7 +142,7 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
-            AND p.is_stock = 1 AND p.status = 1 AND p.idproduct = $this->intId";
+            AND p.status = 1 AND p.idproduct = $this->intId";
             $request = $this->select($sql);
             if(!empty($request)){
                 if($request['product_type'] == 1){
