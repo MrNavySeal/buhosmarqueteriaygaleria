@@ -186,6 +186,7 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
         })[0];
             obj.id = id;
             obj.stock = product.stock;
+            obj.is_stock = product.is_stock;
             obj.qty = 1;
             obj.price_sell = product.price_sell;
             obj.price_offer = product.price_offer;
