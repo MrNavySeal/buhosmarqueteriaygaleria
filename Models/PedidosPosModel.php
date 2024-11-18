@@ -102,7 +102,6 @@
                             "name"=>$pro['name'],
                             "detail"=>$arrVariantDetail
                         );
-                        $variation = json_encode($arrCombination,JSON_UNESCAPED_UNICODE);
                     }
                     array_push($arrProducts,array(
                         "url"=>$url,
@@ -118,7 +117,7 @@
                         "subcategory"=>$pro['subcategory'],
                         "stock"=>$pro['variant_name'] != "" ? $pro['variant_stock'] : $pro['stock'],
                         "measure"=>$pro['measure'],
-                        "variation"=>$variation,
+                        "variation"=>$arrCombination,
                         "variant_name"=>$pro['variant_name'],
                         "product_type"=>$pro['product_type'],
                         "is_stock"=>$pro['is_stock']
@@ -227,7 +226,7 @@
             $strAddress = explode("/",$address)[1];
             $total = count($this->arrData);
             for ($i=0; $i < $total ; $i++) { 
-                $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? $this->arrData[$i]['variant_detail'] : $this->arrData[$i]['name'];
+                $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
                 if($this->arrData[$i]['topic'] == 1){
                     
                     if($this->arrData[$i]['img'] != ""){

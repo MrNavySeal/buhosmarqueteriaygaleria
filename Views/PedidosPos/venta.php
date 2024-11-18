@@ -150,6 +150,7 @@ if($_SESSION['permitsModule']['w']){
                         <thead>
                             <tr>
                                 <th class="text-nowrap">Stock</th>
+                                <th class="text-nowrap">Referencia</th>
                                 <th class="text-nowrap">Artículo</th>
                                 <th class="text-nowrap">Cantidad</th>
                                 <th class="text-nowrap">Precio</th>
@@ -161,15 +162,15 @@ if($_SESSION['permitsModule']['w']){
                         <tbody id="tablePurchase"></tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="5" class="text-end fw-bold">Subtotal:</td>
+                                <td colspan="6" class="text-end fw-bold">Subtotal:</td>
                                 <td class="text-end" id="subtotalProducts">$0</td>
                             </tr>
                             <tr>
-                                <td colspan="5" class="text-end fw-bold">Descuento:</td>
+                                <td colspan="6" class="text-end fw-bold">Descuento:</td>
                                 <td class="text-end" id="discountProducts">$0</td>
                             </tr>
                             <tr>
-                                <td colspan="5" class="text-end fw-bold">Total:</td>
+                                <td colspan="6" class="text-end fw-bold">Total:</td>
                                 <td class="text-end" id="totalProducts">$0</td>
                             </tr>
                         </tfoot>

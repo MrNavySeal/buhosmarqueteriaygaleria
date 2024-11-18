@@ -427,7 +427,6 @@ function showProducts(){
     arrProducts.forEach(pro=>{
         let strDescription = `
             <p class="m-0 mb-1">${pro.name}</p>
-            <p class="text-secondary m-0 mb-1">${pro.reference}</p>
             <p class="text-secondary m-0 mb-1">${pro.variant_name}</p>
         `;
         if(pro.topic == 1){
@@ -447,6 +446,7 @@ function showProducts(){
         let objString = JSON.stringify(pro).replace(/"/g, '&quot;');
         tr.innerHTML = `
             <td>${pro.is_stock ? pro.stock : "N/A"}</td>
+            <td>${pro.reference}</td>
             <td>
                 ${strDescription}
             </td>
@@ -482,10 +482,10 @@ function currentProducts(){
         let price = arrProducts[i].price_offer > 0 ? arrProducts[i].price_offer :arrProducts[i].price_sell; 
         let subtotal = price * arrProducts[i].qty;
         let children = rows[i].children;
-        children[2].children[0].value = arrProducts[i].qty; //Cantidad
-        children[3].children[0].value = arrProducts[i].price_sell; //Precio de venta
-        children[4].children[0].value = arrProducts[i].price_offer; //Precio de oferta
-        children[5].innerHTML = "$"+formatNum(subtotal,".");//Subtotal
+        children[3].children[0].value = arrProducts[i].qty; //Cantidad
+        children[4].children[0].value = arrProducts[i].price_sell; //Precio de venta
+        children[5].children[0].value = arrProducts[i].price_offer; //Precio de oferta
+        children[6].innerHTML = "$"+formatNum(subtotal,".");//Subtotal
     }
     showProducts();
 }
