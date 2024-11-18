@@ -56,8 +56,8 @@
             LEFT JOIN product_variations va ON va.id = v.product_variation_id
             WHERE p.status = 1 AND c.status = 1 AND s.status = 1 AND (p.is_product =1 OR p.is_combo=1)
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
-            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch') LIMIT $start,$intPerPage
-            ORDER BY p.idproduct DESC";
+            OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch') ORDER BY p.idproduct DESC 
+            LIMIT $start,$intPerPage";
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
