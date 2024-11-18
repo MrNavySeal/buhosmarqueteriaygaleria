@@ -286,7 +286,6 @@ function deleteProduct(element,id,variantName){
 }
 function showProducts(){
     tablePurchase.innerHTML ="";
-    console.log(arrProducts);
     arrProducts.forEach(pro=>{
         let iva = 1+(pro.import/100);
         pro.price_base = Math.round(pro.price_purchase/iva);
