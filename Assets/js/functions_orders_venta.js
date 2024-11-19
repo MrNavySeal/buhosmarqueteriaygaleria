@@ -445,16 +445,14 @@ function showProducts(){
         tr.classList.add("productToBuy");
         let objString = JSON.stringify(pro).replace(/"/g, '&quot;');
         tr.innerHTML = `
-            <td>${pro.is_stock ? pro.stock : "N/A"}</td>
-            <td>${pro.reference}</td>
-            <td>
-                ${strDescription}
-            </td>
-            <td><input class="form-control text-center" onchange="updateProduct(this,'qty','${objString}')" value="${pro.qty}" type="number"></td>
-            <td><input class="form-control" value="${pro.price_sell}" onchange="updateProduct(this,'price_sell','${objString}')" type="number"></td>
-            <td><input class="form-control" value="${pro.price_offer}" onchange="updateProduct(this,'discount','${objString}')" value="" type="number"></td>
-            <td class="text-end">$${formatNum(pro.subtotal,".")}</td>
-            <td><button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${objString}')"type="button"><i class="fas fa-trash-alt"></i></button></td>
+            <td data-title="Stock">${pro.is_stock ? pro.stock : "N/A"}</td>
+            <td data-title="Referencia">${pro.reference}</td>
+            <td data-title="Artículo"> ${strDescription}</td>
+            <td data-title="Cantidad"><input class="form-control text-center" onchange="updateProduct(this,'qty','${objString}')" value="${pro.qty}" type="number"></td>
+            <td data-title="Precio"><input class="form-control" value="${pro.price_sell}" onchange="updateProduct(this,'price_sell','${objString}')" type="number"></td>
+            <td data-title="Oferta"><input class="form-control" value="${pro.price_offer}" onchange="updateProduct(this,'discount','${objString}')" value="" type="number"></td>
+            <td data-title="Subtotal" class="text-end">$${formatNum(pro.subtotal,".")}</td>
+            <td data-title="Opciones" ><button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${objString}')"type="button"><i class="fas fa-trash-alt"></i></button></td>
         `;
         tablePurchase.appendChild(tr);
     });

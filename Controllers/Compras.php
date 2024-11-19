@@ -362,11 +362,11 @@
                 $stock = $pro['is_stock'] ? $pro['stock'] : "N/A";
                 $html.='
                     <tr role="button" onclick="addProduct('.$pro['id'].','."'".$pro['variant_name']."'".','.$pro['product_type'].')">
-                        <td class="text-center"><img src="'.$pro['url'].'" height="50"></td>
-                        <td class="text-center">'.$stock.'</td>
-                        <td>'.$pro['reference'].'</td>
-                        <td>'.$pro['name'].'</td>
-                        <td class="text-end">'.$pro['price_purchase_format'].'</td>
+                        <td data-title="Portada" class="text-center"><img src="'.$pro['url'].'" height="50"  width="50"></td>
+                        <td data-title="Stock" class="text-center">'.$stock.'</td>
+                        <td data-title="Referencia">'.$pro['reference'].'</td>
+                        <td data-title="Artículo">'.$pro['name'].'</td>
+                        <td data-title="Precio" class="text-end">'.$pro['price_purchase_format'].'</td>
                     </tr>
                 ';
             }

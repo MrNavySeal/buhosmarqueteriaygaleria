@@ -233,25 +233,25 @@ function showProducts(){
         let tr = document.createElement("tr");
         tr.classList.add("productToBuy");
         tr.innerHTML = `
-            <td>${pro.reference}</td>
-            <td>
+            <td data-title="Referencia">${pro.reference}</td>
+            <td data-title="Artículo">
                 <p class="m-0 mb-1">${pro.name}</p>
                 <p class="text-secondary m-0 mb-1">${pro.product_type ? pro.variant_name : ""}</p>
             </td>
-            <td  class="text-center">${pro.stock}</td>
-            <td class="text-center">
+            <td data-title="Actual"  class="text-center">${pro.stock}</td>
+            <td data-title="Costo" class="text-center">
                 <input class="form-control text-end" onchange="updateProduct(this,'price','${pro.id}','${pro.variant_name}')" value="${pro.price_purchase}" type="number">
             </td>
-            <td>
+            <td data-title="Tipo">
                 <select class="form-select" onchange="updateProduct(this,'type','${pro.id}','${pro.variant_name}')" type="number">
                     <option value="1">Adición</option>
                     <option value="2">Reducción</option>
                 </select>
             </td>
-            <td><input class="form-control text-center" onchange="updateProduct(this,'qty','${pro.id}','${pro.variant_name}')" value="${pro.qty}" type="number"></td>
-            <td class="text-center">${pro.qty_result}</td>
-            <td class="text-end">$${formatNum(pro.subtotal,".")}</td>
-            <td><button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${pro.id}','${pro.variant_name}')"type="button"><i class="fas fa-trash-alt"></i></button></td>
+            <td data-title="Ajuste"><input class="form-control text-center" onchange="updateProduct(this,'qty','${pro.id}','${pro.variant_name}')" value="${pro.qty}" type="number"></td>
+            <td data-title="Resultado" class="text-center">${pro.qty_result}</td>
+            <td data-title="Valor ajuste" class="text-end">$${formatNum(pro.subtotal,".")}</td>
+            <td data-title="Opciones"><button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${pro.id}','${pro.variant_name}')"type="button"><i class="fas fa-trash-alt"></i></button></td>
         `;
         tablePurchase.appendChild(tr);
     });

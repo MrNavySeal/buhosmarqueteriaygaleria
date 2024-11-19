@@ -30,7 +30,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="table-responsive overflow-y" style="max-height:50vh">
+                <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
                     <table class="table align-middle table-hover">
                         <thead>
                             <tr>
@@ -76,7 +76,7 @@
         </div>
         <div class="col-md-8">
             <h3 class="bg-primary p-1 mb-0 text-center text-white">Información de la compra</h3>
-            <div class="table-responsive overflow-y" style="max-height:50vh">
+            <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
                 <table class="table align-middle">
                     <thead>
                         <tr>

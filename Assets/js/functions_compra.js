@@ -293,17 +293,17 @@ function showProducts(){
         let tr = document.createElement("tr");
         tr.classList.add("productToBuy");
         tr.innerHTML = `
-            <td>${pro.is_stock ? pro.stock : "N/A"}</td>
-            <td>${pro.reference}</td>
-            <td>${pro.name}</td>
-            <td><input class="form-control text-center" onchange="updateProduct(this,'qty','${pro.id}','${pro.variant_name}')" value="${pro.qty}" type="number"></td>
-            <td><input class="form-control" value="${pro.price_base}" onchange="updateProduct(this,'price_base','${pro.id}','${pro.variant_name}')" type="number"></td>
-            <td>${pro.import}</td>
-            <td><input class="form-control" value="${pro.price_purchase}" onchange="updateProduct(this,'price_purchase','${pro.id}','${pro.variant_name}')" type="number"></td>
-            <td><input class="form-control" value="${pro.price_sell}" onchange="updateProduct(this,'price_sell','${pro.id}','${pro.variant_name}')" type="number"></td>
-            <td><input class="form-control" value="${pro.discount_percent}" onchange="updateProduct(this,'discount','${pro.id}','${pro.variant_name}')" value="" type="number"></td>
-            <td class="text-end">$${formatNum(pro.subtotal,".")}</td>
-            <td><button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${pro.id}','${pro.variant_name}')"type="button"><i class="fas fa-trash-alt"></i></button></td>
+            <td data-title="Stock">${pro.is_stock ? pro.stock : "N/A"}</td>
+            <td data-title="Referencia">${pro.reference}</td>
+            <td data-title="Artículo">${pro.name}</td>
+            <td data-title="Cantidad"><input class="form-control text-center" onchange="updateProduct(this,'qty','${pro.id}','${pro.variant_name}')" value="${pro.qty}" type="number"></td>
+            <td data-title="Valor base"><input class="form-control" value="${pro.price_base}" onchange="updateProduct(this,'price_base','${pro.id}','${pro.variant_name}')" type="number"></td>
+            <td data-title="IVA">${pro.import}</td>
+            <td data-title="Valor compra"><input class="form-control" value="${pro.price_purchase}" onchange="updateProduct(this,'price_purchase','${pro.id}','${pro.variant_name}')" type="number"></td>
+            <td data-title="Valor venta"><input class="form-control" value="${pro.price_sell}" onchange="updateProduct(this,'price_sell','${pro.id}','${pro.variant_name}')" type="number"></td>
+            <td data-title="Descuento(%)"><input class="form-control" value="${pro.discount_percent}" onchange="updateProduct(this,'discount','${pro.id}','${pro.variant_name}')" value="" type="number"></td>
+            <td data-title="Subtotal" class="text-end">$${formatNum(pro.subtotal,".")}</td>
+            <td data-title="Opciones"><button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${pro.id}','${pro.variant_name}')"type="button"><i class="fas fa-trash-alt"></i></button></td>
         `;
         tablePurchase.appendChild(tr);
     });
