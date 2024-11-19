@@ -49,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="table-responsive overflow-y" style="max-height:50vh" id="noMoreTables">
+        <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
             <table class="table align-middle table-hover">
                 <thead>
                     <tr class="text-center">

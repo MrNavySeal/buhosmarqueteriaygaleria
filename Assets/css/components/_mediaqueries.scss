@@ -2,15 +2,18 @@
 
 }
 @media screen and (max-width: 768px){
-    #noMoreTables tbody,#noMoreTables tr,#noMoreTables td{
+    .no-more-tables{
+        
+    }
+    .no-more-tables tbody,.no-more-tables tr,.no-more-tables td{
         display: block;
     }
-    #noMoreTables thead tr{
+    .no-more-tables thead tr{
         position: absolute;
         top: -99999px;
         left: -99999px;
     }
-    #noMoreTables td{
+    .no-more-tables td{
         position: relative;
         text-wrap: wrap;
         display: flex;
@@ -19,7 +22,7 @@
         flex-direction: column;
         flex-wrap: wrap;
     }
-    #noMoreTables td::before{
+    .no-more-tables td::before{
         content: attr(data-title);
         font-weight: bold;
     }
