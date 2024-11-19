@@ -1,7 +1,5 @@
 <?php
-    require_once("Controllers/Inventario.php");
     class Pedidos extends Controllers{
-        private $objProduct;
         public function __construct(){
             
             session_start();
@@ -74,10 +72,55 @@
                 if($_SESSION['userData']['roleid'] == 2){
                     $idPersona = $_SESSION['idUser'];
                 }
-                $request = $this->model->selectOrders($idPersona);
+                $strSearch = strClean($_POST['search']);
+                $intPerPage = intval($_POST['perpage']);
+                $intPageNow = intval($_POST['page']);
+                $strInitialDate = strClean($_POST['initial_date']);
+                $strFinalDate = strClean($_POST['final_date']);
+                $data = $this->model->selectOrders($idPersona,$strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate);
+                $request = $data['data'];
+                $intTotalPages = $data['pages'];
+                $total = $this->model->selectTotalOrders($idPersona,$strSearch,$strInitialDate,$strFinalDate);
+                
+                $maxButtons = 4;
+                $totalPages = $intTotalPages;
+                $page = $intPageNow;
+                $startPage = max(1, $page - floor($maxButtons / 2));
+                if ($startPage + $maxButtons - 1 > $totalPages) {
+                    $startPage = max(1, $totalPages - $maxButtons + 1);
+                }
+                $html ="";
+                $htmlPages = '
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" onclick="getData(1)" aria-label="First">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                        </a>
+                    </li>
+                ';
+                for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
+                    $htmlPages .= '<li class="page-item">
+                        <a class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getData('.$i.')">'.$i.'</a>
+                    </li>';
+                }
+                $htmlPages .= '
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" onclick="getData('.($intTotalPages).')" aria-label="Last">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                        </a>
+                    </li>
+                ';
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
-
                         $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['idorder'].')"><i class="fas fa-eye"></i></button>';
                         $btnWpp="";
                         $btnPdf='<a href="'.base_url().'/factura/generarFactura/'.$request[$i]['idorder'].'" target="_blank" class="btn btn-primary text-white m-1" type="button" title="Imprimir factura"><i class="fas fa-print"></i></a>';
@@ -125,13 +168,36 @@
                         $request[$i]['status'] = $status;
                         $request[$i]['statusorderval'] =  $request[$i]['statusorder'];
                         $request[$i]['statusorder'] = $statusOrder;
-                        $request[$i]['options'] = $btnView.$btnWpp.$btnPdf.$btnPaypal.$btnEdit.$btnDelete;
                         $request[$i]['format_pendent'] = formatNum($request[$i]['total_pendent']);
                         $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
                         $request[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
+                        $pro = $request[$i];
+                        $html.='
+                        <tr>
+                            <td data-title="ID" class="text-center">'.$pro['idorder'].'</td>
+                            <td data-title="Transacción" class="text-center">'.$pro['idtransaction'].'</td>
+                            <td data-title="Fecha" class="text-center">'.$pro['date'].'</td>
+                            <td data-title="Nombre">'.$pro['name'].'</td>
+                            <td data-title="Correo">'.$pro['email'].'</td>
+                            <td data-title="Teléfono">'.$pro['phone'].'</td>
+                            <td data-title="CC/NIT">'.$pro['identification'].'</td>
+                            <td data-title="Método de pago" class="text-center">'.$pro['type'].'</td>
+                            <td data-title="Total" class="text-end">'.$pro['format_amount'].'</td>
+                            <td data-title="Total pendiente" class="text-end">'.$pro['format_pendent'].'</td>
+                            <td data-title="Estado de pago" class="text-center">'.$status.'</td>
+                            <td data-title="Estado de pedido" class="text-center">'.$statusOrder.'</td>
+                            <td data-title="Opciones" ><div class="d-flex">'.$btnView.$btnWpp.$btnPdf.$btnPaypal.$btnEdit.$btnDelete.'</div></td>
+                        </tr>
+                        ';
                     }
                 }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                $arrData = array(
+                    "html"=>$html,
+                    "html_pages"=>$htmlPages,
+                    "total_records"=>$total,
+                    "data"=>$request
+                );
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
