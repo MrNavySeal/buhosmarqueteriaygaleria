@@ -42,7 +42,7 @@
           const MD = "<?=$company['currency']['code']?>";
         </script>
         
-        <script type="text/javascript" src="<?= media(); ?>/js/functions.js"></script>
+        <script type="text/javascript" src="<?= media()."/js/functions.js?v=".rand()?>"></script>
         
         <?php if(isset($data['panelapp'])){?>
         <script src="<?=media();?>/js/<?=$data['panelapp']."?v=".rand()?>"></script>

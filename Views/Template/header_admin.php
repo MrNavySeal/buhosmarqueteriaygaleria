@@ -44,8 +44,8 @@
         <link href="<?= media();?>/plugins/datepicker/jquery-ui.min.css" rel="stylesheet">
         <link rel="stylesheet" href="<?=media();?>/plugins/datatables/datatables.min.css">
         <!------------------------------My styles--------------------------------->
-        <link rel="stylesheet" href="<?=media()?>/css/style.css">
-        <link rel="stylesheet" href="<?=media()?>/css/marco.css">
+        <link rel="stylesheet" href="<?=media()."/css/style.css?v=".rand()?>">
+        <link rel="stylesheet" href="<?=media()."/css/marco.css?v=".rand()?>">
     </head>
     <body>
         <div class="position-relative bg-white d-flex p-0">
