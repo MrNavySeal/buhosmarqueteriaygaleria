@@ -343,19 +343,19 @@
             $html ="";
             $htmlPages = '
                 <li class="page-item">
-                    <a class="page-link text-secondary" href="#" onclick="getProducts(1)" aria-label="First">
+                    <button type="button" class="page-link text-secondary"  onclick="getProducts(1)" aria-label="First">
                         <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
-                    </a>
+                    </button>
                 </li>
                 <li class="page-item">
-                    <a class="page-link text-secondary" href="#" onclick="getProducts('.max(1, $page-1).')" aria-label="Previous">
+                    <button type="button" class="page-link text-secondary"  onclick="getProducts('.max(1, $page-1).')" aria-label="Previous">
                         <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
-                    </a>
+                    </button>
                 </li>
             ';
             for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
                 $htmlPages .= '<li class="page-item">
-                    <a class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getProducts('.$i.')">'.$i.'</a>
+                    <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" onclick="getProducts('.$i.')">'.$i.'</button>
                 </li>';
             }
             foreach ($data as $pro) {
@@ -372,14 +372,14 @@
             }
             $htmlPages .= '
                 <li class="page-item">
-                    <a class="page-link text-secondary" href="#" onclick="getProducts('.min($totalPages, $page+1).')" aria-label="Next">
+                    <button type="button" class="page-link text-secondary"  onclick="getProducts('.min($totalPages, $page+1).')" aria-label="Next">
                         <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
-                    </a>
+                    </button>
                 </li>
                 <li class="page-item">
-                    <a class="page-link text-secondary" href="#" onclick="getProducts('.($pages).')" aria-label="Last">
+                    <button type="button" class="page-link text-secondary"  onclick="getProducts('.($pages).')" aria-label="Last">
                         <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
-                    </a>
+                    </button>
                 </li>
             ';
             return array("products"=>$html,"pages"=>$htmlPages);
