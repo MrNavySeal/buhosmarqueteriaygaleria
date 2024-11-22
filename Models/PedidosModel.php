@@ -37,6 +37,17 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+        public function selectTotalCreditOrders($idPerson, $strSearch,$strInitialDate,$strFinalDate){
+            $whre="";
+            if($idPerson!="")$whre=" AND personid=$idPerson";
+            $sql = "SELECT COALESCE(COUNT(*),0) as total
+            FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
+            OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
+            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND date BETWEEN '$strInitialDate' AND '$strFinalDate'
+            AND (type = 'credito' OR status = 'pendent') $whre";    
+            $request = $this->select($sql)['total'];
+            return $request;
+        }
         public function selectOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
             $start = ($intPageNow-1)*$intPerPage;
             $whre="";
@@ -97,7 +108,8 @@
             }
             return  array("data"=>$request,"pages"=>$totalPages);
         }
-        public function selectCreditOrders($idPerson){
+        public function selectCreditOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
+            $start = ($intPageNow-1)*$intPerPage;
             $whre="";
             if($idPerson!="")$whre=" AND personid=$idPerson";
             $sql = "SELECT 
@@ -119,8 +131,20 @@
             number_guide,
             DATE_FORMAT(date, '%d/%m/%Y') as date,
             DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat  
-            FROM orderdata WHERE (type = 'credito' OR status = 'pendent') $whre ORDER BY idorder DESC";      
+            FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
+            OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
+            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND date BETWEEN '$strInitialDate' AND '$strFinalDate'
+            AND (type = 'credito' OR status = 'pendent') $whre 
+            ORDER BY idorder DESC LIMIT $start,$intPerPage";      
             $request = $this->select_all($sql);
+
+            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
+            OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
+            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND date BETWEEN '$strInitialDate' AND '$strFinalDate'
+            AND (type = 'credito' OR status = 'pendent') $whre";    
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
             if(!empty($request)){
                 for ($i=0; $i < count($request); $i++) { 
                     $total = $request[$i]['amount'];
@@ -142,7 +166,7 @@
                     $request[$i]['total_advance'] = intval($advance);
                 }
             }
-            return $request;
+            return  array("data"=>$request,"pages"=>$totalPages);
         }
         public function selectDetailOrders($idPerson){
             $whre="";

@@ -3,56 +3,43 @@
 
 let order = {};
 let arrAdvance=[];
+let arrData = [];
 let modalView = document.querySelector("#modalView") ? new bootstrap.Modal(document.querySelector("#modalView")) :"";
 let modalEdit = document.querySelector("#modalEdit") ? new bootstrap.Modal(document.querySelector("#modalEdit")) :"";
 let modalAdvance = document.querySelector("#modalAdvance") ? new bootstrap.Modal(document.querySelector("#modalAdvance")) :"";
-
 let totalPendent = 0;
-let table = new DataTable("#tableData",{
-    "dom": 'lfBrtip',
-    "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-    },
-    "ajax":{
-        "url": " "+base_url+"/pedidos/getCreditOrders",
-        "dataSrc":""
-    },
-    columns: [
-        { data: 'idorder' },
-        { data: 'idtransaction' },
-        { data: 'date' },
-        { data: 'name' },
-        { data: 'email' },
-        { data: 'phone'},
-        { data: 'identification' },
-        { data: 'type' },
-        { data: 'format_amount' },
-        { data: 'format_pendent' },
-        { data: 'status' },
-        { data: 'statusorder' },
-        { data: 'options' },
-    ],
-    responsive: true,
-    buttons: [
-        {
-            "extend": "excelHtml5",
-            "text": "<i class='fas fa-file-excel'></i> Excel",
-            "titleAttr":"Exportar a Excel",
-            "className": "btn btn-success mt-2"
-        }
-    ],
-    order: [[0, 'desc']],
-    pagingType: 'full',
-    scrollY:'400px',
-    //scrollX: true,
-    "aProcessing":true,
-    "aServerSide":true,
-    "iDisplayLength": 10,
-});
+let tableData = document.querySelector("#tableData");
+const searchHtml = document.querySelector("#txtSearch");
+const perPage = document.querySelector("#perPage");
+const initialDateHtml = document.querySelector("#txtInitialDate");
+const finallDateHtml = document.querySelector("#txtFinalDate");
 
+window.addEventListener("load",function(){
+    initialDateHtml.value = new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0];
+    finallDateHtml.value = new Date().toISOString().split("T")[0]; 
+    getData();
+});
+searchHtml.addEventListener("input",function(){getData();});
+perPage.addEventListener("change",function(){getData();});
+initialDateHtml.addEventListener("input",function(){getData();});
+finallDateHtml.addEventListener("input",function(){getData();});
+
+async function getData(page = 1){
+    const formData = new FormData();
+    formData.append("page",page);
+    formData.append("perpage",perPage.value);
+    formData.append("search",searchHtml.value);
+    formData.append("initial_date",initialDateHtml.value);
+    formData.append("final_date",finallDateHtml.value);
+    const response = await fetch(base_url+"/pedidos/getCreditOrders",{method:"POST",body:formData});
+    const objData = await response.json();
+    arrData = objData.data;
+    tableData.innerHTML =objData.html;
+    document.querySelector("#pagination").innerHTML = objData.html_pages;
+    document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
+}
 function viewItem(id){
     document.querySelector("#tablePurchaseDetail").innerHTML ="";
-    const arrData = table.rows().data().toArray();
     let index = arrData.findIndex(e=>e.idorder==id);
     let order = arrData[index];
     let detail = order.detail;
@@ -153,7 +140,6 @@ function viewItem(id){
 }
 function viewAdvance(id){
     arrAdvance = [];
-    const arrData = table.rows().data().toArray();
     let index = arrData.findIndex(e=>e.idorder==id);
     let order = arrData[index];
     let totalAdvance = order.total_advance;
@@ -184,7 +170,6 @@ function viewAdvance(id){
     document.querySelector("#viewTotalAdvance").innerHTML = "$"+formatNum(totalAdvance,".");
 }
 function editItem(id){
-    const arrData = table.rows().data().toArray();
     let index = arrData.findIndex(e=>e.idorder==id);
     let order = arrData[index];
     document.querySelector("#statusOrder").value = order.statusorderval;
@@ -202,7 +187,7 @@ async function updateItem(){
     const objData = await response.json();
     if(objData.status){
         Swal.fire("Actualizado",objData.msg,"success");
-        table.ajax.reload();
+        getData();
         modalEdit.hide();
     }else{
         Swal.fire("Error",objData.msg,"error");
@@ -228,7 +213,7 @@ function deleteItem(id){
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Anulado",objData.msg,"success");
-                    table.ajax.reload();
+                    getData();
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }
@@ -239,9 +224,8 @@ function deleteItem(id){
 function advanceItem(id){
     document.querySelector("#tablePurchaseAdvance").innerHTML ="";
     arrAdvance = [];
-    const arrOrder = table.rows().data().toArray();
-    let index = arrOrder.findIndex(e=>e.idorder==id);
-    order = arrOrder[index];
+    let index = arrData.findIndex(e=>e.idorder==id);
+    order = arrData[index];
     let totalAdvance = order.total_advance;
     let totalPendent = order.amount;
     arrAdvance = order.detail_advance;
@@ -346,7 +330,7 @@ async function saveAdvance(){
     const objData = await response.json();
     if(objData.status){
         Swal.fire("Guardado",objData.msg,"success");
-        table.ajax.reload();
+        getData();
         modalAdvance.hide();
     }else{
         Swal.fire("Error",objData.msg,"error");
