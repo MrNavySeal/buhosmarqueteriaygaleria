@@ -345,7 +345,54 @@
                 if($_SESSION['userData']['roleid'] == 2){
                     $idPersona = $_SESSION['idUser'];
                 }
-                $request = $this->model->selectDetailOrders($idPersona);
+                $strSearch = strClean($_POST['search']);
+                $intPerPage = intval($_POST['perpage']);
+                $intPageNow = intval($_POST['page']);
+                $strInitialDate = strClean($_POST['initial_date']);
+                $strFinalDate = strClean($_POST['final_date']);
+                $data = $this->model->selectDetailOrders($idPersona,$strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate);
+                $request = $data['data'];
+                $intTotalPages = $data['pages'];
+                $total = $this->model->selectTotalDetailOrders($idPersona,$strSearch,$strInitialDate,$strFinalDate);
+
+                $maxButtons = 4;
+                $totalPages = $intTotalPages;
+                $page = $intPageNow;
+                $startPage = max(1, $page - floor($maxButtons / 2));
+                if ($startPage + $maxButtons - 1 > $totalPages) {
+                    $startPage = max(1, $totalPages - $maxButtons + 1);
+                }
+                $html ="";
+                $htmlPages = '
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData(1)" aria-label="First">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                        </button>
+                    </li>
+                ';
+                for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
+                    $htmlPages .= '<li class="page-item">
+                        <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getData('.$i.')">'.$i.'</button>
+                    </li>';
+                }
+                $htmlPages .= '
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.($intTotalPages).')" aria-label="Last">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                        </button>
+                    </li>
+                ';
+                
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
                         $data = $request[$i];
@@ -409,14 +456,33 @@
                                 $description = $name.'<ul>'.$textDetail.'</ul>';
                             }
                         }
-                        $total = $data['price'] * $data['quantity'];
                         $request[$i] = $data;
-                        $request[$i]['total'] = formatNum($total);
+                        $request[$i]['total'] = formatNum($data['price'] * $data['quantity']);
                         $request[$i]['price'] = formatNum($request[$i]['price']);
                         $request[$i]['description'] = $description;
+                        $pro=$request[$i];
+                        $html.='
+                        <tr>
+                            <td data-title="No. Factura" class="text-center">'.$pro['idorder'].'</td>
+                            <td data-title="No. Transacción" class="text-center">'.$pro['idtransaction'].'</td>
+                            <td data-title="Fecha" class="text-center">'.$pro['date'].'</td>
+                            <td data-title="CC/NIT">'.$pro['identification'].'</td>
+                            <td data-title="Nombre">'.$pro['name'].'</td>
+                            <td data-title="Descripción">'.$description.'</td>
+                            <td data-title="Precio">'.$pro['price'].'</td>
+                            <td data-title="Cantidad" class="text-center">'.$pro['quantity'].'</td>
+                            <td data-title="Total" class="text-end">'.$pro['total'].'</td>
+                        </tr>
+                        ';
                     }
                 }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                $arrData = array(
+                    "html"=>$html,
+                    "html_pages"=>$htmlPages,
+                    "total_records"=>$total,
+                    "data"=>$request
+                );
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             }
             die();
         }

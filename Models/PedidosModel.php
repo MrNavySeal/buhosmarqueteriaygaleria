@@ -48,6 +48,19 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+        public function selectTotalDetailOrders($idPerson, $strSearch,$strInitialDate,$strFinalDate){
+            $whre="";
+            if($idPerson!="")$whre=" AND personid=$idPerson";
+            $sql = "SELECT COALESCE(COUNT(*),0) as total
+            FROM orderdata as cab  
+            INNER JOIN orderdetail as det ON cab.idorder = det.orderid
+            WHERE (det.description like '$strSearch%' OR det.price like '$strSearch%' OR det.reference like '$strSearch%'
+            OR cab.identification like '$strSearch%' OR cab.name like '$strSearch%' OR cab.name like '$strSearch%'
+            OR cab.idtransaction like '$strSearch%' OR cab.idorder like '$strSearch%' ) AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate'
+            $whre";       
+            $request = $this->select($sql)['total'];
+            return $request;
+        }
         public function selectOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
             $start = ($intPageNow-1)*$intPerPage;
             $whre="";
@@ -168,9 +181,10 @@
             }
             return  array("data"=>$request,"pages"=>$totalPages);
         }
-        public function selectDetailOrders($idPerson){
+        public function selectDetailOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
+            $start = ($intPageNow-1)*$intPerPage;
             $whre="";
-            if($idPerson!="")$whre=" WHERE cab.personid=$idPerson";
+            if($idPerson!="")$whre=" AND cab.personid=$idPerson";
             $sql = "SELECT 
             cab.idorder,
             cab.idtransaction,
@@ -184,9 +198,23 @@
             det.topic
             FROM orderdata as cab  
             INNER JOIN orderdetail as det ON cab.idorder = det.orderid
-            $whre ORDER BY cab.idorder DESC";      
+            WHERE (det.description like '$strSearch%' OR det.price like '$strSearch%' OR det.reference like '$strSearch%'
+            OR cab.identification like '$strSearch%' OR cab.name like '$strSearch%' OR cab.name like '$strSearch%'
+            OR cab.idtransaction like '$strSearch%' OR cab.idorder like '$strSearch%' )  AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate'
+            $whre ORDER BY cab.idorder DESC LIMIT $start,$intPerPage";      
             $request = $this->select_all($sql);
-            return $request;
+
+            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            FROM orderdata as cab  
+            INNER JOIN orderdetail as det ON cab.idorder = det.orderid
+            WHERE (det.description like '$strSearch%' OR det.price like '$strSearch%' OR det.reference like '$strSearch%'
+            OR cab.identification like '$strSearch%' OR cab.name like '$strSearch%' OR cab.name like '$strSearch%'
+            OR cab.idtransaction like '$strSearch%' OR cab.idorder like '$strSearch%' )  AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate'
+            $whre";    
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
+
+            return  array("data"=>$request,"pages"=>$totalPages);
         }
         public function selectTransaction(string $intIdTransaction,$idPerson){
             $objTransaction = array();
