@@ -15,7 +15,7 @@
         public function venta(){
             if($_SESSION['permitsModule']['w']){
                 $data['page_tag'] = "Punto de venta";
-                $data['page_title'] = "Punto de venta";
+                $data['page_title'] = "Punto de venta | Pedidos";
                 $data['page_name'] = "punto de venta";
                 $data['panelapp'] = "functions_orders_venta.js";
                 $data['framing'] = "functions_molding_custom.js";

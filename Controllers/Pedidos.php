@@ -15,7 +15,7 @@
         public function pedidos(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "pedido";
-                $data['page_title'] = "Pedidos | Panel";
+                $data['page_title'] = "Pedidos";
                 $data['page_name'] = "pedidos";
                 $data['panelapp'] = "functions_orders.js";
                 $this->views->getView($this,"pedidos",$data);
@@ -27,7 +27,7 @@
         public function creditos(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "pedido";
-                $data['page_title'] = "Pedidos a crédito | Panel";
+                $data['page_title'] = "Pedidos a crédito | Pedidos";
                 $data['page_name'] = "creditos";
                 $data['panelapp'] = "functions_orders_creditos.js";
                 $this->views->getView($this,"creditos",$data);
@@ -39,7 +39,7 @@
         public function detalle(){
             if($_SESSION['permitsModule']['r']){
                 $data['page_tag'] = "pedido";
-                $data['page_title'] = "Detalle de pedidos | Panel";
+                $data['page_title'] = "Detalle de pedidos | Pedidos";
                 $data['page_name'] = "creditos";
                 $data['panelapp'] = "functions_orders_detail.js";
                 $this->views->getView($this,"detalle",$data);
@@ -56,7 +56,7 @@
                 }
                 $data['transaction'] = $this->model->selectTransaction($idTransaction,$idPerson);
                 $data['page_tag'] = "Transacción";
-                $data['page_title'] = "Transacción";
+                $data['page_title'] = "Transacción | Pedidos";
                 $data['page_name'] = "transaccion";
                 $data['panelapp'] = "functions_orders.js";
                 $this->views->getView($this,"transaccion",$data);
