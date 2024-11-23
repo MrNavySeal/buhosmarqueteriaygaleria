@@ -264,10 +264,10 @@
                             <td data-title="Fecha" class="text-center">'.$pro['date'].'</td>
                             <td data-title="Proveedor">'.$pro['supplier'].'</td>
                             <td data-title="Atendió">'.$pro['user'].'</td>
-                            <td data-title="Método de pago">'.$pro['format_total'].'</td>
-                            <td data-title="Total">'.$pro['format_pendent'].'</td>
-                            <td data-title="Total pendiente" class="text-center">'.$pro['type'].'</td>
-                            <td data-title="Estado" class="text-end">'.$status.'</td>
+                            <td data-title="Método de pago" class="text-center">'.$pro['type'].'</td>
+                            <td data-title="Total" class="text-end">'.$pro['format_total'].'</td>
+                            <td data-title="Total pendiente" class="text-end">'.$pro['format_pendent'].'</td>
+                            <td data-title="Estado" class="text-center">'.$status.'</td>
                             <td data-title="Opciones" ><div class="d-flex">'.$pro['options'].'</div></td>
                         </tr>
                         ';
@@ -363,10 +363,10 @@
                             <td data-title="Fecha" class="text-center">'.$pro['date'].'</td>
                             <td data-title="Proveedor">'.$pro['supplier'].'</td>
                             <td data-title="Atendió">'.$pro['user'].'</td>
-                            <td data-title="Método de pago">'.$pro['format_total'].'</td>
-                            <td data-title="Total">'.$pro['format_pendent'].'</td>
-                            <td data-title="Total pendiente" class="text-center">'.$pro['type'].'</td>
-                            <td data-title="Estado" class="text-end">'.$status.'</td>
+                            <td data-title="Método de pago" class="text-center">'.$pro['type'].'</td>
+                            <td data-title="Total" class="text-end">'.$pro['format_total'].'</td>
+                            <td data-title="Total pendiente" class="text-end">'.$pro['format_pendent'].'</td>
+                            <td data-title="Estado" class="text-center">'.$status.'</td>
                             <td data-title="Opciones" ><div class="d-flex">'.$pro['options'].'</div></td>
                         </tr>
                         ';
