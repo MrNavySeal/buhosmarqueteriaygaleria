@@ -188,7 +188,53 @@
         }
         public function getPurchases(){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectPurchases();
+                $strSearch = strClean($_POST['search']);
+                $intPerPage = intval($_POST['perpage']);
+                $intPageNow = intval($_POST['page']);
+                $strInitialDate = strClean($_POST['initial_date']);
+                $strFinalDate = strClean($_POST['final_date']);
+                $data = $this->model->selectPurchases($strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate);
+                $request = $data['data'];
+                $intTotalPages = $data['pages'];
+                $total = $this->model->selectTotalPurchases($strSearch,$strInitialDate,$strFinalDate);
+                
+                $maxButtons = 4;
+                $totalPages = $intTotalPages;
+                $page = $intPageNow;
+                $startPage = max(1, $page - floor($maxButtons / 2));
+                if ($startPage + $maxButtons - 1 > $totalPages) {
+                    $startPage = max(1, $totalPages - $maxButtons + 1);
+                }
+                $html ="";
+                $htmlPages = '
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData(1)" aria-label="First">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                        </button>
+                    </li>
+                ';
+                for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
+                    $htmlPages .= '<li class="page-item">
+                        <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getData('.$i.')">'.$i.'</button>
+                    </li>';
+                }
+                $htmlPages .= '
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" onclick="getData('.($intTotalPages).')" aria-label="Last">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                        </button>
+                    </li>
+                ';
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
                         $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['idpurchase'].')"><i class="fas fa-eye"></i></button>';
@@ -210,15 +256,82 @@
                         $request[$i]['format_pendent'] = formatNum($request[$i]['total_pendent']);
                         $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
                         $request[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
+                        $pro = $request[$i];
+                        $html.='
+                        <tr>
+                            <td data-title="No. Factura" class="text-center">'.$pro['idpurchase'].'</td>
+                            <td data-title="Factura Proveedor" class="text-center">'.$pro['cod_bill'].'</td>
+                            <td data-title="Fecha" class="text-center">'.$pro['date'].'</td>
+                            <td data-title="Proveedor">'.$pro['supplier'].'</td>
+                            <td data-title="Atendió">'.$pro['user'].'</td>
+                            <td data-title="Método de pago">'.$pro['format_total'].'</td>
+                            <td data-title="Total">'.$pro['format_pendent'].'</td>
+                            <td data-title="Total pendiente" class="text-center">'.$pro['type'].'</td>
+                            <td data-title="Estado" class="text-end">'.$status.'</td>
+                            <td data-title="Opciones" ><div class="d-flex">'.$pro['options'].'</div></td>
+                        </tr>
+                        ';
                     }
                 }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                $arrData = array(
+                    "html"=>$html,
+                    "html_pages"=>$htmlPages,
+                    "total_records"=>$total,
+                    "data"=>$request
+                );
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
         public function getCreditPurchases(){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectCreditPurchases();
+                $strSearch = strClean($_POST['search']);
+                $intPerPage = intval($_POST['perpage']);
+                $intPageNow = intval($_POST['page']);
+                $strInitialDate = strClean($_POST['initial_date']);
+                $strFinalDate = strClean($_POST['final_date']);
+                $data = $this->model->selectCreditPurchases($strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate);
+                $request = $data['data'];
+                $intTotalPages = $data['pages'];
+                $total = $this->model->selectTotalCreditPurchases($strSearch,$strInitialDate,$strFinalDate);
+                $maxButtons = 4;
+                $totalPages = $intTotalPages;
+                $page = $intPageNow;
+                $startPage = max(1, $page - floor($maxButtons / 2));
+                if ($startPage + $maxButtons - 1 > $totalPages) {
+                    $startPage = max(1, $totalPages - $maxButtons + 1);
+                }
+                $html ="";
+                $htmlPages = '
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData(1)" aria-label="First">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                        </button>
+                    </li>
+                ';
+                for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
+                    $htmlPages .= '<li class="page-item">
+                        <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getData('.$i.')">'.$i.'</button>
+                    </li>';
+                }
+                $htmlPages .= '
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" onclick="getData('.($intTotalPages).')" aria-label="Last">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                        </button>
+                    </li>
+                ';
+                
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
                         $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['idpurchase'].')"><i class="fas fa-eye"></i></button>';
@@ -230,7 +343,7 @@
                         }else if($request[$i]['status'] == 2){
                             $status='<span class="badge me-1 bg-danger">Anulado</span>';
                         }else{
-                            $btnAdvance = '<button class="btn btn-success m-1 text-white" type="button" title="Abonar" onclick="advanceItem('.$request[$i]['idpurchase'].')"><i class="fas fa-hand-holding-usd"></i></button>';
+                            $btnAdvance = '<button class="btn btn-warning m-1" type="button" title="Abonar" onclick="advanceItem('.$request[$i]['idpurchase'].')"><i class="fas fa-hand-holding-usd"></i></button>';
                             $status='<span class="badge me-1 bg-warning text-black">Crédito</span>';
                         }
                         if($_SESSION['permitsModule']['d'] && $request[$i]['status']!=2){
@@ -242,23 +355,111 @@
                         $request[$i]['format_pendent'] = formatNum($request[$i]['total_pendent']);
                         $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
                         $request[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
+                        $pro = $request[$i];
+                        $html.='
+                        <tr>
+                            <td data-title="No. Factura" class="text-center">'.$pro['idpurchase'].'</td>
+                            <td data-title="Factura Proveedor" class="text-center">'.$pro['cod_bill'].'</td>
+                            <td data-title="Fecha" class="text-center">'.$pro['date'].'</td>
+                            <td data-title="Proveedor">'.$pro['supplier'].'</td>
+                            <td data-title="Atendió">'.$pro['user'].'</td>
+                            <td data-title="Método de pago">'.$pro['format_total'].'</td>
+                            <td data-title="Total">'.$pro['format_pendent'].'</td>
+                            <td data-title="Total pendiente" class="text-center">'.$pro['type'].'</td>
+                            <td data-title="Estado" class="text-end">'.$status.'</td>
+                            <td data-title="Opciones" ><div class="d-flex">'.$pro['options'].'</div></td>
+                        </tr>
+                        ';
                     }
                 }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                $arrData = array(
+                    "html"=>$html,
+                    "html_pages"=>$htmlPages,
+                    "total_records"=>$total,
+                    "data"=>$request
+                );
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);;
             }
             die();
         }
         public function getDetailPurchases(){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectDetailPurchases();
+                $strSearch = strClean($_POST['search']);
+                $intPerPage = intval($_POST['perpage']);
+                $intPageNow = intval($_POST['page']);
+                $strInitialDate = strClean($_POST['initial_date']);
+                $strFinalDate = strClean($_POST['final_date']);
+                $data = $this->model->selectDetailPurchases($strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate);
+                $request = $data['data'];
+                $intTotalPages = $data['pages'];
+                $total = $this->model->selectTotalDetailPurchases($strSearch,$strInitialDate,$strFinalDate);
+                $maxButtons = 4;
+                $totalPages = $intTotalPages;
+                $page = $intPageNow;
+                $startPage = max(1, $page - floor($maxButtons / 2));
+                if ($startPage + $maxButtons - 1 > $totalPages) {
+                    $startPage = max(1, $totalPages - $maxButtons + 1);
+                }
+                $html ="";
+                $htmlPages = '
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData(1)" aria-label="First">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                        </button>
+                    </li>
+                ';
+                for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
+                    $htmlPages .= '<li class="page-item">
+                        <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getData('.$i.')">'.$i.'</button>
+                    </li>';
+                }
+                $htmlPages .= '
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button type="button" class="page-link text-secondary" onclick="getData('.($intTotalPages).')" aria-label="Last">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                        </button>
+                    </li>
+                ';
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
                         $request[$i]['price_purchase'] = formatNum($request[$i]['price_purchase']);
                         $request[$i]['price_discount'] = formatNum($request[$i]['price_discount']);
                         $request[$i]['subtotal'] = formatNum($request[$i]['subtotal']);
+                        $pro = $request[$i];
+                        $html.='
+                        <tr>
+                            <td data-title="No. Factura" class="text-center">'.$pro['purchase_id'].'</td>
+                            <td data-title="Factura Proveedor" class="text-center">'.$pro['cod_bill'].'</td>
+                            <td data-title="Fecha" class="text-center">'.$pro['date'].'</td>
+                            <td data-title="Documento">'.$pro['document'].'</td>
+                            <td data-title="Proveedor">'.$pro['supplier'].'</td>
+                            <td data-title="Artículo">'.$pro['name'].'</td>
+                            <td data-title="Cantidad">'.$pro['qty'].'</td>
+                            <td data-title="Precio compra" class="text-end">'.$pro['price_purchase'].'</td>
+                            <td data-title="Descuento" class="text-end">'.$pro['price_discount'].'</td>
+                            <td data-title="Unidad" class="text-center">'.$pro['measure'].'</td>
+                            <td data-title="Total" class="text-end">'.$pro['subtotal'].'</td>
+                        </tr>
+                        ';
                     }
                 }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                $arrData = array(
+                    "html"=>$html,
+                    "html_pages"=>$htmlPages,
+                    "total_records"=>$total,
+                    "data"=>$request
+                );
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             }
             die();
         }

@@ -1,48 +1,39 @@
 let purchase = {};
 let arrAdvance=[];
+let arrData = [];
 let modalView = document.querySelector("#modalView") ? new bootstrap.Modal(document.querySelector("#modalView")) :"";
 let modalAdvance = document.querySelector("#modalAdvance") ? new bootstrap.Modal(document.querySelector("#modalAdvance")) :"";
 let totalPendent = 0;
-let table = new DataTable("#tableData",{
-    "dom": 'lfBrtip',
-    "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-    },
-    "ajax":{
-        "url": " "+base_url+"/Compras/getPurchases",
-        "dataSrc":""
-    },
-    columns: [
-        
-        { data: 'idpurchase'},
-        { data: 'cod_bill' },
-        { data: 'date' },
-        { data: 'supplier' },
-        { data: 'user' },
-        { data: 'type' },
-        { data: 'format_total' },
-        { data: 'format_pendent' },
-        { data: 'status' },
-        { data: 'options' },
-    ],
-    responsive: true,
-    buttons: [
-        {
-            "extend": "excelHtml5",
-            "text": "<i class='fas fa-file-excel'></i> Excel",
-            "titleAttr":"Exportar a Excel",
-            "className": "btn btn-success mt-2"
-        }
-    ],
-    order: [[0, 'desc']],
-    pagingType: 'full',
-    scrollY:'400px',
-    //scrollX: true,
-    "aProcessing":true,
-    "aServerSide":true,
-    "iDisplayLength": 10,
+const searchHtml = document.querySelector("#txtSearch");
+const perPage = document.querySelector("#perPage");
+const initialDateHtml = document.querySelector("#txtInitialDate");
+const finallDateHtml = document.querySelector("#txtFinalDate");
+
+searchHtml.addEventListener("input",function(){getData();});
+perPage.addEventListener("change",function(){getData();});
+initialDateHtml.addEventListener("input",function(){getData();});
+finallDateHtml.addEventListener("input",function(){getData();});
+
+window.addEventListener("load",function(){
+    initialDateHtml.value = new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0];
+    finallDateHtml.value = new Date().toISOString().split("T")[0]; 
+    getData();
 });
 
+async function getData(page = 1){
+    const formData = new FormData();
+    formData.append("page",page);
+    formData.append("perpage",perPage.value);
+    formData.append("search",searchHtml.value);
+    formData.append("initial_date",initialDateHtml.value);
+    formData.append("final_date",finallDateHtml.value);
+    const response = await fetch(base_url+"/compras/getPurchases",{method:"POST",body:formData});
+    const objData = await response.json();
+    arrData = objData.data;
+    tableData.innerHTML =objData.html;
+    document.querySelector("#pagination").innerHTML = objData.html_pages;
+    document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
+}
 function deleteItem(id){
     Swal.fire({
         title:"¿Estás segur@ de anular la factura?",
@@ -61,7 +52,7 @@ function deleteItem(id){
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Anulado",objData.msg,"success");
-                    table.ajax.reload();
+                    getData();
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }
@@ -71,9 +62,8 @@ function deleteItem(id){
 }
 function viewAdvance(id){
     arrAdvance = [];
-    const arrPurchase = table.rows().data().toArray();
-    let index = arrPurchase.findIndex(e=>e.idpurchase==id);
-    purchase = arrPurchase[index];
+    let index = arrData.findIndex(e=>e.idpurchase==id);
+    purchase = arrData[index];
     let totalAdvance = purchase.total_advance;
     let totalPendent = purchase.total;
     arrAdvance = purchase.detail_advance;
@@ -105,9 +95,8 @@ function viewAdvance(id){
 }
 function viewItem(id){
     document.querySelector("#tablePurchaseDetail").innerHTML ="";
-    const arrPurchase = table.rows().data().toArray();
-    let index = arrPurchase.findIndex(e=>e.idpurchase==id);
-    let purchase = arrPurchase[index];
+    let index = arrData.findIndex(e=>e.idpurchase==id);
+    let purchase = arrData[index];
     let detail = purchase.detail;
     let tableDetail = document.querySelector("#tablePurchaseDetail");
     let subtotal = 0;

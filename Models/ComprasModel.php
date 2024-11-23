@@ -1,4 +1,7 @@
 <?php 
+    /*ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);*/
     class ComprasModel extends Mysql{
         private $intId;
         private $strNit;
@@ -113,27 +116,72 @@
             
             return $return;
         }
-        public function selectPurchases(){
+        public function selectTotalPurchases(string $strSearch,$strInitialDate,$strFinalDate){
+            $sql = "SELECT COALESCE(COUNT(*),0) as total
+            FROM purchase p
+            INNER JOIN supplier s ON p.supplierid = s.id_supplier
+            INNER JOIN person u ON p.user = u.idperson
+            WHERE (p.idpurchase like '$strSearch%' OR s.name like '$strSearch%' OR p.cod_bill like '$strSearch%' OR p.type like '$strSearch%') 
+            AND p.date BETWEEN '$strInitialDate' AND '$strFinalDate'";    
+            $request = $this->select($sql)['total'];
+            return $request;
+        }
+        public function selectTotalCreditPurchases(string $strSearch,$strInitialDate,$strFinalDate){
+            $sql = "SELECT COALESCE(COUNT(*),0) as total
+            FROM purchase p
+            INNER JOIN supplier s ON p.supplierid = s.id_supplier
+            INNER JOIN person u ON p.user = u.idperson
+            WHERE (p.idpurchase like '$strSearch%' OR s.name like '$strSearch%' OR p.cod_bill like '$strSearch%' OR p.type like '$strSearch%') 
+            AND p.date BETWEEN '$strInitialDate' AND '$strFinalDate' AND p.type = 'credito'";    
+            $request = $this->select($sql)['total'];
+            return $request;
+        }
+        public function selectTotalDetailPurchases(string $strSearch,$strInitialDate,$strFinalDate){
+            $sql = "SELECT COALESCE(COUNT(*),0) as total
+            FROM purchase_det det
+            INNER JOIN product p ON p.idproduct = det.product_id
+            INNER JOIN purchase cab ON det.purchase_id = cab.idpurchase
+            INNER JOIN supplier s ON cab.supplierid = s.id_supplier
+            INNER JOIN measures m ON p.measure = m.id_measure
+            WHERE (p.name LIKE '$strSearch%' OR det.purchase_id like '$strSearch%' OR det.purchase_id like '$strSearch%' 
+            OR cab.cod_bill like '$strSearch%' OR s.name like '$strSearch%' OR s.nit like '$strSearch%') 
+            AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate'";    
+            $request = $this->select($sql)['total'];
+            return $request;
+        }
+        public function selectPurchases(string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
+            $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT 
-                    p.idpurchase,
-                    p.total,
-                    p.subtotal,
-                    p.iva,
-                    p.discount,
-                    DATE_FORMAT(p.date, '%d/%m/%Y') as date,
-                    s.name as supplier,
-                    CONCAT(u.firstname,' ',u.lastname) as user,
-                    p.cod_bill,
-                    p.type,
-                    p.status
-                    FROM purchase p
-                    INNER JOIN supplier s
-                    ON p.supplierid = s.id_supplier
-                    INNER JOIN person u
-                    ON p.user = u.idperson
-                    ORDER BY p.idpurchase DESC
+                p.idpurchase,
+                p.total,
+                p.subtotal,
+                p.iva,
+                p.discount,
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date,
+                s.name as supplier,
+                CONCAT(u.firstname,' ',u.lastname) as user,
+                p.cod_bill,
+                p.type,
+                p.status
+                FROM purchase p
+                INNER JOIN supplier s ON p.supplierid = s.id_supplier
+                INNER JOIN person u ON p.user = u.idperson
+                WHERE (p.idpurchase like '$strSearch%' OR s.name like '$strSearch%' OR p.cod_bill like '$strSearch%' OR p.type like '$strSearch%') 
+                AND p.date BETWEEN '$strInitialDate' AND '$strFinalDate'
+                ORDER BY p.idpurchase  DESC LIMIT $start,$intPerPage
             ";
             $request = $this->select_all($sql);
+
+            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            FROM purchase p
+            INNER JOIN supplier s ON p.supplierid = s.id_supplier
+            INNER JOIN person u ON p.user = u.idperson
+            WHERE (p.idpurchase like '$strSearch%' OR s.name like '$strSearch%' OR p.cod_bill like '$strSearch%' OR p.type like '$strSearch%') 
+            AND p.date BETWEEN '$strInitialDate' AND '$strFinalDate'";    
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
+
             if(!empty($request)){
                 $rows = count($request);
                 for ($i=0; $i < $rows ; $i++) { 
@@ -169,9 +217,10 @@
                     }
                 }
             }
-            return $request;
+            return  array("data"=>$request,"pages"=>$totalPages);
         }
-        public function selectCreditPurchases(){
+        public function selectCreditPurchases(string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
+            $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT 
                     p.idpurchase,
                     p.total,
@@ -185,14 +234,24 @@
                     p.type,
                     p.status
                     FROM purchase p
-                    INNER JOIN supplier s
-                    ON p.supplierid = s.id_supplier
-                    INNER JOIN person u
-                    ON p.user = u.idperson
-                    WHERE p.type = 'credito'
-                    ORDER BY p.idpurchase DESC
+                    INNER JOIN supplier s ON p.supplierid = s.id_supplier
+                    INNER JOIN person u ON p.user = u.idperson
+                    WHERE (p.idpurchase like '$strSearch%' OR s.name like '$strSearch%' OR p.cod_bill like '$strSearch%' OR p.type like '$strSearch%') 
+                    AND p.date BETWEEN '$strInitialDate' AND '$strFinalDate' AND p.type = 'credito'
+                    ORDER BY p.idpurchase DESC LIMIT $start,$intPerPage
             ";
             $request = $this->select_all($sql);
+
+            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            FROM purchase p
+            INNER JOIN supplier s ON p.supplierid = s.id_supplier
+            INNER JOIN person u ON p.user = u.idperson
+            WHERE (p.idpurchase like '$strSearch%' OR s.name like '$strSearch%' OR p.cod_bill like '$strSearch%' OR p.type like '$strSearch%') 
+            AND p.date BETWEEN '$strInitialDate' AND '$strFinalDate' AND p.type = 'credito'";    
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
+
             if(!empty($request)){
                 $rows = count($request);
                 for ($i=0; $i < $rows ; $i++) { 
@@ -228,9 +287,10 @@
                     }
                 }
             }
-            return $request;
+            return  array("data"=>$request,"pages"=>$totalPages);
         }
-        public function selectDetailPurchases(){
+        public function selectDetailPurchases(string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
+            $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT 
                     CONCAT(p.name,' ',det.variant_name) as name, 
                     det.purchase_id,
@@ -245,18 +305,29 @@
                     m.initials as measure,
                     DATE_FORMAT(cab.date,'%d/%m/%Y') as date
                     FROM purchase_det det
-                    INNER JOIN product p
-                    ON p.idproduct = det.product_id
-                    INNER JOIN purchase cab
-                    ON det.purchase_id = cab.idpurchase
-                    INNER JOIN supplier s
-                    ON cab.supplierid = s.id_supplier
-                    INNER JOIN measures m
-                    ON p.measure = m.id_measure
-                    ORDER BY det.purchase_id DESC
+                    INNER JOIN product p ON p.idproduct = det.product_id
+                    INNER JOIN purchase cab ON det.purchase_id = cab.idpurchase
+                    INNER JOIN supplier s ON cab.supplierid = s.id_supplier
+                    INNER JOIN measures m ON p.measure = m.id_measure
+                    WHERE (p.name LIKE '$strSearch%' OR det.purchase_id like '$strSearch%' OR det.purchase_id like '$strSearch%' 
+                    OR cab.cod_bill like '$strSearch%' OR s.name like '$strSearch%' OR s.nit like '$strSearch%') 
+                    AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate'
+                    ORDER BY det.purchase_id DESC LIMIT $start,$intPerPage
             ";
+            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            FROM purchase_det det
+            INNER JOIN product p ON p.idproduct = det.product_id
+            INNER JOIN purchase cab ON det.purchase_id = cab.idpurchase
+            INNER JOIN supplier s ON cab.supplierid = s.id_supplier
+            INNER JOIN measures m ON p.measure = m.id_measure
+            WHERE (p.name LIKE '$strSearch%' OR det.purchase_id like '$strSearch%' OR det.purchase_id like '$strSearch%' 
+            OR cab.cod_bill like '$strSearch%' OR s.name like '$strSearch%' OR s.nit like '$strSearch%') 
+            AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate'";    
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
             $request = $this->select_all($sql);
-            return $request;
+            return  array("data"=>$request,"pages"=>$totalPages);
         }
         public function selectPurchase($id){
             $this->intId = $id;

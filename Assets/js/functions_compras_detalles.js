@@ -1,40 +1,30 @@
-let table = new DataTable("#tableData",{
-    "dom": 'lfBrtip',
-    "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-    },
-    "ajax":{
-        "url": " "+base_url+"/Compras/getDetailPurchases",
-        "dataSrc":""
-    },
-    columns: [
-        
-        { data: 'purchase_id'},
-        { data: 'cod_bill' },
-        { data: 'date' },
-        { data: 'document' },
-        { data: 'supplier' },
-        { data: 'name' },
-        { data: 'qty' },
-        { data: 'price_purchase' },
-        { data: 'price_discount' },
-        { data: 'measure' },
-        { data: 'subtotal' }
-    ],
-    responsive: true,
-    buttons: [
-        {
-            "extend": "excelHtml5",
-            "text": "<i class='fas fa-file-excel'></i> Excel",
-            "titleAttr":"Exportar a Excel",
-            "className": "btn btn-success mt-2"
-        }
-    ],
-    order: [[0, 'desc']],
-    pagingType: 'full',
-    scrollY:'400px',
-    //scrollX: true,
-    "aProcessing":true,
-    "aServerSide":true,
-    "iDisplayLength": 10,
+let arrData = [];
+const searchHtml = document.querySelector("#txtSearch");
+const perPage = document.querySelector("#perPage");
+const initialDateHtml = document.querySelector("#txtInitialDate");
+const finallDateHtml = document.querySelector("#txtFinalDate");
+
+window.addEventListener("load",function(){
+    initialDateHtml.value = new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0];
+    finallDateHtml.value = new Date().toISOString().split("T")[0]; 
+    getData();
 });
+searchHtml.addEventListener("input",function(){getData();});
+perPage.addEventListener("change",function(){getData();});
+initialDateHtml.addEventListener("input",function(){getData();});
+finallDateHtml.addEventListener("input",function(){getData();});
+
+async function getData(page = 1){
+    const formData = new FormData();
+    formData.append("page",page);
+    formData.append("perpage",perPage.value);
+    formData.append("search",searchHtml.value);
+    formData.append("initial_date",initialDateHtml.value);
+    formData.append("final_date",finallDateHtml.value);
+    const response = await fetch(base_url+"/compras/getDetailPurchases",{method:"POST",body:formData});
+    const objData = await response.json();
+    arrData = objData.data;
+    tableData.innerHTML =objData.html;
+    document.querySelector("#pagination").innerHTML = objData.html_pages;
+    document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
+}
