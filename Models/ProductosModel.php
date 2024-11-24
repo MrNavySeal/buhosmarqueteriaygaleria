@@ -144,7 +144,17 @@
             $request = $this->delete($sql);
             return $request;
         }
-        public function selectProducts(){
+        public function selectTotalProducts(string $strSearch){
+            $sql = "SELECT COALESCE(COUNT(*),0) as total
+            FROM product p
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON p.subcategoryid = s.idsubcategory
+            WHERE c.idcategory = s.categoryid AND (s.name like '$strSearch%' OR c.name like '$strSearch%' OR p.name like '$strSearch%')"; 
+            $request = $this->select($sql)['total'];
+            return $request;
+        }
+        public function selectProducts(string $strSearch,int $intPerPage,int $intPageNow){
+            $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT 
                 p.idproduct,
                 p.categoryid,
@@ -171,11 +181,22 @@
                 s.name as subcategory,
                 DATE_FORMAT(p.date, '%d/%m/%Y') as date
             FROM product p
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
-            ORDER BY p.idproduct DESC
-            ";
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON p.subcategoryid = s.idsubcategory
+            WHERE c.idcategory = s.categoryid AND (s.name like '$strSearch%' OR c.name like '$strSearch%' OR p.name like '$strSearch%')
+            ORDER BY p.idproduct DESC LIMIT $start,$intPerPage";
             $request = $this->select_all($sql);
+
+            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            FROM product p
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON p.subcategoryid = s.idsubcategory
+            WHERE c.idcategory = s.categoryid AND (s.name like '$strSearch%' OR c.name like '$strSearch%' OR p.name like '$strSearch%')";    
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
+            $request = $this->select_all($sql);
+            
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $idProduct = $request[$i]['idproduct'];
@@ -198,7 +219,7 @@
                     }
                 }
             }
-            return $request;
+            return  array("data"=>$request,"pages"=>$totalPages);
         }
         public function selectProduct($id){
             $this->intIdProduct = $id;
