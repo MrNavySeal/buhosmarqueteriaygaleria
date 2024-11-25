@@ -242,32 +242,58 @@
             $request = $this->select_all($sql);
             $sql = "UPDATE orderdata SET status=?,statusorder =? WHERE idorder = $this->intIdOrder;DELETE FROM count_amount WHERE order_id = $this->intIdOrder";
             $return = $this->update($sql,array("canceled","anulado"));
-            if(!empty($request)){
-                foreach ($request as $e) {
-                    $description = json_decode($e['description'],true);
-                    if(is_array($description)){
-                        $arrDet = $description['detail'];
-                        $variantName = implode("-",array_values(array_column($arrDet,"option")));
-                        $sqlProduct = "SELECT pv.stock,p.is_stock
-                        FROM product_variations_options pv
-                        INNER JOIN product p ON p.idproduct = pv.product_id
-                        WHERE pv.name='$variantName' AND pv.product_id = $e[productid]";
-                        $requestProduct = $this->select($sqlProduct);
-                        if($requestProduct['is_stock']){
-                            $stock = $requestProduct['stock']+$e['quantity'];
-                            $this->update("UPDATE product_variations_options SET stock =? WHERE name='$variantName' AND product_id = $e[productid]",[$stock]);
-                        }
-                    }else{
-                        $sqlProduct = "SELECT stock,is_stock FROM product WHERE idproduct = $e[productid]";
-                        $requestProduct = $this->select($sqlProduct);
-                        if($requestProduct['is_stock']){
-                            $stock = $requestProduct['stock']+$e['quantity'];
-                            $this->update("UPDATE product SET stock =? WHERE idproduct = $e[productid]",[$stock]);
-                        }
+            if(!empty($request)){$this->insertAdjustment($id,$request);}
+            return $return;
+        }
+        public function insertAdjustment($id,$arrData){
+            $this->intIdOrder = $id;
+            $total = $this->select("SELECT amount FROM orderdata WHERE idorder = $this->intIdOrder")['amount'];
+            $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
+            $request = $this->insert($sql,["Factura de venta No. ".$id." Anulada",$total,$_SESSION['userData']['idperson']]);
+            foreach ($arrData as $data) {
+                $description = json_decode($data['description'],true);
+                $variantName ="";
+                if(is_array($description)){
+                    $arrDet = $description['detail'];
+                    $variantName = implode("-",array_values(array_column($arrDet,"option")));
+                    $sqlProduct = "SELECT pv.stock,p.is_stock,product_type
+                    FROM product_variations_options pv
+                    INNER JOIN product p ON p.idproduct = pv.product_id
+                    WHERE pv.name='$variantName' AND pv.product_id = $data[productid]";
+                    $requestProduct = $this->select($sqlProduct);
+                }else{
+                    $sqlProduct = "SELECT stock,is_stock,product_type FROM product WHERE idproduct = $data[productid]";
+                    $requestProduct = $this->select($sqlProduct);
+                }
+                if($requestProduct['is_stock']){
+                    $stock = $requestProduct['stock']+$data['quantity'];
+                    $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
+                    $arrValues = [
+                        $request,
+                        $data['productid'],
+                        $requestProduct['stock'],
+                        $data['quantity'],
+                        $data['price'],
+                        1,
+                        $stock,
+                        $variantName,
+                        $data['quantity']*$data['price']
+                    ];
+                    $this->insert($sql,$arrValues);
+                    //Update products
+                    $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
+                    WHERE idproduct = $data[productid]";
+                    if($requestProduct['product_type']){
+                        $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
+                        WHERE product_id = $data[productid] AND name = '$variantName'";
+                    } 
+                    $price_purchase = getLastPrice($data['productid'],$variantName);
+                    if($price_purchase == 0){
+                        $price_purchase = $data['price_purchase'];
                     }
+                    $this->update($sqlProduct,[$stock,$price_purchase]);
                 }
             }
-            return $return;
         }
         public function updateOrder(int $id,string $statusOrder,string $strSendBy,string $strGuide){
             $sql = "UPDATE orderdata SET statusorder =?, send_by =?,number_guide =?  WHERE idorder = $id";
