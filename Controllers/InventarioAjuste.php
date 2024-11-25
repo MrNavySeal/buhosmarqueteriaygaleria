@@ -154,7 +154,7 @@
                 $arrData = array(
                     "html"=>$this->getAdjustmentHtml($arrProducts,$intTotalPages,$intPageNow),
                     "total_records"=>$request['total_records'],
-                    "export"=>$request['data'],
+                    "export"=>$arrProducts,
                     "data"=>$arrProducts
                 );
                 echo json_encode($arrData,JSON_UNESCAPED_UNICODE);

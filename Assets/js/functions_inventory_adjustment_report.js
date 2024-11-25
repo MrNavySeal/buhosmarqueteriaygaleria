@@ -70,6 +70,7 @@ exportPDF.addEventListener("click",async function(){
 });
 function viewItem(id){
     const objCab = arrData.filter(function(e){return e.id == id})[0];
+    console.log(objCab);
     const objDet = objCab.det;
     console.log(objDet);
     document.querySelector("#strDate").innerHTML =  objCab.date_created;
