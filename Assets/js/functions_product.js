@@ -30,6 +30,7 @@ const selectImport = document.querySelector("#selectImport");
 const txtPurchase = document.querySelector("#txtPurchase");
 const txtPrice = document.querySelector("#txtPrice");
 const txtPriceOffer = document.querySelector("#txtPriceOffer");
+const inputImages = document.querySelector("#txtImg");
 //let id = document.querySelector("#idProduct").value;
 let arrSpecs = [];
 let arrCategories = [];
@@ -40,6 +41,7 @@ let arrVariants = [];
 let arrVariantsToMix = [];
 let arrCombinations = [];
 let imgLocation = ".uploadImg img";
+let arrImages=[];
 
 /*************************Initial data*******************************/
 if(document.querySelector("#id").value !=""){
@@ -77,6 +79,8 @@ if(document.querySelector("#id").value !=""){
         checkStockVariants.checked = productData.is_stock;
         selectFramingMode.value = productData.framing_mode;
         statusList.value = productData.status;
+        arrImages = productData.image;
+        if(arrImages.length > 0){ displayImages();}
         if(selectFramingMode.value == 1){
             document.querySelector(".framingImage").classList.remove("d-none");
             document.querySelector(".uploadImg img").setAttribute("src",productData.framing_url);
@@ -87,6 +91,8 @@ if(document.querySelector("#id").value !=""){
             checkInventory.checked = false;
             checkStockVariants.checked = false; 
 
+        }
+        if(checkRecipe.checked){
             checkInventory.setAttribute("disabled","");
             checkStockVariants.setAttribute("disabled","");
         }
@@ -169,6 +175,7 @@ checkRecipe.addEventListener("change",function(){
         checkStockVariants.removeAttribute("disabled");
         document.querySelector("#divPurchase").classList.remove("d-none");
     }
+    checkStockVar();
 });
 checkInventory.addEventListener("change",function(){
     checkStockVariants.checked =checkInventory.checked;
@@ -177,6 +184,7 @@ checkInventory.addEventListener("change",function(){
     }else{
         document.querySelector("#setStocks").classList.add("d-none");
     }
+    checkStockVar();
 });
 checkIngredient.addEventListener("change",function(){
     checkRecipe.checked = false;
@@ -209,13 +217,20 @@ productVariant.addEventListener("change",function(){
 framingImg.addEventListener("change",function(){
     uploadImg(framingImg,imgLocation);
 });
-checkStockVariants.addEventListener("change",function(){
+
+checkStockVariants.addEventListener("change",function(){checkStockVar();});
+inputImages.addEventListener("change",function(){
+    setImage();
+})
+setTinymce("#txtDescription");
+/*************************Functions*******************************/
+function checkStockVar(){
     checkInventory.checked = checkStockVariants.checked;
     if(document.querySelector(".minStockVariant")){
         const arrMinStock = document.querySelectorAll(".minStockVariant");
         const arrStock = document.querySelectorAll(".stockVariant");
         for (let i = 0; i < arrMinStock.length; i++) {
-            if(checkStockVariants.checked){
+            if(checkStockVariants.checked || checkInventory.checked){
                 arrStock[i].removeAttribute("disabled");
                 arrMinStock[i].removeAttribute("disabled");
             }else{
@@ -224,11 +239,7 @@ checkStockVariants.addEventListener("change",function(){
             }
         }
     }
-});
-setImage(img,parent,"product");
-delImage(parent);
-setTinymce("#txtDescription");
-/*************************Functions*******************************/
+}
 function save(){
     tinymce.triggerSave();
     const formData = new FormData(form);
@@ -261,10 +272,6 @@ function save(){
     
     if(strShortDescription.length >140){
         Swal.fire("Error","La descripción corta debe tener un máximo de 140 caracteres","error");
-        return false;
-    }
-    if(images.length < 1){
-        Swal.fire("Error","Debe subir al menos una imagen","error");
         return false;
     }
     if(!productVariant.checked){
@@ -312,8 +319,7 @@ function save(){
 
     const arrData = {
         "general":{
-            "images":getImages(images),
-            "specs":getSpecs(),
+            "images":arrImages.filter(function(e){return e.rename!=""}),
             "status":intStatus,
             "id":intId,
             "subcategory":subcategoryList.value,
@@ -341,6 +347,12 @@ function save(){
         "is_stock":checkStockVariants.checked
     }
     formData.append("data",JSON.stringify(arrData));
+    formData.append("images[]",[]);
+    if(arrImages.length > 0){
+        arrImages.forEach(function(e){
+            formData.append("images[]",e);
+        });
+    }
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
     
@@ -348,17 +360,10 @@ function save(){
         btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
         btnAdd.removeAttribute("disabled");
         if(objData.status){
-            if (intId == 0) {
-                Swal.fire("Guardado",objData.msg,"success");
-                setTimeout(function(){
-                    window.location.reload();
-                },3500);
-            } else {
-                Swal.fire("Guardado",objData.msg,"success");
-                setTimeout(function(){
-                    window.location.reload();
-                },3500);
-            }
+            Swal.fire("Guardado",objData.msg,"success");
+            setTimeout(function(){
+                window.location.reload();
+            },1500);
         }else{
             Swal.fire("Error",objData.msg,"error");
         }
@@ -647,70 +652,47 @@ function removeItem(item,type){
     }
     element.remove();
 }
-function setImage(element,parent,pre){
-    let formFile = document.querySelector("#formFile");
-    if(pre==""){
-        Swal.fire("Error","prefijo de imagen","error");
-        return false;
+function setImage(){
+    const files = inputImages.files;
+    for (let i = 0; i < files.length; i++) {
+        if(files[i].type != "image/png" && files[i].type != "image/jpg" && files[i].type != "image/jpeg" && files[i].type != "image/gif"){
+            Swal.fire("Error","Solo se permite imágenes","error");
+            value ="";
+        }else{
+            arrImages.push(files[i]);
+        }   
     }
-    element.addEventListener("change",function(e){
-        if(element.value!=""){
-            let formImg = new FormData(formFile);
-            uploadMultipleImg(element,parent,['upload-image','ms-3']);
-            formImg.append("id","");
-            formImg.append("pre",pre);
-            /*if(option == 2){
-                let images = document.querySelectorAll(".upload-image").length;
-                formImg.append("images",images);
-                formImg.append("id",document.querySelector("#idProduct").value);  
-            }*/
-            request(base_url+"/UploadImages/uploadMultipleImages",formImg,"post").then(function(objData){
-                if(objData.status){
-                    let divImg = document.querySelectorAll(".upload-image");
-                    let newImg =[];
-                    let images = objData.data;
-                    for (let i = 0; i < divImg.length; i++) {
-                        if(!divImg[i].hasAttribute("data-rename")){
-                            newImg.push(divImg[i]);
-                        }
-                    }
-                    if(newImg.length == images.length){
-                        for (let i = 0; i < images.length; i++) {
-                            newImg[i].setAttribute("data-rename",images[i].rename);
-                        }
-                    }
-                }else{
-                    Swal.fire("Error",objData.msg,"error");
-                }
-            });
-        }
-    });
+    displayImages();
 }
-function delImage(parent){
-    parent.addEventListener("click",function(e){
-        if(e.target.className =="deleteImg"){
-            let divImg = document.querySelectorAll(".upload-image");
-            let deleteItem = e.target.parentElement;
-            let nameItem = deleteItem.getAttribute("data-rename");
-            let imgDel;
-            for (let i = 0; i < divImg.length; i++) {
-                if(divImg[i].getAttribute("data-rename")==nameItem){
-                    deleteItem.remove();
-                    imgDel = document.querySelectorAll(".upload-image");
-                }
-            }
-            let formDel = new FormData();
-            formDel.append("image",nameItem);
-            request(base_url+"/UploadImages/delImg",formDel,"post").then(function(objData){});
+function displayImages(){
+    const arrClass=['upload-image','ms-3']
+    const parentImg = document.querySelectorAll(".upload-images")[1];
+    parentImg.innerHTML="";
+    let index = 0;
+    let route ="";
+    arrImages.forEach(function(e){
+        let div = document.createElement("div");
+        if(arrClass.length > 0 )arrClass.forEach(el => { div.classList.add(el) });
+        div.innerHTML = `
+                <img>
+                <div class="deleteImg" onclick="delImage(this,'${e.name}')" name="delete">x</div>
+        `
+        if(e.rename !=""){
+            route = e.url;
         }
-    });
+        if(e.size){
+            let objectUrl = window.URL || window.webkitURL;
+            route = objectUrl.createObjectURL(e);
+        }
+        div.children[0].setAttribute("src",route);
+        parentImg.appendChild(div);
+        index++;
+    })
 }
-function getImages(images){
-    let arrImg =[];
-    for (let i = 0; i < images.length; i++) {
-        arrImg.push(images[i].getAttribute("data-rename"));
-    }
-    return arrImg;
+function delImage(element,name){
+    const index =arrImages.findIndex(function(e){return e.name==name});
+    arrImages.splice(index,1);
+    element.parentElement.remove();
 }
 function changeCategory(){
     let formData = new FormData();

@@ -1,4 +1,7 @@
 <?php 
+    /*ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);*/
     class ProductosModel extends Mysql{
         private $intIdCategory;
         private $intIdSubCategory;
@@ -22,7 +25,7 @@
             parent::__construct();
         }
         /*************************Productos methods*******************************/
-        public function insertProduct(array $data){
+        public function insertProduct(array $data,array $images){
             $this->arrData = $data;
             $name = $this->arrData['name'];
 			$return = 0;
@@ -66,7 +69,7 @@
                     $this->arrData['is_stock']
         		);
 	        	$request = $this->insert($sql,$arrData);
-                $this->insertImages($request,$this->arrData['images']);
+                $this->insertImages($request,$images);
                 $this->insertSpecs($request,$this->arrData['specs']);
                 $this->insertVariants($request,$this->arrData['variants']);
 	        	$return = intval($request);
@@ -75,7 +78,7 @@
 			}
 	        return $return;
 		}
-        public function updateProduct(int $idProduct,array $data){
+        public function updateProduct(int $idProduct,array $data,array $images){
             $this->intIdProduct = $idProduct;
             $this->arrData = $data;
             $return = 0;
@@ -120,8 +123,12 @@
         		);
 				$request = $this->update($sql,$arrData);
                 if(!empty($this->arrData['images'])){
+                    $this->insertImages($this->intIdProduct,$this->arrData['images'],false);
+                }else{
                     $this->deleteImages($this->intIdProduct);
-                    $this->insertImages($this->intIdProduct,$this->arrData['images']);
+                }
+                if(!empty($images)){
+                    $this->insertImages($this->intIdProduct,$images);
                 }
                 $this->insertSpecs($this->intIdProduct,$this->arrData['specs']);
                 $this->insertVariants($this->intIdProduct,$this->arrData['variants']);
@@ -262,6 +269,7 @@
             if(!empty($request)){
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
                 $requestImg = $this->select_all($sqlImg);
+                $request['image'] = [];
                 if(count($requestImg)){
                     for ($i=0; $i < count($requestImg); $i++) { 
                         $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name'],"rename"=>$requestImg[$i]['name']);
@@ -308,11 +316,32 @@
                 $request = $this->insert($sql,$arrData);
             }
         }
-        public function insertImages($id,$photos){
-            for ($i=0; $i < count($photos) ; $i++) { 
-                $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
-                $arrImg = array($id,$photos[$i]);
-                $requestImg = $this->insert($sqlImg,$arrImg);
+        public function insertImages($id,$photos,$flag=true){
+            if($flag){
+                $total = count($photos['name']);
+            }else{
+                $total = count($photos);
+                $this->deleteImages($id);
+            }
+            for ($i=0; $i < $total ; $i++) { 
+                if($flag){
+                    $strRoute = "product_".$id."_".bin2hex(random_bytes(6)).'.png';
+                    uploadImage([
+                        "name"=>$photos['name'][$i],
+                        "full_path"=>$photos['full_path'][$i],
+                        "type"=>$photos['type'][$i],
+                        "tmp_name"=>$photos['tmp_name'][$i],
+                        "error"=>$photos['error'][$i],
+                        "size"=>$photos['size'][$i]
+                    ],$strRoute);
+                    $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
+                    $arrImg = array($id,$strRoute);
+                    $this->insert($sqlImg,$arrImg);
+                }else{
+                    $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
+                    $arrImg = array($id,$photos[$i]['name']);
+                    $this->insert($sqlImg,$arrImg);
+                }
             }
         }
         public function insertSpecs($id,$specs){

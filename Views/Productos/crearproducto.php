@@ -18,8 +18,8 @@
     </ul>
     <div class="tab-content mb-3" id="myTabContent">
         <div class="tab-pane show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-            <form id="formFile" name="formFile">
-                <div  style="display:flex;overflow-x:auto;" id="upload-multiple">
+            <div>
+                <div  class="d-flex" style="overflow-x:auto;" id="upload-multiple">
                     <div class="mb-3 upload-images me-3">
                         <label for="txtImg" class="text-primary text-center d-flex justify-content-center align-items-center">
                             <div>
@@ -29,8 +29,9 @@
                         </label>
                         <input class="d-none" type="file" id="txtImg" name="txtImg[]" multiple accept="image/*"> 
                     </div>
+                    <div class="upload-images d-flex"></div>
                 </div>
-            </form>
+            </div>
             <form id="formItem" name="formItem" class="mb-4">  
                 <input type="hidden" id="id" name="id" value="">
                 <p class="text-center">Todos los campos con (<span class="text-danger">*</span>) son obligatorios.</p>
@@ -160,13 +161,13 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="txtPrice" class="form-label">Precio de venta<span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="txtPrice" name="txtPrice">
+                                <input type="number" class="form-control" id="txtPrice" name="txtPrice" value="0">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="txtPriceOffer" class="form-label">Precio de oferta</label>
-                                <input type="number" class="form-control" id="txtPriceOffer" name="txtPriceOffer">
+                                <input type="number" class="form-control" id="txtPriceOffer" name="txtPriceOffer" value="0">
                             </div>
                         </div>
                     </div>

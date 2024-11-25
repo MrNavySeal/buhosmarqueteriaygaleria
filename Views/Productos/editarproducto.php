@@ -28,8 +28,8 @@
     </ul>
     <div class="tab-content mb-3" id="myTabContent">
         <div class="tab-pane show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-            <form id="formFile" name="formFile">
-                <div  style="display:flex;overflow-x:auto;" id="upload-multiple">
+            <div>
+                <div  class="d-flex" style="overflow-x:auto;" id="upload-multiple">
                     <div class="mb-3 upload-images me-3">
                         <label for="txtImg" class="text-primary text-center d-flex justify-content-center align-items-center">
                             <div>
@@ -39,14 +39,9 @@
                         </label>
                         <input class="d-none" type="file" id="txtImg" name="txtImg[]" multiple accept="image/*"> 
                     </div>
-                    <?php for ($i=0; $i < count($images); $i++) { ?>
-                    <div class="upload-image ms-3" data-name="<?=$images[$i]['name']?>" data-rename="<?=$images[$i]['rename']?>">
-                        <img src="<?=$images[$i]['url']?>">
-                        <div class="deleteImg" name="delete">x</div>
-                    </div>
-                    <?php }?>
+                    <div class="upload-images d-flex"></div>
                 </div>
-            </form>
+            </div>
             <form id="formItem" name="formItem" class="mb-4">  
                 <input type="hidden" id="id" name="id" value="<?=$data['id']?>">
                 <p class="text-center">Todos los campos con (<span class="text-danger">*</span>) son obligatorios.</p>

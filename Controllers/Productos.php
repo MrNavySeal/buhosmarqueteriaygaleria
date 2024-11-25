@@ -34,7 +34,6 @@
                 }else{
                     $data['page_title'] = "Editar Producto";
                     $data['id'] = intval(strClean($params));
-                    $data['images'] = $this->model->selectProduct($data['id'])['image'];
                     $this->views->getView($this,"editarproducto",$data);
                 }
             }else{
@@ -253,7 +252,7 @@
                         $route = str_replace("?","",$route);
 
                         $data = array(
-                            "images"=>$arrGeneral['images'],
+                            "images"=>array_values(array_filter($arrGeneral['images'],function($e){return !empty($e);})),
                             "specs"=>$arrGeneral['specs'],
                             "status"=>intval($arrGeneral['status']),
                             "subcategory"=>intval($arrGeneral['subcategory']),
@@ -282,7 +281,6 @@
                                 "is_stock"=>$arrData['is_stock']
                             )
                         );
-                        //dep($data);exit;
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 if($data['framing_mode']==1){
@@ -293,7 +291,7 @@
                                 }
                                 $option = 1;
                                 $data['photo_framing'] = $photoFraming;
-                                $request= $this->model->insertProduct($data);
+                                $request= $this->model->insertProduct($data,$_FILES['images']);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
@@ -311,7 +309,7 @@
                                 } 
                                 $option = 2;
                                 $data['photo_framing'] = $photoFraming;
-                                $request= $this->model->updateProduct($id,$data);
+                                $request= $this->model->updateProduct($id,$data,$_FILES['images'] ? $_FILES['images'] : []);
                             }
                         }
                         if(is_numeric($request) && $request > 0){
@@ -351,29 +349,6 @@
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
             }
-            die();
-        }
-        public function setImg(){ 
-            $arrImages = orderFiles($_FILES['txtImg'],"product");
-            for ($i=0; $i < count($arrImages) ; $i++) { 
-                $request = $this->model->insertTmpImage($arrImages[$i]['name'],$arrImages[$i]['rename']);
-            }
-            $arrResponse = array("msg"=>"Uploaded");
-            echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            die();
-        }
-        public function delImg(){
-            $images = $this->model->selectTmpImages();
-            $image = $_POST['image'];
-            for ($i=0; $i < count($images) ; $i++) { 
-                if($image == $images[$i]['name']){
-                    deleteFile($images[$i]['rename']);
-                    $this->model->deleteTmpImage($images[$i]['rename']);
-                    break;
-                }
-            }
-            $arrResponse = array("msg"=>"Deleted");
-            echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
 
