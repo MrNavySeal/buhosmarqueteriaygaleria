@@ -133,6 +133,7 @@ formSetOrder.addEventListener("submit",function(e){
             document.querySelector("#id").value = 0;
             document.querySelector("#selectedItem").innerHTML="";
             modalPurchase.hide();
+            getProducts();
         }else{
             Swal.fire("Error",objData.msg,"error");
         }
