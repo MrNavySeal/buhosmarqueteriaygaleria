@@ -200,10 +200,11 @@ function currentProducts(){
     let rows = document.querySelectorAll(".productToBuy");
     for (let i = 0; i < arrProducts.length; i++) {
         let children = rows[i].children;
-        children[3].children[0].value = arrProducts[i].type;
-        children[4].children[0].value = arrProducts[i].qty;
-        children[5].innerHTML= arrProducts[i].qty_result;
-        children[6].innerHTML = "$"+formatNum(arrProducts[i].subtotal,".");
+        children[3].children[0].value = arrProducts[i].price_purchase;
+        children[4].children[0].value = arrProducts[i].type;
+        children[5].children[0].value = arrProducts[i].qty;
+        children[6].innerHTML= arrProducts[i].qty_result;
+        children[7].innerHTML = "$"+formatNum(arrProducts[i].subtotal,".");
     }
     currentTotal();
 }
