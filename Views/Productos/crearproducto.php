@@ -128,13 +128,13 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="txtStock" class="form-label">Stock <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="txtStock" name="txtStock" required>
+                                <input type="number" class="form-control" id="txtStock" name="txtStock" value="0" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="txtMinStock" class="form-label">Stock mínimo <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="txtMinStock" name="txtMinStock" required>
+                                <input type="number" class="form-control" id="txtMinStock" name="txtMinStock" value="0" required>
                             </div>
                         </div>
                     </div>
