@@ -340,6 +340,7 @@ function save(){
             "short_description":strShortDescription,
             "description":strDescription,
             "name":strName,
+            "specs":getSpecs(),
             "reference":strReference,
         },
         "combinations": combinations,
