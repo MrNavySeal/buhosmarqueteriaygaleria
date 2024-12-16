@@ -179,6 +179,7 @@ if($_SESSION['permitsModule']['w']){
                 </div>
                 <div class="d-flex mt-2">
                     <button type="button" class="btn btn-primary w-100" id="btnPurchase">Pagar</button>
+                    <button type="button" class="btn btn-success w-100" id="btnQuote">Cotizar</button>
                     <button type="button" class="btn btn-danger w-100" id="btnClean">Limpiar</button>
                 </div>
             </div>

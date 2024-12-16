@@ -29,8 +29,7 @@
                 <div id="selectedItem"></div>
                 <form id="formSetOrder">
                     <input type="hidden" name="id" id="id" value ="">
-                    <div class="row">
-
+                    <div class="row" id="contentPurchase">
                         <div class="col-md-4">
                             <div class="mt-3 mb-3">
                                 <label for="" class="form-label">Fecha de venta</label>
@@ -58,6 +57,16 @@
                                 <label for="" class="form-label">Notas</label>
                                 <textarea rows="3" name="strNote" id="txtNote" class="form-control"></textarea>
                             </div>
+                        </div>
+                    </div>
+                    <div id="contentQuote" class="d-none">
+                        <div class="mt-3 mb-3">
+                            <label for="" class="form-label">Fecha de cotización</label>
+                            <input type="date" name="strDateQuote" id="strDateQuote" class="form-control">
+                        </div>
+                        <div class="mt-3 mb-3">
+                            <label for="" class="form-label">Notas</label>
+                            <textarea rows="3" name="strNoteQuote" id="strNoteQuote" class="form-control"></textarea>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end">

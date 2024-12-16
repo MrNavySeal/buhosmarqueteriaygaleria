@@ -320,6 +320,71 @@
             $request = $this->insert($sql,$arrData);
 	        return $request;
 		}
+        /*************************methods to set quote*******************************/
+        public function insertQuote(array $data){
+            $this->arrData = $data;
+            $this->arrProducts = $data['products'];
+            $this->arrCustomer = $data['customer'];
+            //Insert header
+            $sql = "INSERT INTO quote_cab(personid,name,identification,email,phone,address,note,amount,discount,date,date_beat) 
+            VALUE(?,?,?,?,?,?,?,?,?,?,?)";
+            $arrData = array(
+                $this->arrCustomer['id'],
+                clear_cadena($this->arrCustomer['name']),
+                $this->arrCustomer['identification'],
+                $this->arrCustomer['email'],
+                $this->arrCustomer['phone'],
+                $this->arrCustomer['address'],
+                $this->arrData['note_quote'],
+                $this->arrData['total']['total'],
+                $this->arrData['total']['discount'],
+                $this->arrData['date_quote'],
+                $this->arrData['date_beat']
+            );
+            $request = $this->insert($sql,$arrData);
+            //Insert detail
+            if($request > 0){
+                $this->insertQuoteDet($request,$this->arrCustomer['id'],$this->arrProducts);
+            }
+            return $request;
+        }
+        public function insertQuoteDet(int $id,int $idCustom,array $data){
+            $this->intIdUser = $idCustom;
+            $this->intId = $id;
+            $this->arrData = $data;
+            $total = count($this->arrData);
+            for ($i=0; $i < $total ; $i++) { 
+                $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
+                if($this->arrData[$i]['topic'] == 1){
+                    if($this->arrData[$i]['img'] != ""){
+                        $imgData = $this->arrData[$i]['img'];
+                        list($type,$imgData) = explode(";",$imgData);
+                        list(,$imgData)=explode(",",$imgData);
+                        $img = base64_decode($imgData);
+                        $name = "frame_print_".bin2hex(random_bytes(6))."_".$this->intId.'.png';
+                        $route = "Assets/images/uploads/".$name;
+                        $this->strImg = $name;
+                        file_put_contents($route, $img);
+                    }
+                    $this->strDescription = json_encode(
+                        array("name"=>$this->arrData[$i]['name'],"detail"=>$this->arrData[$i]['data'],"img"=>$this->strImg),
+                        JSON_UNESCAPED_UNICODE
+                    );
+                }
+                $sql = "INSERT INTO quote_det(quote_id,person_id,product_id,topic,description,qty,price,reference) VALUE(?,?,?,?,?,?,?,?)";
+                $arrData = array(
+                    $id,
+                    $this->intIdUser,
+                    $this->arrData[$i]['id'],
+                    $this->arrData[$i]['topic'],
+                    $this->strDescription,
+                    $this->arrData[$i]['qty'],
+                    $this->arrData[$i]['price_sell'],
+                    $this->arrData[$i]['reference']
+                );
+                $this->insert($sql,$arrData);
+            }
+        }
         /*************************Molding methods*******************************/
         public function selectMoldingCategories(){
             $sql = "SELECT * FROM moldingcategory WHERE status = 1 ORDER BY id ASC";       

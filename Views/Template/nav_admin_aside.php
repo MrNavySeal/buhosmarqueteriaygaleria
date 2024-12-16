@@ -99,6 +99,7 @@
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-receipt"></i>Mis pedidos</a>
                     <div class="dropdown-menu bg-transparent border-0">
+                        <a href="<?=base_url()?>/cotizaciones" class="dropdown-item">Cotizaciones</a>
                         <a href="<?=base_url()?>/pedidos" class="dropdown-item">Pedidos</a>
                         <a href="<?=base_url()?>/pedidos/creditos" class="dropdown-item">Pedidos a crédito</a>
                         <a href="<?=base_url()?>/pedidos/detalle" class="dropdown-item">Detalle pedidos</a>

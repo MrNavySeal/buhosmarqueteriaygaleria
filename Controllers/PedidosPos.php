@@ -131,7 +131,9 @@
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $strDate = $_POST['strDate'] == "" ? date("Y-m-d") : strClean($_POST['strDate']);
+                        $strDateQuote = $_POST['strDate'] == "" ? date("Y-m-d") : strClean($_POST['strDateQuote']);
                         $arrProducts = json_decode($_POST['products'],true);
+                        $intOrderType = intval($_POST["order_type"]);
                         $arrTotal = json_decode($_POST['total'],true);
                         $id = intval($_POST['id']);
                         $request_customer = $this->model->selectCustomer($id);
@@ -150,16 +152,26 @@
                                 $data = array(
                                     "customer"=>$request_customer,
                                     "date"=>$strDate,
+                                    "date_quote"=>$strDateQuote,
                                     "date_beat"=>$dateBeat,
                                     "type"=>strClean($_POST['paymentList']),
                                     "note"=>strClean($_POST['strNote']),
+                                    "note_quote"=>strClean($_POST['strNoteQuote']),
                                     "status_order"=>intval($_POST['statusOrder']),
                                     "products"=>$arrProducts,
                                     "total"=>$arrTotal
                                 );
-                                $request = $this->model->insertOrder($data);
+                                if($intOrderType == 1){
+                                    $request = $this->model->insertOrder($data);
+                                }else{
+                                    $request = $this->model->insertQuote($data);
+                                }
                                 if($request > 0){
-                                    $arrResponse = array("status"=>true,"msg"=>"La venta se ha registrado con éxito");
+                                    if($intOrderType == 1){
+                                        $arrResponse = array("status"=>true,"msg"=>"La venta se ha registrado con éxito");
+                                    }else{
+                                        $arrResponse = array("status"=>true,"msg"=>"La cotización se ha registrado con éxito");
+                                    }
                                 }else{
                                     $arrResponse = array("status"=>false,"msg"=>"Ha ocurrido un error, inténtelo de nuevo");
                                 }

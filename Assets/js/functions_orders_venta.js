@@ -6,6 +6,7 @@ const btnAdd = document.querySelector("#btnAdd");
 const btnPurchase = document.querySelector("#btnPurchase");
 const btnClean = document.querySelector("#btnClean");
 const btnSetPurchase = document.querySelector("#btnSetPurchase");
+const btnQuote = document.querySelector("#btnQuote");
 const searchItems = document.querySelector("#searchItems");
 const selectItems = document.querySelector("#selectItems");
 const items = document.querySelector("#items");
@@ -14,6 +15,7 @@ const tablePurchase = document.querySelector("#tablePurchase");
 const searchHtml = document.querySelector("#txtSearch");
 const perPage = document.querySelector("#perPage");
 const tableProducts = document.querySelector("#tableProducts");
+let orderType = 1;
 let arrDataMolding = [];
 let arrProducts = [];
 let arrCustomers = [];
@@ -72,6 +74,17 @@ async function getProducts(page = 1){
 /*************************Events*******************************/
 btnPurchase.addEventListener("click",function(){
     modalPurchase.show();
+    orderType = 1;
+    document.querySelector("#modalPurchase .modal-title").innerHTML="Información de pago";
+    document.querySelector("#contentPurchase").classList.remove("d-none");
+    document.querySelector("#contentQuote").classList.add("d-none");
+});
+btnQuote.addEventListener("click",function(){
+    modalPurchase.show();
+    orderType = 2;
+    document.querySelector("#modalPurchase .modal-title").innerHTML="Información de cotización";
+    document.querySelector("#contentPurchase").classList.add("d-none");
+    document.querySelector("#contentQuote").classList.remove("d-none");
 });
 btnClean.addEventListener("click",function(){
     arrProducts = [];
@@ -115,6 +128,7 @@ formSetOrder.addEventListener("submit",function(e){
     let url = base_url+"/PedidosPos/setOrder";
     let formData = new FormData(formSetOrder);
     formData.append("products",JSON.stringify(arrProducts));
+    formData.append("order_type",orderType);
     formData.append("total",JSON.stringify(currentTotal()));
     btnSetPurchase.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnSetPurchase.setAttribute("disabled","");
