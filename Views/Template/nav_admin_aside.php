@@ -27,13 +27,14 @@
         </div>
         <div class="navbar-nav w-100">
             <!-- Dashboard -->
-            <?php if($_SESSION['permit'][1]['r']){ ?>
-            <a href="<?=base_url()?>/dashboard" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+            <?php if($_SESSION['permit'][1]['r']){ $active = $_SESSION['permitsModule']['module'] == "Dashboard" ? "active" :"";?>
+            
+            <a href="<?=base_url()?>/dashboard" class="nav-item nav-link <?=$active?>"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
             <?php } ?>
             <!-- Usuarios -->
-            <?php  if($_SESSION['permit'][2]['r']){?>
+            <?php  if($_SESSION['permit'][2]['r']){ $active = $_SESSION['permitsModule']['module'] == "Usuarios" ? "active" :"";?>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-users"></i>Usuarios</a>
+                <a href="#" class="nav-link dropdown-toggle <?=$active?>" data-bs-toggle="dropdown"><i class="fas fa-users"></i>Usuarios</a>
                 <div class="dropdown-menu bg-transparent border-0">
                     <a href="<?=base_url()?>/usuarios" class="dropdown-item">Usuarios</a>
                     <?php
@@ -45,13 +46,13 @@
             </div>
             <?php } ?>
              <!-- Clientes -->
-            <?php  if($_SESSION['permit'][3]['r']){ ?>
-            <a href="<?=base_url()?>/clientes" class="nav-item nav-link"><i class="fas fa-user-tag"></i>Clientes</a>
+            <?php  if($_SESSION['permit'][3]['r']){ $active = $_SESSION['permitsModule']['module'] == "Clientes" ? "active" :"";?>
+            <a href="<?=base_url()?>/clientes" class="nav-item nav-link <?=$active?>"><i class="fas fa-user-tag"></i>Clientes</a>
             <?php } ?>
             <!-- Productos -->
-            <?php  if($_SESSION['permit'][11]['r']){ ?>
+            <?php  if($_SESSION['permit'][11]['r']){ $active = $_SESSION['permitsModule']['module'] == "Productos" ? "active" :"";?>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-shopping-bag"></i>Productos</a>
+                <a href="#" class="nav-link dropdown-toggle <?=$active?>" data-bs-toggle="dropdown"><i class="fas fa-shopping-bag"></i>Productos</a>
                 <div class="dropdown-menu bg-transparent border-0">
                     <a href="<?=base_url()?>/ProductosCategorias/categorias" class="dropdown-item">Categorias</a>
                     <a href="<?=base_url()?>/ProductosCategorias/subcategorias" class="dropdown-item">Subcategorias</a>
@@ -64,9 +65,9 @@
             </div>
             <?php } ?>
             <!-- Marquetería -->
-            <?php  if($_SESSION['permit'][12]['r']){ ?>
+            <?php  if($_SESSION['permit'][12]['r']){ $active = $_SESSION['permitsModule']['module'] == "Marqueteria" ? "active" :"";?>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-crop-alt"></i>Marquetería</a>
+                <a href="#" class="nav-link dropdown-toggle <?=$active?>" data-bs-toggle="dropdown"><i class="fas fa-crop-alt"></i>Marquetería</a>
                 <div class="dropdown-menu bg-transparent border-0">
                     <a href="<?=base_url()?>/marqueteria/colores" class="dropdown-item">Colores</a>
                     <?php  if($_SESSION['permit'][12]['w']){ ?>
@@ -80,9 +81,9 @@
             </div>
             <?php } ?>
             <!-- Inventario -->
-            <?php if($_SESSION['permit'][4]['r']){ ?>
+            <?php if($_SESSION['permit'][4]['r']){ $active = $_SESSION['permitsModule']['module'] == "Inventario" ? "active" :"";?>
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-warehouse"></i>Almacén</a>
+                    <a href="#" class="nav-link dropdown-toggle <?=$active?>" data-bs-toggle="dropdown"><i class="fas fa-warehouse"></i>Almacén</a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <a href="<?=base_url()?>/inventario" class="dropdown-item">Inventario</a>
                         <a href="<?=base_url()?>/inventario/kardex" class="dropdown-item">Kardex</a>
@@ -95,9 +96,9 @@
                 </div>
             <?php } ?>
             <!-- Pedidos -->
-            <?php if($_SESSION['permit'][6]['r']){ ?>
+            <?php if($_SESSION['permit'][6]['r']){ $active = $_SESSION['permitsModule']['module'] == "Pedidos" ? "active" :"";?>
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-receipt"></i>Mis pedidos</a>
+                    <a href="#" class="nav-link dropdown-toggle <?=$active?>" data-bs-toggle="dropdown"><i class="fas fa-receipt"></i>Mis pedidos</a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <a href="<?=base_url()?>/cotizaciones" class="dropdown-item">Cotizaciones</a>
                         <a href="<?=base_url()?>/pedidos" class="dropdown-item">Pedidos</a>
@@ -110,9 +111,9 @@
                 </div>
             <?php } ?>
             <!-- Gestión de compras -->
-            <?php if($_SESSION['permit'][8]['r']){ ?>
+            <?php if($_SESSION['permit'][8]['r']){ $active = $_SESSION['permitsModule']['module'] == "Compras" ? "active" :"";?>
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-coins"></i>Compras</a>
+                    <a href="#" class="nav-link dropdown-toggle <?=$active?>" data-bs-toggle="dropdown"><i class="fas fa-coins"></i>Compras</a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <?php  if($_SESSION['permit'][8]['w']){ ?>
                         <a href="<?=base_url()?>/compras/compra" class="dropdown-item">Nueva compra</a>
@@ -125,9 +126,9 @@
                 </div>
             <?php } ?>
             <!-- Contabilidad -->
-            <?php if($_SESSION['permit'][7]['r']){ ?>
+            <?php if($_SESSION['permit'][7]['r']){ $active = $_SESSION['permitsModule']['module'] == "Contabilidad" ? "active" :"";?>
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-file-invoice-dollar"></i>Contabilidad</a>
+                    <a href="#" class="nav-link dropdown-toggle <?=$active?>" data-bs-toggle="dropdown"><i class="fas fa-file-invoice-dollar"></i>Contabilidad</a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <a href="<?=base_url()?>/contabilidad/categorias" class="dropdown-item">Categorias</a>
                         <a href="<?=base_url()?>/contabilidad/egreso" class="dropdown-item">Egresos</a>
@@ -172,21 +173,17 @@
             </div>
             <?php } ?>
             <!-- Comentarios -->
-            <?php 
-                if($_SESSION['permit'][9]['r']){
-            ?>
+            <?php if($_SESSION['permit'][9]['r']){$active = $_SESSION['permitsModule']['module'] == "Comentarios" ? "active" :"";?>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-comments"></i>Comentarios</a>
+                <a href="#" class="nav-link dropdown-toggle <?=$active?>" data-bs-toggle="dropdown"><i class="fas fa-comments"></i>Comentarios</a>
                 <div class="dropdown-menu bg-transparent border-0">
                     <a href="<?=base_url()?>/comentarios/opiniones" class="dropdown-item">Reseñas</a>
                 </div>
             </div>
             <?php } ?>
             <!-- Blog -->
-            <?php 
-                if($_SESSION['permit'][10]['r']){
-            ?>
-            <a href="<?=base_url()?>/articulos" class="nav-item nav-link"><i class="far fa-newspaper"></i>Blog</a>
+            <?php if($_SESSION['permit'][10]['r']){$active = $_SESSION['permitsModule']['module'] == "Blog" ? "active" :"";?>
+            <a href="<?=base_url()?>/articulos" class="nav-item nav-link <?=$active?>"><i class="far fa-newspaper"></i>Blog</a>
             <?php } ?>
         </div>
     </nav>
