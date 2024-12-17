@@ -74,6 +74,7 @@
         }
         public function insertOrder(int $id,array $data){
             $this->intId = $id;
+            $status = $data['type'] != "credito" ? "approved" : "pendent";
             //Insert header
             $sql = "INSERT INTO orderdata(personid,name,identification,email,phone,address,note,amount,date,status,coupon,type,statusorder,date_beat) 
             VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -87,10 +88,10 @@
                 $data['note'],
                 $data['amount'],
                 $data['date'],
-                "pendent",
+                $status,
                 $data['discount'],
-                "credito",
-                "confirmado",
+                $data['type'],
+                STATUS[$data['status_order']],
                 $data['date_beat']
             );
             $request = $this->insert($sql,$arrData);

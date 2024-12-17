@@ -1,6 +1,10 @@
 <?php 
     headerAdmin($data);
     getModal("modalQuoteDetail");
+    
+    if($_SESSION['permitsModule']['w']){
+        getModal("modalSetOrder");
+    }
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <h2 class="text-center"><?=$data['page_title']?></h2>

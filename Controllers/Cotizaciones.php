@@ -31,6 +31,8 @@
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $id = intval($_POST['id']);
+                        $statusOrder = intval($_POST['statusOrder']);
+                        $paymentList = strClean($_POST['type']);
                         $request = $this->model->selectQuote($id);
                         if(!empty($request)){
                                 $dateObj = new DateTime("now");
@@ -46,6 +48,8 @@
                                 $dateBeat = $dateObj->format("Y-m-d");
                                 $request['date'] = $currentDate;
                                 $request['date_beat'] = $dateBeat;
+                                $request['status_order'] = $statusOrder;
+                                $request['type'] = $paymentList;
                                 $request = $this->model->insertOrder($id,$request);
                                 if($request > 0){
                                     $arrResponse = array("status"=>true,"msg"=>"La cotizacion se ha facturado con éxito");

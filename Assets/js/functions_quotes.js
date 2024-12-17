@@ -5,17 +5,53 @@ let purchase = {};
 let arrAdvance=[];
 let arrData = [];
 let modalView = document.querySelector("#modalView") ? new bootstrap.Modal(document.querySelector("#modalView")) :"";
+let modalEdit = document.querySelector("#modalSetOrder") ? new bootstrap.Modal(document.querySelector("#modalSetOrder")) :"";
 let tableData = document.querySelector("#tableData");
 const searchHtml = document.querySelector("#txtSearch");
 const perPage = document.querySelector("#perPage");
 const initialDateHtml = document.querySelector("#txtInitialDate");
 const finallDateHtml = document.querySelector("#txtFinalDate");
+const btnAddPos = document.querySelector("#btnSetPurchase");
 
 let totalPendent = 0;
 window.addEventListener("load",function(){
     initialDateHtml.value = new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0];
     finallDateHtml.value = new Date().toISOString().split("T")[0]; 
     getData();
+});
+btnAddPos.addEventListener("click",function(e){
+    e.preventDefault();
+    Swal.fire({
+        title:"¿Estás segur@ de facturar esta cotización?",
+        text:"",
+        icon: 'warning',
+        showCancelButton:true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText:"Sí, facturar",
+        cancelButtonText:"No, cancelar"
+    }).then(function(result){
+        if(result.isConfirmed){
+            const url = base_url+"/cotizaciones/setOrder";
+            const formData= new FormData();
+            formData.append("id",document.querySelector("#id").value);
+            formData.append("type",document.querySelector("#paymentList").value);
+            formData.append("statusOrder",document.querySelector("#statusOrder").value);
+            btnAddPos.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+            btnAddPos.setAttribute("disabled","");
+            request(url,formData,"post").then(function(objData){
+                btnAddPos.removeAttribute("disabled");
+                btnAddPos.innerHTML="Guardar";
+                if(objData.status){
+                    Swal.fire("Facturado",objData.msg,"success");
+                    modalEdit.hide();
+                    getData();
+                }else{
+                    Swal.fire("Error",objData.msg,"error");
+                }
+            });
+        }
+    });
 });
 
 searchHtml.addEventListener("input",function(){getData();});
@@ -132,30 +168,8 @@ function viewItem(id){
     openModal("view");
 }
 function editItem(id){
-    Swal.fire({
-        title:"¿Estás segur@ de facturar esta cotización?",
-        text:"",
-        icon: 'warning',
-        showCancelButton:true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText:"Sí, facturar",
-        cancelButtonText:"No, cancelar"
-    }).then(function(result){
-        if(result.isConfirmed){
-            let url = base_url+"/cotizaciones/setOrder"
-            let formData = new FormData();
-            formData.append("id",id);
-            request(url,formData,"post").then(function(objData){
-                if(objData.status){
-                    Swal.fire("Facturado",objData.msg,"success");
-                    getData();
-                }else{
-                    Swal.fire("Error",objData.msg,"error");
-                }
-            });
-        }
-    });
+    document.querySelector("#id").value = id;
+    openModal("edit");
 }
 //Modal
 function openModal(type=""){
