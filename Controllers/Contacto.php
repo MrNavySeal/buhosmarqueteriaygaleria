@@ -37,8 +37,13 @@
                                                 "company"=>$company,
                                                 "phone"=>$strPhone,
                                                 'name'=>$strName);
-                        sendEmail($dataEmail,'email_contact');
-                        $arrResponse = array("status"=>true,"msg"=>"Recibimos tu mensaje, pronto nos comunicaremos contigo.");
+                        try {
+                            sendEmail($dataEmail,'email_contact');
+                            $arrResponse = array("status"=>true,"msg"=>"Recibimos tu mensaje, pronto nos comunicaremos contigo.");
+                        } catch (Exception $e) {
+                            $arrResponse = array("status"=>false,"msg"=>"Ha ocurrido un error en el envio de mensajes, inténtelo más tarde.");
+                        }
+                        
                     }else{
                         $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo");
                     }

@@ -326,7 +326,7 @@
             $this->con = new Mysql();
             $this->intIdProduct = $id;
             if($variant != null){
-                $sql = "UPDATE product_variations_options SET stock=? WHERE name = $variant AND product_id = $this->intIdProduct";
+                $sql = "UPDATE product_variations_options SET stock=? WHERE name = '$variant' AND product_id = $this->intIdProduct";
                 $arrData = array($stock);
             }else{
                 $sql = "UPDATE product SET stock=? WHERE idproduct = $this->intIdProduct";
