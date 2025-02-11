@@ -237,7 +237,7 @@
                     'email_copia' => $company['secondary_email'],
                     'order' => $orderInfo);
 
-                //try {sendEmail($dataEmailOrden,'email_order');} catch (Exception $e) {}
+                try {sendEmail($dataEmailOrden,'email_order');} catch (Exception $e) {}
                 $idOrder = openssl_encrypt($request,METHOD,KEY);
                 $idTransaction = openssl_encrypt($orderInfo['order']['idtransaction'],METHOD,KEY);
                 $orderData = array("order"=>$idOrder,"transaction"=>$idTransaction);
