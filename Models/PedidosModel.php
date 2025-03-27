@@ -86,14 +86,14 @@
             DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat  
             FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
             OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
-            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND date BETWEEN '$strInitialDate' AND '$strFinalDate' $whre 
+            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' $whre 
             ORDER BY idorder DESC LIMIT $start,$intPerPage";      
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
             FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
             OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
-            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND date BETWEEN '$strInitialDate' AND '$strFinalDate' $whre";    
+            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' $whre";    
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
             if(!empty($request)){
@@ -200,7 +200,7 @@
             INNER JOIN orderdetail as det ON cab.idorder = det.orderid
             WHERE (det.description like '$strSearch%' OR det.price like '$strSearch%' OR det.reference like '$strSearch%'
             OR cab.identification like '$strSearch%' OR cab.name like '$strSearch%' OR cab.name like '$strSearch%'
-            OR cab.idtransaction like '$strSearch%' OR cab.idorder like '$strSearch%' )  AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate'
+            OR cab.idtransaction like '$strSearch%' OR cab.idorder like '$strSearch%' )  AND DATE(cab.date) BETWEEN '$strInitialDate' AND '$strFinalDate'
             $whre ORDER BY cab.idorder DESC LIMIT $start,$intPerPage";      
             $request = $this->select_all($sql);
 
@@ -209,7 +209,7 @@
             INNER JOIN orderdetail as det ON cab.idorder = det.orderid
             WHERE (det.description like '$strSearch%' OR det.price like '$strSearch%' OR det.reference like '$strSearch%'
             OR cab.identification like '$strSearch%' OR cab.name like '$strSearch%' OR cab.name like '$strSearch%'
-            OR cab.idtransaction like '$strSearch%' OR cab.idorder like '$strSearch%' )  AND cab.date BETWEEN '$strInitialDate' AND '$strFinalDate'
+            OR cab.idtransaction like '$strSearch%' OR cab.idorder like '$strSearch%' )  AND DATE(cab.date) BETWEEN '$strInitialDate' AND '$strFinalDate'
             $whre";    
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
