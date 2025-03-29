@@ -391,10 +391,10 @@
                                 <td class="text-center">'.$request[$i]['id_egress'].'</td>
                                 <td class="text-center">'.$request[$i]['date'].'</td>
                                 <td class="text-center">'.$request[$i]['type'].'</td>
-                                <td class="text-left">'.$request[$i]['categoria'].'</td>
+                                <td>'.$request[$i]['categoria'].'</td>
                                 <td>'.$request[$i]['concepto'].'</td>
                                 <td class="text-center">'.$request[$i]['method'].'</td>
-                                <td class="text-right">'.$request[$i]['amount'].'</td>
+                                <td class="text-end">'.$request[$i]['amount'].'</td>
                                 <td class="text-center">'.$request[$i]['estado'].'</td>
                                 <td class="text-center">'.$request[$i]['options'].'</td>
                             </tr>
