@@ -193,19 +193,69 @@
             return $return;
         }
         /*************************Egress methods*******************************/
-        public function selecOutgoings(){
-            $sql = "SELECT *,
+        public function selecOutgoings(string $strSearch,int $intPerPage,int $intPageNow,string $strInitialDate,string $strFinalDate){
+            $start = ($intPageNow-1)*$intPerPage;
+            $sql = "SELECT a.*,
             a.id as id_egress,
             a.name as concepto,
             a.status as estado,
             c.name as categoria,
-            DATE_FORMAT(a.date, '%d/%m/%Y') as date,
-            DATE(a.date) as dateorder
+            DATE_FORMAT(a.date, '%d/%m/%Y') as date
             FROM count_amount a
             INNER JOIN count_category c
-            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 ORDER BY dateorder ASC";
+            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 
+            AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
+            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            ORDER BY DATE(a.date) DESC LIMIT $start,$intPerPage";
             $request = $this->select_all($sql);
-            return $request;
+
+            $sql = "SELECT a.*,
+            a.id as id_egress,
+            a.name as concepto,
+            a.status as estado,
+            c.name as categoria,
+            DATE_FORMAT(a.date, '%d/%m/%Y') as date
+            FROM count_amount a
+            INNER JOIN count_category c
+            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 
+            AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
+            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            ORDER BY DATE(a.date) DESC";
+            $requestFull = $this->select_all($sql);
+
+            $sqlTotal = "SELECT a.method,
+            a.amount,
+            a.id as id_egress,
+            a.name as concepto,
+            a.status as estado,
+            c.name as categoria,
+            DATE_FORMAT(a.date, '%d/%m/%Y') as date
+            FROM count_amount a
+            INNER JOIN count_category c
+            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 
+            AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
+            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            ORDER BY DATE(a.date) DESC";
+
+            $requestFull = $this->select_all($sqlTotal);
+            $totalRecords = count($requestFull);
+            $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
+            $maxButtons = 4;
+            $page = $intPageNow;
+            $startPage = max(1, $page - floor($maxButtons / 2));
+            if ($startPage + $maxButtons - 1 > $totalPages) {
+                $startPage = max(1, $totalPages - $maxButtons + 1);
+            }
+            $limitPages = min($startPage + $maxButtons, $totalPages + 1);
+            $arrResponse = array(
+                "data"=>$request,
+                "start_page"=>$startPage,
+                "limit_page"=>$limitPages,
+                "total_pages"=>$totalPages,
+                "total_records"=>$totalRecords,
+                "full_data"=>$requestFull
+            );
+            return $arrResponse;
         }
         public function insertEgress(int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus,string $method){
 

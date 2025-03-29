@@ -346,9 +346,17 @@
             }
 			die();
         }
+
         public function getOutgoings(){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selecOutgoings();
+                $strSearch = strClean($_POST['search']);
+                $intPerPage = intval($_POST['perpage']);
+                $intPageNow = intval($_POST['page']);
+                $strInitialDate = strClean($_POST['initial_date']);
+                $strFinalDate = strClean($_POST['final_date']);
+                $arrData = $this->model->selecOutgoings($strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate);
+                $request = $arrData['data'];
+                $html ="";
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
                         
@@ -377,8 +385,25 @@
                         $request[$i]['estado'] = $status;
                         $request[$i]['amount'] = formatNum($request[$i]['amount']);
                         $request[$i]['type'] = $type;
+
+                        $html.='
+                            <tr>
+                                <td class="text-center">'.$request[$i]['id_egress'].'</td>
+                                <td class="text-center">'.$request[$i]['date'].'</td>
+                                <td class="text-center">'.$request[$i]['type'].'</td>
+                                <td class="text-left">'.$request[$i]['categoria'].'</td>
+                                <td>'.$request[$i]['concepto'].'</td>
+                                <td class="text-center">'.$request[$i]['method'].'</td>
+                                <td class="text-right">'.$request[$i]['amount'].'</td>
+                                <td class="text-center">'.$request[$i]['estado'].'</td>
+                                <td class="text-center">'.$request[$i]['options'].'</td>
+                            </tr>
+                        ';
                     }
-                    echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                    $arrData['html'] = $html;
+                    $arrData['html_pages'] = getPagination($intPageNow,$arrData['start_page'],$arrData['total_pages'],$arrData['limit_page']);
+                    $arrData['data'] = $request;
+                    echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
                 }
             }
             die();

@@ -90,4 +90,36 @@
         }
         return $finalPrice;
     }
+    function getPagination($page,$startPage,$totalPages,$limitPages){
+        $htmlPages = '
+            <li class="page-item">
+                <button type="button" class="page-link text-secondary" href="#" onclick="getData(1)" aria-label="First">
+                    <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                </button>
+            </li>
+            <li class="page-item">
+                <button type="button" class="page-link text-secondary" href="#" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
+                    <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                </button>
+            </li>
+        ';
+        for ($i = $startPage; $i < $limitPages; $i++) {
+            $htmlPages .= '<li class="page-item">
+                <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getData('.$i.')">'.$i.'</button>
+            </li>';
+        }
+        $htmlPages .= '
+            <li class="page-item">
+                <button type="button" class="page-link text-secondary" href="#" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
+                    <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                </button>
+            </li>
+            <li class="page-item">
+                <button type="button" class="page-link text-secondary" href="#" onclick="getData('.($totalPages).')" aria-label="Last">
+                    <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                </button>
+            </li>
+        ';
+        return $htmlPages;
+    }
 ?>
