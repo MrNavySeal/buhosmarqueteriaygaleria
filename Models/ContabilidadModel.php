@@ -193,7 +193,7 @@
             return $return;
         }
         /*************************Egress methods*******************************/
-        public function selecOutgoings(string $strSearch,int $intPerPage,int $intPageNow,string $strInitialDate,string $strFinalDate){
+        public function selecOutgoings(string $strSearch,int $intPerPage,int $intPageNow,string $strInitialDate,string $strFinalDate,string $intType,string $intTopic){
             $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT a.*,
             a.id as id_egress,
@@ -202,10 +202,10 @@
             c.name as categoria,
             DATE_FORMAT(a.date, '%d/%m/%Y') as date
             FROM count_amount a
-            INNER JOIN count_category c
-            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 
-            AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
-            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            INNER JOIN count_category c ON a.category_id = c.id
+            WHERE c.status = 1 AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
+            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            AND a.category_id LIKE '$intTopic%' AND a.type_id LIKE '$intType%'
             ORDER BY DATE(a.date) DESC LIMIT $start,$intPerPage";
             $request = $this->select_all($sql);
 
@@ -216,14 +216,15 @@
             c.name as categoria,
             DATE_FORMAT(a.date, '%d/%m/%Y') as date
             FROM count_amount a
-            INNER JOIN count_category c
-            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 
-            AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
-            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            INNER JOIN count_category c ON a.category_id = c.id
+            WHERE c.status = 1 AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
+            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            AND a.category_id LIKE '$intTopic%' AND a.type_id LIKE '$intType%'
             ORDER BY DATE(a.date) DESC";
             $requestFull = $this->select_all($sql);
 
             $sqlTotal = "SELECT a.method,
+            a.type_id,
             a.amount,
             a.id as id_egress,
             a.name as concepto,
@@ -231,10 +232,10 @@
             c.name as categoria,
             DATE_FORMAT(a.date, '%d/%m/%Y') as date
             FROM count_amount a
-            INNER JOIN count_category c
-            WHERE a.category_id = c.id AND a.type_id != 3 AND c.status = 1 
-            AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
-            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            INNER JOIN count_category c ON a.category_id = c.id
+            WHERE c.status = 1 AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
+            AND (a.name LIKE '$strSearch%' OR c.name LIKE '$strSearch%' OR a.id LIKE '$strSearch%' OR a.method LIKE '$strSearch%')
+            AND a.category_id LIKE '$intTopic%' AND a.type_id LIKE '$intType%'
             ORDER BY DATE(a.date) DESC";
 
             $requestFull = $this->select_all($sqlTotal);
@@ -355,7 +356,10 @@
             return $return;
         }
         public function selectCatIncome(int $option){
-            $sql = "select * from count_category where type = $option and status = 1 order by name desc";
+            $sql = "SELECT * FROM count_category 
+            WHERE type = $option and 
+            status = 1 AND id NOT IN(1,2,3)
+            ORDER BY name DESC";
             $request = $this->select_all($sql);
             return $request;
         }

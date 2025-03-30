@@ -59,4 +59,4 @@
             <!-- Content Start -->
             <div class="content">
             <?php require('Views/Template/nav_header_admin.php');?>
-            <div class="p-4">
+            <div class="p-2">

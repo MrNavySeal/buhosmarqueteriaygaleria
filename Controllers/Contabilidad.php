@@ -19,38 +19,14 @@
                 die();
             }
         }
-        public function ingreso(){
-            if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Ingresos";
-                $data['page_title'] = "Contabilidad | Ingresos";
-                $data['page_name'] = "ingresos";
-                $data['categories'] = $this->model->selectCatIncome(3);
-                $data['panelapp'] = "functions_countincome.js";
-                $this->views->getView($this,"ingreso",$data);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-        }
-        public function egreso(){
-            if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Egresos";
-                $data['page_title'] = "Contabilidad | Egresos";
-                $data['page_name'] = "egresos";
-                $data['categories'] = $this->model->selectCatIncome(1);
-                $data['panelapp'] = "functions_countegress.js";
-                $this->views->getView($this,"egreso",$data);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-        }
         public function movimientos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Caja";
+                $data['page_tag'] = "Movimientos";
                 $data['page_title'] = "Contabilidad | Movimientos";
-                $data['page_name'] = "movimientos";
-                $data['panelapp'] = "functions_movimientos.js";
+                $data['page_name'] = "movimiento";
+                $data['categories'] = $this->model->selectCatIncome(1);
+                $data['payment_methods'] = getOptionPago(); 
+                $data['panelapp'] = "functions_count_movement.js";
                 $this->views->getView($this,"movimientos",$data);
             }else{
                 header("location: ".base_url());
@@ -195,115 +171,6 @@
             }
             die();
         }
-        /*************************Income methods*******************************/
-        public function setIncome(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    if(empty($_POST['typeList']) || empty($_POST['txtAmount']) || empty($_POST['statusList'])){
-                        $arrResponse = array("status" => false, "msg" => 'Error de datos');
-                    }else{ 
-                        $idIncome = intval($_POST['idIncome']);
-                        $strName = ucwords(strClean($_POST['txtName']));
-                        $intTopic = intval($_POST['typeList']);
-                        $intAmount = intval($_POST['txtAmount']);
-                        $intType = 3;
-                        $strDate = strClean($_POST['txtDate']);
-                        $intStatus = intval($_POST['statusList']);
-                        $strMethod = strClean($_POST['subType']);
-                        if($idIncome == 0){
-                            if($_SESSION['permitsModule']['w']){
-                                $option = 1;
-                                $request= $this->model->insertIncome($intType,$intTopic,$strName,$intAmount,$strDate,$intStatus,$strMethod);
-                            }
-                        }else{
-                            if($_SESSION['permitsModule']['u']){
-                                $option = 2;
-                                $request= $this->model->updateIncome($idIncome,$intType,$intTopic,$strName,$intAmount,$strDate,$intStatus,$strMethod);
-                            }
-                        }
-                        if($request > 0 ){
-                            if($option == 1){
-                                $arrResponse = array("status"=>true,"msg"=>"Datos guardados");
-                            }else{
-                                $arrResponse = array("status"=>true,"msg"=>"Datos actualizados");
-                            }
-                        }else{
-                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-			die();
-        }
-        public function getIncomes(){
-            if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectIncomes();
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-                        $btnEdit="";
-                        $btnDelete="";
-                        $status="";
-                        $type="";
-                        if($_SESSION['permitsModule']['u'] && $request[$i]['category_id'] != 1){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" onclick="editItem('.$request[$i]['id_income'].')"><i class="fas fa-pencil-alt"></i></button>';
-                        }
-                        if($_SESSION['permitsModule']['d'] && $request[$i]['category_id'] != 1){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" onclick="deleteItem('.$request[$i]['id_income'].')" ><i class="fas fa-trash-alt"></i></button>';
-                        }
-                        if($request[$i]['estado']==1){
-                            $status='<span class="badge me-1 bg-success">Activo</span>';
-                        }else{
-                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
-                        }
-                        $request[$i]['options'] = $btnEdit.$btnDelete;
-                        $request[$i]['estado'] = $status;
-                        $request[$i]['amount'] = formatNum($request[$i]['amount']);
-                    }
-                    echo json_encode($request,JSON_UNESCAPED_UNICODE);
-                }
-            }
-            die();
-        }
-        public function getIncome(){
-            if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    if(empty($_POST)){
-                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['idIncome']);
-                        $request = $this->model->selectIncome($id);
-                        if(!empty($request)){
-                            $arrResponse = array("status"=>true,"data"=>$request);
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-            die();
-        }
-        public function delIncome(){
-            if($_SESSION['permitsModule']['d']){
-                if($_POST){
-                    if(empty($_POST['idIncome'])){
-                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['idIncome']);
-                        $request = $this->model->deleteIncome($id);
-
-                        if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-            die();
-        }
         /*************************Egress methods*******************************/
         public function setEgress(){
             if($_SESSION['permitsModule']['r']){
@@ -346,15 +213,19 @@
             }
 			die();
         }
-
         public function getOutgoings(){
             if($_SESSION['permitsModule']['r']){
                 $strSearch = strClean($_POST['search']);
+                $intType = strClean($_POST['type']);
+                $intTopic = strClean($_POST['topic']);
                 $intPerPage = intval($_POST['perpage']);
                 $intPageNow = intval($_POST['page']);
+                $intTotalGastos = 0;
+                $intTotalCostos = 0;
+                $intTotalIngresos = 0;
                 $strInitialDate = strClean($_POST['initial_date']);
                 $strFinalDate = strClean($_POST['final_date']);
-                $arrData = $this->model->selecOutgoings($strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate);
+                $arrData = $this->model->selecOutgoings($strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate,$intType,$intTopic);
                 $request = $arrData['data'];
                 $html ="";
                 if(count($request)>0){
@@ -364,10 +235,10 @@
                         $btnDelete="";
                         $status="";
                         $type="";
-                        if($_SESSION['permitsModule']['u'] && $request[$i]['category_id'] != 2){
+                        if($_SESSION['permitsModule']['u'] && $request[$i]['category_id'] != 2 && $request[$i]['category_id'] != 3 && $request[$i]['category_id'] != 1){
                             $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" onclick="editItem('.$request[$i]['id_egress'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
-                        if($_SESSION['permitsModule']['d'] && $request[$i]['category_id'] != 2){
+                        if($_SESSION['permitsModule']['d'] && $request[$i]['category_id'] != 2 && $request[$i]['category_id'] != 3 && $request[$i]['category_id'] != 1){
                             $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" onclick="deleteItem('.$request[$i]['id_egress'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
                         if($request[$i]['estado']==1){
@@ -376,35 +247,60 @@
                             $status='<span class="badge me-1 bg-danger">Inactivo</span>';
                         }
                         if($request[$i]['type_id'] == 1){
-                            $type = "Gasto";
+                            $type = "Gastos";
+                        }else if($request[$i]['type_id']==2){
+                            $type="Costos";
                         }else{
-                            $type="Costo";
+                            $type="Ingresos";
                         }
 
                         $request[$i]['options'] = $btnEdit.$btnDelete;
                         $request[$i]['estado'] = $status;
                         $request[$i]['amount'] = formatNum($request[$i]['amount']);
                         $request[$i]['type'] = $type;
-
+                        
                         $html.='
                             <tr>
-                                <td class="text-center">'.$request[$i]['id_egress'].'</td>
-                                <td class="text-center">'.$request[$i]['date'].'</td>
-                                <td class="text-center">'.$request[$i]['type'].'</td>
-                                <td>'.$request[$i]['categoria'].'</td>
-                                <td>'.$request[$i]['concepto'].'</td>
-                                <td class="text-center">'.$request[$i]['method'].'</td>
-                                <td class="text-end">'.$request[$i]['amount'].'</td>
-                                <td class="text-center">'.$request[$i]['estado'].'</td>
-                                <td class="text-center">'.$request[$i]['options'].'</td>
+                                <td data-title="ID" class="text-center">'.$request[$i]['id_egress'].'</td>
+                                <td data-title="Fecha" class="text-center">'.$request[$i]['date'].'</td>
+                                <td data-title="Tipo" class="text-center">'.$request[$i]['type'].'</td>
+                                <td data-title="Categoría" >'.$request[$i]['categoria'].'</td>
+                                <td data-title="Concepto">'.$request[$i]['concepto'].'</td>
+                                <td data-title="Método" class="text-center">'.$request[$i]['method'].'</td>
+                                <td data-title="Monto" class="text-end">'.$request[$i]['amount'].'</td>
+                                <td data-title="Estado" class="text-center">'.$request[$i]['estado'].'</td>
+                                <td data-title="Opciones" class="text-center"><div class="d-flex">'.$request[$i]['options'].'</div></td>
                             </tr>
                         ';
                     }
-                    $arrData['html'] = $html;
-                    $arrData['html_pages'] = getPagination($intPageNow,$arrData['start_page'],$arrData['total_pages'],$arrData['limit_page']);
-                    $arrData['data'] = $request;
-                    echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                    foreach ($arrData['full_data'] as $data) {
+                        if($data['type_id'] == 1){
+                            $intTotalGastos+=$data['amount'];
+                        }else if($data['type_id'] == 2){
+                            $intTotalCostos+=$data['amount'];
+                        }else{
+                            $intTotalIngresos+=$data['amount'];
+                        }
+                    }
+                    $intNeto = $intTotalIngresos-($intTotalGastos+$intTotalCostos);
+                    $htmlTotal='
+                        <tr class="fw-bold text-end">
+                            <td colspan="2" data-title="Gastos">'.formatNum($intTotalGastos).'</td>
+                            <td colspan="2" data-title="Costos">'.formatNum($intTotalCostos).'</td>
+                            <td colspan="2" data-title="Ingresos">'.formatNum($intTotalIngresos).'</td>
+                            <td colspan="3" data-title="Total">'.formatNum($intNeto).'</td>
+                        </tr>
+                    ';
                 }
+                $arrData['html'] = $html;
+                $arrData['html_total'] = $htmlTotal;
+                $arrData['html_pages'] = getPagination($intPageNow,$arrData['start_page'],$arrData['total_pages'],$arrData['limit_page']);
+                $arrData['data'] = $request;
+                $arrData['gastos']= $intTotalGastos;
+                $arrData['costos'] = $intTotalCostos;
+                $arrData['ingresos'] = $intTotalIngresos;
+                $arrData['neto'] = $intNeto;
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
@@ -597,71 +493,6 @@
 
             $tBody = $htmlCA.$htmlGA.$htmlIA.'<tr class="bg-color-2"><td class="text-end fw-bold" colspan="13">Ingresos - (costos+gastos)</td><td>'.formatNum($neto).'</td></tr>';
             return $tBody;
-        }
-        public function getMovements(){
-            if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectMovements();
-                $movimientos = $request['movements'];
-                if(!empty($movimientos)){
-                    for ($i=0; $i < count($movimientos) ; $i++) { 
-                        $movimientos[$i]['amount'] = formatNum($movimientos[$i]['amount']);
-                        if($movimientos[$i]['type_id'] == 1){
-                            $movimientos[$i]['type'] = "Gastos";
-                        }else if($movimientos[$i]['type_id'] == 2){
-                            $movimientos[$i]['type'] = "Costos";
-                        }else{
-                            $movimientos[$i]['type'] = "Ingresos";
-                        }
-                    }
-                }
-                echo json_encode($movimientos,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function getMovementsResume(){
-            if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectMovements();
-                $resumen = $request['resume'];
-                $total = 0;
-                $arrData = [];
-                if(!empty($resumen)){
-                    $egresos = array_values(array_filter($resumen,function($e){return $e['type_id'] != 3;}));
-                    $ingresos = array_values(array_filter($resumen,function($e){return $e['type_id'] == 3;}));
-            
-                    $totales = [];
-
-                    foreach ($ingresos as $ingreso) {
-                        if (!isset($totales[$ingreso['method']])) {
-                            $totales[$ingreso['method']] = 0;
-                        }
-                        $totales[$ingreso['method']] += $ingreso['total'];
-                    }
-
-                    foreach ($egresos as $egreso) {
-                        if (!isset($totales[$egreso['method']])) {
-                            $totales[$egreso['method']] = 0;
-                        }
-                        $totales[$egreso['method']] -= $egreso['total'];
-                    }
-
-                    $totalGeneral = 0;
-                    $detalle = [];
-
-                    foreach ($totales as $method => $total) {
-                        $detalle[] = ['method' => $method, 'total' => formatNum($total)];
-                        $totalGeneral += $total;
-                    }
-
-                    $totalGeneral = formatNum($totalGeneral);
-
-                    $arrData = [
-                        'total' => $totalGeneral,
-                        'detail' => $detalle
-                    ];                  
-                }
-                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
-            }
-            die();
         }
     }
 ?>

@@ -90,6 +90,15 @@
         }
         return $finalPrice;
     }
+    function getOptionPago(){
+        $pago="";
+        for ($i=0; $i < count(PAGO) ; $i++) { 
+            if(PAGO[$i] != "credito"){
+                $pago .='<option value="'.PAGO[$i].'">'.PAGO[$i].'</option>';
+            }
+        }
+        return $pago;
+    }
     function getPagination($page,$startPage,$totalPages,$limitPages){
         $htmlPages = '
             <li class="page-item">
