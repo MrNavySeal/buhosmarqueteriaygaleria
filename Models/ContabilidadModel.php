@@ -245,10 +245,7 @@
             return $return;
         }
         public function selectCatIncome(int $option){
-            $sql = "SELECT * FROM count_category 
-            WHERE type = $option and 
-            status = 1 AND id NOT IN(1,2,3)
-            ORDER BY name DESC";
+            $sql = "SELECT * FROM count_category WHERE type = $option AND status = 1 ORDER BY name DESC";
             $request = $this->select_all($sql);
             return $request;
         }
