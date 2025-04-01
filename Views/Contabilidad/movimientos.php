@@ -82,45 +82,47 @@ getModal("modalCountMovement",$data['categories']);
                 
             </table>
         </div>
-        <table class="table align-middle table-hover">
-            <thead>
-                <tr class="text-end">
-                    <th colspan="2">Gastos</th>
-                    <th colspan="2">Costos</th>
-                    <th colspan="2">Ingresos</th>
-                    <th colspan="3">Total</th>
-                </tr>
-            </thead>
-            <tbody id="tableFooter"></tbody>
-        </table>
-        <p id="totalRecords" class="text-center m-0 mb-1"><strong>Total de registros: </strong> 0</p>
-        <nav aria-label="Page navigation example" class="d-flex justify-content-center w-100">
-            <ul class="pagination" id="pagination">
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#" aria-label="Next">
-                        <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#" aria-label="Previous">
-                        <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
-                    </a>
-                </li>
-                <li class="page-item"><a class="page-link text-secondary" href="#">1</a></li>
-                <li class="page-item"><a class="page-link text-secondary" href="#">2</a></li>
-                <li class="page-item"><a class="page-link text-secondary" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#" aria-label="Next">
-                        <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#" aria-label="Next">
-                        <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <div class="no-more-tables">
+            <table class="table align-middle table-hover">
+                <thead>
+                    <tr class="text-end">
+                        <th colspan="2">Gastos</th>
+                        <th colspan="2">Costos</th>
+                        <th colspan="2">Ingresos</th>
+                        <th colspan="3">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tableFooter"></tbody>
+            </table>
+            <p id="totalRecords" class="text-center m-0 mb-1"><strong>Total de registros: </strong> 0</p>
+            <nav aria-label="Page navigation example" class="d-flex justify-content-center w-100">
+                <ul class="pagination" id="pagination">
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link text-secondary" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link text-secondary" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link text-secondary" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 <?php footerAdmin($data)?>         
