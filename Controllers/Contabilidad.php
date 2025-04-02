@@ -311,7 +311,7 @@
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $id = intval($_POST['id']);
-                        $request = $this->model->selectIncome($id);
+                        $request = $this->model->selectEgress($id);
                         $request['options'] = $this->getSelectCategories($request['type_id'],true);
                         if(!empty($request)){
                             $arrResponse = array("status"=>true,"data"=>$request);
