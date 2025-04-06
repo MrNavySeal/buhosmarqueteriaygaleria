@@ -30,23 +30,7 @@ window.addEventListener("load",function(){
     }
     initialDateHtml.value = new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0];
     finallDateHtml.value = new Date().toISOString().split("T")[0]; 
-    typeList.addEventListener("change",function(){
-        request(base_url+"/contabilidad/getSelectCategories/"+typeList.value,"","get").then(function(objData){
-            document.querySelector("#categoryList").innerHTML=objData.data;
-        });
-    });
-    selectType.addEventListener("change",function(){
-        if(selectType.value!=""){
-            searchHtml.parentElement.parentElement.classList.replace("col-md-4","col-md-2");
-            selectTopic.parentElement.parentElement.classList.remove("d-none");
-            request(base_url+"/contabilidad/getSelectCategories/"+selectType.value,"","get").then(function(objData){
-                selectTopic.innerHTML='<option value="">Todo</option>'+objData.data;
-            });
-        }else{
-            searchHtml.parentElement.parentElement.classList.replace("col-md-2","col-md-4");
-            selectTopic.parentElement.parentElement.classList.add("d-none");
-        }
-    });
+    
     formItem.addEventListener("submit",function(e){
         e.preventDefault();
         let name = document.querySelector("#txtName").value;
@@ -80,11 +64,30 @@ window.addEventListener("load",function(){
     });
     getData();
 });
+typeList.addEventListener("change",function(){
+    request(base_url+"/contabilidad/getSelectCategories/"+typeList.value,"","get").then(function(objData){
+        document.querySelector("#categoryList").innerHTML=objData.data;
+    });
+    getData();
+});
+selectType.addEventListener("change",function(){
+    if(selectType.value!=""){
+        searchHtml.parentElement.parentElement.classList.replace("col-md-4","col-md-2");
+        selectTopic.parentElement.parentElement.classList.remove("d-none");
+        request(base_url+"/contabilidad/getSelectCategories/"+selectType.value,"","get").then(function(objData){
+            selectTopic.innerHTML='<option value="">Todo</option>'+objData.data;
+        });
+    }else{
+        searchHtml.parentElement.parentElement.classList.replace("col-md-2","col-md-4");
+        selectTopic.parentElement.parentElement.classList.add("d-none");
+        selectTopic.value="";
+    }
+    getData();
+});
 perPage.addEventListener("change",function(){getData();});
 initialDateHtml.addEventListener("input",function(){getData();});
 finallDateHtml.addEventListener("input",function(){getData();});
 searchHtml.addEventListener("input",function(){getData();});
-selectType.addEventListener("change",function(){getData();});
 selectTopic.addEventListener("change",function(){getData();});
 async function getData(page = 1){
     const formData = new FormData();
