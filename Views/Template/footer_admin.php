@@ -34,6 +34,7 @@
         <script src="<?= media();?>/plugins/print/print.min.js"></script>
         <script src="<?= media();?>/plugins/datatables/datatables.min.js"></script>
         <script src="<?= media();?>/plugins/datatables/jszip.min.js"></script>
+        <script src="<?= media();?>/plugins/vue/vue.js"></script>
         <!------------------------------My functions--------------------------------->
 
         <script>
