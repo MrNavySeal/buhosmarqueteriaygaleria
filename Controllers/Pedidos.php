@@ -188,48 +188,14 @@
                 $intPageNow = intval($_POST['page']);
                 $strInitialDate = strClean($_POST['initial_date']);
                 $strFinalDate = strClean($_POST['final_date']);
-                $data = $this->model->selectCreditOrders($idPersona,$strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate);
-                $request = $data['data'];
-                $intTotalPages = $data['pages'];
-                $total = $this->model->selectTotalCreditOrders($idPersona,$strSearch,$strInitialDate,$strFinalDate);
-
-                $maxButtons = 4;
-                $totalPages = $intTotalPages;
-                $page = $intPageNow;
-                $startPage = max(1, $page - floor($maxButtons / 2));
-                if ($startPage + $maxButtons - 1 > $totalPages) {
-                    $startPage = max(1, $totalPages - $maxButtons + 1);
-                }
+                $strStatusOrder = strClean($_POST['status_order']);
+                $strStatusPayment = strClean($_POST['status_payment']);
+                $intTotalAmount = 0;
+                $intTotalPendent = 0;
+                $arrData = $this->model->selectCreditOrders($idPersona,$strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate,$strStatusOrder,$strStatusPayment);
+                $request = $arrData['data'];
                 $html ="";
-                $htmlPages = '
-                    <li class="page-item">
-                        <button type="button" class="page-link text-secondary" href="#" onclick="getData(1)" aria-label="First">
-                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
-                        </button>
-                    </li>
-                    <li class="page-item">
-                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
-                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
-                        </button>
-                    </li>
-                ';
-                for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
-                    $htmlPages .= '<li class="page-item">
-                        <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getData('.$i.')">'.$i.'</button>
-                    </li>';
-                }
-                $htmlPages .= '
-                    <li class="page-item">
-                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
-                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
-                        </button>
-                    </li>
-                    <li class="page-item">
-                        <button type="button" class="page-link text-secondary" href="#" onclick="getData('.($intTotalPages).')" aria-label="Last">
-                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
-                        </button>
-                    </li>
-                ';
+                $htmlTotal="";
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
 
@@ -304,13 +270,23 @@
                         </tr>
                         ';
                     }
+                    foreach ($arrData['full_data'] as $data) {
+                        $intTotalPendent += $data['total_pendent'];
+                        $intTotalAmount +=$data['amount'];
+                    }
+                    $htmlTotal='
+                        <tr class="fw-bold text-end">
+                            <td data-title="Total">'.formatNum($intTotalAmount).'</td>
+                            <td data-title="Total pendiente">'.formatNum($intTotalPendent).'</td>
+                        </tr>
+                    ';
                 }
-                $arrData = array(
-                    "html"=>$html,
-                    "html_pages"=>$htmlPages,
-                    "total_records"=>$total,
-                    "data"=>$request
-                );
+                $arrData['html'] = $html;
+                $arrData['html_total'] = $htmlTotal;
+                $arrData['html_pages'] = getPagination($intPageNow,$arrData['start_page'],$arrData['total_pages'],$arrData['limit_page']);
+                $arrData['data'] = $request;
+                $arrData['total_amount']= $intTotalAmount;
+                $arrData['total_pendent'] = $intTotalPendent;
                 echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             }
             die();

@@ -5,6 +5,10 @@
         getModal("modalOrderEdit");
     }
     getModal("modalOrderDetail");
+    $status='<option value="">Todo</option>';
+    for ($i=0; $i < count(STATUS) ; $i++) { 
+        $status .='<option value="'.STATUS[$i].'">'.STATUS[$i].'</option>';
+    }
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <h2 class="text-center"><?=$data['page_title']?></h2>
@@ -12,14 +16,14 @@
         <?php
             if($_SESSION['permitsModule']['w']){
         ?>
-        <a class="btn btn-primary" href="<?=base_url()."//PedidosPos/venta"?>" >Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></a>
+        <a class="btn btn-primary" href="<?=base_url()."/PedidosPos/venta"?>" >Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></a>
         <?php
         }
         ?>
     </div>
     <div class="mt-3">
         <div class="row">
-            <div class="col-md-2">
+        <div class="col-md-2">
                 <div class="mb-3">
                     <label for="perPage" class="form-label">Por página</label>
                     <select class="form-control" aria-label="Default select example" id="perPage" name="perPage">
@@ -43,7 +47,20 @@
                     <input type="date" class="form-control" id="txtFinalDate" name="txtFinalDate">
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-2">
+                <label for="selectPago" class="form-label">Estado de pago</label>
+                <select class="form-control" aria-label="Default select example" id="selectPago" name="selectPago">
+                    <option value="">Todo</option>
+                    <option value="pendent">Crédito</option>
+                    <option value="approved">Pagado</option>
+                    <option value="canceled">Anulado</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="selectPedido" class="form-label">Estado de pedido</label>
+                <select class="form-control" aria-label="Default select example" id="selectPedido" name="selectPedido"><?=$status?></select>
+            </div>
+            <div class="col-md-2">
                 <div class="mb-3">
                     <label for="txtSearch" class="form-label">Buscar</label>
                     <input type="text" class="form-control" id="txtSearch" name="txtSearch">
@@ -72,34 +89,45 @@
                 <tbody id="tableData"></tbody>
             </table>
         </div>
-        <p id="totalRecords" class="text-center m-0 mb-1"><strong>Total de registros: </strong> 0</p>
-        <nav aria-label="Page navigation example" class="d-flex justify-content-center w-100">
-            <ul class="pagination" id="pagination">
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#" aria-label="Next">
-                        <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#" aria-label="Previous">
-                        <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
-                    </a>
-                </li>
-                <li class="page-item"><a class="page-link text-secondary" href="#">1</a></li>
-                <li class="page-item"><a class="page-link text-secondary" href="#">2</a></li>
-                <li class="page-item"><a class="page-link text-secondary" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#" aria-label="Next">
-                        <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#" aria-label="Next">
-                        <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <div class="no-more-tables">
+            <table class="table align-middle table-hover">
+                <thead>
+                    <tr class="text-end">
+                        <th>Total</th>
+                        <th>Total Pendiente</th>
+                    </tr>
+                </thead>
+                <tbody id="tableFooter"></tbody>
+            </table>
+            <p id="totalRecords" class="text-center m-0 mb-1"><strong>Total de registros: </strong> 0</p>
+            <nav aria-label="Page navigation example" class="d-flex justify-content-center w-100">
+                <ul class="pagination" id="pagination">
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link text-secondary" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link text-secondary" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link text-secondary" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary" href="#" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 <?php footerAdmin($data)?>         
