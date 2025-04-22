@@ -88,8 +88,9 @@ getModal("modalCountMovement",$data['categories']);
                     <tr class="text-end">
                         <th colspan="2">Gastos</th>
                         <th colspan="2">Costos</th>
+                        <th colspan="2">Total gastos</th>
                         <th colspan="2">Ingresos</th>
-                        <th colspan="3">Total</th>
+                        <th colspan="2">Total</th>
                     </tr>
                 </thead>
                 <tbody id="tableFooter"></tbody>

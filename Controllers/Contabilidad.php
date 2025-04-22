@@ -282,13 +282,15 @@
                             $intTotalIngresos+=$data['amount'];
                         }
                     }
-                    $intNeto = $intTotalIngresos-($intTotalGastos+$intTotalCostos);
+                    $intTotalGastos = $intTotalGastos+$intTotalCostos;
+                    $intNeto = $intTotalIngresos-$intTotalGastos;
                     $htmlTotal='
                         <tr class="fw-bold text-end">
                             <td colspan="2" data-title="Gastos">'.formatNum($intTotalGastos).'</td>
                             <td colspan="2" data-title="Costos">'.formatNum($intTotalCostos).'</td>
+                            <td colspan="2" data-title="Total gastos">'.formatNum($intTotalGastos).'</td>
                             <td colspan="2" data-title="Ingresos">'.formatNum($intTotalIngresos).'</td>
-                            <td colspan="3" data-title="Total">'.formatNum($intNeto).'</td>
+                            <td colspan="2" data-title="Total">'.formatNum($intNeto).'</td>
                         </tr>
                     ';
                 }
@@ -298,6 +300,7 @@
                 $arrData['data'] = $request;
                 $arrData['gastos']= $intTotalGastos;
                 $arrData['costos'] = $intTotalCostos;
+                $arrData['total_gastos'] = $intTotalGastos;
                 $arrData['ingresos'] = $intTotalIngresos;
                 $arrData['neto'] = $intNeto;
                 echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
