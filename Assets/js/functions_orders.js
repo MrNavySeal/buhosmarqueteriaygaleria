@@ -11,6 +11,8 @@ const searchHtml = document.querySelector("#txtSearch");
 const perPage = document.querySelector("#perPage");
 const initialDateHtml = document.querySelector("#txtInitialDate");
 const finallDateHtml = document.querySelector("#txtFinalDate");
+const selectPago = document.querySelector("#selectPago");
+const selectPedido = document.querySelector("#selectPedido");
 
 let totalPendent = 0;
 window.addEventListener("load",function(){
@@ -30,6 +32,8 @@ window.addEventListener("load",function(){
 });
 searchHtml.addEventListener("input",function(){getData();});
 perPage.addEventListener("change",function(){getData();});
+selectPago.addEventListener("change",function(){getData();});
+selectPedido.addEventListener("change",function(){getData();});
 initialDateHtml.addEventListener("input",function(){getData();});
 finallDateHtml.addEventListener("input",function(){getData();});
 async function getData(page = 1){
@@ -39,10 +43,13 @@ async function getData(page = 1){
     formData.append("search",searchHtml.value);
     formData.append("initial_date",initialDateHtml.value);
     formData.append("final_date",finallDateHtml.value);
+    formData.append("status_payment",selectPago.value);
+    formData.append("status_order",selectPedido.value);
     const response = await fetch(base_url+"/pedidos/getOrders",{method:"POST",body:formData});
     const objData = await response.json();
-    arrData = objData.data;
     tableData.innerHTML =objData.html;
+    arrData = objData.full_data;
+    document.querySelector("#tableFooter").innerHTML = objData.html_total;
     document.querySelector("#pagination").innerHTML = objData.html_pages;
     document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
 }

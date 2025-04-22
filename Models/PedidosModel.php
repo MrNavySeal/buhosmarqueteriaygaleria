@@ -27,16 +27,6 @@
             $request = $this->select_all("SELECT *,DATE_FORMAT(date, '%Y-%m-%d') as date FROM order_advance");
             return $request;
         }
-        public function selectTotalOrders($idPerson, $strSearch,$strInitialDate,$strFinalDate){
-            $whre="";
-            if($idPerson!="")$whre=" AND personid=$idPerson";
-            $sql = "SELECT COALESCE(COUNT(*),0) as total
-            FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
-            OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
-            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND date BETWEEN '$strInitialDate' AND '$strFinalDate' $whre";    
-            $request = $this->select($sql)['total'];
-            return $request;
-        }
         public function selectTotalCreditOrders($idPerson, $strSearch,$strInitialDate,$strFinalDate){
             $whre="";
             if($idPerson!="")$whre=" AND personid=$idPerson";
@@ -61,7 +51,7 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
-        public function selectOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
+        public function selectOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate,$strStatusOrder,$strStatusPayment){
             $start = ($intPageNow-1)*$intPerPage;
             $whre="";
             if($idPerson!="")$whre=" AND personid=$idPerson";
@@ -86,16 +76,27 @@
             DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat  
             FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
             OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
-            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' $whre 
+            OR type like '$strSearch%') AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
+            AND statusorder like '$strStatusOrder%' AND status like '$strStatusPayment%' $whre 
             ORDER BY idorder DESC LIMIT $start,$intPerPage";      
             $request = $this->select_all($sql);
 
-            $sqlTotal = "SELECT COALESCE(COUNT(*),0) as total
+            $sqlTotal = "SELECT *
             FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
             OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
-            OR statusorder like '$strSearch%' OR status like '$strSearch%' OR type like '$strSearch%') AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' $whre";    
-            $totalRecords = $this->select($sqlTotal)['total'];
+            OR type like '$strSearch%') AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
+            AND statusorder like '$strStatusOrder%' AND status like '$strStatusPayment%' $whre";    
+            $requestFull = $this->select_all($sqlTotal);
+            $totalRecords = count($requestFull);
             $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
+            $maxButtons = 4;
+            $page = $intPageNow;
+            $startPage = max(1, $page - floor($maxButtons / 2));
+            if ($startPage + $maxButtons - 1 > $totalPages) {
+                $startPage = max(1, $totalPages - $maxButtons + 1);
+            }
+            $limitPages = min($startPage + $maxButtons, $totalPages + 1);
+            
             if(!empty($request)){
                 for ($i=0; $i < count($request); $i++) { 
                     $total = $request[$i]['amount'];
@@ -118,8 +119,37 @@
                         $request[$i]['total_advance'] = intval($advance);
                     }
                 }
+                for ($i=0; $i < count($requestFull); $i++) { 
+                    $total = $requestFull[$i]['amount'];
+                    $sql_det = "SELECT * FROM orderdetail WHERE orderid = {$requestFull[$i]['idorder']}";
+
+                    $requestFull[$i]['detail']=$this->select_all($sql_det);
+                    $requestFull[$i]['total_pendent'] = 0;
+                    if($requestFull[$i]['type'] == "credito" || $requestFull[$i]['status'] == "pendent"){
+                        $sql_credit = "SELECT COALESCE(SUM(advance),0) as total_advance FROM order_advance WHERE order_id = {$requestFull[$i]['idorder']}";
+                        $advance = $this->select($sql_credit)['total_advance'];
+                        $total = $total - $advance;
+                        $requestFull[$i]['total_pendent'] = $total;
+                        $sql_advance = "SELECT det.order_id, det.type, det.advance,DATE_FORMAT(det.date,'%Y-%m-%d') as date,det.user,
+                        CONCAT(u.firstname,' ',u.lastname) as user_name
+                        FROM order_advance det 
+                        INNER JOIN person u
+                        ON det.user = u.idperson
+                        WHERE det.order_id = {$requestFull[$i]['idorder']}";
+                        $requestFull[$i]['detail_advance']= $this->select_all($sql_advance);
+                        $requestFull[$i]['total_advance'] = intval($advance);
+                    }
+                }
             }
-            return  array("data"=>$request,"pages"=>$totalPages);
+            $arrResponse = array(
+                "data"=>$request,
+                "start_page"=>$startPage,
+                "limit_page"=>$limitPages,
+                "total_pages"=>$totalPages,
+                "total_records"=>$totalRecords,
+                "full_data"=>$requestFull
+            ); 
+            return  $arrResponse;
         }
         public function selectCreditOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
             $start = ($intPageNow-1)*$intPerPage;
