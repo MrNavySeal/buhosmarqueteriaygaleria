@@ -192,11 +192,11 @@ function viewAdvance(id){
 function editItem(id){
     let index = arrData.findIndex(e=>e.idorder==id);
     let order = arrData[index];
-    document.querySelector("#statusOrder").value = order.statusorderval;
+    document.querySelector("#statusOrder").value = order.statusorder;
     document.querySelector("#idOrder").value = order.idorder;
     document.querySelector("#sendList").value = order.send_by;
     document.querySelector("#txtGuide").value = order.number_guide;
-    if(order.statusorderval == "enviado"){
+    if(order.statusorder == "enviado"){
         document.querySelector("#divSend").classList.remove("d-none");
     }else{
         document.querySelector("#divSend").classList.add("d-none");

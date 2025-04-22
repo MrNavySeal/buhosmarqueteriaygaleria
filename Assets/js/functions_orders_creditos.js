@@ -41,6 +41,7 @@ async function getData(page = 1){
     const objData = await response.json();
     tableData.innerHTML =objData.html;
     arrData = objData.full_data;
+    
     document.querySelector("#tableFooter").innerHTML = objData.html_total;
     document.querySelector("#pagination").innerHTML = objData.html_pages;
     document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
@@ -179,7 +180,7 @@ function viewAdvance(id){
 function editItem(id){
     let index = arrData.findIndex(e=>e.idorder==id);
     let order = arrData[index];
-    document.querySelector("#statusOrder").value = order.statusorderval;
+    document.querySelector("#statusOrder").value = order.statusorder;
     document.querySelector("#idOrder").value = order.idorder;
     openModal("edit");
 }
