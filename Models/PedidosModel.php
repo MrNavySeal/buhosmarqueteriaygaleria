@@ -70,7 +70,25 @@
             ORDER BY idorder DESC LIMIT $start,$intPerPage";      
             $request = $this->select_all($sql);
 
-            $sqlTotal = "SELECT *
+            $sqlTotal = "SELECT 
+            idorder,
+            idtransaction,
+            name,
+            identification,
+            email,
+            phone,
+            amount,
+            shipping,
+            status,
+            type,
+            address,
+            statusorder,
+            coupon,
+            note,
+            send_by,
+            number_guide,
+            DATE_FORMAT(date, '%d/%m/%Y') as date,
+            DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat 
             FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
             OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
             OR type like '$strSearch%') AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
@@ -172,7 +190,25 @@
             ORDER BY idorder DESC LIMIT $start,$intPerPage";      
             $request = $this->select_all($sql);
 
-            $sqlTotal = "SELECT *
+            $sqlTotal = "SELECT 
+            idorder,
+            idtransaction,
+            name,
+            identification,
+            email,
+            phone,
+            amount,
+            shipping,
+            status,
+            type,
+            address,
+            statusorder,
+            coupon,
+            note,
+            send_by,
+            number_guide,
+            DATE_FORMAT(date, '%d/%m/%Y') as date,
+            DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat 
             FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
             OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
             OR type like '$strSearch%') AND date BETWEEN '$strInitialDate' AND '$strFinalDate'

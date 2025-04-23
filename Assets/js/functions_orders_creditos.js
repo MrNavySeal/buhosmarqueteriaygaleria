@@ -50,6 +50,7 @@ function viewItem(id){
     document.querySelector("#tablePurchaseDetail").innerHTML ="";
     let index = arrData.findIndex(e=>e.idorder==id);
     let order = arrData[index];
+    console.log(order);
     let detail = order.detail;
     let tableDetail = document.querySelector("#tablePurchaseDetail");
     let subtotal = 0;
