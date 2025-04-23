@@ -63,7 +63,9 @@
             return  array("data"=>$request,"pages"=>$totalPages);
         }
         public function selectQuote(int $id){
-            $sql = "SELECT * FROM quote_cab WHERE id = $id";
+            $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date,
+            DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat
+            FROM quote_cab WHERE id = $id";
             $request = $this->select($sql);
             if(!empty($request)){
                 $sql_det = "SELECT q.product_id,q.topic,q.description,q.qty,q.price,q.reference,p.product_type,p.is_stock
