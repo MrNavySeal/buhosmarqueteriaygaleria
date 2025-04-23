@@ -249,8 +249,6 @@
                         $request[$i]['statusorderval'] =  $request[$i]['statusorder'];
                         $request[$i]['statusorder'] = $statusOrder;
                         $request[$i]['format_pendent'] = formatNum($request[$i]['total_pendent']);
-                        $request[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
-                        $request[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
                         $pro=$request[$i];
                         $html.='
                         <tr>

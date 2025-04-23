@@ -114,6 +114,8 @@
 
                     $requestFull[$i]['detail']=$this->select_all($sql_det);
                     $requestFull[$i]['total_pendent'] = 0;
+                    $requestFull[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
+                    $requestFull[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
                     if($requestFull[$i]['type'] == "credito" || $requestFull[$i]['status'] == "pendent"){
                         $sql_credit = "SELECT COALESCE(SUM(advance),0) as total_advance FROM order_advance WHERE order_id = {$requestFull[$i]['idorder']}";
                         $advance = $this->select($sql_credit)['total_advance'];
@@ -213,6 +215,8 @@
 
                     $requestFull[$i]['detail']=$this->select_all($sql_det);
                     $requestFull[$i]['total_pendent'] = 0;
+                    $requestFull[$i]['actual_user'] = $_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname'];
+                    $requestFull[$i]['id_actual_user'] = $_SESSION['userData']['idperson'];
                     if($requestFull[$i]['type'] == "credito" || $requestFull[$i]['status'] == "pendent"){
                         $sql_credit = "SELECT COALESCE(SUM(advance),0) as total_advance FROM order_advance WHERE order_id = {$requestFull[$i]['idorder']}";
                         $advance = $this->select($sql_credit)['total_advance'];
