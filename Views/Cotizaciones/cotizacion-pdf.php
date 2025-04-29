@@ -1,6 +1,11 @@
 <?php
     define("DATA",$data);
     define("QUOTE",$data['data']);
+    $arrDet = QUOTE['detail'];
+    $discount = QUOTE['discount'];
+    $shipping = QUOTE['shipping'];
+    $total = QUOTE['amount'];
+    $subtotal = QUOTE['subtotal'];
     class MYPDF extends TCPDF {
 
         public function Header() {
@@ -94,7 +99,6 @@
     $pdf->SetFont('helvetica', '', 9);
     $pdf->MultiCell(30,$intHeight,QUOTE['date'],"LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
     $pdf->ln();
-
     $pdf->SetFillColor(109,106,107);
     $pdf->SetTextColor(255,255,255);
     $pdf->SetFont('helvetica', 'B', 9);
@@ -170,6 +174,124 @@
     $pdf->MultiCell(20,10,"Precio","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
     $pdf->MultiCell(20,10,"Cantidad","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
     $pdf->MultiCell(20,10,"Subtotal","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->ln();
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFont('helvetica', '', 9);
+    foreach ($arrDet as $pro) {
+        $subtotalProduct =$pro['qty']*$pro['price'];
+        $subtotal+= $pro['qty']*$pro['price'];
+        $description="";
+        if($pro['topic'] == 1){
+            $detail = json_decode($pro['description'],true);
+            $img ="";
+            if(isset($detail['type'])){
+                $intWidth = floatval($detail['width']);
+                $intHeight = floatval($detail['height']);
+                $intMargin = floatval($detail['margin']);
+                $colorFrame =  $detail['colorframe'] ? $detail['colorframe'] : "";
+                $material = $detail['material'] ? $detail['material'] : "";
+                $marginStyle = $detail['style'] == "Flotante" || $detail['style'] == "Flotante sin marco interno" ? "Fondo" : "Paspartú";
+                $borderStyle = $detail['style'] == "Flotante" ? "marco interno" : "bocel";
+                $glassStyle = $detail->idType == 4 ? "Bastidor" : "Tipo de vidrio";
+                $measureFrame = ($intWidth+($intMargin*2))."cm X ".($intHeight+($intMargin*2))."cm";
+                if($detail['photo'] !=""){
+                    $img = '<a href="'.media().'/images/uploads/'.$detail['photo'].'" target="_blank">Ver imagen</a><br>';
+                }
+                $description.='
+                        '.$img.'
+                        '.$detail['name'].'
+                        <ul>
+                            <li>Referencia: '.$detail['reference'].'</li>
+                            <li>Color del marco: '.$colorFrame.'</li>
+                            <li>Material: '.$material.'</li>
+                            <li>Orientación: '.$marginStyle.'</li>
+                            <li>Estilo de enmarcación: '.$detail['style'].'</li>
+                            <li>'.$marginStyle.': '.$detail['margin'].'cm</li>
+                            <li>Medida imagen: '.$detail['width'].'cm X '.$detail['height'].'cm</li>
+                            <li>Medida marco: '.$measureFrame.'</li>
+                            <li>Color del '.$marginStyle.': '.$detail['colormargin'].'</li>
+                            <li>Color del '.$borderStyle.': '.$detail['colorborder'].'</li>
+                            <li>'.$glassStyle.': '.$detail['glass'].'</li>
+                        </ul>
+                ';
+            }else{
+                if($detail['img'] !="" && $detail['img'] !=null){
+                    $img = '<a href="'.media().'/images/uploads/'.$detail['img'].'" target="_blank">Ver imagen</a><br>';
+                }
+                $htmlDetail ="";
+                $arrDet = $detail['detail'];
+                foreach ($arrDet as $d) {
+                    $htmlDetail.='<li>'.$d['name'].' :'.$d['value'].'</li>';
+                }
+                $description = $img.$detail['name'].'<ul>'.$htmlDetail.'</ul>';
+            }
+        }else{
+            $description=$pro['description'];
+            $flag = substr($pro['description'], 0,1) == "{" ? true : false;
+            if($flag){
+                $arrData = json_decode($pro['description'],true);
+                $name = $arrData['name'];
+                $varDetail = $arrData['detail'];
+                $textDetail ="";
+                foreach ($varDetail as $d) {
+                    $textDetail .= '<li><span class="fw-bold t-color-3">'.$d['name'].':</span> '.$d['option'].'</li>';
+                }
+                $description = $name.'<ul>'.$textDetail.'</ul>';
+            }
+        }
+        $lines = $pdf->getNumLines($description);
+        $h = $lines*15;
+        $pdf->MultiCell(20,$h,$pro['reference'],"LRBT",'C',false,0,'','',true,0,false,true,0,'M',true);
+        $pdf->writeHTMLCell(100, $h, '', '', $description, "LRBT", 0, false, true, 'L', true);
+        $pdf->MultiCell(20,$h,formatNum($pro['price']),"LRBT",'R',false,0,'','',true,0,false,true,0,'M',true);
+        $pdf->MultiCell(20,$h,$pro['qty'],"LRBT",'C',false,0,'','',true,0,false,true,0,'M',true);
+        $pdf->MultiCell(20,$h,formatNum($subtotalProduct),"LRBT",'R',false,0,'','',true,0,false,true,0,'M',true);
+        $pdf->ln();
+        if($pdf->GetY() > 250){
+            $pdf->AddPage();
+            $pdf->ln(10);
+        }
+    }
+    $pdf->SetFillColor(109,106,107);
+    $pdf->SetTextColor(255,255,255);
+    $pdf->SetFont('helvetica', 'B', 9);
+    $pdf->MultiCell(160,10,"Subtotal","LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFont('helvetica', 'R', 9);
+    $pdf->MultiCell(20,10,formatNum($subtotal),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->ln();
+
+    $pdf->SetFillColor(109,106,107);
+    $pdf->SetTextColor(255,255,255);
+    $pdf->SetFont('helvetica', 'B', 9);
+    $pdf->MultiCell(160,10,"Descuento","LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFont('helvetica', 'R', 9);
+    $pdf->MultiCell(20,10,formatNum($discount),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->ln();
+
+    $pdf->SetFillColor(109,106,107);
+    $pdf->SetTextColor(255,255,255);
+    $pdf->SetFont('helvetica', 'B', 9);
+    $pdf->MultiCell(160,10,"Envio","LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFont('helvetica', 'R', 9);
+    $pdf->MultiCell(20,10,formatNum($shipping),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->ln();
+    
+    $pdf->SetFillColor(109,106,107);
+    $pdf->SetTextColor(255,255,255);
+    $pdf->SetFont('helvetica', 'B', 9);
+    $pdf->MultiCell(160,10,"Total","LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFont('helvetica', 'R', 9);
+    $pdf->MultiCell(20,10,formatNum($total),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+    
     ob_end_clean();
     $pdf->Output($fileName.'.pdf', 'I');
 ?>
