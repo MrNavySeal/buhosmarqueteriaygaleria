@@ -1,5 +1,5 @@
 <?php
-    require 'Libraries/html2pdf/vendor/autoload.php';
+    //require 'Libraries/html2pdf/vendor/autoload.php';
     use Spipu\Html2Pdf\Html2Pdf;
     class Factura extends Controllers{
 
