@@ -6,6 +6,7 @@
         private $intIdOrder;
         private $intIdUser;
         private $intIdTransaction;
+        private $strCoupon;
         private $strIdentification;
         private $strFirstName;
         private $strLastName;

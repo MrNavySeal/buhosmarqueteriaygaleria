@@ -39,10 +39,10 @@
     
         public function Footer() {
             $arrCompany = getCompanyInfo();
-            $this->setY(-50);
-            $this->SetFont('helvetica', 'B', 8);
+            $this->setY(-40);
+            $this->SetFont('helvetica', 'B', 7.5);
             $this->MultiCell(180, 10,"Esta factura de compra venta se asimila en todos sus efectos legales a la letra de cambio de acuerdo al ART.774 del código de comercio", "", 'C', 0, 0, '', "", true,0,0,1,25,"M"); 
-            $this->SetFont('helvetica', 'I', 8);
+            $this->SetFont('helvetica', 'I', 7);
             $this->SetY(-30);
             $this->MultiCell(180, 10,"Dirección: ".$arrCompany['addressfull']."\n Teléfono: ".$arrCompany['phone']." - Email: ".$arrCompany['email']." - Sitio web: ".base_url() , "T", 'C', 0, 0, '', "", true,0,0,1,25,"M"); 
             $this->SetY(-8);
@@ -278,7 +278,7 @@
         $pdf->MultiCell(20,$h,$pro['quantity'],"LRBT",'C',false,0,'','',true,0,false,true,0,'M',true);
         $pdf->MultiCell(20,$h,formatNum($subtotalProduct),"LRBT",'R',false,0,'','',true,0,false,true,0,'M',true);
         $pdf->ln();
-        if($pdf->GetY() > 220){
+        if($pdf->GetY() > 250){
             $pdf->AddPage();
             $pdf->ln(10);
         }

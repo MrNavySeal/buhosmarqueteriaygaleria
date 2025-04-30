@@ -69,8 +69,8 @@
         public function pdf($params){
             if($_SESSION['permitsModule']['r']){
                 $data['page_title'] = " Factura de venta No. ".$params." | "."Pedidos";
-                $data['data'] = $this->model->selectOrder($params);
                 $data['file_name'] = 'pedido_'.$params.'_'.rand()*10;
+                $data['data'] = $this->model->selectOrder($params);
                 $this->views->getView($this,"pedido-pdf",$data);
             }else{
                 header("location: ".base_url());
