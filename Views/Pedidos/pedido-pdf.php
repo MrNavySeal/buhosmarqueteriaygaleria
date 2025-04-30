@@ -283,6 +283,10 @@
             $pdf->ln(10);
         }
     }
+    if($pdf->GetY() > 230){
+        $pdf->AddPage();
+        $pdf->ln(10);
+    }
     $pdf->SetFillColor(109,106,107);
     $pdf->SetTextColor(255,255,255);
     $pdf->SetFont('helvetica', 'B', 9);
