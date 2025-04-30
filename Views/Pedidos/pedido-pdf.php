@@ -2,11 +2,19 @@
     define("DATA",$data);
     define("QUOTE",$data['data']);
     $arrDet = QUOTE['detail'];
-    $discount = QUOTE['discount'];
+    $discount = QUOTE['coupon'];
     $shipping = QUOTE['shipping'];
     $total = QUOTE['amount'];
     $subtotal = QUOTE['subtotal'];
     $fileName = DATA['file_name'];
+    $status = "";
+    if(QUOTE['status'] =="pendent"){
+        $status = 'crédito';
+    }else if(QUOTE['status'] =="approved"){
+        $status = 'pagado';
+    }else if(QUOTE['status'] =="canceled"){
+        $status = 'anulado';
+    }
     class MYPDF extends TCPDF {
 
         public function Header() {
@@ -16,10 +24,10 @@
             $this->MultiCell(40, 25, '', "LRBT", 'C', 0, 0, '', $y, true); 
             $this->SetFont('helvetica', 'B', 14);
             $this->MultiCell(120, 10, $arrCompany['name'], "T", 'C', 0, 0, 55, $y, true,0,false,true,10,"M");
-            $this->SetFont('helvetica', 'B', 10);
-            $this->MultiCell(25, 25, 'Cotización', "LRT", 'C', 0, 0, 170, $y, true);
+            $this->SetFont('helvetica', 'B', 8);
+            $this->MultiCell(25, 25, 'Factura de venta', "LRT", 'C', 0, 0, 170, $y, true);
             $this->SetFont('helvetica', 'B', 13);
-            $this->MultiCell(25, 10,"No. ".QUOTE['id'], "LR", 'C', 0, 0,170, 15, true);
+            $this->MultiCell(25, 10,"No. ".QUOTE['idorder'], "LR", 'C', 0, 0,170, 15, true);
             $this->SetFont('helvetica', '', 8);
             $this->MultiCell(120, 13.35, "\nNIT: ".$arrCompany['nit']." No responsable de IVA", "", 'C', 0, 0, 55, 10, true);
             $this->SetFont('helvetica', '', 8);
@@ -31,9 +39,12 @@
     
         public function Footer() {
             $arrCompany = getCompanyInfo();
+            $this->setY(-50);
+            $this->SetFont('helvetica', 'B', 8);
+            $this->MultiCell(180, 10,"Esta factura de compra venta se asimila en todos sus efectos legales a la letra de cambio de acuerdo al ART.774 del código de comercio", "", 'C', 0, 0, '', "", true,0,0,1,25,"M"); 
             $this->SetFont('helvetica', 'I', 8);
             $this->SetY(-30);
-            $this->MultiCell(180, 10,  "Dirección: ".$arrCompany['addressfull']."\n Teléfono: ".$arrCompany['phone']." - Email: ".$arrCompany['email']." - Sitio web: ".base_url() , "T", 'C', 0, 0, '', "", true,0,0,1,25,"M"); 
+            $this->MultiCell(180, 10,"Dirección: ".$arrCompany['addressfull']."\n Teléfono: ".$arrCompany['phone']." - Email: ".$arrCompany['email']." - Sitio web: ".base_url() , "T", 'C', 0, 0, '', "", true,0,0,1,25,"M"); 
             $this->SetY(-8);
             $this->MultiCell(90, 25, 'Fecha: '.date("d/m/Y H:i:s"), "", 'L', 0, 0, '', "", true);
             $this->MultiCell(90, 25, 'Página '.$this->getAliasNumPage().' de '.$this->getAliasNbPages(), "", 'R', 0, 0, '', "", true); 
@@ -111,11 +122,11 @@
     $pdf->SetFillColor(109,106,107);
     $pdf->SetTextColor(255,255,255);
     $pdf->SetFont('helvetica', 'B', 9);
-    $pdf->MultiCell(20,$intHeight,"CC/NIT","LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(25,$intHeight,"CC/NIT","LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
     $pdf->SetFillColor(255,255,255);
     $pdf->SetTextColor(0,0,0);
     $pdf->SetFont('helvetica', '', 9);
-    $pdf->MultiCell(35,$intHeight,QUOTE['identification'],"LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(30,$intHeight,QUOTE['identification'],"LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
     $pdf->SetFillColor(109,106,107);
     $pdf->SetTextColor(255,255,255);
     $pdf->SetFont('helvetica', 'B', 9);
@@ -149,11 +160,29 @@
     $pdf->SetFillColor(109,106,107);
     $pdf->SetTextColor(255,255,255);
     $pdf->SetFont('helvetica', 'B', 9);
-    $pdf->MultiCell(20,$intHeight,"Estado","LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(20,$intHeight,"Tipo de pago","LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
     $pdf->SetFillColor(255,255,255);
     $pdf->SetTextColor(0,0,0);
     $pdf->SetFont('helvetica', '', 9);
-    $pdf->MultiCell(160,$intHeight,QUOTE['status'],"LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(40,$intHeight,QUOTE['type'],"LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
+
+    $pdf->SetFillColor(109,106,107);
+    $pdf->SetTextColor(255,255,255);
+    $pdf->SetFont('helvetica', 'B', 9);
+    $pdf->MultiCell(25,$intHeight,"Estado de pago","LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFont('helvetica', '', 9);
+    $pdf->MultiCell(30,$intHeight,$status,"LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
+
+    $pdf->SetFillColor(109,106,107);
+    $pdf->SetTextColor(255,255,255);
+    $pdf->SetFont('helvetica', 'B', 9);
+    $pdf->MultiCell(35,$intHeight,"Estado de pedido","LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetTextColor(0,0,0);
+    $pdf->SetFont('helvetica', '', 9);
+    $pdf->MultiCell(30,$intHeight,QUOTE['statusorder'],"LRBT",'L',true,0,'','',true,0,false,true,0,'M',true);
     $pdf->ln();
 
     $pdf->SetFillColor(109,106,107);
@@ -180,8 +209,8 @@
     $pdf->SetTextColor(0,0,0);
     $pdf->SetFont('helvetica', '', 9);
     foreach ($arrDet as $pro) {
-        $subtotalProduct =$pro['qty']*$pro['price'];
-        $subtotal+= $pro['qty']*$pro['price'];
+        $subtotalProduct =$pro['quantity']*$pro['price'];
+        $subtotal+= $pro['quantity']*$pro['price'];
         $description="";
         if($pro['topic'] == 1){
             $detail = json_decode($pro['description'],true);
@@ -246,10 +275,10 @@
         $pdf->MultiCell(20,$h,$pro['reference'],"LRBT",'C',false,0,'','',true,0,false,true,0,'M',true);
         $pdf->writeHTMLCell(100, $h, '', '', $description, "LRBT", 0, false, true, 'L', true);
         $pdf->MultiCell(20,$h,formatNum($pro['price']),"LRBT",'R',false,0,'','',true,0,false,true,0,'M',true);
-        $pdf->MultiCell(20,$h,$pro['qty'],"LRBT",'C',false,0,'','',true,0,false,true,0,'M',true);
+        $pdf->MultiCell(20,$h,$pro['quantity'],"LRBT",'C',false,0,'','',true,0,false,true,0,'M',true);
         $pdf->MultiCell(20,$h,formatNum($subtotalProduct),"LRBT",'R',false,0,'','',true,0,false,true,0,'M',true);
         $pdf->ln();
-        if($pdf->GetY() > 250){
+        if($pdf->GetY() > 220){
             $pdf->AddPage();
             $pdf->ln(10);
         }

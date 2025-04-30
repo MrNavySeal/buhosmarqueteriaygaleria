@@ -28,7 +28,7 @@
             if($_SESSION['permitsModule']['r']){
                 $data['page_title'] = " Cotizacion No. ".$params." | "."Cotizaciones";
                 $data['data'] = $this->model->selectQuote($params);
-                $data['file_name'] = 'reporte_inventario_ajuste_detalle_'.rand()*10;
+                $data['file_name'] = 'cotizacion_'.$params.'_'.rand()*10;
                 $this->views->getView($this,"cotizacion-pdf",$data);
             }else{
                 header("location: ".base_url());

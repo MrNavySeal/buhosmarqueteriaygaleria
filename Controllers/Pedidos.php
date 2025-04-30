@@ -66,6 +66,17 @@
                 die();
             }
         }
+        public function pdf($params){
+            if($_SESSION['permitsModule']['r']){
+                $data['page_title'] = " Factura de venta No. ".$params." | "."Pedidos";
+                $data['data'] = $this->model->selectOrder($params);
+                $data['file_name'] = 'pedido_'.$params.'_'.rand()*10;
+                $this->views->getView($this,"pedido-pdf",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
         public function getOrders(){
             if($_SESSION['permitsModule']['r']){
                 $idPersona = "";
@@ -89,7 +100,7 @@
                     for ($i=0; $i < count($request); $i++) { 
                         $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['idorder'].')"><i class="fas fa-eye"></i></button>';
                         $btnWpp="";
-                        $btnPdf='<a href="'.base_url().'/factura/generarFactura/'.$request[$i]['idorder'].'" target="_blank" class="btn btn-primary text-white m-1" type="button" title="Imprimir factura"><i class="fas fa-print"></i></a>';
+                        $btnPdf='<a href="'.base_url().'/Pedidos/pdf/'.$request[$i]['idorder'].'" target="_blank" class="btn btn-primary text-white m-1" type="button" title="Imprimir factura"><i class="fas fa-print"></i></a>';
                         $btnPaypal='';
                         $btnDelete ="";
                         $btnEdit ="";

@@ -160,6 +160,51 @@
             ); 
             return  $arrResponse;
         }
+        public function selectOrder(int $idOrder){
+            $sql = "SELECT 
+            idorder,
+            idtransaction,
+            name,
+            identification,
+            email,
+            phone,
+            amount,
+            shipping,
+            status,
+            type,
+            address,
+            statusorder,
+            coupon,
+            note,
+            send_by,
+            number_guide,
+            DATE_FORMAT(date, '%d/%m/%Y') as date,
+            DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat  
+            FROM orderdata WHERE idorder = $idOrder";      
+            $request = $this->select($sql);
+            if(!empty($request)){
+                $total = $request['amount'];
+                $sql_det = "SELECT * FROM orderdetail WHERE orderid = $idOrder";
+
+                $request['detail']=$this->select_all($sql_det);
+                $request['total_pendent'] = 0;
+                if($request['type'] == "credito" || $request['status'] == "pendent"){
+                    $sql_credit = "SELECT COALESCE(SUM(advance),0) as total_advance FROM order_advance WHERE order_id = $idOrder";
+                    $advance = $this->select($sql_credit)['total_advance'];
+                    $total = $total - $advance;
+                    $request['total_pendent'] = $total;
+                    $sql_advance = "SELECT det.order_id, det.type, det.advance,DATE_FORMAT(det.date,'%Y-%m-%d') as date,det.user,
+                    CONCAT(u.firstname,' ',u.lastname) as user_name
+                    FROM order_advance det 
+                    INNER JOIN person u
+                    ON det.user = u.idperson
+                    WHERE det.order_id = $idOrder";
+                    $request['detail_advance']= $this->select_all($sql_advance);
+                    $request['total_advance'] = intval($advance);
+                }
+            }
+            return $request;
+        }
         public function selectCreditOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate,$strStatusOrder,$strStatusPayment){
             $start = ($intPageNow-1)*$intPerPage;
             $whre="";
