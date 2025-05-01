@@ -194,7 +194,7 @@
                     $advance = $this->select($sql_credit)['total_advance'];
                     $total = $total - $advance;
                     $request['total_pendent'] = $total;
-                    $sql_advance = "SELECT det.order_id, det.type, det.advance,DATE_FORMAT(det.date,'%Y-%m-%d') as date,det.user,
+                    $sql_advance = "SELECT det.order_id, det.type, det.advance,DATE_FORMAT(det.date,'%d/%m/%Y') as date,det.user,
                     CONCAT(u.firstname,' ',u.lastname) as user_name
                     FROM order_advance det 
                     INNER JOIN person u

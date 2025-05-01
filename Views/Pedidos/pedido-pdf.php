@@ -7,6 +7,9 @@
     $total = QUOTE['amount'];
     $subtotal = QUOTE['subtotal'];
     $fileName = DATA['file_name'];
+    $arrAdvance = QUOTE['detail_advance'];
+    $intTotalAdvance = QUOTE['total_advance'];
+    $intTotalPendent = QUOTE['total_pendent'];
     $status = "";
     if(QUOTE['status'] =="pendent"){
         $status = 'crédito';
@@ -199,11 +202,11 @@
     $pdf->SetFillColor(109,106,107);
     $pdf->SetTextColor(255,255,255);
     $pdf->SetFont('helvetica', 'B', 9);
-    $pdf->MultiCell(20,10,"Referencia","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
-    $pdf->MultiCell(100,10,"Descripción","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
-    $pdf->MultiCell(20,10,"Precio","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
-    $pdf->MultiCell(20,10,"Cantidad","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
-    $pdf->MultiCell(20,10,"Subtotal","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(20,$intHeight,"Referencia","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(100,$intHeight,"Descripción","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(20,$intHeight,"Precio","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(20,$intHeight,"Cantidad","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+    $pdf->MultiCell(20,$intHeight,"Subtotal","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
     $pdf->ln();
     $pdf->SetFillColor(255,255,255);
     $pdf->SetTextColor(0,0,0);
@@ -326,6 +329,45 @@
     $pdf->SetFont('helvetica', 'R', 9);
     $pdf->MultiCell(20,10,formatNum($total),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
     
+    if(count($arrAdvance) > 0){
+        $pdf->ln();
+        $pdf->ln();
+        $pdf->SetFillColor(109,106,107);
+        $pdf->SetTextColor(255,255,255);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->MultiCell(80,$intHeight,"Fecha","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+        $pdf->MultiCell(80,$intHeight,"Método de pago","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+        $pdf->MultiCell(20,$intHeight,"Abono","LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+        $pdf->ln();
+        $pdf->SetFillColor(255,255,255);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->SetFont('helvetica', '', 9);
+        foreach ($arrAdvance as $det) {
+            $pdf->MultiCell(80,$intHeight,$det['date'],"LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+            $pdf->MultiCell(80,$intHeight,$det['type'],"LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
+            $pdf->MultiCell(20,$intHeight,formatNum($det['advance']),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+            $pdf->ln();
+        }
+        $pdf->SetFillColor(109,106,107);
+        $pdf->SetTextColor(255,255,255);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->MultiCell(160,10,"Total abonado","LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+        $pdf->SetFillColor(255,255,255);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->SetFont('helvetica', 'R', 9);
+        $pdf->MultiCell(20,10,formatNum($intTotalAdvance),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+        $pdf->ln();
+
+        $pdf->SetFillColor(109,106,107);
+        $pdf->SetTextColor(255,255,255);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->MultiCell(160,10,"Total pendiente","LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+        $pdf->SetFillColor(255,255,255);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->SetFont('helvetica', 'R', 9);
+        $pdf->MultiCell(20,10,formatNum($intTotalPendent),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
+        $pdf->ln();
+    }
     ob_end_clean();
     $pdf->Output($fileName.'.pdf', 'I');
 ?>
