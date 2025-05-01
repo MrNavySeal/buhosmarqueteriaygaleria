@@ -347,6 +347,14 @@
             $pdf->MultiCell(80,$intHeight,$det['type'],"LRBT",'C',true,0,'','',true,0,false,true,0,'M',true);
             $pdf->MultiCell(20,$intHeight,formatNum($det['advance']),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
             $pdf->ln();
+            if($pdf->GetY() > 250){
+                $pdf->AddPage();
+                $pdf->ln(10);
+            }
+        }
+        if($pdf->GetY() > 230){
+            $pdf->AddPage();
+            $pdf->ln(10);
         }
         $pdf->SetFillColor(109,106,107);
         $pdf->SetTextColor(255,255,255);
