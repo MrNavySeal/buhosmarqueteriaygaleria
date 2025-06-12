@@ -135,12 +135,12 @@
         $company = getCompanyInfo();
         session_start();
         sessionCookie();
+        $data['company'] = $company;
         $data['error']['msg'] = ERRORES[$code];
         $data['error']['code'] = $code;
         $data['page_tag'] = $company['name'];
         $data['page_title'] = $company['name'];
         $data['page_name'] = "Error $code";
-        //$data['app'] = "functions_home.js";
         require_once "Views/Template/Error/error.php";
     }
     function setView($route){
