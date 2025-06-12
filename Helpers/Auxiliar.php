@@ -131,4 +131,55 @@
         ';
         return $htmlPages;
     }
+    function getError($code){
+        $company = getCompanyInfo();
+        session_start();
+        sessionCookie();
+        $data['error']['msg'] = ERRORES[$code];
+        $data['error']['code'] = $code;
+        $data['page_tag'] = $company['name'];
+        $data['page_title'] = $company['name'];
+        $data['page_name'] = "Error $code";
+        //$data['app'] = "functions_home.js";
+        require_once "Views/Template/Error/error.php";
+    }
+    function setView($route){
+        $ip = getIp();
+        $con = new Mysql();
+        $sql = "SELECT * FROM locations WHERE ip = '$ip' AND route = '$route'";
+        $request = $con->select_all($sql);
+        if(empty($request)){
+            $location = new IpServiceProvider(new IpGeolocationProvider,$ip);
+            $location = $location->getLocation();
+            if($location['status']=="success"){
+                $sql = "INSERT INTO locations(route,country,state,city,zip,lat,lon,timezone,isp,org,aso,ip) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+                $arrData = [
+                    $route,
+                    $location['country'] ?? "",
+                    $location['regionName'] ?? "",
+                    $location['city'] ?? "",
+                    $location['zip'] ?? "",
+                    $location['lat'] ?? "",
+                    $location['lon'] ?? "",
+                    $location['timezone'] ?? "",
+                    $location['isp'] ?? "",
+                    $location['org'] ?? "",
+                    $location['as'] ?? "",
+                    $location['query'] ?? "",
+                ];
+                $con->insert($sql,$arrData);
+            }
+        }
+    }
+    function resetUserData(){
+        $id = $_SESSION['idUser'];
+        $con = new Mysql();
+        $sql = "SELECT  *,r.name as role_name 
+        FROM person p 
+        INNER JOIN role r
+        ON r.idrole = p.roleid
+        WHERE idperson = $id";
+        $request = $con->select($sql);
+        $_SESSION['userData'] = $request;
+    }
 ?>
