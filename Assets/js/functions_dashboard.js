@@ -18,8 +18,49 @@ $('.date-picker').datepicker( {
 });
 
 
+window.addEventListener("load",function(e){
+    getDatosIniciales();
+}); 
+function getDatosIniciales(){
+    let strFechaActual = new Date();
+    let intVigencia = strFechaActual.getFullYear();
+    let intMes = strFechaActual.getMonth()+1;
+    let valorMes = intMes+" - "+intVigencia;
+    let valorAnual = intVigencia;
+    let formData = new FormData();
+
+    //Ventas
+    formData.append("date",valorMes);
+    request(base_url+"/dashboard/getContabilidadMes",formData,"post").then(function(objData){
+        $("#monthChart").html(objData.script);
+    });
+
+    formData.append("date",valorAnual);
+    request(base_url+"/dashboard/getContabilidadAnio",formData,"post").then(function(objData){
+        $("#yearChart").html(objData.script);
+    });
+    //Vistas
+    formData.append("date",valorMes);
+    request(base_url+"/dashboard/getVisitasMes",formData,"post").then(function(objData){
+        $("#monthChartViews").html(objData.script);
+    });
+    formData.append("date",valorAnual);
+    request(base_url+"/dashboard/getVisitasAnio",formData,"post").then(function(objData){
+        $("#yearChartViews").html(objData.script);
+    });
+
+    request(base_url+"/dashboard/getVisitasPais","","get").then(function(objData){
+        $("#countryChartViews").html(objData.script);
+    });
+    request(base_url+"/dashboard/getVisitasPaginas","","get").then(function(objData){
+        $("#pageChartViews").html(objData.script);
+    });
+}
 let btnContabilidadMes = document.querySelector("#btnContabilidadMes");
 let btnContabilidadAnio = document.querySelector("#btnContabilidadAnio");
+let btnVisitasMes = document.querySelector("#btnVisitasMes");
+let btnVisitasAnio = document.querySelector("#btnVisitasAnio");
+
 btnContabilidadMes.addEventListener("click",function(){
     let contabilidadMes = document.querySelector(".contabilidadMes").value;
     if(contabilidadMes==""){
@@ -62,6 +103,55 @@ btnContabilidadAnio.addEventListener("click",function(){
 
         if(objData.status){
             $("#yearChart").html(objData.script);
+        }else{
+            Swal.fire("Error", objData.msg, "error");
+            document.querySelector("#sYear").value ="";
+        }
+    });
+});
+
+btnVisitasMes.addEventListener("click",function(){
+    let valor = document.querySelector(".visitasMes").value;
+    if(valor==""){
+        Swal.fire("Error", "Elija una fecha", "error");
+        return false;
+    }
+    btnVisitasMes.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnVisitasMes.setAttribute("disabled","");
+    let formData = new FormData();
+    formData.append("date",valor);
+    request(base_url+"/dashboard/getVisitasMes",formData,"post").then(function(objData){
+        btnVisitasMes.innerHTML=`<i class="fas fa-search"></i>`;
+        btnVisitasMes.removeAttribute("disabled");
+        $("#monthChartViews").html(objData.script);
+    });
+});
+btnVisitasAnio.addEventListener("click",function(){
+    
+    let salesYear = document.querySelector("#viewYear").value;
+    let strYear = salesYear.toString();
+
+    if(salesYear==""){
+        Swal.fire("Error", "Por favor, ponga un año", "error");
+        document.querySelector("#sYear").value ="";
+        return false;
+    }
+    if(strYear.length>4){
+        Swal.fire("Error", "El año es incorrecto.", "error");
+        document.querySelector("#sYear").value ="";
+        return false;
+    }
+    btnVisitasAnio.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnVisitasAnio.setAttribute("disabled","");
+
+    let formData = new FormData();
+    formData.append("date",salesYear);
+    request(base_url+"/dashboard/getVisitasAnio",formData,"post").then(function(objData){
+        btnVisitasAnio.innerHTML=`<i class="fas fa-search"></i>`;
+        btnVisitasAnio.removeAttribute("disabled");
+
+        if(objData.status){
+            $("#yearChartViews").html(objData.script);
         }else{
             Swal.fire("Error", objData.msg, "error");
             document.querySelector("#sYear").value ="";
