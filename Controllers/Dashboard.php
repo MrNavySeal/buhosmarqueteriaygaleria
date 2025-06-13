@@ -96,6 +96,44 @@
             }
             die();
         }
+        public function getClientesMes(){
+            if($_POST){
+                    if($_SESSION['permitsModule']['r']){
+                    $arrDate = explode(" - ",$_POST['date']);
+                    $month = $arrDate[0];
+                    $year = $arrDate[1];
+                    $request = $this->model->selectCustomersMonth($year,$month);
+                    $total = $request['info']['total'];
+                    $html = '<span class="text-success">'.$total.'</span>';
+                    $request['info_vistas'] = $request['info'];
+                    $request['mes'] =$request['info']['month'];
+                    $request['anio'] = $request['info']['year'];
+                    $request['vistas'] =$total;
+                    $request['vistas_neto'] = $html;
+                    $request['script'] = getFile("Template/Chart/chart_customers_month",$request);
+                    echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                }
+            }
+            die();
+        }
+        public function getClientesAnio(){
+            if($_POST){
+                if(empty($_POST['date'])){
+                    $arrResponse=array("status"=>false,"msg"=>"Error de datos");
+                }else{
+                    $strYear = strval($_POST['date']);
+                    if(strlen($strYear)>4){
+                        $arrResponse=array("status"=>false,"msg"=>"La fecha es incorrecta."); 
+                    }else{
+                        $request = $this->model->selectCustomersYear($strYear);
+                        $script = getFile("Template/Chart/chart_customers_year",$request);
+                        $arrResponse=array("status"=>true,"script"=>$script); 
+                    }
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
         public function getVisitasMes(){
             if($_POST){
                     if($_SESSION['permitsModule']['r']){

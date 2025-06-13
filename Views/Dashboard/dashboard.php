@@ -121,6 +121,33 @@
         </div>
     </div>
     <div class="card mb-4">
+        <h2 class="p-4">Gráfico de clientes</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card-body">
+                    <div class="d-flex justify-content-end mb-3">
+                        <div class="d-flex align-items-center">
+                            <input  class="date-picker clientesMes" name="clientesMes" placeholder="Mes y año" required>
+                            <button class="btn btn-sm btn-primary" id="btnClientesMes"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <figure class="highcharts-figure mb-3 mt-3"><div id="monthChartCustomers"></div></figure>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <div class="d-flex justify-content-end mb-3">
+                        <div class="d-flex align-items-center">
+                            <input type="number" name="clientessAnio" id="customerYear" placeholder="Año" min="2000" max="9999">
+                            <button class="btn btn-sm btn-primary" id="btnClientesAnio"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <figure class="highcharts-figure"><div id="yearChartCustomers"></div></figure>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4">
         <h2 class="p-4">Gráficos de visitas</h2>
         <div class="row">
             <div class="col-md-6">

@@ -39,6 +39,15 @@ function getDatosIniciales(){
     request(base_url+"/dashboard/getContabilidadAnio",formData,"post").then(function(objData){
         $("#yearChart").html(objData.script);
     });
+    //Clientes
+    formData.append("date",valorMes);
+    request(base_url+"/dashboard/getClientesMes",formData,"post").then(function(objData){
+        $("#monthChartCustomers").html(objData.script);
+    });
+    formData.append("date",valorAnual);
+    request(base_url+"/dashboard/getClientesAnio",formData,"post").then(function(objData){
+        $("#yearChartCustomers").html(objData.script);
+    });
     //Vistas
     formData.append("date",valorMes);
     request(base_url+"/dashboard/getVisitasMes",formData,"post").then(function(objData){
@@ -60,6 +69,8 @@ let btnContabilidadMes = document.querySelector("#btnContabilidadMes");
 let btnContabilidadAnio = document.querySelector("#btnContabilidadAnio");
 let btnVisitasMes = document.querySelector("#btnVisitasMes");
 let btnVisitasAnio = document.querySelector("#btnVisitasAnio");
+let btnClientesMes = document.querySelector("#btnClientesMes");
+let btnClientesAnio = document.querySelector("#btnClientesAnio");
 
 btnContabilidadMes.addEventListener("click",function(){
     let contabilidadMes = document.querySelector(".contabilidadMes").value;
@@ -133,12 +144,12 @@ btnVisitasAnio.addEventListener("click",function(){
 
     if(salesYear==""){
         Swal.fire("Error", "Por favor, ponga un año", "error");
-        document.querySelector("#sYear").value ="";
+        document.querySelector("#viewYear").value ="";
         return false;
     }
     if(strYear.length>4){
         Swal.fire("Error", "El año es incorrecto.", "error");
-        document.querySelector("#sYear").value ="";
+        document.querySelector("#viewYear").value ="";
         return false;
     }
     btnVisitasAnio.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
@@ -154,7 +165,56 @@ btnVisitasAnio.addEventListener("click",function(){
             $("#yearChartViews").html(objData.script);
         }else{
             Swal.fire("Error", objData.msg, "error");
-            document.querySelector("#sYear").value ="";
+            document.querySelector("#viewYear").value ="";
+        }
+    });
+});
+
+btnClientesMes.addEventListener("click",function(){
+    let valor = document.querySelector(".clientesMes").value;
+    if(valor==""){
+        Swal.fire("Error", "Elija una fecha", "error");
+        return false;
+    }
+    btnClientesMes.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnClientesMes.setAttribute("disabled","");
+    let formData = new FormData();
+    formData.append("date",valor);
+    request(base_url+"/dashboard/getClientesMes",formData,"post").then(function(objData){
+        btnClientesMes.innerHTML=`<i class="fas fa-search"></i>`;
+        btnClientesMes.removeAttribute("disabled");
+        $("#monthChartCustomers").html(objData.script);
+    });
+});
+btnClientesAnio.addEventListener("click",function(){
+    
+    let salesYear = document.querySelector("#customerYear").value;
+    let strYear = salesYear.toString();
+
+    if(salesYear==""){
+        Swal.fire("Error", "Por favor, ponga un año", "error");
+        document.querySelector("#customerYear").value ="";
+        return false;
+    }
+    if(strYear.length>4){
+        Swal.fire("Error", "El año es incorrecto.", "error");
+        document.querySelector("#customerYear").value ="";
+        return false;
+    }
+    btnClientesAnio.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnClientesAnio.setAttribute("disabled","");
+
+    let formData = new FormData();
+    formData.append("date",salesYear);
+    request(base_url+"/dashboard/getClientesAnio",formData,"post").then(function(objData){
+        btnClientesAnio.innerHTML=`<i class="fas fa-search"></i>`;
+        btnClientesAnio.removeAttribute("disabled");
+
+        if(objData.status){
+            $("#yearChartCustomers").html(objData.script);
+        }else{
+            Swal.fire("Error", objData.msg, "error");
+            document.querySelector("#customerYear").value ="";
         }
     });
 });

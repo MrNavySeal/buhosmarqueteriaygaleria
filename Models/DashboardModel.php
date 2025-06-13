@@ -250,15 +250,57 @@
             );
             return $arrData;
         }
-        public function selectViewsCountry(){
-            $sql = "SELECT country as name,count(*) as total FROM locations GROUP BY country ORDER BY country LIMIT 0,10 ";
-            $request = $this->select_all($sql);
-            return $request;
+        public function selectCustomersYear(int $year){
+            $arrInfo = array();
+            $months = months();
+            $total =0;
+            for ($i=1; $i <=12 ; $i++) { 
+                $arrData = array("year"=>"","month"=>"","nmonth"=>"","total"=>"");
+                $sql = "SELECT $year as year, 
+                        $i as month, 
+                        count(idperson) as total 
+                        FROM person
+                        WHERE MONTH(date) = $i AND YEAR(date) = $year AND roleid = 2
+                        GROUP BY MONTH(date)";
+                $request = $this->select($sql);
+                $arrData['month'] = $months[$i-1];
+                if(empty($request)){
+                    $arrData['year'] = $year;
+                    $arrData['nmonth'] = $i;
+                    $arrData['total'] = 0;
+                }else{
+                    $arrData['year'] = $request['year'];
+                    $arrData['nmonth'] = $request['month'];
+                    $arrData['total'] = $request['total'];
+                }
+                $total+=$arrData['total'];
+                array_push($arrInfo,$arrData);
+                
+            }
+            $arrData = array("data"=>$arrInfo,"total"=>$total);
+            return $arrData;
         }
-        public function selectViewsPage(){
-            $sql = "SELECT route as name,count(*) as total FROM locations GROUP BY route ORDER BY total DESC LIMIT 0,10";
-            $request = $this->select_all($sql);
-            return $request;
+        public function selectCustomersMonth(int $year, int $month){
+            $totalPerMonth = 0;
+            $arrInfo = array();
+            $days = cal_days_in_month(CAL_GREGORIAN,$month,$year);
+            $day = 1;
+            for ($i=0; $i < $days ; $i++) { 
+                $date_create = date_create($year."-".$month."-".$day);
+                $date_format = date_format($date_create,"Y-m-d");
+                $sql ="SELECT DAY(date) AS day, COUNT(idperson) AS total FROM person WHERE DATE(date) = '$date_format' AND roleid = 2";
+                $request = $this->select($sql);
+                $request['day'] = $day;
+                $request['total'] = $request['total'] =="" ? 0 : $request['total'];
+                $totalPerMonth+=$request['total'];
+                array_push($arrInfo,$request);
+                $day++;
+            }
+            $months = months();
+            $arrData = array(
+                "info"=>array("year"=>$year,"month"=>$months[$month-1],"total"=>$totalPerMonth,"data"=>$arrInfo),
+            );
+            return $arrData;
         }
         public function selectViewsYear(int $year){
             $arrInfo = array();
@@ -290,6 +332,17 @@
             $arrData = array("data"=>$arrInfo,"total"=>$total);
             return $arrData;
         }
+        public function selectViewsCountry(){
+            $sql = "SELECT country as name,count(*) as total FROM locations GROUP BY country ORDER BY country LIMIT 0,10 ";
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectViewsPage(){
+            $sql = "SELECT route as name,count(*) as total FROM locations GROUP BY route ORDER BY total DESC LIMIT 0,10";
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        
 
     }
 ?>
