@@ -16,6 +16,7 @@
 
         /******************************Views************************************/
         public function tienda(){
+            setView(BASE_URL."/tienda");
             $pageNow = isset($_GET['p']) ? intval(strClean($_GET['p'])) : 1;
             $sort = isset($_GET['s']) ? intval(strClean($_GET['s'])) : 1;
             $company=getCompanyInfo();
@@ -35,6 +36,7 @@
             }
         }
         public function categoria($params){
+            setView(BASE_URL."/tienda/categoria/".$params);
             $pageNow = isset($_GET['p']) ? intval(strClean($_GET['p'])) : 1;
             $sort = isset($_GET['s']) ? intval(strClean($_GET['s'])) : 1;
             $params = strClean($params);
@@ -83,6 +85,7 @@
         }
         public function producto($params){
             if($params!= ""){
+                setView(BASE_URL."/tienda/producto/".$params);
                 $params = strClean($params);
                 $data['product'] = $this->getProductPageT($params);
                 if(!empty($data['product'])){

@@ -4,7 +4,7 @@
         private $key;
 
         public function getLocation(string $ip,string $format,array $fields=[]){
-            $this->key = "f5dbd4464e734ac29e84d64fec64a1e7";
+            $this->key = "ca6f044ff6b442e19272f33c2f942988";
             $this->ip = $ip;
             $url = "https://api.ipgeolocation.io/ipgeo?apiKey=".$this->key."&ip=$this->ip";
             $cURL = curl_init();

@@ -64,7 +64,6 @@ for ($i=0; $i < count($social) ; $i++) {
                                 <li><a href="<?=base_url()?>/enmarcar">Enmarcar aquí</a></li>
                                 <li><a href="<?=base_url()?>/tienda">Tienda</a></li>
                                 <li><a href="<?=base_url()?>/nosotros">¿Quienes somos?</a></li>
-                                <li><a href="<?=base_url()?>/servicios">Servicios</a></li>
                                 <li><a href="<?=base_url()?>/contacto">Contacto</a></li>
                             </ul>
                         </div>

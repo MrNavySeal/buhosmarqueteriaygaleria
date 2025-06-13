@@ -14,6 +14,7 @@
         }
 
         public function home(){
+            setView(BASE_URL);
             $company = getCompanyInfo();
             $data['page_tag'] = $company['name'];
             $data['page_title'] = $company['name'];

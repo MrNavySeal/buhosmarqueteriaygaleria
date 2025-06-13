@@ -145,6 +145,7 @@
     }
     function setView($route){
         $ip = getIp();
+        //$ip = "191.107.176.102";
         $con = new Mysql();
         $sql = "SELECT * FROM locations WHERE ip = '$ip' AND route = '$route'";
         $request = $con->select_all($sql);

@@ -14,6 +14,7 @@
 
         /******************************Views************************************/
         public function blog(){
+            setView(BASE_URL."/blog");
             $company=getCompanyInfo();
             $data['page_tag'] = $company['name'];
             $data['page_title'] = "Blog | ".$company['name'];
@@ -23,6 +24,7 @@
         }
         public function articulo($params){
             if($params!=""){
+                setView(BASE_URL."/blog/articulo/".$params);
                 $params = strClean($params);
                 $data['article'] = $this->getArticlePageT($params);
                 if(!empty($data['article'])){

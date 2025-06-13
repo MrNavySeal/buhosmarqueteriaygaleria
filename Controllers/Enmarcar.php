@@ -10,6 +10,7 @@
         }
 
         public function enmarcar(){
+            setView(BASE_URL."/enmarcar");
             $company = getCompanyInfo();
             $data['page_tag'] = "Enmarcar | ".$company['name'];
             $data['page_title'] = "Enmarcar | ".$company['name'];
@@ -24,6 +25,7 @@
             $params = strClean($params);
             $request = $this->selectTipo($params);
             if(!empty($request)){
+                setView(BASE_URL."/enmarcar/$params");
                 $data['page_tag'] = 'Enmarcar '.$request['name'].' | '.$company['name'];
                 $data['page_title'] = 'Enmarcar '.$request['name'].' | '.$company['name'];
                 $data['page_name'] = "personalizar";

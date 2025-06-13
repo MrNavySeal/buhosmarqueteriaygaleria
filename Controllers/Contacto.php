@@ -9,6 +9,7 @@
         }
 
         public function contacto(){
+            setView(BASE_URL."/contacto");
             $company=getCompanyInfo();
             $data['page_tag'] = "Contacto | ".$company['name'];
 			$data['page_title'] = "Contacto | ".$company['name'];

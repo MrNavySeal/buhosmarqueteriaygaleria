@@ -8,6 +8,7 @@
             sessionCookie();
         }
         public function nosotros(){
+            setView(BASE_URL."/nosotros");
             $company=getCompanyInfo();
             $data['page'] = $this->selectPage(1);
             $data['page_tag'] = $company['name'];

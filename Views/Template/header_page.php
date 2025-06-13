@@ -191,6 +191,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </ul>
                 </div>
                 <li class="nav-link"><a href="<?=base_url()?>/favoritos">Mis favoritos</a></li>
+                <!--
                 <div class="nav-link dropdown">
                     <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         Servicios
@@ -207,7 +208,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <hr>
                         <li><a class="dropdown-item" href="<?=base_url()?>/servicios">Ver todo</a></li>
                     </ul>
-                </div>
+                </div>-->
                 <li class="nav-link"><a href="<?=base_url()?>/contacto">Contacto</a></li>
                 <li class="nav-link"><a href="<?=base_url()?>/blog">Blog</a></li>
             </ul>
