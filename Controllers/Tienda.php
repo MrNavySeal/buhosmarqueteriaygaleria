@@ -36,10 +36,10 @@
             }
         }
         public function categoria($params){
-            setView(BASE_URL."/tienda/categoria/".$params);
             $pageNow = isset($_GET['p']) ? intval(strClean($_GET['p'])) : 1;
             $sort = isset($_GET['s']) ? intval(strClean($_GET['s'])) : 1;
             $params = strClean($params);
+            setView(BASE_URL."/tienda/categoria/".str_replace(",","/",$params));
             $arrParams = explode(",",$params);
             $title = count($arrParams) > 1 ? ucwords(str_replace("-"," ",$arrParams[1])): ucwords(str_replace("-"," ",$arrParams[0]));
             //dep($title);exit;
@@ -85,8 +85,8 @@
         }
         public function producto($params){
             if($params!= ""){
-                setView(BASE_URL."/tienda/producto/".$params);
                 $params = strClean($params);
+                setView(BASE_URL."/tienda/producto/".$params);
                 $data['product'] = $this->getProductPageT($params);
                 if(!empty($data['product'])){
                     $company=getCompanyInfo();
