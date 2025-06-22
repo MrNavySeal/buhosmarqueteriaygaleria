@@ -329,7 +329,7 @@
     $pdf->SetFont('helvetica', 'R', 9);
     $pdf->MultiCell(20,10,formatNum($total),"LRBT",'R',true,0,'','',true,0,false,true,0,'M',true);
     
-    if(count($arrAdvance) > 0){
+    if(!empty($arrAdvance)){
         $pdf->ln();
         $pdf->ln();
         $pdf->SetFillColor(109,106,107);
