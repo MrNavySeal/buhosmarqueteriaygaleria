@@ -15,8 +15,8 @@
 		if(file_exists("Libraries/TCPDF/tcpdf.php")){
 			require_once "Libraries/TCPDF/tcpdf.php";
 		}
-		if(file_exists("Libraries/TCPDF/tcpdf.php")){
-			require_once "Libraries/TCPDF/tcpdf.php";
+		if(file_exists("Libraries/vendor/autoload.php")){
+			require_once "Libraries/vendor/autoload.php";
 		}
 	});
  ?>
