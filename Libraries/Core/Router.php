@@ -6,11 +6,10 @@
             $this->strUrl = $url;
             $this->loadRoutes();
         }
-        public function setRoute($name,$route){
+        public function setRoute($name,$route,$params=true){
             $name = $this->normalizeRoute($name);
             $arrRoute = $this->validRoute($route);
-            $arrParams = $this->getParams($name,$this->strUrl);
-            
+            $arrParams = $params ? $this->getParams($name,$this->strUrl) : [];
             $this->arrRoutes[$name] = [
                 "name"=>$name,
                 "controller"=>$arrRoute['controller'],
@@ -33,7 +32,6 @@
                 $route = $arrUrl['name'];
                 $arrControllerFile = explode(".php",$controllerFile);
                 $controllerFile = count($arrControllerFile) > 1 ? $controllerFile : $controllerFile.".php";
-                
                 require_once $controllerFile;
                 $controller = str_replace(".php","",$controller);
                 $controller = new $controller(); //Creo la instancia del controlador
@@ -65,17 +63,22 @@
             return implode("/",$arrName);
         }
         private function getRoute(){
-            $arrUrl = explode("/",$this->normalizeRoute($this->strUrl));
+            $strUrlNormalized = $this->normalizeRoute($this->strUrl);
+            $arrUrl = explode("/",$strUrlNormalized);
             $strName = "";
+            $arrRouteContent = [];
             foreach ($arrUrl as $name) {
-                if(isset($this->arrRoutes[$strName])){
+                $content = $this->arrRoutes[$strName];
+                $params = !empty($content['params']) ? implode("/",explode(",",$content['params'])) : "";
+                $route = $content['name'].$params;
+                if($route == $strUrlNormalized){
+                    $arrRouteContent = $content;
                     break;
                 }else{
                     $strName.=$name."/";
                     $strName = str_replace(".php","",$strName);
                 }
-            }
-            $arrRouteContent = $this->arrRoutes[$strName];
+            }           
             if(empty($arrRouteContent)){
                 $arrUrl = explode("/",$this->strUrl);
                 $controllerFile = "Controllers/";
@@ -136,6 +139,7 @@
                         $params = str_replace(".php","",$params);
                     }
                     $controllerFile = $controllerFile.$controller;
+                    $controller = str_replace(".php","",$controller);
                     break;
                 }else{
                     $controllerFile.=str_replace(".php","",$cont)."/";
