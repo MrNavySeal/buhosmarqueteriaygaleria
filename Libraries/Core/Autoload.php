@@ -12,5 +12,11 @@
 		if(file_exists("Services/".$class.".php")){
 			require_once("Services/".$class.".php");
 		}
+		if(file_exists("Libraries/TCPDF/tcpdf.php")){
+			require_once "Libraries/TCPDF/tcpdf.php";
+		}
+		if(file_exists("Libraries/TCPDF/tcpdf.php")){
+			require_once "Libraries/TCPDF/tcpdf.php";
+		}
 	});
  ?>
