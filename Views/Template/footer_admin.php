@@ -1,6 +1,6 @@
 <?php $company = getCompanyInfo();?>
           
-        
+          </div>
           </div>
           </div>
           <!-- Content End -->
@@ -46,7 +46,7 @@
         <script type="text/javascript" src="<?= media()."/js/functions.js?v=".rand()?>"></script>
         
         <?php if(isset($data['panelapp'])){?>
-        <script src="<?=media();?>/js/<?=$data['panelapp']."?v=".rand()?>"></script>
+        <script type="module" src="<?=media();?>/js/<?=$data['panelapp']."?v=".rand()?>"></script>
         <?php }?>
         <?php if(isset($data['framing'])){?>
         <script src="<?=media();?>/js/<?=$data['framing']."?v=".rand()?>"></script>
