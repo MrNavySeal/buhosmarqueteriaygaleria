@@ -183,8 +183,4 @@
         $request = $con->select($sql);
         $_SESSION['userData'] = $request;
     }
-    function getComponent(string $name, $data=null){
-        $file = "Views/Template/Components/{$name}.php";
-        require $file;        
-    }
 ?>

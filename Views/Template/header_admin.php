@@ -60,6 +60,3 @@
             <div class="content">
             <?php require('Views/Template/nav_header_admin.php');?>
             <div class="p-2">
-                <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-                    <h2 class="text-center"><?=$data['page_title']?></h2>
-                    <?php getComponent("buttonsAdmin",$data);?>
