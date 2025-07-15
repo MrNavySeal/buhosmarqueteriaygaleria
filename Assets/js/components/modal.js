@@ -19,17 +19,11 @@ export default {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"  @click="close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="formItem" name="formItem" class="mb-4">
-                            <input type="hidden" id="idRol" name="idRol" value="">
-                            <div class="mb-3">
-                                <label for="txtName" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="txtName" name="txtName">
-                            </div>
-                            <div class="modal-footer">
-                                <app-button btn="primary" icon="save" title="Guardar"></app-button>
-                                <app-button btn="secondary" @click="close" title="Cerrar"></app-button>
-                            </div>
-                        </form>
+                        <slot name="body"></slot>
+                    </div>
+                    <div class="modal-footer">
+                        <slot name="footer"></slot>
+                        <app-button btn="secondary" @click="close" title="Cerrar"></app-button>
                     </div>
                 </div>
             </div>
