@@ -26,6 +26,15 @@
             </div>
         </div>
         <div class="navbar-nav w-100">
+            <!-- Módulos | Solo se habilita para el super usuario -->
+            <?php  if($_SESSION['idUser'] == 1){ ?>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-compass"></i>Módulos</a>
+                <div class="dropdown-menu bg-transparent border-0">
+                    <a href="<?=base_url()?>/modulos" class="dropdown-item">Módulos</a>
+                </div>
+            </div>
+            <?php } ?>
             <!-- Dashboard -->
             <?php if($_SESSION['permit'][1]['r']){ $active = $_SESSION['permitsModule']['module'] == "Dashboard" ? "active" :"";?>
             

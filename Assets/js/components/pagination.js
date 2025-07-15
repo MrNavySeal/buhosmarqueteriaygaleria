@@ -1,4 +1,3 @@
-import {common} from "./variables.js";
 export default {
     template:`
         <div v-if="common.arrData.length > 0">
@@ -34,7 +33,10 @@ export default {
         </div>
     `,
     props:{
-        common:common,
+        common:{
+            type:Object,
+            default:{}
+        },
     },
     methods:{
         search:function(page){

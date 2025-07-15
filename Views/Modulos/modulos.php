@@ -31,7 +31,7 @@
                 <td>{{data.name}}</td>
                 <td>
                     <div class="d-flex gap-2">
-                        <app-button  icon="edit" btn="success"></app-button>
+                        <app-button  icon="edit" btn="success" @click="common.showModalModule=true;common.modulesTitle='Editar modulo'"></app-button>
                         <app-button  icon="delete" btn="danger"></app-button>
                     </div>
                 </td>
