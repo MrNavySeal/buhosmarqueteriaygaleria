@@ -1,6 +1,6 @@
 <?php 
     headerAdmin($data);
-    getModal("Modules/modalModule"); 
+    getModal("Modules/modalSection"); 
 ?>
 <div class="row">
     <div class="col-md-4">
@@ -22,6 +22,7 @@
             <tr>
                 <th>Id</th>
                 <th>Nombre</th>
+                <th>Módulo</th>
                 <th>Opciones</th>
             </tr>
         </thead>
@@ -29,7 +30,8 @@
             <tr v-for="(data,index) in common.arrData" :key="index">
                 <td data-title="Id">{{data.id}}</td>
                 <td data-title="Nombre">{{data.name}}</td>
-                <td data-title="Opciones">
+                <td data-title="Módulo">{{data.module}}</td>
+                <td>
                     <div class="d-flex gap-2">
                         <app-button  icon="edit" btn="success" @click="edit(data)" ></app-button>
                         <app-button  icon="delete" btn="danger" @click="del(data)"></app-button>

@@ -2,8 +2,8 @@ export default {
     template:`
         <div class="mb-3">
             <label :for="label" class="form-label">{{label}}</label>
-            <select class="form-control" :placeholder="placeholder" :id="label" name="perPage" @change="$emit('update:modelValue', $event.target.value)">
-                <option v-if="placeholder!=''" value="" disabled selected>{{placeholder}}</option>
+            <select class="form-control" :placeholder="placeholder" :value = "modelValue" :id="label" name="perPage" @change="$emit('update:modelValue', $event.target.value)">
+                <option v-if="placeholder==''" value="" disabled selected>{{placeholder}}</option>
                 <slot></slot>
             </select>
         </div>
@@ -13,7 +13,10 @@ export default {
         label:"",
         type:"text",
         disabled:"",
-        placeholder:""
+        placeholder:{
+            type:String,
+            default:"Seleccione"
+        }
     },
     emits:['update:modelValue'],
 

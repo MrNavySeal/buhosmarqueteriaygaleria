@@ -15,7 +15,7 @@
             $request = $this->select($sql);
             if(empty($request)){
                 $sql = "INSERT INTO module(name) VALUES(?)";
-                $request = $this->insert($sql,[$this->strName]);
+                $request = intval($this->insert($sql,[$this->strName]));
             }else{
                 $request = "existe";
             }
@@ -28,15 +28,27 @@
             $request = $this->select($sql);
             if(empty($request)){
                 $sql = "UPDATE module SET name=? WHERE idmodule=$this->intId";
-                $request = $this->update($sql,[$this->strName]);
+                $request = intval($this->update($sql,[$this->strName]));
             }else{
                 $request = "existe";
             }
             return $request;
         }
+        public function deleteModulo($intId){
+            $this->intId = $intId;
+            $sql = "SELECT * FROM module_sections WHERE module_id = $this->intId";
+            $request = $this->select($sql);
+            if(empty($request)){
+                $sql = "DELETE FROM module WHERE idmodule = $this->intId";
+                $request = $this->delete($sql);
+            }else{
+                $request ="existe";
+            }
+            return $request;
+        }
         public function selectModulo($intId){
             $this->intId = $intId;
-            $sql = "SELECT * FROM module WHERE idmodule = $this->intId";
+            $sql = "SELECT *,idmodule as id FROM module WHERE idmodule = $this->intId";
             $request = $this->select($sql);
             return $request;
         }

@@ -8,8 +8,9 @@ export default {
             'btn btn-danger': btn=='danger',
             'btn btn-success': btn=='success'
         }" :disabled = processing :type="type"
+            :title = title
         >
-            <div v-show="!processing" class="d-flex align-items-center gap-2">
+            <div v-if="!processing" class="d-flex align-items-center gap-2">
                 {{title}}
                 <div v-show="icon!=''">
                     <i v-show="icon == 'back'" class="fas fa-reply"></i>
@@ -22,7 +23,7 @@ export default {
                     <i v-show="icon == 'delete'" class="fas fa-trash-alt"></i>
                 </div>
             </div> 
-            <div v-show="processing"><span  class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></div>
+            <div v-if="processing"><span  class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></div>
         </button>
     `,
     props:{
@@ -38,11 +39,13 @@ export default {
             type:String,
             default:"button",
         },
-        title:""
+        processing:{
+            type:Boolean,
+            default:false
+        },
+        title:{
+            type:String,
+            default:"",
+        }
     },
-    data(){
-        return {
-            processing:false,
-        };
-    }
 }

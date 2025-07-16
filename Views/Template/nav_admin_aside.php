@@ -31,7 +31,8 @@
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-compass"></i>Módulos</a>
                 <div class="dropdown-menu bg-transparent border-0">
-                    <a href="<?=base_url()?>/modulos" class="dropdown-item">Módulos</a>
+                    <a href="<?=base_url()?>/gestion-modulos/modulos/" class="dropdown-item">Módulos</a>
+                    <a href="<?=base_url()?>/gestion-modulos/secciones/" class="dropdown-item">Secciones</a>
                 </div>
             </div>
             <?php } ?>

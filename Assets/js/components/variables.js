@@ -22,7 +22,10 @@ export const common = {
     /**Modals**/
     //Titles
     modulesTitle:"Nuevo módulo",
+    sectionTitle:"Nueva sección",
     
     //Show Modals
-    showModalModule:false
+    showModal:"",
+    showModalModule:false,
+    showModalSection:"Nuevo módulo",
 };
