@@ -31,7 +31,8 @@
                 <td data-title="Nombre">{{data.name}}</td>
                 <td data-title="Opciones">
                     <div class="d-flex gap-2">
-                        <app-button  icon="edit" btn="success" @click="edit(data)" ></app-button>
+                        <app-button  icon="key" btn="secondary" @click="permissions(data)"></app-button>
+                        <app-button  icon="edit" btn="success" @click="edit(data)"></app-button>
                         <app-button  icon="delete" btn="danger" @click="del(data)"></app-button>
                     </div>
                 </td>

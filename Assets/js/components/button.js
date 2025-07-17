@@ -21,6 +21,7 @@ export default {
                     <i v-show="icon == 'watch'" class="fas fa-eye"></i>
                     <i v-show="icon == 'edit'" class="fas fa-pencil-alt"></i>
                     <i v-show="icon == 'delete'" class="fas fa-trash-alt"></i>
+                    <i v-show="icon == 'key'" class="fas fa-key"></i>
                 </div>
             </div> 
             <div v-if="processing"><span  class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></div>
