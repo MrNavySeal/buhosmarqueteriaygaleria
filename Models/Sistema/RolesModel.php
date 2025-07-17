@@ -1,76 +1,67 @@
 <?php
-    class SeccionesModel extends Mysql{
+    class RolesModel extends Mysql{
 
         private $intId;
         private $strName; 
-        private $intModule;
+
 
         public function __construct(){
             parent::__construct();
         }
 
-        public function insertSeccion($strName,$intModule){
-            $this->intModule = $intModule;
+        public function insertRol($strName){
             $this->strName = $strName;
-            $sql = "SELECT * FROM module_sections WHERE name = '$this->strName' AND module_id = $this->intModule";
+            $sql = "SELECT * FROM role WHERE name = '$this->strName'";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "INSERT INTO module_sections(name,module_id) VALUES(?,?)";
-                $request = intval($this->insert($sql,[$this->strName,$this->intModule]));
+                $sql = "INSERT INTO role(name) VALUES(?)";
+                $request = intval($this->insert($sql,[$this->strName]));
             }else{
                 $request = "existe";
             }
             return $request;
         }
-        public function updateSeccion($intId,$strName,$intModule){
-            $this->intModule = $intModule;
+        public function updateRol($intId,$strName){
             $this->strName = $strName;
             $this->intId = $intId;
-            $sql = "SELECT * FROM module_sections WHERE name = '$this->strName' AND module_id = $this->intModule AND id != $this->intId";
+            $sql = "SELECT * FROM role WHERE name = '$this->strName' AND idrole != $this->intId";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "UPDATE module_sections SET name= ?, module_id = ? WHERE id=$this->intId";
-                $request = intval($this->update($sql,[$this->strName,$this->intModule]));
+                $sql = "UPDATE role SET name=? WHERE idrole=$this->intId";
+                $request = intval($this->update($sql,[$this->strName]));
             }else{
                 $request = "existe";
             }
             return $request;
         }
-        public function deleteSeccion($intId){
+        public function deleteRol($intId){
             $this->intId = $intId;
-            $sql = "SELECT * FROM module_options WHERE section_id = $this->intId";
+            $sql = "SELECT * FROM person WHERE roleid = $this->intId";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "DELETE FROM module_sections WHERE id = $this->intId";
+                $sql = "DELETE FROM role WHERE idrole = $this->intId";
                 $request = $this->delete($sql);
             }else{
-                $request = "existe";
+                $request ="existe";
             }
             return $request;
         }
-        public function selectSeccion($intId){
+        public function selectRol($intId){
             $this->intId = $intId;
-            $sql = "SELECT * FROM module_sections WHERE id = $this->intId";
+            $sql = "SELECT *,idrole as id FROM role WHERE idrole = $this->intId";
             $request = $this->select($sql);
             return $request;
         }
-        public function selectSecciones($intPage,$intPerPage,$strSearch){
+        public function selectRoles($intPage,$intPerPage,$strSearch){
             $limit ="";
             $intStartPage = ($intPage-1)*$intPerPage;
             if($intPerPage != 0){
                 $limit = " LIMIT $intStartPage,$intPerPage";
             }
-            $sql = "SELECT cab.name as module, det.* 
-            FROM module_sections det
-            INNER JOIN module cab ON det.module_id = cab.idmodule
-            WHERE det.name like  '$strSearch%' OR cab.name like '$strSearch'
-            ORDER BY det.id DESC $limit";
+            $sql = "SELECT idrole as id, name FROM role WHERE name like  '$strSearch%' ORDER BY idrole DESC $limit";
             $request = $this->select_all($sql);
 
-            $sqlTotal = "SELECT count(*) as total 
-            FROM module_sections det
-            INNER JOIN module cab ON det.module_id = cab.idmodule
-            WHERE det.name like  '$strSearch%' OR cab.name like '$strSearch'";
+            $sqlTotal = "SELECT count(*) as total FROM role WHERE name like '$strSearch%'";
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
             $totalPages = $totalPages == 0 ? 1 : $totalPages;
@@ -92,11 +83,6 @@
                 "buttons"=>$arrButtons
             );
             return $arrData;
-        }
-        public function selectModulos(){
-            $sql = "SELECT *, idmodule as id FROM module ORDER BY idmodule DESC";
-            $request = $this->select_all($sql);
-            return $request;
         }
         
     }

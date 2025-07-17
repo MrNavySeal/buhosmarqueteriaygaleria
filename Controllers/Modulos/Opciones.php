@@ -1,5 +1,5 @@
 <?php
-    class Secciones extends Controllers{
+    class Opciones extends Controllers{
         public function __construct(){
             session_start();
             if(empty($_SESSION['login']) || $_SESSION['idUser'] != 1){
@@ -9,36 +9,39 @@
             parent::__construct();
             sessionCookie();
         }
-        public function secciones(){
+        public function opciones(){
             $data['botones'] = [
-                "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/modulos/secciones"."','','');mypop.focus();"],
+                "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/modulos/opciones"."','','');mypop.focus();"],
                 "nuevo" => ["mostrar"=>true, "evento"=>"@click","funcion"=>"openModal()"],
             ];
-            $data['page_tag'] = "Secciones | Modulos";
-            $data['page_title'] = "Secciones | Modulos";
-            $data['page_name'] = "secciones";
-            $data['panelapp'] = "/Modulos/functions_secciones.js";
-            $this->views->getView($this,"secciones",$data);
+            $data['page_tag'] = "Opciones | Modulos";
+            $data['page_title'] = "Opciones | Modulos";
+            $data['page_name'] = "opciones";
+            $data['panelapp'] = "/Modulos/functions_opciones.js";
+            $this->views->getView($this,"opciones",$data);
         }
         public function getDatos(){
-            $request = $this->model->selectModulos();
+            $request['modules'] = $this->model->selectModulos();
+            $request['sections'] = $this->model->selectSecciones();
             echo json_encode($request,JSON_UNESCAPED_UNICODE);
         }
-        public function setSeccion(){
+        public function setOpcion(){
             if($_POST){
-                if(empty($_POST['name']) || empty($_POST['module'])){
+                if(empty($_POST['name']) || empty($_POST['route']) || empty($_POST['module'])){
                     $arrResponse = array("status"=>false,"msg"=>"Los campos con (*) son obligatorios.");
                 }else{
                     $strName = clear_cadena(strClean(ucfirst(strtolower($_POST['name']))));
+                    $strRoute = clear_cadena(strClean($_POST['route']));
                     $intId = intval($_POST['id']);
                     $intModule = intval($_POST['module']);
+                    $intSection = intval($_POST['section']);
                     $option = "";
                     if($intId==0){
                         $option = 1;
-                        $request = $this->model->insertSeccion($strName,$intModule);
+                        $request = $this->model->insertOpcion($strName,$intModule,$intSection,$strRoute);
                     }else{
                         $option = 2;
-                        $request = $this->model->updateSeccion($intId,$strName,$intModule);
+                        $request = $this->model->updateOpcion($intId,$strName,$intModule,$intSection,$strRoute);
                     }
                     if(is_numeric($request) && $request > 0){
                         if($option == 1){
@@ -56,18 +59,18 @@
             }
             die();
         }
-        public function getSecciones(){
+        public function getOpciones(){
             $intPage = intval($_POST['page']);
             $intPerPage = intval($_POST['per_page']);
             $strSearch = strClean($_POST['search']);
-            $request = $this->model->selectSecciones($intPage,$intPerPage,$strSearch);
+            $request = $this->model->selectOpciones($intPage,$intPerPage,$strSearch);
             echo json_encode($request,JSON_UNESCAPED_UNICODE);
             die();
         }
-        public function getSeccion(){
+        public function getOpcion(){
             if($_POST){
                 $intId = intval($_POST['id']);
-                $request = $this->model->selectSeccion($intId);
+                $request = $this->model->selectOpcion($intId);
                 if(!empty($request)){
                     $arrResponse = array("status"=>true,"data"=>$request);
                 }else{
@@ -77,14 +80,12 @@
                 die();
             }
         }
-        public function delSeccion(){
+        public function delOpcion(){
             if($_POST){
                 $intId = intval($_POST['id']);
-                $request = $this->model->deleteSeccion($intId);
-                if($request=="ok"){
+                $request = $this->model->deleteOpcion($intId);
+                if(!empty($request)){
                     $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado correctamente");
-                }else if($request=="existe"){
-                    $arrResponse = array("status"=>false,"msg"=>"La sección contiene opciones, debe eliminarlas primero.");
                 }else{
                     $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar.");
                 }

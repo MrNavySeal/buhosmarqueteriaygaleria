@@ -1,76 +1,79 @@
 <?php
-    class SeccionesModel extends Mysql{
+    class OpcionesModel extends Mysql{
 
         private $intId;
         private $strName; 
         private $intModule;
+        private $intSection;
+        private $strRoute;
 
         public function __construct(){
             parent::__construct();
         }
 
-        public function insertSeccion($strName,$intModule){
+        public function insertOpcion($strName,$intModule,$intSection,$strRoute){
+            $this->intModule = $intModule;
+            $this->intSection = $intSection;
+            $this->strName = $strName;
+            $this->strRoute = $strRoute;
+            $sql = "SELECT * FROM module_options WHERE name = '$this->strName' AND module_id = $this->intModule AND section_id = $this->intSection";
+            $request = $this->select($sql);
+            if(empty($request)){
+                $sql = "INSERT INTO module_options(name,module_id,section_id,route) VALUES(?,?,?,?)";
+                $request = intval($this->insert($sql,[$this->strName,$this->intModule,$this->intSection,$this->strRoute]));
+            }else{
+                $request = "existe";
+            }
+            return $request;
+        }
+        public function updateOpcion($intId,$strName,$intModule,$intSection,$strRoute){
             $this->intModule = $intModule;
             $this->strName = $strName;
-            $sql = "SELECT * FROM module_sections WHERE name = '$this->strName' AND module_id = $this->intModule";
+            $this->strRoute = $strRoute;
+            $this->intId = $intId;
+            $this->intSection = $intSection;
+            $sql = "SELECT * FROM module_options 
+            WHERE name = '$this->strName' AND module_id = $this->intModule AND section_id = $this->intSection AND id != $this->intId";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "INSERT INTO module_sections(name,module_id) VALUES(?,?)";
-                $request = intval($this->insert($sql,[$this->strName,$this->intModule]));
+                $sql = "UPDATE module_options SET name= ?, module_id = ?, section_id = ?, route=? WHERE id=$this->intId";
+                $request = intval($this->update($sql,[$this->strName,$this->intModule,$this->intSection,$this->strRoute]));
             }else{
                 $request = "existe";
             }
             return $request;
         }
-        public function updateSeccion($intId,$strName,$intModule){
-            $this->intModule = $intModule;
-            $this->strName = $strName;
+        public function deleteOpcion($intId){
             $this->intId = $intId;
-            $sql = "SELECT * FROM module_sections WHERE name = '$this->strName' AND module_id = $this->intModule AND id != $this->intId";
-            $request = $this->select($sql);
-            if(empty($request)){
-                $sql = "UPDATE module_sections SET name= ?, module_id = ? WHERE id=$this->intId";
-                $request = intval($this->update($sql,[$this->strName,$this->intModule]));
-            }else{
-                $request = "existe";
-            }
+            $sql = "DELETE FROM module_options WHERE id = $this->intId";
+            $request = $this->delete($sql);
             return $request;
         }
-        public function deleteSeccion($intId){
+        public function selectOpcion($intId){
             $this->intId = $intId;
-            $sql = "SELECT * FROM module_options WHERE section_id = $this->intId";
-            $request = $this->select($sql);
-            if(empty($request)){
-                $sql = "DELETE FROM module_sections WHERE id = $this->intId";
-                $request = $this->delete($sql);
-            }else{
-                $request = "existe";
-            }
-            return $request;
-        }
-        public function selectSeccion($intId){
-            $this->intId = $intId;
-            $sql = "SELECT * FROM module_sections WHERE id = $this->intId";
+            $sql = "SELECT * FROM module_options WHERE id = $this->intId";
             $request = $this->select($sql);
             return $request;
         }
-        public function selectSecciones($intPage,$intPerPage,$strSearch){
+        public function selectOpciones($intPage,$intPerPage,$strSearch){
             $limit ="";
             $intStartPage = ($intPage-1)*$intPerPage;
             if($intPerPage != 0){
                 $limit = " LIMIT $intStartPage,$intPerPage";
             }
-            $sql = "SELECT cab.name as module, det.* 
-            FROM module_sections det
+            $sql = "SELECT cab.name as module, det.*, sec.name as section 
+            FROM module_options det
             INNER JOIN module cab ON det.module_id = cab.idmodule
-            WHERE det.name like  '$strSearch%' OR cab.name like '$strSearch'
+            LEFT JOIN module_sections sec ON det.section_id = sec.id
+            WHERE det.name like  '$strSearch%' OR cab.name like '$strSearch' OR sec.name like '$strSearch'
             ORDER BY det.id DESC $limit";
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT count(*) as total 
-            FROM module_sections det
+            FROM module_options det
             INNER JOIN module cab ON det.module_id = cab.idmodule
-            WHERE det.name like  '$strSearch%' OR cab.name like '$strSearch'";
+            LEFT JOIN module_sections sec ON det.section_id = sec.id
+            WHERE det.name like  '$strSearch%' OR cab.name like '$strSearch' OR sec.name like '$strSearch'";
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
             $totalPages = $totalPages == 0 ? 1 : $totalPages;
@@ -95,6 +98,11 @@
         }
         public function selectModulos(){
             $sql = "SELECT *, idmodule as id FROM module ORDER BY idmodule DESC";
+            $request = $this->select_all($sql);
+            return $request;
+        }
+        public function selectSecciones(){
+            $sql = "SELECT * FROM module_sections ORDER BY id DESC";
             $request = $this->select_all($sql);
             return $request;
         }

@@ -31,8 +31,16 @@
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-compass"></i>Módulos</a>
                 <div class="dropdown-menu bg-transparent border-0">
-                    <a href="<?=base_url()?>/gestion-modulos/modulos/" class="dropdown-item">Módulos</a>
-                    <a href="<?=base_url()?>/gestion-modulos/secciones/" class="dropdown-item">Secciones</a>
+                    <a href="<?=base_url()?>/modulos/" class="dropdown-item">Módulos</a>
+                    <a href="<?=base_url()?>/modulos/secciones/" class="dropdown-item">Secciones</a>
+                    <a href="<?=base_url()?>/modulos/opciones/" class="dropdown-item">Opciones</a>
+                </div>
+            </div>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-user-cog"></i>Sistema</a>
+                <div class="dropdown-menu bg-transparent border-0">
+                    <a href="<?=base_url()?>/sistema/roles/" class="dropdown-item">Roles</a>
+                    <a href="<?=base_url()?>/sistema/usuarios/" class="dropdown-item">Usuarios</a>
                 </div>
             </div>
             <?php } ?>

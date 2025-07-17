@@ -1,5 +1,5 @@
 <?php
-    class Secciones extends Controllers{
+    class Roles extends Controllers{
         public function __construct(){
             session_start();
             if(empty($_SESSION['login']) || $_SESSION['idUser'] != 1){
@@ -9,36 +9,31 @@
             parent::__construct();
             sessionCookie();
         }
-        public function secciones(){
+        public function roles(){
             $data['botones'] = [
-                "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/modulos/secciones"."','','');mypop.focus();"],
+                "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/sistema/roles"."','','');mypop.focus();"],
                 "nuevo" => ["mostrar"=>true, "evento"=>"@click","funcion"=>"openModal()"],
             ];
-            $data['page_tag'] = "Secciones | Modulos";
-            $data['page_title'] = "Secciones | Modulos";
-            $data['page_name'] = "secciones";
-            $data['panelapp'] = "/Modulos/functions_secciones.js";
-            $this->views->getView($this,"secciones",$data);
+            $data['page_tag'] = "Roles | Sistema";
+            $data['page_title'] = "Roles | Sistema";
+            $data['page_name'] = "roles";
+            $data['panelapp'] = "/Sistema/functions_roles.js";
+            $this->views->getView($this,"roles",$data);
         }
-        public function getDatos(){
-            $request = $this->model->selectModulos();
-            echo json_encode($request,JSON_UNESCAPED_UNICODE);
-        }
-        public function setSeccion(){
+        public function setRol(){
             if($_POST){
-                if(empty($_POST['name']) || empty($_POST['module'])){
-                    $arrResponse = array("status"=>false,"msg"=>"Los campos con (*) son obligatorios.");
+                if(empty($_POST['name'])){
+                    $arrResponse = array("status"=>false,"msg"=>"El nombre no puede estar vacío.");
                 }else{
                     $strName = clear_cadena(strClean(ucfirst(strtolower($_POST['name']))));
                     $intId = intval($_POST['id']);
-                    $intModule = intval($_POST['module']);
                     $option = "";
                     if($intId==0){
                         $option = 1;
-                        $request = $this->model->insertSeccion($strName,$intModule);
+                        $request = $this->model->insertRol($strName);
                     }else{
                         $option = 2;
-                        $request = $this->model->updateSeccion($intId,$strName,$intModule);
+                        $request = $this->model->updateRol($intId,$strName);
                     }
                     if(is_numeric($request) && $request > 0){
                         if($option == 1){
@@ -56,18 +51,18 @@
             }
             die();
         }
-        public function getSecciones(){
+        public function getRoles(){
             $intPage = intval($_POST['page']);
             $intPerPage = intval($_POST['per_page']);
             $strSearch = strClean($_POST['search']);
-            $request = $this->model->selectSecciones($intPage,$intPerPage,$strSearch);
+            $request = $this->model->selectRoles($intPage,$intPerPage,$strSearch);
             echo json_encode($request,JSON_UNESCAPED_UNICODE);
             die();
         }
-        public function getSeccion(){
+        public function getRol(){
             if($_POST){
                 $intId = intval($_POST['id']);
-                $request = $this->model->selectSeccion($intId);
+                $request = $this->model->selectRol($intId);
                 if(!empty($request)){
                     $arrResponse = array("status"=>true,"data"=>$request);
                 }else{
@@ -77,14 +72,14 @@
                 die();
             }
         }
-        public function delSeccion(){
+        public function delRol(){
             if($_POST){
                 $intId = intval($_POST['id']);
-                $request = $this->model->deleteSeccion($intId);
-                if($request=="ok"){
+                $request = $this->model->deleteRol($intId);
+                if($request =="ok"){
                     $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado correctamente");
                 }else if($request=="existe"){
-                    $arrResponse = array("status"=>false,"msg"=>"La sección contiene opciones, debe eliminarlas primero.");
+                    $arrResponse = array("status"=>false,"msg"=>"El módulo contiene secciones, debe eliminarlas primero.");
                 }else{
                     $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar.");
                 }
