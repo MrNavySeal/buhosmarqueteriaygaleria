@@ -78,7 +78,7 @@
                     $strName.=$name."/";
                     $strName = str_replace(".php","",$strName);
                 }
-            }           
+            }       
             if(empty($arrRouteContent)){
                 $arrUrl = explode("/",$this->strUrl);
                 $controllerFile = "Controllers/";
@@ -89,7 +89,7 @@
                     $cont = str_replace(".php","",ucwords($arrUrl[$i])).".php";
                     if(file_exists($controllerFile.$cont)){
                         $controller = $cont;
-                        $method = isset($arrUrl[$i+1]) ? $arrUrl[$i+1] : $cont;
+                        $method = !empty($arrUrl[$i+1]) ? $arrUrl[$i+1] : $cont;
                         $method = str_replace(".php","",$method);
                         if(isset($arrUrl[$i+2])){
                             $params = implode(",",array_slice($arrUrl,$i+2));
