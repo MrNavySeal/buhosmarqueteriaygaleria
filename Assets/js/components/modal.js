@@ -11,6 +11,7 @@ export default {
                     'modal-lg': size=='lg',
                     'modal-xl': size=='xl',
                     'modal-fullscreen': size=='full',
+                    'modal-dialog-scrollable': scroll=='true'
                 }
             ">
                 <div class="modal-content">
@@ -34,6 +35,7 @@ export default {
         id:"",
         size:"", //modal-sm,modal-lg,modal-xl, modal-fullscreen
         modelValue: Boolean,
+        scroll:"",
     },
     data(){
         return{

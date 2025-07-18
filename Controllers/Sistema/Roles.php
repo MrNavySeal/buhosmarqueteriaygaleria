@@ -20,6 +20,35 @@
             $data['panelapp'] = "/Sistema/functions_roles.js";
             $this->views->getView($this,"roles",$data);
         }
+        public function getPermisos(){
+            if($_POST){
+                $intId = intval($_POST['id']);
+                $request = $this->model->selectPermisos($intId);
+                $arrResponse = [
+                    "data"=>$request,
+                    "r"=>!empty(array_filter($request,function($e){return $e['r'];})),
+                    "w"=>!empty(array_filter($request,function($e){return $e['w'];})),
+                    "u"=>!empty(array_filter($request,function($e){return $e['u'];})),
+                    "d"=>!empty(array_filter($request,function($e){return $e['d'];})),
+                ];
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function setPermisos(){
+            if($_POST){
+                $arrData = json_decode($_POST['data'],true);
+                $intId = intval($_POST['id']);
+                $request = $this->model->insertPermisos($intId,$arrData);
+                if(is_numeric($request) && $request > 0){
+                    $arrResponse = array("status"=>true,"msg"=>"Permisos asignados correctamente.");
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"No se ha podido guardar, intente de nuevo.");
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
         public function setRol(){
             if($_POST){
                 if(empty($_POST['name'])){

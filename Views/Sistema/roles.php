@@ -1,6 +1,7 @@
 <?php 
     headerAdmin($data);
     getModal("Modules/modalModule"); 
+    getModal("Sistema/modalPermission"); 
 ?>
 <div class="row">
     <div class="col-md-4">
