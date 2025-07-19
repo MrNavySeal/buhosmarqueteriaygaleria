@@ -114,10 +114,10 @@
                     if($request == 0){  $request = ""; break;}
 
                     foreach ($section['options'] as $option) {
-                    $sql = "INSERT INTO module_options_permissions(role_id,option_id,r,w,u,d) VALUES(?,?,?,?,?,?)";
-                    $request = $this->insert($sql,[$this->intId,$option['id'],$option['r'],$option['w'],$option['u'],$option['d']]);
-                    if($request == 0){  $request = ""; break;}
-                }
+                        $sql = "INSERT INTO module_options_permissions(role_id,option_id,r,w,u,d) VALUES(?,?,?,?,?,?)";
+                        $request = $this->insert($sql,[$this->intId,$option['id'],$option['r'],$option['w'],$option['u'],$option['d']]);
+                        if($request == 0){  $request = ""; break;}
+                    }
                 }
             }
             return $request;
