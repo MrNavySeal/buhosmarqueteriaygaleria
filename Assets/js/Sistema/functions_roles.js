@@ -135,7 +135,6 @@ const App = {
             const objData = await response.json();
             this.showPermissionModal = true;
             this.arrPermissions = objData.data;
-            this.arrPermissions.every(e=>{console.log(e)})
             this.checkR = objData.r;
             this.checkW = objData.w;
             this.checkU = objData.u;
