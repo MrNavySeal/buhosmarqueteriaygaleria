@@ -9,13 +9,12 @@
             }
             parent::__construct();
             sessionCookie();
-            getPermits(2);
         }
         public function usuarios(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
                     "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/sistema/usuarios/"."','','');mypop.focus();"],
-                    "nuevo" => ["mostrar"=>true, "evento"=>"@click","funcion"=>"openModal()"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
                 ];
                 $data['page_tag'] = "Usuarios | Sistema";
                 $data['page_title'] = "Usuarios | Sistema";
@@ -181,11 +180,13 @@
 			die();
 		}
         public function getBuscar(){
-            $intPage = intval($_POST['page']);
-            $intPerPage = intval($_POST['per_page']);
-            $strSearch = strClean($_POST['search']);
-            $request = $this->model->selectUsuarios($intPage,$intPerPage,$strSearch);
-            echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            if($_SESSION['permitsModule']['r']){
+                $intPage = intval($_POST['page']);
+                $intPerPage = intval($_POST['per_page']);
+                $strSearch = strClean($_POST['search']);
+                $request = $this->model->selectUsuarios($intPage,$intPerPage,$strSearch);
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
             die();
         }
         public function getDatos(){
@@ -235,33 +236,37 @@
         }
         //Pemisos
         public function setPermisos(){
-            if($_POST){
-                $arrData = json_decode($_POST['data'],true);
-                $intId = intval($_POST['id']);
-                $intRolId = intval($_POST['rol']);
-                $request = $this->model->insertPermisos($intRolId,$intId,$arrData);
-                if(is_numeric($request) && $request > 0){
-                    $arrResponse = array("status"=>true,"msg"=>"Permisos asignados correctamente.");
-                }else{
-                    $arrResponse = array("status"=>false,"msg"=>"No se ha podido guardar, intente de nuevo.");
+            if($_SESSION['permitsModule']['u']){
+                if($_POST){
+                    $arrData = json_decode($_POST['data'],true);
+                    $intId = intval($_POST['id']);
+                    $intRolId = intval($_POST['rol']);
+                    $request = $this->model->insertPermisos($intRolId,$intId,$arrData);
+                    if(is_numeric($request) && $request > 0){
+                        $arrResponse = array("status"=>true,"msg"=>"Permisos asignados correctamente.");
+                    }else{
+                        $arrResponse = array("status"=>false,"msg"=>"No se ha podido guardar, intente de nuevo.");
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
         public function getPermisos(){
-            if($_POST){
-                $intId = intval($_POST['id']);
-                $intRolId = intval($_POST['rol']);
-                $request = $this->model->selectPermisos($intRolId,$intId);
-                $arrResponse = [
-                    "data"=>$request,
-                    "r"=>!empty(array_filter($request,function($e){return $e['r'];})),
-                    "w"=>!empty(array_filter($request,function($e){return $e['w'];})),
-                    "u"=>!empty(array_filter($request,function($e){return $e['u'];})),
-                    "d"=>!empty(array_filter($request,function($e){return $e['d'];})),
-                ];
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            if($_SESSION['permitsModule']['r']){
+                if($_POST){
+                    $intId = intval($_POST['id']);
+                    $intRolId = intval($_POST['rol']);
+                    $request = $this->model->selectPermisos($intRolId,$intId);
+                    $arrResponse = [
+                        "data"=>$request,
+                        "r"=>!empty(array_filter($request,function($e){return $e['r'];})),
+                        "w"=>!empty(array_filter($request,function($e){return $e['w'];})),
+                        "u"=>!empty(array_filter($request,function($e){return $e['u'];})),
+                        "d"=>!empty(array_filter($request,function($e){return $e['d'];})),
+                    ];
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }
             }
             die();
         }

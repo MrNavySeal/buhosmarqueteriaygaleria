@@ -1,5 +1,4 @@
 <?php 
-
 	class LoginModel extends Mysql
 	{
         private $intIdUser;
@@ -24,7 +23,6 @@
         
         public function sessionLogin(int $iduser){
             $this->intIdUser = $iduser;
-
             $sql = "SELECT  *,r.name as role_name 
             FROM person p 
             INNER JOIN role r
@@ -32,6 +30,7 @@
             WHERE idperson = $this->intIdUser";
             $request = $this->select($sql);
             $_SESSION['userData'] = $request;
+            getPermisos();
             return $request;
         }
 

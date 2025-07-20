@@ -237,4 +237,122 @@
         $request = $con->select_all("SELECT * FROM cities WHERE state_id = $id ORDER BY name");
         return $request;
     }
+    function getPermisos(){
+        if(isset($_SESSION['userData'])){
+            $con = new Mysql();
+            $intRolId = $_SESSION['userData']['roleid'];
+            $intId = $_SESSION['idUser'];
+            $sql = "SELECT idmodule as id,name,icon FROM module WHERE status = 1 ORDER BY level";
+            $arrModules = $con->select_all($sql);
+            $arrOptionsPermits = [];
+            foreach ($arrModules as &$module) {
+                $sql = "SELECT r,w,u,d FROM module_permissions WHERE module_id = $module[id] AND role_id = $intRolId AND user_id = $intId";
+                $request = $con->select($sql);
+                if(empty($request)){
+                    $sql = "SELECT r,w,u,d FROM module_permissions WHERE module_id = $module[id] AND role_id = $intRolId";
+                    $request = $con->select($sql);
+                }
+                if(!empty($request)){
+                    $module["r"] = boolval($request["r"]);
+                    $module["w"] = boolval($request["w"]);
+                    $module["u"] = boolval($request["u"]);
+                    $module["d"] = boolval($request["d"]);
+                }else{
+                    $module["r"] = false;
+                    $module["w"] = false;
+                    $module["u"] = false;
+                    $module["d"] = false;
+                }
+                $sql = "SELECT * FROM module_sections WHERE module_id = $module[id] AND status = 1 ORDER BY level";
+                $arrSections = $con->select_all($sql);
+                foreach ($arrSections as &$section) {
+                    $sql = "SELECT r,w,u,d FROM module_sections_permissions WHERE section_id = $section[id] AND role_id = $intRolId AND user_id = $intId";
+                    $request = $con->select($sql);
+                    if(empty($request)){
+                        $sql = "SELECT r,w,u,d FROM module_sections_permissions WHERE section_id = $section[id] AND role_id = $intRolId";
+                        $request = $con->select($sql);
+                    }
+                    if(!empty($request)){
+                        $section["r"] = boolval($request["r"]);
+                        $section["w"] = boolval($request["w"]);
+                        $section["u"] = boolval($request["u"]);
+                        $section["d"] = boolval($request["d"]);
+                    }else{
+                        $section["r"] = false;
+                        $section["w"] = false;
+                        $section["u"] = false;
+                        $section["d"] = false;
+                    }
+                    $sql = "SELECT * FROM module_options WHERE section_id = $section[id] AND status = 1 ORDER BY level";
+                    $arrOptionsSection = $con->select_all($sql);
+                    foreach ($arrOptionsSection as &$optionSection) {
+                        
+                        $sql = "SELECT r,w,u,d FROM module_options_permissions WHERE option_id = $optionSection[id] AND role_id = $intRolId AND user_id = $intId";
+                        $request = $con->select($sql);
+                        if(empty($request)){
+                            $sql = "SELECT r,w,u,d FROM module_options_permissions WHERE option_id = $optionSection[id] AND role_id = $intRolId";
+                            $request = $con->select($sql);
+                        }
+                        if(!empty($request)){
+                            $optionSection["r"] = boolval($request["r"]);
+                            $optionSection["w"] = boolval($request["w"]);
+                            $optionSection["u"] = boolval($request["u"]);
+                            $optionSection["d"] = boolval($request["d"]);
+                        }else{
+                            $optionSection["r"] = false;
+                            $optionSection["w"] = false;
+                            $optionSection["u"] = false;
+                            $optionSection["d"] = false;
+                        }
+                        if($_SESSION['idUser'] == 1){
+                            $request["r"] = 1;
+                            $request["w"] = 1;
+                            $request["u"] = 1;
+                            $request["d"] = 1;
+                        }
+                        $request['roleid'] = $intRolId;
+                        $request['module'] = $module['name'];
+                        $request['moduleid'] = $module['id'];
+                        $arrOptionsPermits[$arrOptionsPermits['route']] = $request;
+                    }
+                    $section['options'] = $arrOptionsSection;
+                }
+                $sql = "SELECT * FROM module_options WHERE module_id = $module[id] AND section_id = 0 AND status = 1 ORDER BY level";
+                $arrOptions = $con->select_all($sql);
+                foreach ($arrOptions as &$option) {
+                    $sql = "SELECT r,w,u,d FROM module_options_permissions WHERE option_id = $option[id] AND role_id = $intRolId AND user_id = $intId";
+                    $request = $con->select($sql);
+                    if(empty($request)){
+                        $sql = "SELECT r,w,u,d FROM module_options_permissions WHERE option_id = $option[id] AND role_id = $intRolId";
+                        $request = $con->select($sql);
+                    }
+                    if(!empty($request)){
+                        $option["r"] = boolval($request["r"]);
+                        $option["w"] = boolval($request["w"]);
+                        $option["u"] = boolval($request["u"]);
+                        $option["d"] = boolval($request["d"]);
+                    }else{
+                        $option["r"] = false;
+                        $option["w"] = false;
+                        $option["u"] = false;
+                        $option["d"] = false;
+                    }
+                    if($_SESSION['idUser'] == 1){
+                        $request["r"] = 1;
+                        $request["w"] = 1;
+                        $request["u"] = 1;
+                        $request["d"] = 1;
+                    }
+                    $request['roleid'] = $intRolId;
+                    $request['module'] = $module['name'];
+                    $request['moduleid'] = $module['id'];
+                    $arrOptionsPermits[$option['route']] = $request;
+                }
+                $module['options'] = $arrOptions;
+                $module['sections'] = $arrSections;
+            }
+            $_SESSION['permissions'] = $arrOptionsPermits;
+            $_SESSION['navegation'] = $arrModules;
+        }
+    }
 ?>
