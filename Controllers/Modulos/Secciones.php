@@ -32,13 +32,15 @@
                     $strName = clear_cadena(strClean(ucfirst(strtolower($_POST['name']))));
                     $intId = intval($_POST['id']);
                     $intModule = intval($_POST['module']);
+                    $intStatus = intval($_POST['status']);
+                    $intLevel = intval($_POST['level']);
                     $option = "";
                     if($intId==0){
                         $option = 1;
-                        $request = $this->model->insertSeccion($strName,$intModule);
+                        $request = $this->model->insertSeccion($strName,$intModule,$intLevel,$intStatus);
                     }else{
                         $option = 2;
-                        $request = $this->model->updateSeccion($intId,$strName,$intModule);
+                        $request = $this->model->updateSeccion($intId,$strName,$intModule,$intLevel,$intStatus);
                     }
                     if(is_numeric($request) && $request > 0){
                         if($option == 1){

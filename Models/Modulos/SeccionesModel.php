@@ -4,33 +4,39 @@
         private $intId;
         private $strName; 
         private $intModule;
+        private $intLevel;
+        private $intStatus;
 
         public function __construct(){
             parent::__construct();
         }
 
-        public function insertSeccion($strName,$intModule){
+        public function insertSeccion($strName,$intModule,$intLevel,$intStatus){
             $this->intModule = $intModule;
             $this->strName = $strName;
+            $this->intLevel = $intLevel;
+            $this->intStatus = $intStatus;
             $sql = "SELECT * FROM module_sections WHERE name = '$this->strName' AND module_id = $this->intModule";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "INSERT INTO module_sections(name,module_id) VALUES(?,?)";
-                $request = intval($this->insert($sql,[$this->strName,$this->intModule]));
+                $sql = "INSERT INTO module_sections(name,module_id,level,status) VALUES(?,?,?,?)";
+                $request = intval($this->insert($sql,[$this->strName,$this->intModule,$this->intLevel,$this->intStatus]));
             }else{
                 $request = "existe";
             }
             return $request;
         }
-        public function updateSeccion($intId,$strName,$intModule){
+        public function updateSeccion($intId,$strName,$intModule,$intLevel,$intStatus){
             $this->intModule = $intModule;
             $this->strName = $strName;
             $this->intId = $intId;
+            $this->intLevel = $intLevel;
+            $this->intStatus = $intStatus;
             $sql = "SELECT * FROM module_sections WHERE name = '$this->strName' AND module_id = $this->intModule AND id != $this->intId";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "UPDATE module_sections SET name= ?, module_id = ? WHERE id=$this->intId";
-                $request = intval($this->update($sql,[$this->strName,$this->intModule]));
+                $sql = "UPDATE module_sections SET name= ?, module_id = ?, level=?,status=? WHERE id=$this->intId";
+                $request = intval($this->update($sql,[$this->strName,$this->intModule,$this->intLevel,$this->intStatus]));
             }else{
                 $request = "existe";
             }
@@ -97,7 +103,7 @@
             return $arrData;
         }
         public function selectModulos(){
-            $sql = "SELECT *, idmodule as id FROM module ORDER BY idmodule DESC";
+            $sql = "SELECT *, idmodule as id FROM module WHERE status = 1 ORDER BY idmodule DESC";
             $request = $this->select_all($sql);
             return $request;
         }

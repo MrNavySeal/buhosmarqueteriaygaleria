@@ -40,7 +40,7 @@
                 foreach ($_SESSION['navegation'] as $modulo) {
                     if($_SESSION['idUser'] == 1 || $modulo['r']){
                         $html ='<div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-compass"></i>'.$modulo['name'].'</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">'.$modulo['icon']." ".$modulo['name'].'</a>
                         <div class="dropdown-menu bg-transparent border-0">';
                         foreach ($modulo['sections'] as $section) {
                             if($_SESSION['idUser'] == 1 || $section['r']){

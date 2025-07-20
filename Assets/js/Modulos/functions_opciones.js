@@ -20,6 +20,9 @@ const App = {
             intModule:"",
             intSection:0,
             strRoute:"",
+            intLevel:1,
+            intStatus:1,
+            
         }
     },
     mounted(){
@@ -43,6 +46,8 @@ const App = {
             this.intModule = this.arrModules[0].id;
             this.intSection = 0;
             this.strRoute = "";
+            this.intLevel = 1;
+            this.intStatus = 1;
             this.getData();
         },
         save:async function(){
@@ -52,6 +57,8 @@ const App = {
             formData.append("module",this.intModule);
             formData.append("section",this.intSection);
             formData.append("route",this.strRoute);
+            formData.append("level",this.intLevel);
+            formData.append("status",this.intStatus);
             this.common.processing =true;
             const response = await fetch(base_url+"/Modulos/Opciones/setOpcion",{method:"POST",body:formData});
             const objData = await response.json();
@@ -61,8 +68,8 @@ const App = {
             this.intSection = "";
             this.strRoute = "";
             this.common.processing =false;
-            this.common.showModalModule = false;
             if(objData.status){
+                this.common.showModalModule = false;
                 this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
             }else{
@@ -90,6 +97,8 @@ const App = {
             const response = await fetch(base_url+"/Modulos/Opciones/getOpcion",{method:"POST",body:formData});
             const objData = await response.json();
             if(objData.status){
+                this.intStatus = objData.data.status;
+                this.intLevel = objData.data.level;
                 this.common.strName =objData.data.name;
                 this.common.intId = objData.data.id;
                 this.common.showModalModule = true;

@@ -17,6 +17,8 @@ const App = {
             common:common,
             arrModules:[],
             intModule:"",
+            intLevel:1,
+            intStatus:1,
         }
     },
     mounted(){
@@ -34,6 +36,8 @@ const App = {
             this.common.strName ="";
             this.common.intId = 0;
             this.common.modulesTitle = "Nueva Seccion";
+            this.intLevel = 1;
+            this.intStatus = 1;
             this.getData();
         },
         save:async function(){
@@ -41,15 +45,17 @@ const App = {
             formData.append("name",this.common.strName);
             formData.append("id",this.common.intId);
             formData.append("module",this.intModule);
+            formData.append("level",this.intLevel);
+            formData.append("status",this.intStatus);
             this.common.processing =true;
             const response = await fetch(base_url+"/Modulos/Secciones/setSeccion",{method:"POST",body:formData});
             const objData = await response.json();
-            this.common.strName ="";
-            this.common.intId =0;
-            this.intModule = "";
             this.common.processing =false;
-            this.common.showModalModule = false;
             if(objData.status){
+                this.common.showModalModule = false;
+                this.common.strName ="";
+                this.common.intId =0;
+                this.intModule = "";
                 this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
             }else{
@@ -81,6 +87,8 @@ const App = {
                 this.common.intId = objData.data.id;
                 this.common.showModalModule = true;
                 this.common.modulesTitle = "Editar sección";
+                this.intStatus = objData.data.status;
+                this.intLevel = objData.data.level;
                 this.intModule = objData.data.module_id;
             }else{
                 Swal.fire("Error",objData.msg,"error");

@@ -15,6 +15,9 @@ const App = {
     data(){
         return {
             common:common,
+            strIcon:"",
+            intLevel:1,
+            intStatus:1,
         }
     },
     mounted(){
@@ -25,20 +28,25 @@ const App = {
             this.common.showModalModule = true;
             this.common.strName ="";
             this.common.intId =0;
+            this.intLevel = 1;
+            this.intStatus = 1;
             this.common.modulesTitle = "Nuevo modulo";
         },
         save:async function(){
             const formData = new FormData();
             formData.append("name",this.common.strName);
             formData.append("id",this.common.intId);
+            formData.append("icon",this.strIcon);
+            formData.append("level",this.intLevel);
+            formData.append("status",this.intStatus);
             this.common.processing =true;
             const response = await fetch(base_url+"/Modulos/Modulos/setModulo",{method:"POST",body:formData});
             const objData = await response.json();
-            this.common.strName ="";
-            this.common.intId =0;
             this.common.processing =false;
-            this.common.showModalModule = false;
             if(objData.status){
+                this.common.strName ="";
+                this.common.intId =0;
+                this.common.showModalModule = false;
                 this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
             }else{
@@ -68,6 +76,9 @@ const App = {
             if(objData.status){
                 this.common.strName =objData.data.name;
                 this.common.intId = objData.data.id;
+                this.strIcon = objData.data.icon;
+                this.intStatus = objData.data.status;
+                this.intLevel = objData.data.level;
                 this.common.showModalModule = true;
                 this.common.modulesTitle = "Editar modulo";
             }else{

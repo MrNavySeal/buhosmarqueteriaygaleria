@@ -3,32 +3,41 @@
 
         private $intId;
         private $strName; 
+        private $strIcon;
+        private $intLevel;
+        private $intStatus;
 
 
         public function __construct(){
             parent::__construct();
         }
 
-        public function insertModulo($strName){
+        public function insertModulo($strName,$strIcon,$intLevel,$intStatus){
             $this->strName = $strName;
+            $this->strIcon = $strIcon;
+            $this->intLevel = $intLevel;
+            $this->intStatus = $intStatus;
             $sql = "SELECT * FROM module WHERE name = '$this->strName'";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "INSERT INTO module(name) VALUES(?)";
-                $request = intval($this->insert($sql,[$this->strName]));
+                $sql = "INSERT INTO module(name,icon,level,status) VALUES(?,?,?,?)";
+                $request = intval($this->insert($sql,[$this->strName,$this->strIcon,$this->intLevel,$this->intStatus]));
             }else{
                 $request = "existe";
             }
             return $request;
         }
-        public function updateModulo($intId,$strName){
+        public function updateModulo($intId,$strName,$strIcon,$intLevel,$intStatus){
             $this->strName = $strName;
+            $this->strIcon = $strIcon;
+            $this->intLevel = $intLevel;
+            $this->intStatus = $intStatus;
             $this->intId = $intId;
             $sql = "SELECT * FROM module WHERE name = '$this->strName' AND idmodule != $this->intId";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "UPDATE module SET name=? WHERE idmodule=$this->intId";
-                $request = intval($this->update($sql,[$this->strName]));
+                $sql = "UPDATE module SET name=?,icon=?,level=?,status=? WHERE idmodule=$this->intId";
+                $request = intval($this->update($sql,[$this->strName,$this->strIcon,$this->intLevel,$this->intStatus]));
             }else{
                 $request = "existe";
             }
@@ -61,7 +70,7 @@
             if($intPerPage != 0){
                 $limit = " LIMIT $intStartPage,$intPerPage";
             }
-            $sql = "SELECT idmodule as id, name FROM module WHERE name like  '$strSearch%' ORDER BY idmodule DESC $limit";
+            $sql = "SELECT idmodule as id, name,status,level FROM module WHERE name like  '$strSearch%' ORDER BY idmodule DESC $limit";
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT count(*) as total FROM module WHERE name like '$strSearch%'";

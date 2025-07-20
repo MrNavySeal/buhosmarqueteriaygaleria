@@ -6,38 +6,44 @@
         private $intModule;
         private $intSection;
         private $strRoute;
+        private $intLevel;
+        private $intStatus;
 
         public function __construct(){
             parent::__construct();
         }
 
-        public function insertOpcion($strName,$intModule,$intSection,$strRoute){
+        public function insertOpcion($strName,$intModule,$intSection,$strRoute,$intLevel,$intStatus){
             $this->intModule = $intModule;
             $this->intSection = $intSection;
             $this->strName = $strName;
             $this->strRoute = $strRoute;
+            $this->intLevel = $intLevel;
+            $this->intStatus = $intStatus;
             $sql = "SELECT * FROM module_options WHERE name = '$this->strName' AND module_id = $this->intModule AND section_id = $this->intSection";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "INSERT INTO module_options(name,module_id,section_id,route) VALUES(?,?,?,?)";
-                $request = intval($this->insert($sql,[$this->strName,$this->intModule,$this->intSection,$this->strRoute]));
+                $sql = "INSERT INTO module_options(name,module_id,section_id,route,level,status) VALUES(?,?,?,?,?,?)";
+                $request = intval($this->insert($sql,[$this->strName,$this->intModule,$this->intSection,$this->strRoute,$this->intLevel,$this->intStatus]));
             }else{
                 $request = "existe";
             }
             return $request;
         }
-        public function updateOpcion($intId,$strName,$intModule,$intSection,$strRoute){
+        public function updateOpcion($intId,$strName,$intModule,$intSection,$strRoute,$intLevel,$intStatus){
             $this->intModule = $intModule;
             $this->strName = $strName;
             $this->strRoute = $strRoute;
             $this->intId = $intId;
             $this->intSection = $intSection;
+            $this->intLevel = $intLevel;
+            $this->intStatus = $intStatus;
             $sql = "SELECT * FROM module_options 
             WHERE name = '$this->strName' AND module_id = $this->intModule AND section_id = $this->intSection AND id != $this->intId";
             $request = $this->select($sql);
             if(empty($request)){
-                $sql = "UPDATE module_options SET name= ?, module_id = ?, section_id = ?, route=? WHERE id=$this->intId";
-                $request = intval($this->update($sql,[$this->strName,$this->intModule,$this->intSection,$this->strRoute]));
+                $sql = "UPDATE module_options SET name= ?, module_id = ?, section_id = ?, route=?,level=?,status=? WHERE id=$this->intId";
+                $request = intval($this->update($sql,[$this->strName,$this->intModule,$this->intSection,$this->strRoute,$this->intLevel,$this->intStatus]));
             }else{
                 $request = "existe";
             }
@@ -102,12 +108,12 @@
             return $arrData;
         }
         public function selectModulos(){
-            $sql = "SELECT *, idmodule as id FROM module ORDER BY idmodule DESC";
+            $sql = "SELECT *, idmodule as id FROM module WHERE status = 1 ORDER BY idmodule DESC";
             $request = $this->select_all($sql);
             return $request;
         }
         public function selectSecciones(){
-            $sql = "SELECT * FROM module_sections ORDER BY id DESC";
+            $sql = "SELECT * FROM module_sections WHERE status = 1 ORDER BY id DESC";
             $request = $this->select_all($sql);
             return $request;
         }

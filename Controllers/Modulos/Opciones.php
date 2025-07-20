@@ -35,13 +35,15 @@
                     $intId = intval($_POST['id']);
                     $intModule = intval($_POST['module']);
                     $intSection = intval($_POST['section']);
+                    $intStatus = intval($_POST['status']);
+                    $intLevel = intval($_POST['level']);
                     $option = "";
                     if($intId==0){
                         $option = 1;
-                        $request = $this->model->insertOpcion($strName,$intModule,$intSection,$strRoute);
+                        $request = $this->model->insertOpcion($strName,$intModule,$intSection,$strRoute,$intLevel,$intStatus);
                     }else{
                         $option = 2;
-                        $request = $this->model->updateOpcion($intId,$strName,$intModule,$intSection,$strRoute);
+                        $request = $this->model->updateOpcion($intId,$strName,$intModule,$intSection,$strRoute,$intLevel,$intStatus);
                     }
                     if(is_numeric($request) && $request > 0){
                         if($option == 1){

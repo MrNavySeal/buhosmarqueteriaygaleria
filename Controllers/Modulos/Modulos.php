@@ -27,13 +27,16 @@
                 }else{
                     $strName = clear_cadena(strClean(ucfirst(strtolower($_POST['name']))));
                     $intId = intval($_POST['id']);
+                    $intStatus = intval($_POST['status']);
+                    $intLevel = intval($_POST['level']);
+                    $strIcon = strClean($_POST['icon']);
                     $option = "";
                     if($intId==0){
                         $option = 1;
-                        $request = $this->model->insertModulo($strName);
+                        $request = $this->model->insertModulo($strName,$strIcon,$intLevel,$intStatus);
                     }else{
                         $option = 2;
-                        $request = $this->model->updateModulo($intId,$strName);
+                        $request = $this->model->updateModulo($intId,$strName,$strIcon,$intLevel,$intStatus);
                     }
                     if(is_numeric($request) && $request > 0){
                         if($option == 1){
