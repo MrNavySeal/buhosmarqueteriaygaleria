@@ -187,4 +187,54 @@
         $file = "Views/Template/Components/{$name}.php";
         require $file;        
     }
+    function setEncriptar($data){
+        $encrypted = openssl_encrypt($data, METHOD,KEY);
+        //$base64 = base64_encode($encrypted); 
+        $safe = str_replace(['/', '+'], ['_', '-'], $encrypted);
+        return $safe;
+    }
+    function setDesencriptar($data){
+        $data = str_replace(['_', '-'], ['/', '+'], $data);
+        $decrypted = openssl_decrypt($data, METHOD, KEY);
+        return $decrypted;
+    }
+    function getRedesSociales(){
+        $social = getSocialMedia();
+        $links ="";
+        for ($i=0; $i < count($social) ; $i++) { 
+            if($social[$i]['link']!=""){
+                if($social[$i]['name']=="whatsapp"){
+                    $links.='<li><a href="https://wa.me/'.$social[$i]['link'].'" target="_blank"><i class="fab fa-'.$social[$i]['name'].'"></i></a></li>';
+                }else{
+                    $links.='<li><a href="'.$social[$i]['link'].'" target="_blank"><i class="fab fa-'.$social[$i]['name'].'"></i></a></li>';
+                }
+            }
+        }
+        return $links;
+    }
+    function getFooterServicios(){
+        $con = new Mysql();
+        $sql="SELECT * FROM category ORDER BY name";
+        $request = $con->select_all($sql);
+        $total = count($request);
+        for ($i=0; $i < $total ; $i++) { 
+            $request[$i]['route'] = base_url()."/servicios/area/".$request[$i]['route'];
+        }
+        return $request;
+    }
+    function getPaises(){
+        $con = new Mysql();
+        $request = $con->select_all("SELECT * FROM countries ORDER BY name");
+        return $request;
+    }
+    function getDepartamentos(int $id){
+        $con = new Mysql();
+        $request = $con->select_all("SELECT * FROM states WHERE country_id = $id ORDER BY name ");
+        return $request;
+    }
+    function getCiudades(int $id){
+        $con = new Mysql();
+        $request = $con->select_all("SELECT * FROM cities WHERE state_id = $id ORDER BY name");
+        return $request;
+    }
 ?>

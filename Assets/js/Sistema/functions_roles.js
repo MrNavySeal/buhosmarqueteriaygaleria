@@ -140,6 +140,7 @@ const App = {
             this.checkU = objData.u;
             this.checkD = objData.d;
             this.strRol = data.name;
+            this.common.modulesTitle = "Permisos de "+this.strRol;
         },
         setPermission:function(type="module",data=[]){
             if(type=="all"){

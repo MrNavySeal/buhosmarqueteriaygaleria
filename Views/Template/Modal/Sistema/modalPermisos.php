@@ -1,4 +1,4 @@
-<app-modal :title="'Permisos '+strRol" id="showPermissionModal" v-model="showPermissionModal" size="xl" scroll="true">
+<app-modal :title="common.modulesTitle" id="showPermissionModal" v-model="showPermissionModal" size="xl" scroll="true">
     <input type="hidden" v-model="intIdRol">
     <template #body>
         <div class="d-flex gap-4 ms-3 mb-2">
