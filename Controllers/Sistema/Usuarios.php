@@ -17,9 +17,9 @@
                     "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/sistema/usuarios/"."','','');mypop.focus();"],
                     "nuevo" => ["mostrar"=>true, "evento"=>"@click","funcion"=>"openModal()"],
                 ];
-                $data['page_tag'] = "";
-                $data['page_title'] = "Usuarios";
-                $data['page_name'] = "";
+                $data['page_tag'] = "Usuarios | Sistema";
+                $data['page_title'] = "Usuarios | Sistema";
+                $data['page_name'] = "usuarios";
                 $data['panelapp'] = "/Sistema/functions_usuarios.js";
                 $this->views->getView($this,"usuarios",$data);
             }else{
@@ -146,9 +146,10 @@
                                 $data['company'] = $company;
                                 if($strCorreo !="generico@generico.co"){
                                     try { sendEmail($data,"email_credentials"); } catch (\Throwable $th) {}
-                                    
+                                    $arrResponse = array("status"=>true,"msg"=>'Datos guardados. Se ha enviado un correo electrónico al usuario con las credenciales.');
+                                }else{
+                                    $arrResponse = array("status"=>true,"msg"=>'Datos guardados.');
                                 }
-                                $arrResponse = array("status"=>true,"msg"=>'Datos guardados. Se ha enviado un correo electrónico al usuario con las credenciales.');
                             }else{
                                 if($strContrasena!=""){
                                     $data['nombreUsuario'] = $strNombre." ".$strApellido;
@@ -159,8 +160,10 @@
                                     $data['company'] = $company;
                                     if($strCorreo !="generico@generico.co"){
                                         try { sendEmail($data,"email_passwordUpdated"); } catch (\Throwable $th) {}
+                                        $arrResponse = array("status"=>true,"msg"=>'La contraseña ha sido actualizada, se ha enviado un correo electrónico con la nueva contraseña.');
+                                    }else{
+                                        $arrResponse = array("status"=>true,"msg"=>'Datos actualizados');
                                     }
-                                    $arrResponse = array("status"=>true,"msg"=>'La contraseña ha sido actualizada, se ha enviado un correo electrónico con la nueva contraseña.');
                                 }else{
                                     $arrResponse = array("status"=>true,"msg"=>'Datos actualizados');
                                 }
@@ -214,7 +217,11 @@
                 if($_POST){
                     $intId = intval($_POST['id']);
                     $request = $this->model->selectUsuario($intId);
-                    if($request['image']!="user.jpg"){ deleteFile($request['image']); }
+                    if($request['image']!="user.jpg"){ 
+                        if(file_exists(media()."/images/uploads".$request['image'])){
+                            deleteFile($request['image']);
+                        }
+                     }
                     $request = $this->model->deleteUsuario($intId);
                     if($request > 0 || $request == "ok"){
                         $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado correctamente.");
@@ -223,6 +230,38 @@
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
+            }
+            die();
+        }
+        //Pemisos
+        public function setPermisos(){
+            if($_POST){
+                $arrData = json_decode($_POST['data'],true);
+                $intId = intval($_POST['id']);
+                $intRolId = intval($_POST['rol']);
+                $request = $this->model->insertPermisos($intRolId,$intId,$arrData);
+                if(is_numeric($request) && $request > 0){
+                    $arrResponse = array("status"=>true,"msg"=>"Permisos asignados correctamente.");
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"No se ha podido guardar, intente de nuevo.");
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+        public function getPermisos(){
+            if($_POST){
+                $intId = intval($_POST['id']);
+                $intRolId = intval($_POST['rol']);
+                $request = $this->model->selectPermisos($intRolId,$intId);
+                $arrResponse = [
+                    "data"=>$request,
+                    "r"=>!empty(array_filter($request,function($e){return $e['r'];})),
+                    "w"=>!empty(array_filter($request,function($e){return $e['w'];})),
+                    "u"=>!empty(array_filter($request,function($e){return $e['u'];})),
+                    "d"=>!empty(array_filter($request,function($e){return $e['d'];})),
+                ];
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }

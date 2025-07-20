@@ -1,7 +1,7 @@
 <app-modal :title="common.modulesTitle" id="showPermissionModal" v-model="showPermissionModal" size="xl" scroll="true">
     <input type="hidden" v-model="intIdRol">
     <template #body>
-        <div class="d-flex gap-4 ms-3 mb-2">
+        <div class="d-flex gap-4 ms-3 mb-2 flex-wrap">
             <div class="form-check form-switch text-normal">
                 <input class="form-check-input" @change="setPermission('all')" type="checkbox" role="switch" v-model="checkR" id="switchCheckR">
                 <label class="form-check-label" for="switchCheckR">Leer </label>
@@ -28,7 +28,7 @@
                 </h2>
                 <div :id="'flush-module-'+module.name" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
-                        <div class="d-flex gap-4">
+                        <div class="d-flex gap-4 flex-wrap">
                             <div class="form-check form-switch text-normal">
                                 <input class="form-check-input" @change="setPermission('module',module)" type="checkbox" role="switch" v-model="module.r" :id="'switchCheckModuleR'+module.name">
                                 <label class="form-check-label" :for="'switchCheckModuleR'+module.name">Leer </label>
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="d-flex gap-4 mt-2" v-for="(option,optionIndex) in module.options" :key="option.id">
+                        <div class="d-flex gap-4 mt-2 flex-wrap" v-for="(option,optionIndex) in module.options" :key="option.id">
                             <span>{{option.name}}</span>
                             <div class="form-check form-switch text-normal">
                                 <input class="form-check-input" type="checkbox" role="switch" v-model="option.r" :id="'switchCheckOptionR'+option.name">
@@ -73,7 +73,7 @@
                                 </button>
                             </h2>
                             <div :id="'flush-section-'+section.name" class="accordion-collapse collapse" :data-bs-parent="'#accordionFlushSection'+section.name">
-                                <div class="d-flex gap-4 ms-3 mt-2">
+                                <div class="d-flex gap-4 ms-3 mt-2 flex-wrap">
                                     <div class="form-check form-switch text-normal">
                                         <input class="form-check-input" @change="setPermission('section',section)" type="checkbox" role="switch" v-model="section.r" :id="'switchCheckSectionR'+section.name">
                                         <label class="form-check-label" :for="'switchCheckSectionR'+section.name">Leer </label>
@@ -92,7 +92,7 @@
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="d-flex gap-4 ms-5 mt-2" v-for="(option,optionIndex) in section.options" :key="option.id">
+                                <div class="d-flex gap-4 ms-5 mt-2 flex-wrap" v-for="(option,optionIndex) in section.options" :key="option.id">
                                     <span>{{option.name}}</span>
                                     <div class="form-check form-switch text-normal">
                                         <input class="form-check-input" type="checkbox" role="switch" v-model="option.r" :id="'switchCheckOptionR'+option.name">

@@ -54,6 +54,13 @@ const App = {
             arrCiudades:[],
             arrRoles:[],
             intRol:"",
+
+            showPermissionModal:false,
+            arrPermissions:[],
+            checkR:false,
+            checkW:false,
+            checkU:false,
+            checkD:false, 
         };
     },mounted(){
         this.search();
@@ -80,6 +87,7 @@ const App = {
             }
         },
         openModal:async function(){
+            await this.getDatosIniciales();
             this.common.showModalModule = true;
             this.common.intId =0;
             this.common.modulesTitle = "Nuevo usuario";
@@ -251,6 +259,95 @@ const App = {
                 objVue.search();
               }
           });
+        },
+        permissions:async function(data){
+            this.intRol = data.roleid;
+            this.common.intId = data.id;
+            const formData = new FormData();
+            formData.append("id",data.id);
+            formData.append("rol",data.roleid);
+            const response = await fetch(base_url+"/Sistema/Usuarios/getPermisos",{method:"POST",body:formData});
+            const objData = await response.json();
+            this.showPermissionModal = true;
+            this.arrPermissions = objData.data;
+            this.checkR = objData.r;
+            this.checkW = objData.w;
+            this.checkU = objData.u;
+            this.checkD = objData.d;
+            this.common.modulesTitle = "Permisos de "+data.role+" para "+data.nombre;
+        },
+        setPermission:function(type="module",data=[]){
+            if(type=="all"){
+                for (let i = 0; i < this.arrPermissions.length; i++) {
+                    const module = this.arrPermissions[i];
+                    module.r = this.checkR;
+                    module.w = this.checkW;
+                    module.u = this.checkU;
+                    module.d = this.checkD;
+                    module.options.forEach(option=>{
+                        option.r = module.r;
+                        option.w = module.w;
+                        option.u = module.u;
+                        option.d = module.d;
+                    });
+                    module.sections.forEach(section=>{
+                        section.r = module.r;
+                        section.w = module.w;
+                        section.u = module.u;
+                        section.d = module.d;
+                        section.options.forEach(option=>{
+                            option.r = module.r;
+                            option.w = module.w;
+                            option.u = module.u;
+                            option.d = module.d;
+                        });
+                    });
+                }
+            }else if(type=="module"){
+                data.options.forEach(option=>{
+                    option.r = data.r;
+                    option.w = data.w;
+                    option.u = data.u;
+                    option.d = data.d;
+                });
+                data.sections.forEach(section=>{
+                    section.r = data.r;
+                    section.w = data.w;
+                    section.u = data.u;
+                    section.d = data.d;
+                    section.options.forEach(option=>{
+                        option.r = data.r;
+                        option.w = data.w;
+                        option.u = data.u;
+                        option.d = data.d;
+                    });
+                });
+            }else{
+                data.options.forEach(option=>{
+                    option.r = data.r;
+                    option.w = data.w;
+                    option.u = data.u;
+                    option.d = data.d;
+                });
+            }
+            
+        },
+        savePermissions:async function(){
+            const formData = new FormData();
+            formData.append("data",JSON.stringify(this.arrPermissions));
+            formData.append("rol",this.intRol);
+            formData.append("id",this.common.intId);
+            this.common.processing =true;
+            const response = await fetch(base_url+"/Sistema/Usuarios/setPermisos",{method:"POST",body:formData});
+            const objData = await response.json();
+            this.common.processing =false;
+            this.showPermissionModal = false;
+            if(objData.status){
+                Swal.fire("Guardado",objData.msg,"success");
+            }else{
+                Swal.fire("Error",objData.msg,"error");
+            }
+            
         },
     }
 };
