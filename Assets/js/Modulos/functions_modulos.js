@@ -39,7 +39,7 @@ const App = {
             this.common.processing =false;
             this.common.showModalModule = false;
             if(objData.status){
-                this.search();
+                this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
             }else{
                 Swal.fire("Error",objData.msg,"error");
@@ -93,12 +93,12 @@ const App = {
                     const objData = await response.json();
                     if(objData.status){
                         Swal.fire("Eliminado!",objData.msg,"success");
-                        objVue.search();
+                        objVue.search(objVue.common.intPage);
                     }else{
                         Swal.fire("Error",objData.msg,"error");
                     }
                 }else{
-                    objVue.search();
+                    objVue.search(objVue.common.intPage);
                 }
             });
             

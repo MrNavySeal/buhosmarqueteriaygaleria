@@ -31,7 +31,7 @@
                     $arrResponse = array("status"=>false,"msg"=>"Los campos con (*) son obligatorios.");
                 }else{
                     $strName = clear_cadena(strClean(ucfirst(strtolower($_POST['name']))));
-                    $strRoute = clear_cadena(strClean($_POST['route']));
+                    $strRoute = strtolower(clear_cadena(strClean($_POST['route'])));
                     $intId = intval($_POST['id']);
                     $intModule = intval($_POST['module']);
                     $intSection = intval($_POST['section']);

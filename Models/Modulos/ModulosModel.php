@@ -39,6 +39,9 @@
             $sql = "SELECT * FROM module_sections WHERE module_id = $this->intId";
             $request = $this->select($sql);
             if(empty($request)){
+                $this->delete("DELETE FROM module_permissions WHERE module_id = $this->intId;SET @autoid :=0; 
+                UPDATE module_permissions SET id = @autoid := (@autoid+1);
+                ALTER TABLE module_permissions Auto_Increment = 1");
                 $sql = "DELETE FROM module WHERE idmodule = $this->intId";
                 $request = $this->delete($sql);
             }else{

@@ -45,6 +45,11 @@
         }
         public function deleteOpcion($intId){
             $this->intId = $intId;
+
+            $this->delete("DELETE FROM module_options_permissions WHERE option_id = $this->intId;SET @autoid :=0; 
+            UPDATE module_options_permissions SET id = @autoid := (@autoid+1);
+            ALTER TABLE module_options_permissions Auto_Increment = 1");
+
             $sql = "DELETE FROM module_options WHERE id = $this->intId";
             $request = $this->delete($sql);
             return $request;
