@@ -39,6 +39,7 @@
                 if(method_exists($controller, $method)){//Valido si existe el método
                     //Asigno permisos a la sesión
                     getPermisos();
+                    sessionCookie();
                     if(isset($_SESSION['permissions'])){
                         $arrPermits = $_SESSION['permissions'];
                         $arrKeysOptions = array_keys($arrPermits);
