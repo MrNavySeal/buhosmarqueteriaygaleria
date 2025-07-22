@@ -7,7 +7,6 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
         }
         public function roles(){
             $data['botones'] = [

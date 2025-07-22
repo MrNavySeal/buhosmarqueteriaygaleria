@@ -7,14 +7,11 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(11);
-            
         }
         public function categorias(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "categoría";
-                $data['page_title'] = "Categorías";
+                $data['page_tag'] = "Categorías | Productos";
+                $data['page_title'] = "Categorías | Productos";
                 $data['page_name'] = "categorias";
                 $data['panelapp'] = "functions_products_category.js";
                 $this->views->getView($this,"categorias",$data);

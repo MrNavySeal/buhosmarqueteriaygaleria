@@ -7,7 +7,6 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
         }
         public function productos(){
             if($_SESSION['permitsModule']['r']){
@@ -55,9 +54,9 @@
         }
         public function insumo($params){
             if($_SESSION['permitsModule']['w']){
-                $data['page_tag'] = "Asignar insumos";
-                $data['page_title'] = "Asignar insumos";
-                $data['page_name'] = "insumoos";
+                $data['page_tag'] = "Insumos | Productos";
+                $data['page_title'] = "Insumos | Productos";
+                $data['page_name'] = "insumos";
                 $data['panelapp'] = "functions_productos_insumos.js";
                 $data['id'] = intval(strClean($params));
                 $data['data'] = $this->model->selectProduct($data['id']);

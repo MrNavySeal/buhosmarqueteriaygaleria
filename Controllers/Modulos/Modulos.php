@@ -7,7 +7,6 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
         }
         public function modulos(){
             $data['botones'] = [

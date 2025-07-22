@@ -8,7 +8,6 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
         }
         public function usuarios(){
             if($_SESSION['permitsModule']['r']){
