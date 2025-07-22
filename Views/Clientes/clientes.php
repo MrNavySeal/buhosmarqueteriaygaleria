@@ -1,39 +1,73 @@
 <?php 
     headerAdmin($data);
-    getModal("modalCustomer");
-    getModal("modalViewCustomer");
+    getModal("Clientes/modalClientes"); 
 ?>
-<div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <h2 class="text-center"><?=$data['page_title']?></h2>
-    <div class="d-flex justify-content-end mb-3">
-        <?php
-            if($_SESSION['permitsModule']['w']){
-        ?>
-        <button class="btn btn-primary d-none" type="button" id="btnNew">Agregar <?= $data['page_tag']?> <i class="fas fa-plus"></i></button>
-        <?php
-        }
-        ?>
+<div class="row">
+    <div class="col-md-4">
+        <app-select label="Por página"  @change="search()" v-model="common.intPerPage">
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="1000">1000</option>
+        </app-select>
     </div>
-    <table class="table align-middle" id="tableData">
+    <div class="col-md-8">
+        <app-input label="Buscar" @input="search()" v-model="common.strSearch"></app-input>
+    </div>
+</div>
+<div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
+    <table class="table align-middle table-hover">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Portada</th>
                 <th>Nombre</th>
                 <th>CC/NIT</th>
-                <th>Email</th>
+                <th>Correo</th>
                 <th>Teléfono</th>
+                <th>País</th>
+                <th>Departamento</th>
+                <th>Ciudad</th>
+                <th>Dirección</th>
                 <th>Fecha</th>
                 <th>Estado</th>
                 <th>Opciones</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            <tr v-for="(data,index) in common.arrData" :key="index">
+                <td data-title="ID" class="text-center">{{data.id}}</td>
+                <td data-title="Portada">
+                    <img :src="data.url" :alt="data.name" class="img-thumbnail" style="width: 50px; height: 50px;">
+                </td>
+                <td data-title="Nombre">{{data.nombre}}</td>
+                <td data-title="CC/NIT">{{data.documento}}</td>
+                <td data-title="Correo">{{data.email}}</td>
+                <td data-title="Teléfono" class="text-nowrap">{{data.telefono}}</td>
+                <td data-title="País">{{data.pais}}</td>
+                <td data-title="Departamento">{{data.departamento}}</td>
+                <td data-title="Ciudad">{{data.ciudad}}</td>
+                <td data-title="Dirección">{{data.direccion}}</td>
+                <td data-title="Fecha">{{data.fecha}}</td>
+                <td data-title="Estado" class="text-center">
+                    <span :class="data.status == '1' ? 'bg-success' : 'bg-danger'" class="badge text-white">
+                        {{ data.status == '1' ? "Activo" : "Inactivo" }}
+                    </span>
+                </td>
+                <td data-title="Opciones">
+                    <div class="d-flex gap-2">
+                        <?php if($_SESSION['permitsModule']['u']){ ?>
+                        <app-button  icon="edit" btn="success" @click="edit(data)"></app-button>
+                        <?php } ?>
+                        <?php if($_SESSION['permitsModule']['d']){ ?>
+                        <app-button  icon="delete" btn="danger" @click="del(data)"></app-button>
+                        <?php } ?>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </div>
-<main class="addFilter container mb-3" id="<?=$data['page_name']?>">
-    <div class="row">
-        <div class="col-12 col-lg-9 col-md-12">
-        </div>
-    </div>
-</main>
-<?php footerAdmin($data)?>         
+<app-pagination :common="common" @search="search"></app-pagination>
+<?php footerAdmin($data); ?>

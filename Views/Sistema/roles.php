@@ -1,6 +1,6 @@
 <?php 
     headerAdmin($data);
-    getModal("Modulos/modalModulo"); 
+    getModal("Sistema/modalRol"); 
     getModal("Sistema/modalPermisos"); 
 ?>
 <div class="row">

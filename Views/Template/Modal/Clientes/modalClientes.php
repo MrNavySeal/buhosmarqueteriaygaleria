@@ -48,19 +48,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4">
-                <app-select label="Rol"  v-model="intRol" required="true">
-                    <option v-for="(data,index) in arrRoles" :value="data.idrole">{{data.name}}</option>
-                </app-select>
+            <div class="col-md-6">
+                <app-input label="Contraseña" type="password" v-model="strContrasena"></app-input>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <app-select label="Estado"  v-model="intEstado">
                     <option value="1">Activo</option>
                     <option value="2">Inactivo</option>
                 </app-select>
-            </div>
-            <div class="col-md-4">
-                <app-input label="Contraseña" type="password" v-model="strContrasena"></app-input>
             </div>
         </div>
     </template>
