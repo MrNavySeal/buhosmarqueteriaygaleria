@@ -2,7 +2,7 @@
     class Roles extends Controllers{
         public function __construct(){
             session_start();
-            if(empty($_SESSION['login']) || $_SESSION['idUser'] != 1){
+            if(empty($_SESSION['login'])){
                 header("location: ".base_url());
                 die();
             }
@@ -108,7 +108,7 @@
                 if($request =="ok"){
                     $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado correctamente");
                 }else if($request=="existe"){
-                    $arrResponse = array("status"=>false,"msg"=>"El módulo contiene secciones, debe eliminarlas primero.");
+                    $arrResponse = array("status"=>false,"msg"=>"El rol contiene usuarios, debe eliminarlos primero.");
                 }else{
                     $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar.");
                 }

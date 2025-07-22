@@ -8,11 +8,13 @@
             }
             parent::__construct();
             sessionCookie();
-            getPermits(11);
-            
         }
         public function productos(){
             if($_SESSION['permitsModule']['r']){
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/productos/producto/'"],
+                ];
                 $data['page_tag'] = "producto";
                 $data['page_title'] = "Productos";
                 $data['page_name'] = "productos";
@@ -25,15 +27,25 @@
         }
         public function producto($params){
             if($_SESSION['permitsModule']['w']){
-                $data['page_tag'] = "Crear Producto";
-                $data['page_title'] = "Nuevo Producto";
+                $data['page_tag'] = "Crear Producto | Productos";
+                $data['page_title'] = "Crear Producto | Productos";
                 $data['page_name'] = "productos";
                 $data['panelapp'] = "functions_product.js";
                 if($params==""){
+                    $data['botones'] = [
+                        "atras" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/productos/'"],
+                        "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/producto/"."','','');mypop.focus();"],
+                    ];
                     $this->views->getView($this,"crearproducto",$data);
                 }else{
+                    $params = intval(strClean($params));
+                    $data['id'] = $params;
+                    $data['botones'] = [
+                        "atras" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/productos/'"],
+                        "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/producto/".$params."/','','');mypop.focus();"],
+                        "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/productos/producto/'"],
+                    ];
                     $data['page_title'] = "Editar Producto";
-                    $data['id'] = intval(strClean($params));
                     $this->views->getView($this,"editarproducto",$data);
                 }
             }else{
