@@ -1,15 +1,31 @@
 export default {
     template:`
-        <div class="mb-3" v-if="type != 'hidden'">
-            <label :for="label" class="form-label">{{label}} <span class="text-danger" v-if="required == 'true'">*</span></label>
+        <div class="mb-3" v-if="type != 'hidden' && type != 'switch'">
+            <label :for="label" class="form-label">{{label != '' && title =='' ? label : title}} <span class="text-danger" v-if="required == 'true'">*</span></label>
             <input :type="type" :placeholder="placeholder" :value="modelValue" :required="required=='true' ? true : false" :disabled=disabled class="form-control" :id="label" @input="$emit('update:modelValue', $event.target.value)">
+        </div>
+        <div class="mb-3" v-else-if="type=='switch'">
+            <div  class="form-check form-switch">
+                <label :for="label" class="form-check-label">{{title}} <span class="text-danger" v-if="required == 'true'">*</span></label>
+                <input role="switch" type="checkbox" :value="modelValue" :required="required=='true' ? true : false" :disabled=disabled class="form-check-input" :id="label" @input="$emit('update:modelValue', $event.target.value)"></input>
+            </div>
         </div>
         <input v-else :type="type" :placeholder="placeholder" :value="modelValue" :required=required :disabled=disabled class="form-control" :id="label" @input="$emit('update:modelValue', $event.target.value)">
     `,
     props:{
-        modelValue:[String,Number],
-        label:"",
-        type:"text",
+        modelValue:[String,Number,Boolean],
+        label:{
+            type:String,
+            default:"",
+        },
+        type:{
+            type:String,
+            default:"text",
+        },
+        title:{
+            type:String,
+            default:"",
+        },
         disabled:"",
         placeholder:"",
         required:false,
