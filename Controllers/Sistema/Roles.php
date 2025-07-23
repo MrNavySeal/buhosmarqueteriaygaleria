@@ -11,7 +11,7 @@
         public function roles(){
             $data['botones'] = [
                 "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/sistema/roles"."','','');mypop.focus();"],
-                "nuevo" => ["mostrar"=>true, "evento"=>"@click","funcion"=>"openModal()"],
+                "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
             ];
             $data['page_tag'] = "Roles | Sistema";
             $data['page_title'] = "Roles | Sistema";
