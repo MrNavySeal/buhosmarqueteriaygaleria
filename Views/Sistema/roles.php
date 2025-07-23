@@ -32,9 +32,15 @@
                 <td data-title="Nombre">{{data.name}}</td>
                 <td data-title="Opciones">
                     <div class="d-flex gap-2">
+                        <?php if($_SESSION['permitsModule']['u']){ ?>
                         <app-button  icon="key" btn="secondary" @click="permissions(data)"></app-button>
+                        <?php } ?>
+                        <?php if($_SESSION['permitsModule']['u']){ ?>
                         <app-button  icon="edit" btn="success" @click="edit(data)"></app-button>
+                        <?php } ?>
+                        <?php if($_SESSION['permitsModule']['d']){ ?>
                         <app-button  icon="delete" btn="danger" @click="del(data)"></app-button>
+                        <?php } ?>
                     </div>
                 </td>
             </tr>
