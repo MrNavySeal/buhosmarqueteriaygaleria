@@ -105,7 +105,7 @@
                                     $strImagenNombre = $request['image'] != "" ? $request['image'] :"user.jpg";
                                 }else{
                                     if($request['image'] != "user.jpg"){
-                                        if(file_exists(media()."/images/uploads".$request['image'])){
+                                        if(file_exists(media()."/images/uploads/".$request['image'])){
                                             deleteFile($request['image']);
                                         }
                                     }
@@ -219,9 +219,7 @@
                     $intId = intval($_POST['id']);
                     $request = $this->model->selectUsuario($intId);
                     if($request['image']!="user.jpg"){ 
-                        if(file_exists(media()."/images/uploads".$request['image'])){
-                            deleteFile($request['image']);
-                        }
+                        deleteFile($request['image']);
                      }
                     $request = $this->model->deleteUsuario($intId);
                     if($request > 0 || $request == "ok"){

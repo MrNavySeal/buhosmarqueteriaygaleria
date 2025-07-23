@@ -296,7 +296,9 @@
     }
 
     function deleteFile(string $name){
-        unlink('Assets/images/uploads/'.$name);
+        if(file_exists("Assets/images/uploads/$name")){
+            unlink('Assets/images/uploads/'.$name);
+        }
     }
     
     function months(){
