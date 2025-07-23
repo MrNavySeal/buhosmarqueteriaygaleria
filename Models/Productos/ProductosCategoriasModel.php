@@ -2,22 +2,11 @@
     class ProductosCategoriasModel extends Mysql{
         private $intIdCategory;
         private $intIdSubCategory;
-        private $intIdProduct;
-        private $strReference;
 		private $strName;
+        private $strPhoto;
         private $strDescription;
-        private $strShortDescription;
-        private $intPrice;
-        private $intDiscount;
-        private $intStock;
 		private $intStatus;
         private $strRoute;
-        private $strFramingImg;
-        private $intFramingMode;
-        private $intProductType;
-        private $strSpecifications;
-        private $intIdMeasure;
-        private $arrData;
         public function __construct(){
             parent::__construct();
         }
@@ -38,7 +27,7 @@
             return $request;
         }
         /*************************Category methods*******************************/
-        public function insertCategory(string $photo,string $strName,int $status, string $strDescription, string $strRoute, int $isVisible){
+        public function insertCategoria(string $photo,string $strName,int $status, string $strDescription, string $strRoute, int $isVisible){
 
 			$this->strName = $strName;
 			$this->strRoute = $strRoute;
@@ -70,7 +59,7 @@
 			}
 	        return $return;
 		}
-        public function updateCategory(int $intIdCategory,string $photo, string $strName,int $status, string $strDescription,string $strRoute, int $isVisible){
+        public function updateCategoria(int $intIdCategory,string $photo, string $strName,int $status, string $strDescription,string $strRoute, int $isVisible){
             $this->intIdCategory = $intIdCategory;
             $this->strName = $strName;
             $this->strDescription = $strDescription;
@@ -99,7 +88,7 @@
 			return $request;
 		
 		}
-        public function deleteCategory($id){
+        public function deleteCategoria($id){
             $this->intIdCategory = $id;
             $sql = "SELECT * FROM subcategory WHERE categoryid = $this->intIdCategory";
             $request = $this->select_all($sql);
@@ -112,12 +101,43 @@
             }
             return $return;
         }
-        public function selectCategories(){
-            $sql = "SELECT * FROM category ORDER BY idcategory DESC";       
+        public function selectCategorias($intPage,$intPerPage,$strSearch){
+            $limit ="";
+            $intStartPage = ($intPage-1)*$intPerPage;
+            if($intPerPage != 0){
+                $limit = " LIMIT $intStartPage,$intPerPage";
+            }    
+            $sql = "SELECT *,idcategory as id FROM category WHERE name like '$strSearch%' ORDER BY idcategory DESC $limit";  
             $request = $this->select_all($sql);
-            return $request;
+
+            $sqlTotal = "SELECT count(*) as total FROM category WHERE name like '$strSearch%' ORDER BY idcategory";
+            foreach ($request as &$data) { 
+                $data['url'] = media()."/images/uploads/".$data['picture'];
+            }
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
+            $totalPages = $totalPages == 0 ? 1 : $totalPages;
+            $startPage = max(1, $intStartPage - floor(BUTTONS / 2));
+            if ($startPage + BUTTONS - 1 > $totalPages) {
+                $startPage = max(1, $totalPages - BUTTONS + 1);
+            }
+            $limitPages = min($startPage + BUTTONS, $totalPages+1);
+            $arrButtons = [];
+            for ($i=$startPage; $i < $limitPages; $i++) { 
+                array_push($arrButtons,$i);
+            }
+            $arrData = array(
+                "data"=>$request,
+                "start_page"=>$startPage,
+                "limit_page"=>$limitPages,
+                "total_pages"=>$totalPages,
+                "total_records"=>$totalRecords,
+                "buttons"=>$arrButtons
+            );
+            return $arrData;
         }
-        public function selectCategory($id){
+        public function selectCategoria($id){
             $this->intIdCategory = $id;
             $sql = "SELECT * FROM category WHERE idcategory = $this->intIdCategory";
             $request = $this->select($sql);

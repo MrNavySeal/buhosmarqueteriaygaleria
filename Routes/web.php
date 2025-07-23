@@ -15,13 +15,13 @@
     $router->setRoute("clientes/","Clientes/Clientes",false);
 
     //Productos
-    $router->setRoute("productos/categorias/","ProductosCategorias/categorias",false);
-    $router->setRoute("productos/subcategorias/","ProductosCategorias/subcategorias",false);
-    $router->setRoute("productos/productos-masivos/","ProductosMasivos/productos",false);
+    $router->setRoute("productos/categorias/","Productos/ProductosCategorias/categorias",false);
+    $router->setRoute("productos/subcategorias/","Productos/ProductosCategorias/subcategorias",false);
+    $router->setRoute("productos/productos-masivos/","Productos/ProductosMasivos/productos",false);
     $router->setRoute("productos/","Productos/Productos",false);
-    $router->setRoute("productos/variantes/","ProductosOpciones/variantes",false);
-    $router->setRoute("productos/unidades-medida/","ProductosOpciones/unidades",false);
-    $router->setRoute("productos/caracteristicas/","ProductosOpciones/caracteristicas",false);
+    $router->setRoute("productos/variantes/","Productos/ProductosOpciones/variantes",false);
+    $router->setRoute("productos/unidades-medida/","Productos/ProductosOpciones/unidades",false);
+    $router->setRoute("productos/caracteristicas/","Productos/ProductosOpciones/caracteristicas",false);
 
     //Marquetería
     $router->setRoute("marqueteria/colores/","Marqueteria/colores",false);

@@ -10,10 +10,14 @@
         }
         public function categorias(){
             if($_SESSION['permitsModule']['r']){
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/categorias/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
+                ];
                 $data['page_tag'] = "Categorías | Productos";
                 $data['page_title'] = "Categorías | Productos";
                 $data['page_name'] = "categorias";
-                $data['panelapp'] = "functions_products_category.js";
+                $data['panelapp'] = "/Productos/functions_categorias.js";
                 $this->views->getView($this,"categorias",$data);
             }else{
                 header("location: ".base_url());
@@ -22,10 +26,14 @@
         }
         public function subcategorias(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "subcategoria";
-                $data['page_title'] = "Subcategorias | Categorías";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/categorias/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = "Subcategorias | Productos";
+                $data['page_title'] = "Subcategorias | Productos";
                 $data['page_name'] = "subcategorias";
-                $data['panelapp'] = "functions_products_subcategory.js";
+                $data['panelapp'] = "functions_subcategorias.js";
                 $this->views->getView($this,"subcategorias",$data);
             }else{
                 header("location: ".base_url());
@@ -87,45 +95,26 @@
             die();
         }
         /*************************Category methods*******************************/
-        public function getCategories(){
+        public function getCategorias(){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectCategories();
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-
-                        $btnEdit="";
-                        $btnDelete="";
-                        $status="";
-                        if($request[$i]['status']==1){
-                            $status='<span class="badge me-1 bg-success">Activo</span>';
-                        }else{
-                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
-                        }
-
-                        if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['idcategory'].')" ><i class="fas fa-pencil-alt"></i></button>';
-                        }
-                        if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idcategory'].')"><i class="fas fa-trash-alt"></i></button>';
-                        }
-                        $request[$i]['options'] = $btnEdit.$btnDelete;
-                        $request[$i]['status'] = $status;
-                    }   
-                }
+                $intPage = intval($_POST['page']);
+                $intPerPage = intval($_POST['per_page']);
+                $strSearch = strClean($_POST['search']);
+                $request = $this->model->selectCategorias($intPage,$intPerPage,$strSearch);
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
-        public function getCategory(){
+        public function getCategoria(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     if(empty($_POST)){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
-                        $idCategory = intval($_POST['idCategory']);
-                        $request = $this->model->selectCategory($idCategory);
+                        $idCategory = intval($_POST['id']);
+                        $request = $this->model->selectCategoria($idCategory);
                         if(!empty($request)){
-                            $request['picture'] = media()."/images/uploads/".$request['picture'];
+                            $request['url'] = media()."/images/uploads/".$request['picture'];
                             $arrResponse = array("status"=>true,"data"=>$request);
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
@@ -136,17 +125,17 @@
             }
             die();
         }
-        public function setCategory(){
+        public function setCategoria(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
-                    if(empty($_POST['txtName'])){
+                    if(empty($_POST['name'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
-                        $idCategory = intval($_POST['idCategory']);
-                        $strName = ucwords(strClean($_POST['txtName']));
-                        $strDescription = strClean($_POST['txtDescription']);
-                        $isVisible = intval($_POST['isVisible']);
-                        $status = intval($_POST['statusList']);
+                        $idCategory = intval($_POST['id']);
+                        $strName = ucwords(strClean($_POST['name']));
+                        $strDescription = strClean($_POST['description']);
+                        $isVisible = intval($_POST['visible']);
+                        $status = intval($_POST['status']);
                         $route = clear_cadena($strName);
                         $route = strtolower(str_replace("¿","",$route));
                         $route = str_replace(" ","-",$route);
@@ -158,14 +147,14 @@
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
 
-                                if($_FILES['txtImg']['name'] == ""){
+                                if($_FILES['image']['name'] == ""){
                                     $photoCategory = "category.jpg";
                                 }else{
-                                    $photo = $_FILES['txtImg'];
+                                    $photo = $_FILES['image'];
                                     $photoCategory = 'category_'.bin2hex(random_bytes(6)).'.png';
                                 }
 
-                                $request= $this->model->insertCategory(
+                                $request= $this->model->insertCategoria(
                                     $photoCategory, 
                                     $strName,
                                     $status,
@@ -177,17 +166,17 @@
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->selectCategory($idCategory);
-                                if($_FILES['txtImg']['name'] == ""){
+                                $request = $this->model->selectCategoria($idCategory);
+                                if($_FILES['image']['name'] == ""){
                                     $photoCategory = $request['picture'];
                                 }else{
                                     if($request['picture'] != "category.jpg"){
                                         deleteFile($request['picture']);
                                     }
-                                    $photo = $_FILES['txtImg'];
+                                    $photo = $_FILES['image'];
                                     $photoCategory = 'category_'.bin2hex(random_bytes(6)).'.png';
                                 }
-                                $request = $this->model->updateCategory(
+                                $request = $this->model->updateCategoria(
                                     $idCategory, 
                                     $photoCategory,
                                     $strName,
@@ -198,7 +187,7 @@
                                 );
                             }
                         }
-                        if($request > 0 ){
+                        if(is_numeric($request) && $request > 0){
                             if($photo!=""){
                                 uploadImage($photo,$photoCategory);
                             }
@@ -218,29 +207,23 @@
             }
 			die();
 		}
-        public function delCategory(){
+        public function delCategoria(){
             if($_SESSION['permitsModule']['d']){
-
                 if($_POST){
-                    if(empty($_POST['idCategory'])){
-                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
+                    $id = intval($_POST['id']);
+                    $request = $this->model->selectCategoria($id);
+                    if($request['picture']!="category.jpg"){
+                        deleteFile($request['picture']);
+                    }
+                    
+                    $request = $this->model->deleteCategoria($id);
+
+                    if($request=="ok"){
+                        $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
+                    }else if($request =="exist"){
+                        $arrResponse = array("status"=>false,"msg"=>"La categoría tiene al menos una subcategoría asignada, no puede ser eliminada.");
                     }else{
-                        $id = intval($_POST['idCategory']);
-
-                        $request = $this->model->selectCategory($id);
-                        if($request['picture']!="category.jpg"){
-                            deleteFile($request['picture']);
-                        }
-                        
-                        $request = $this->model->deleteCategory($id);
-
-                        if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
-                        }else if($request =="exist"){
-                            $arrResponse = array("status"=>false,"msg"=>"La categoría tiene al menos una subcategoría asignada, no puede ser eliminada.");
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
-                        }
+                        $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
