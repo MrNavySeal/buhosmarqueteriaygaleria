@@ -17,7 +17,7 @@
                 $data['page_tag'] = "producto";
                 $data['page_title'] = "Productos";
                 $data['page_name'] = "productos";
-                $data['panelapp'] = "functions_products.js";
+                $data['panelapp'] = "/Productos/functions_productos.js";
                 $this->views->getView($this,"productos",$data);
             }else{
                 header("location: ".base_url());
