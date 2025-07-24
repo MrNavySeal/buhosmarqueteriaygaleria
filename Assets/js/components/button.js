@@ -1,3 +1,4 @@
+import { btnProps } from "./variables.js";
 export default {
     template:`
         <button :class="{ 
@@ -27,26 +28,5 @@ export default {
             <div v-if="processing"><span  class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></div>
         </button>
     `,
-    props:{
-        btn:{
-            type:String,
-            default:"primary"
-        },
-        icon:{
-            type:String,
-            default:"",
-        },
-        type:{
-            type:String,
-            default:"button",
-        },
-        processing:{
-            type:Boolean,
-            default:false
-        },
-        title:{
-            type:String,
-            default:"",
-        }
-    },
+    props:btnProps,
 }
