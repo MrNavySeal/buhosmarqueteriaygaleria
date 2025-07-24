@@ -65,7 +65,7 @@
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
             $totalPages = $totalPages == 0 ? 1 : $totalPages;
-            $startPage = max(1, $intStartPage - floor(BUTTONS / 2));
+            $startPage = max(1, $intPage - floor(BUTTONS / 2));
             if ($startPage + BUTTONS - 1 > $totalPages) {
                 $startPage = max(1, $totalPages - BUTTONS + 1);
             }
