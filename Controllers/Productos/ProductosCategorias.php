@@ -27,13 +27,13 @@
         public function subcategorias(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
-                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/categorias/"."','','');mypop.focus();"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/subcategorias/"."','','');mypop.focus();"],
                     "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
                 ];
                 $data['page_tag'] = "Subcategorias | Productos";
                 $data['page_title'] = "Subcategorias | Productos";
                 $data['page_name'] = "subcategorias";
-                $data['panelapp'] = "functions_subcategorias.js";
+                $data['panelapp'] = "/Productos/functions_subcategorias.js";
                 $this->views->getView($this,"subcategorias",$data);
             }else{
                 header("location: ".base_url());
@@ -231,91 +231,71 @@
             die();
         }
         /*************************SubCategory methods*******************************/
-        public function getSubCategories(){
+        public function getSubcategorias(){
             if($_SESSION['permitsModule']['r']){
-                $request = $this->model->selectSubCategories();
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-
-                        $btnEdit="";
-                        $btnDelete="";
-                        $status="";
-                        if($request[$i]['status']==1){
-                            $status='<span class="badge me-1 bg-success">Activo</span>';
-                        }else{
-                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
-                        }
-                        if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['idsubcategory'].')"><i class="fas fa-pencil-alt"></i></button>';
-                        }
-                        if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idsubcategory'].')"><i class="fas fa-trash-alt"></i></button>';
-                        }
-                        $request[$i]['options'] = $btnEdit.$btnDelete;
-                        $request[$i]['status'] = $status;
-                    }
-                }
+                $intPage = intval($_POST['page']);
+                $intPerPage = intval($_POST['per_page']);
+                $strSearch = strClean($_POST['search']);
+                $request = $this->model->selectSubcategorias($intPage,$intPerPage,$strSearch);
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
-        public function getSubCategory(){
+        public function getSubcategoria(){
             if($_SESSION['permitsModule']['r']){
-
                 if($_POST){
-                    if(empty($_POST)){
-                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
+                    $idCategory = intval($_POST['id']);
+                    $request = $this->model->selectSubcategoria($idCategory);
+                    if(!empty($request)){
+                        $arrResponse = array("status"=>true,"data"=>$request);
                     }else{
-                        $idCategory = intval($_POST['idSubCategory']);
-                        $request = $this->model->selectSubCategory($idCategory);
-                        if(!empty($request)){
-                            $arrResponse = array("status"=>true,"data"=>$request);
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo."); 
-                        }
+                        $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo."); 
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
             }
             die();
         }
-        public function setSubCategory(){
+        public function setSubcategoria(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
-                    if(empty($_POST['txtName']) ||empty($_POST['categoryList'])){
-                        $arrResponse = array("status" => false, "msg" => 'Error de datos.');
+                    $errors = validator()->validate([
+                        "name"=>"required",
+                        "category"=>"required|numeric"
+                    ])->getErrors();
+                    if(!empty($errors)){
+                        $arrResponse = array("status" => false, "errors" => $errors,"msg"=>"Error de datos, por favor revisar los campos.");
                     }else{ 
-                        $idSubCategory = intval($_POST['idSubCategory']);
-                        $strName = ucwords(strClean($_POST['txtName']));
-                        $status = intval($_POST['statusList']);
-                        $idCategory = intval(strClean($_POST['categoryList']));
+                        $idSubCategory = intval($_POST['id']);
+                        $strName = ucwords(strClean($_POST['name']));
+                        $status = intval($_POST['status']);
+                        $idCategory = intval(strClean($_POST['category']));
                         $route = clear_cadena($strName);
                         $route = strtolower(str_replace("¿","",$route));
                         $route = str_replace(" ","-",$route);
                         $route = str_replace("?","",$route);
-
                         if($idSubCategory == 0){
                             if($_SESSION['permitsModule']['w']){
 
                                 $option = 1;
-                                $request= $this->model->insertSubCategory($idCategory,$strName,$status, $route);
+                                $request= $this->model->insertSubcategoria($idCategory,$strName,$status, $route);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request = $this->model->updateSubCategory($idSubCategory,$idCategory, $strName,$status, $route);
+                                $request = $this->model->updateSubcategoria($idSubCategory,$idCategory, $strName,$status, $route);
                             }
                         }
-                        if($request > 0 ){
+                        if(is_numeric($request)){
                             if($option == 1){
                                 $arrResponse=array("status"=>true,"msg"=>"Datos guardados");
                             }else{
                                 $arrResponse=array("status"=>true,"msg"=>"Datos actualizados");
                             }
                         }else if($request == 'exist'){
-                            $arrResponse = array('status' => false, 'msg' => 'La subcategoría ya existe, intenta con otro nombre.');		
+                            $arrResponse = array('status' => false, 'msg' => 'La subcategoría ya existe, intenta con otro nombre.',"errors" => []);		
                         }else{
-                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
+                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.',"errors" => []);
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
@@ -323,22 +303,23 @@
             }
 			die();
 		}
-        public function delSubCategory(){
+        public function delSubcategoria(){
             if($_SESSION['permitsModule']['d']){
                 if($_POST){
-                    if(empty($_POST['idSubCategory'])){
-                        $arrResponse=array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['idSubCategory']);
-                        $request = $this->model->deleteSubCategory($id);
+                    $id = intval($_POST['id']);
+                    $request = $this->model->selectSubcategoria($id);
+                    if(!empty($request)){
+                        $request = $this->model->deleteSubcategoria($id);
                         if($request=="ok"){
                             $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
                         }else if($request=="exist"){
-                            $arrResponse = array("status"=>false,"msg"=>"La subcategoría tiene al menos un producto asignado, no puede ser eliminado.");
+                            $arrResponse = array("status"=>false,"msg"=>"La subcategoría tiene al menos un producto asignado, no puede ser eliminada.");
                         }
                         else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                         }
+                    }else{
+                        $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }

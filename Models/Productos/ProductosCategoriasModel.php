@@ -118,7 +118,7 @@
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
             $totalPages = $totalPages == 0 ? 1 : $totalPages;
-            $startPage = max(1, $intStartPage - floor(BUTTONS / 2));
+            $startPage = max(1, $intPage - floor(BUTTONS / 2));
             if ($startPage + BUTTONS - 1 > $totalPages) {
                 $startPage = max(1, $totalPages - BUTTONS + 1);
             }
@@ -144,7 +144,7 @@
             return $request;
         }
         /*************************SubCategory methods*******************************/
-        public function insertSubCategory(int $intIdCategory ,string $strName,int $status,string $strRoute){
+        public function insertSubcategoria(int $intIdCategory ,string $strName,int $status,string $strRoute){
             $this->intIdCategory = $intIdCategory;
 			$this->strName = $strName;
 			$this->strRoute = $strRoute;
@@ -167,7 +167,7 @@
 			}
 	        return $return;
 		}
-        public function updateSubCategory(int $intIdSubCategory,int $intIdCategory, string $strName,int $status,string $strRoute){
+        public function updateSubcategoria(int $intIdSubCategory,int $intIdCategory, string $strName,int $status,string $strRoute){
             $this->intIdSubCategory = $intIdSubCategory;
             $this->intIdCategory = $intIdCategory;
             $this->strName = $strName;
@@ -177,7 +177,6 @@
 			$request = $this->select_all($sql);
 
 			if(empty($request)){
-
                 $sql = "UPDATE subcategory SET categoryid=?,name=?, status=?,route=? WHERE idsubcategory = $this->intIdSubCategory";
                 $arrData = array(
                     $this->intIdCategory,
@@ -185,13 +184,13 @@
                     $this->intStatus,
                     $this->strRoute
                 );
-				$request = $this->update($sql,$arrData);
+				$request = intval($this->update($sql,$arrData));
 			}else{
 				$request = "exist";
 			}
 			return $request;
 		}
-        public function deleteSubCategory($id){
+        public function deleteSubcategoria($id){
             $this->intIdSubCategory = $id;
             $sql="SELECT * FROM product WHERE subcategoryid = $id";
             $request = $this->select_all($sql);
@@ -210,24 +209,63 @@
             $request = $this->select_all($sql);
             return $request;
         }
-        public function selectSubCategories(){
+        public function selectSubcategorias($intPage,$intPerPage,$strSearch){
+            $limit ="";
+            $intStartPage = ($intPage-1)*$intPerPage;
+            if($intPerPage != 0){
+                $limit = " LIMIT $intStartPage,$intPerPage";
+            }    
+   
             $sql = "SELECT  
-                    s.idsubcategory,
-                    s.name,
-                    s.categoryid,
-                    c.idcategory,
-                    c.name as category,
-                    s.status
-                    FROM subcategory s
-                    INNER JOIN category c
-                    ON c.idcategory = s.categoryid
-                    ORDER BY idsubcategory DESC";       
+            s.idsubcategory as id,
+            s.name,
+            s.categoryid,
+            c.idcategory,
+            c.name as category,
+            s.status
+            FROM subcategory s
+            INNER JOIN category c ON c.idcategory = s.categoryid 
+            WHERE s.name like '$strSearch%' OR c.name like '$strSearch%' ORDER BY s.idsubcategory DESC $limit";  
             $request = $this->select_all($sql);
-            return $request;
+            $sqlTotal = "SELECT count(*) as total FROM subcategory s 
+            INNER JOIN category c ON c.idcategory = s.categoryid 
+            WHERE s.name like '$strSearch%' or c.name like '$strSearch%'";
+            foreach ($request as &$data) { 
+                $data['url'] = media()."/images/uploads/".$data['picture'];
+            }
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
+            $totalPages = $totalPages == 0 ? 1 : $totalPages;
+            $startPage = max(1, $intPage - floor(BUTTONS / 2));
+            if ($startPage + BUTTONS - 1 > $totalPages) {
+                $startPage = max(1, $totalPages - BUTTONS + 1);
+            }
+            $limitPages = min($startPage + BUTTONS, $totalPages+1);
+            $arrButtons = [];
+            for ($i=$startPage; $i < $limitPages; $i++) { 
+                array_push($arrButtons,$i);
+            }
+            $arrData = array(
+                "data"=>$request,
+                "start_page"=>$startPage,
+                "limit_page"=>$limitPages,
+                "total_pages"=>$totalPages,
+                "total_records"=>$totalRecords,
+                "buttons"=>$arrButtons
+            );
+            return $arrData;
         }
-        public function selectSubCategory($id){
+        public function selectSubcategoria($id){
             $this->intIdSubCategory = $id;
-            $sql = "SELECT * FROM subcategory WHERE idsubcategory = $this->intIdSubCategory";
+            $sql = "SELECT  
+            s.idsubcategory as id,
+            s.name,
+            s.categoryid,
+            c.name as category,
+            s.status
+            FROM subcategory s
+            INNER JOIN category c ON c.idcategory = s.categoryid  WHERE s.idsubcategory = $this->intIdSubCategory";
             $request = $this->select($sql);
             return $request;
         }
