@@ -204,10 +204,41 @@
             }
             return $return;
         }
-        public function selectCategoriesSel(){
-            $sql = "SELECT * FROM category WHERE status = 1 ORDER BY idcategory DESC";       
+        public function selectCategoriasSel($intPage,$intPerPage,$strSearch){
+            $limit ="";
+            $intStartPage = ($intPage-1)*$intPerPage;
+            if($intPerPage != 0){
+                $limit = " LIMIT $intStartPage,$intPerPage";
+            }    
+            $sql = "SELECT *,idcategory as id FROM category WHERE status=1 AND name like '$strSearch%' ORDER BY idcategory DESC $limit";  
             $request = $this->select_all($sql);
-            return $request;
+
+            $sqlTotal = "SELECT count(*) as total FROM category WHERE status=1 AND name like '$strSearch%' ORDER BY idcategory";
+            foreach ($request as &$data) { 
+                $data['url'] = media()."/images/uploads/".$data['picture'];
+            }
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
+            $totalPages = $totalPages == 0 ? 1 : $totalPages;
+            $startPage = max(1, $intPage - floor(BUTTONS / 2));
+            if ($startPage + BUTTONS - 1 > $totalPages) {
+                $startPage = max(1, $totalPages - BUTTONS + 1);
+            }
+            $limitPages = min($startPage + BUTTONS, $totalPages+1);
+            $arrButtons = [];
+            for ($i=$startPage; $i < $limitPages; $i++) { 
+                array_push($arrButtons,$i);
+            }
+            $arrData = array(
+                "data"=>$request,
+                "start_page"=>$startPage,
+                "limit_page"=>$limitPages,
+                "total_pages"=>$totalPages,
+                "total_records"=>$totalRecords,
+                "buttons"=>$arrButtons
+            );
+            return $arrData;
         }
         public function selectSubcategorias($intPage,$intPerPage,$strSearch){
             $limit ="";

@@ -69,7 +69,7 @@ const App = {
                 formData.append("page",this.pagination.intPage);
                 formData.append("per_page",this.pagination.intPerPage);
                 formData.append("search",this.pagination.strSearch);
-                const response = await fetch(base_url+"/Productos/ProductosCategorias/getCategorias",{method:"POST",body:formData});
+                const response = await fetch(base_url+"/Productos/ProductosCategorias/getSelectCategorias",{method:"POST",body:formData});
                 const objData = await response.json();
                 this.pagination.arrData = objData.data;
                 this.pagination.intStartPage  = objData.start_page;

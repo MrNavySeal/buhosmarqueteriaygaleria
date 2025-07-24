@@ -40,18 +40,12 @@
                 die();
             }
         }
-        public function getSelectCategories(){
-            $html='<option value="0" selected>Seleccione</option>';
-            $request = $this->model->selectCategoriesSel();
-            if(count($request)>0){
-                for ($i=0; $i < count($request); $i++) { 
-                    $html.='<option value="'.$request[$i]['idcategory'].'">'.$request[$i]['name'].'</option>';
-                }
-                $arrResponse = array("data"=>$html);
-            }else{
-                $arrResponse = array("data"=>"");
-            }
-            echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+        public function getSelectCategorias(){
+            $intPage = intval($_POST['page']);
+            $intPerPage = intval($_POST['per_page']);
+            $strSearch = strClean($_POST['search']);
+            $request = $this->model->selectCategoriasSel($intPage,$intPerPage,$strSearch);
+            echo json_encode($request,JSON_UNESCAPED_UNICODE);
             die();
         }
         public function getSelectSubcategories(){
@@ -69,29 +63,6 @@
                 }
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
-            die();
-        }
-        public function setImg(){ 
-            $arrImages = orderFiles($_FILES['txtImg'],"product");
-            for ($i=0; $i < count($arrImages) ; $i++) { 
-                $request = $this->model->insertTmpImage($arrImages[$i]['name'],$arrImages[$i]['rename']);
-            }
-            $arrResponse = array("msg"=>"Uploaded");
-            echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            die();
-        }
-        public function delImg(){
-            $images = $this->model->selectTmpImages();
-            $image = $_POST['image'];
-            for ($i=0; $i < count($images) ; $i++) { 
-                if($image == $images[$i]['name']){
-                    deleteFile($images[$i]['rename']);
-                    $this->model->deleteTmpImage($images[$i]['rename']);
-                    break;
-                }
-            }
-            $arrResponse = array("msg"=>"Deleted");
-            echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
         /*************************Category methods*******************************/
