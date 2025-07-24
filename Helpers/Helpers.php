@@ -787,5 +787,8 @@
             $_SESSION['navegation'] = $arrModules;
         }
     }
+    function validator(){
+        return new Validator();
+    }
 
 ?>
