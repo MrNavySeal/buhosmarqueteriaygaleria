@@ -41,17 +41,17 @@
                     $html="";
                     if($_SESSION['idUser'] == 1 || $modulo['r']){
                         $html .='<div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">'.$modulo['icon']." ".$modulo['name'].'</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside">'.$modulo['icon']." ".$modulo['name'].'</a>
                         <div class="dropdown-menu bg-transparent border-0">';
                         foreach ($modulo['sections'] as $section) {
                             if($_SESSION['idUser'] == 1 || $section['r']){
                                 $html.='<div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-compass"></i>'.$section['name'].'</a>
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-caret-right"></i>'.$section['name'].'</a>
                                 <div class="dropdown-menu bg-transparent border-0">';
                                 foreach ($section['options'] as $option) {
                                     if($_SESSION['idUser'] == 1 || $option['r']){
                                         $route = base_url()."/".$option['route'];
-                                        $html.='<a href="'.$route.'" class="dropdown-item">'.$option['name'].'</a>';
+                                        $html.='<a href="'.$route.'" class="dropdown-item ps-7">'.$option['name'].'</a>';
                                     }
                                 }
                                 $html.='</div></div>';
@@ -60,7 +60,7 @@
                         foreach ($modulo['options'] as $option) {
                             if($_SESSION['idUser'] == 1 || $option['r']){
                                 $route = base_url()."/".$option['route'];
-                                $html.='<a href="'.$route.'" class="dropdown-item">'.$option['name'].'</a>';
+                                $html.='<a href="'.$route.'" class="dropdown-item ">'.$option['name'].'</a>';
                             }
                         }
                         $html.='</div></div>';
@@ -68,15 +68,6 @@
                     echo $html;
                 }
             ?>
-            
-            <!-- 
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-user-cog"></i>Sistema</a>
-                <div class="dropdown-menu bg-transparent border-0">
-                    <a href="<?=base_url()?>/sistema/roles/" class="dropdown-item">Roles</a>
-                    <a href="<?=base_url()?>/sistema/usuarios/" class="dropdown-item">Usuarios</a>
-                </div>
-            </div> -->
         </div>
     </nav>
 </div>
