@@ -1,8 +1,8 @@
-<app-modal title="Buscar categorías" id="modalCategory" v-model="category.showModalPaginationCategory" size="lg">
+<app-modal title="Buscar subcategorías" id="modalSubcategory" v-model="subcategory.showModalPaginationSubcategory" size="lg">
     <template #body>
         <div class="row">
             <div class="col-md-4">
-                <app-select label="Por página"  @change="search()" v-model="category.intPerPage">
+                <app-select label="Por página"  @change="search()" v-model="subcategory.intPerPage">
                     <option value="10" selected>10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
@@ -11,7 +11,7 @@
                 </app-select>
             </div>
             <div class="col-md-8">
-                <app-input label="Buscar" @input="search()" v-model="category.strSearch"></app-input>
+                <app-input label="Buscar" @input="search()" v-model="subcategory.strSearch"></app-input>
             </div>
         </div>
         <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
@@ -19,28 +19,24 @@
                 <thead>
                     <tr>
                         <th>Id</th>
-                        <th>Portada</th>
                         <th>Nombre</th>
                         <th>Opciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(data,index) in category.arrData" :key="index">
+                    <tr v-for="(data,index) in subcategory.arrData" :key="index">
                         <td data-title="Id">{{data.id}}</td>
-                        <td data-title="Portada">
-                            <img :src="data.url" :alt="data.name" class="img-thumbnail" style="width: 50px; height: 50px;">
-                        </td>
                         <td data-title="Nombre">{{data.name}}</td>
                         <td data-title="Opciones">
                             <div class="d-flex gap-2">
-                                <app-button  icon="new" btn="primary" @click="selectItem(data)"></app-button>
+                                <app-button  icon="new" btn="primary" @click="selectItem(data,'subcategory')"></app-button>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <app-pagination :common="category" @search="search"></app-pagination>
+        <app-pagination :common="subcategory" @search="search"></app-pagination>
     </template>
     <template #footer></template>
 </app-modal>

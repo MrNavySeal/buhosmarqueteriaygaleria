@@ -1,5 +1,5 @@
 <?php
-    require 'Libraries/vendor/autoload.php';
+    //require 'Libraries/vendor/autoload.php';
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
     use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
     use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -14,23 +14,24 @@
             }
             parent::__construct();
             sessionCookie();
-            getPermits(11);
             
         }
         public function productos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Productos masivos";
-                $data['page_title'] = "Productos | Creación & Edición masiva";
+                $data['botones'] = [
+                    "atras" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL.'/productos/'."'"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/creacion-edicion-masiva/"."','','');mypop.focus();"],
+                ];
+                $data['page_tag'] = "Creación & Edición masiva | Productos";
+                $data['page_title'] = "Creación & Edición masiva | Productos";
                 $data['page_name'] = "masivos";
-                $data['categories'] = $this->model->selectFullCategories();
-                $data['panelapp'] = "functions_products_mass.js";
-                $this->views->getView($this,"productos",$data);
+                $data['panelapp'] = "/Productos/functions_masivo.js";
+                $this->views->getView($this,"productos-masivos",$data);
             }else{
                 header("location: ".base_url());
                 die();
             }
         }
-
         public function plantilla(){
             $arrProducts = [];
             $fileName = "plantilla_crear";
@@ -46,7 +47,7 @@
             $lastRowSheet = 1000;
 
             $nextId = $this->model->selectNextId();
-            $categories = $this->model->selectCategories();
+            $categories = $this->model->selectExportCategorias();
             
             //Dropdowns 
             $arrBool = array("Si","No");
@@ -415,7 +416,7 @@
                         $arrProducts = [];
                         $index = 2;
                         $colSub = 'S';
-                        $categories = $this->model->selectCategories()['categories'];
+                        $categories = $this->model->selectExportCategorias()['categories'];
                         $totalCat = count($categories);
                         //product read;
                         while ($sheetProduct->getCell("A$index")->getValue() !="") {
@@ -562,7 +563,6 @@
             die();
         }
         public function setProducts($data,$type){
-            //dep($data);exit;
             $total = count($data);
             for ($i=0; $i < $total; $i++) {
                 $images = $data[$i]['images'];
@@ -590,6 +590,23 @@
                     $this->model->updateProduct($data[$i]);
                 }
             }
+        }
+        public function getSelectCategorias(){
+            $intPage = intval($_POST['page']);
+            $intPerPage = intval($_POST['per_page']);
+            $strSearch = strClean($_POST['search']);
+            $request = $this->model->selectCategorias($intPage,$intPerPage,$strSearch);
+            echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            die();
+        }
+        public function getSelectSubcategorias(){
+            $intId = intval($_POST['id']);
+            $intPage = intval($_POST['page']);
+            $intPerPage = intval($_POST['per_page']);
+            $strSearch = strClean($_POST['search']);
+            $request = $this->model->selectSubcategorias($intId,$intPage,$intPerPage,$strSearch);
+            echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            die();
         }
     }
 

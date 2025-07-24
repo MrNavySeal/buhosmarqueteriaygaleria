@@ -17,7 +17,7 @@ ini_set('max_execution_time', 30000);
             $request = $this->select_all($sql);
             return $request;
         }
-        public function selectCategories(){
+        public function selectExportCategorias(){
             $sql = "SELECT name,idcategory FROM category WHERE status = 1";
             $request = $this->select_all($sql);
             $arrCategories = [];
@@ -36,6 +36,78 @@ ini_set('max_execution_time', 30000);
                 array_push($arrSubcategories,array($request[$i]['name']=>$subcategories));
             }
             return array("categories"=>$arrCategories,"subcategories"=>$arrSubcategories);
+        }
+        public function selectCategorias($intPage,$intPerPage,$strSearch){
+            $limit ="";
+            $intStartPage = ($intPage-1)*$intPerPage;
+            if($intPerPage != 0){
+                $limit = " LIMIT $intStartPage,$intPerPage";
+            }    
+            $sql = "SELECT *,idcategory as id FROM category WHERE status=1 AND name like '$strSearch%' ORDER BY idcategory DESC $limit";  
+            $request = $this->select_all($sql);
+
+            $sqlTotal = "SELECT count(*) as total FROM category WHERE status=1 AND name like '$strSearch%' ORDER BY idcategory";
+            foreach ($request as &$data) { 
+                $data['url'] = media()."/images/uploads/".$data['picture'];
+            }
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
+            $totalPages = $totalPages == 0 ? 1 : $totalPages;
+            $startPage = max(1, $intPage - floor(BUTTONS / 2));
+            if ($startPage + BUTTONS - 1 > $totalPages) {
+                $startPage = max(1, $totalPages - BUTTONS + 1);
+            }
+            $limitPages = min($startPage + BUTTONS, $totalPages+1);
+            $arrButtons = [];
+            for ($i=$startPage; $i < $limitPages; $i++) { 
+                array_push($arrButtons,$i);
+            }
+            $arrData = array(
+                "data"=>$request,
+                "start_page"=>$startPage,
+                "limit_page"=>$limitPages,
+                "total_pages"=>$totalPages,
+                "total_records"=>$totalRecords,
+                "buttons"=>$arrButtons
+            );
+            return $arrData;
+        }
+        public function selectSubcategorias($intId,$intPage,$intPerPage,$strSearch){
+            $limit ="";
+            $intStartPage = ($intPage-1)*$intPerPage;
+            if($intPerPage != 0){
+                $limit = " LIMIT $intStartPage,$intPerPage";
+            }    
+            $sql = "SELECT *,idsubcategory as id FROM subcategory WHERE status=1 AND name like '$strSearch%' AND categoryid = $intId ORDER BY idsubcategory DESC $limit";  
+            $request = $this->select_all($sql);
+
+            $sqlTotal = "SELECT count(*) as total FROM subcategory WHERE status=1 AND name like '$strSearch%' AND categoryid = $intId ORDER BY idsubcategory";
+            foreach ($request as &$data) { 
+                $data['url'] = media()."/images/uploads/".$data['picture'];
+            }
+
+            $totalRecords = $this->select($sqlTotal)['total'];
+            $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
+            $totalPages = $totalPages == 0 ? 1 : $totalPages;
+            $startPage = max(1, $intPage - floor(BUTTONS / 2));
+            if ($startPage + BUTTONS - 1 > $totalPages) {
+                $startPage = max(1, $totalPages - BUTTONS + 1);
+            }
+            $limitPages = min($startPage + BUTTONS, $totalPages+1);
+            $arrButtons = [];
+            for ($i=$startPage; $i < $limitPages; $i++) { 
+                array_push($arrButtons,$i);
+            }
+            $arrData = array(
+                "data"=>$request,
+                "start_page"=>$startPage,
+                "limit_page"=>$limitPages,
+                "total_pages"=>$totalPages,
+                "total_records"=>$totalRecords,
+                "buttons"=>$arrButtons
+            );
+            return $arrData;
         }
         public function selectSpecs(){
             $sql = "SELECT name,id_specification as id FROM specifications WHERE status =1 ORDER BY name";

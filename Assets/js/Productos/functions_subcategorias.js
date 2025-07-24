@@ -19,7 +19,7 @@ const App = {
     data(){
         return {
             common:createCommon(),
-            pagination:createCommon(),
+            category:createCommon(),
             intStatus:1,
             strDescription:"",
             objCategory:{name:"",id:""}
@@ -37,10 +37,10 @@ const App = {
             this.intStatus = 1;
             this.objCategory={name:"",id:""};
             this.common.subcategoryTitle = "Nueva subcategoría";
-            this.pagination.modalType='';
+            this.category.modalType='';
         },
         save:async function(){
-            this.pagination.modalType='';
+            this.category.modalType='';
             const formData = new FormData();
             formData.append("name",this.common.strName);
             formData.append("id",this.common.intId);
@@ -62,21 +62,25 @@ const App = {
                 this.common.errors = objData.errors;
             }
         },
+        selectItem:function(data){
+            this.objCategory=data;
+            this.category.showModalPaginationCategory=false
+        },
         search:async function(page=1){
             const formData = new FormData();
-            if(this.pagination.modalType == "category"){
-                this.pagination.intPage = page;
-                formData.append("page",this.pagination.intPage);
-                formData.append("per_page",this.pagination.intPerPage);
-                formData.append("search",this.pagination.strSearch);
+            if(this.category.modalType == "category"){
+                this.category.intPage = page;
+                formData.append("page",this.category.intPage);
+                formData.append("per_page",this.category.intPerPage);
+                formData.append("search",this.category.strSearch);
                 const response = await fetch(base_url+"/Productos/ProductosCategorias/getSelectCategorias",{method:"POST",body:formData});
                 const objData = await response.json();
-                this.pagination.arrData = objData.data;
-                this.pagination.intStartPage  = objData.start_page;
-                this.pagination.intTotalButtons = objData.limit_page;
-                this.pagination.intTotalPages = objData.total_pages;
-                this.pagination.intTotalResults = objData.total_records;
-                this.pagination.arrButtons = objData.buttons;
+                this.category.arrData = objData.data;
+                this.category.intStartPage  = objData.start_page;
+                this.category.intTotalButtons = objData.limit_page;
+                this.category.intTotalPages = objData.total_pages;
+                this.category.intTotalResults = objData.total_records;
+                this.category.arrButtons = objData.buttons;
             }else{
                 this.common.intPage = page;
                 formData.append("page",this.common.intPage);

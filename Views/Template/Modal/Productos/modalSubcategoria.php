@@ -6,10 +6,14 @@
                 <app-input label="Nombre" type="text" v-model="common.strName" :errors="common.errors.name"></app-input>
             </div>
             <div class="col-md-12">
-                <app-button-input :errors="common.errors.category"
+                <app-button-input title="Categoría" :errors="common.errors.category"
                 btn="primary" icon="new" 
                 :value="objCategory.name" 
-                @click="pagination.modalType='category';pagination.showModalPaginationCategory=true;search();"></app-button-input>
+                >
+                    <template #left>
+                        <app-button icon="new" btn="primary" @click="category.modalType='category';category.showModalPaginationCategory=true;search();"></app-button>
+                    </template>
+                </app-button-input>
             </div>
             <div class="col-md-12">
                 <app-select label="Estado"  v-model="intStatus">

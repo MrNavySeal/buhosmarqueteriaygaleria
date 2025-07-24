@@ -17,7 +17,7 @@
     //Productos
     $router->setRoute("productos/categorias/","Productos/ProductosCategorias/categorias",false);
     $router->setRoute("productos/subcategorias/","Productos/ProductosCategorias/subcategorias",false);
-    $router->setRoute("productos/productos-masivos/","Productos/ProductosMasivos/productos",false);
+    $router->setRoute("productos/creacion-edicion-masiva/","Productos/ProductosMasivos/productos",false);
     $router->setRoute("productos/","Productos/Productos",false);
     $router->setRoute("productos/variantes/","Productos/ProductosOpciones/variantes",false);
     $router->setRoute("productos/unidades-medida/","Productos/ProductosOpciones/unidades",false);
