@@ -4,7 +4,7 @@ export default {
         <button :class="{ 
             'btn btn-primary': btn=='primary',
             'btn btn-secondary': btn=='secondary',
-            'btn btn-info': btn=='info',
+            'btn btn-info text-white': btn=='info',
             'btn btn-warning': btn=='warning',
             'btn btn-danger': btn=='danger',
             'btn btn-success': btn=='success'
@@ -23,6 +23,9 @@ export default {
                     <i v-show="icon == 'edit'" class="fas fa-pencil-alt"></i>
                     <i v-show="icon == 'delete'" class="fas fa-trash-alt"></i>
                     <i v-show="icon == 'key'" class="fas fa-key"></i>
+                    <i v-show="icon == 'box'" class="fas fa-box"></i>
+                    <i v-show="icon == 'globe'" class="fas fa-globe"></i>
+                    <i v-show="icon == 'list'" class="fa fa-list"></i>
                 </div>
             </div> 
             <div v-if="processing"><span  class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></div>

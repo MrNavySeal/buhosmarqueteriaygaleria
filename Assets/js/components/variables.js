@@ -88,12 +88,16 @@ export function createCommon() {
         sectionTitle:"Nueva sección",
         categoryTitle:"Nueva categoría",
         subcategoryTitle:"Nueva subcategoría",
+        productTitle:"Nuevo producto",
         
         //Show Modals
         showModal:"",
         showModalModule:false,
         showModalCategory:false,
         showModalSubcategory:false,
+        showModalProduct:false,
+        
+        //Pagination modals
         showModalPaginationCategory:false,
         showModalPaginationSubcategory:false,
     }

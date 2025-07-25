@@ -12,9 +12,9 @@
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
                     "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/"."','','');mypop.focus();"],
-                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/productos/producto/'"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
                 ];
-                $data['page_tag'] = "producto";
+                $data['page_tag'] = "Productos";
                 $data['page_title'] = "Productos";
                 $data['page_name'] = "productos";
                 $data['panelapp'] = "/Productos/functions_productos.js";
@@ -101,125 +101,13 @@
             }
             die();
         }
-        public function getProducts(){
+        public function getProductos(){
             if($_SESSION['permitsModule']['r']){
+                $intPage = intval($_POST['page']);
+                $intPerPage = intval($_POST['per_page']);
                 $strSearch = strClean($_POST['search']);
-                $intPerPage = intval($_POST['perpage']);
-                $intPageNow = intval($_POST['page']);
-                $data = $this->model->selectProducts($strSearch,$intPerPage,$intPageNow);
-                $request = $data['data'];
-                $intTotalPages = $data['pages'];
-                $total = $this->model->selectTotalProducts($strSearch);
-                
-                $maxButtons = 4;
-                $totalPages = $intTotalPages;
-                $page = $intPageNow;
-                $startPage = max(1, $page - floor($maxButtons / 2));
-                if ($startPage + $maxButtons - 1 > $totalPages) {
-                    $startPage = max(1, $totalPages - $maxButtons + 1);
-                }
-                $html ="";
-                $htmlPages = '
-                    <li class="page-item">
-                        <button type="button" class="page-link text-secondary" onclick="getData(1)" aria-label="First">
-                            <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
-                        </button>
-                    </li>
-                    <li class="page-item">
-                        <button type="button" class="page-link text-secondary" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
-                            <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
-                        </button>
-                    </li>
-                ';
-                for ($i = $startPage; $i < min($startPage + $maxButtons, $totalPages + 1); $i++) {
-                    $htmlPages .= '<li class="page-item">
-                        <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" onclick="getData('.$i.')">'.$i.'</button>
-                    </li>';
-                }
-                $htmlPages .= '
-                    <li class="page-item">
-                        <button type="button" class="page-link text-secondary" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
-                            <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
-                        </button>
-                    </li>
-                    <li class="page-item">
-                        <button type="button" class="page-link text-secondary" onclick="getData('.($intTotalPages).')" aria-label="Last">
-                            <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
-                        </button>
-                    </li>
-                ';
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-
-                        $status="";
-                        $btnView = "";
-                        $btnEdit="";
-                        $btnDelete="";
-                        $btnOptions = "";
-                        $variant = $request[$i]['product_type'] == 1 ? "Desde " : "";
-                        if($request[$i]['is_product'] || $request[$i]['is_combo']){
-                            $btnView = '<a href="'.base_url().'/tienda/producto/'.$request[$i]['route'].'" target="_blank" class="btn btn-info m-1 text-white" title="Ver página"><i class="fas fa-eye"></i></a>';
-                        }
-                        if($_SESSION['permitsModule']['u']){
-                            if($request[$i]['is_combo']){
-                                $btnOptions='<a href="'.base_url().'/Productos/insumo/'.$request[$i]['idproduct'].'" target="_blank" class="btn btn-primary m-1 text-white" title="Asignar insumos"><i class="fa fa-list" aria-hidden="true"></i></a>';
-                            }
-                            $btnEdit = '<a href="'.base_url().'/Productos/producto/'.$request[$i]['idproduct'].'" class="btn btn-success m-1 text-white" title="Editar"><i class="fas fa-pencil-alt"></i></a>';
-                        }
-                        if($_SESSION['permitsModule']['d']){
-                            $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteItem('.$request[$i]['idproduct'].')"><i class="fas fa-trash-alt"></i></button>';
-                        }
-                        if($request[$i]['is_stock'] && $request[$i]['status']==1){
-                            if($request[$i]['stock'] <= 0){
-                                $status='<span class="badge me-1 bg-warning">Agotado</span>';
-                            }else{
-                                $status='<span class="badge me-1 bg-success">Activo</span>';
-                            }
-                        }else if( $request[$i]['status']==1){
-                            $status='<span class="badge me-1 bg-success">Activo</span>';
-                        }else if($request[$i]['status'] == 2){
-                            $status='<span class="badge me-1 bg-danger">Inactivo</span>';
-                        }
-
-                        $request[$i]['status'] = $status;
-                        $request[$i]['options'] = $btnView.$btnOptions.$btnEdit.$btnDelete;
-                        $request[$i]['price_purchase'] = $variant.formatNum($request[$i]['price_purchase'] != null ? $request[$i]['price_purchase'] : 0);
-                        $request[$i]['price'] = $variant.formatNum($request[$i]['price'] != null ? $request[$i]['price'] : 0);
-                        $request[$i]['discount'] = $variant.formatNum($request[$i]['discount'] != null ? $request[$i]['discount'] : 0);
-                        $request[$i]['stock'] = !$request[$i]['is_stock'] ? "N/A" : $request[$i]['stock'];
-                        $request[$i]['is_product'] = $request[$i]['is_product'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
-                        $request[$i]['is_ingredient'] = $request[$i]['is_ingredient'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
-                        $request[$i]['is_combo'] = $request[$i]['is_combo'] ? '<i class="fa fa-check text-success" aria-hidden="true"></i>' : '<i class="fa fa-times text-danger" aria-hidden="true"></i>';
-                        $pro = $request[$i];
-                        $html.='
-                        <tr>
-                            <td data-title="ID" class="text-center">'.$pro['idproduct'].'</td>
-                            <td data-title="Portada" class="text-center"><img src="'.$pro['image'].'" class="rounded" height="50" width="50"></td>
-                            <td data-title="Nombre" class="text-center">'.$pro['name'].'</td>
-                            <td data-title="Referencia">'.$pro['reference'].'</td>
-                            <td data-title="Categoría">'.$pro['category'].'</td>
-                            <td data-title="Subcategoría">'.$pro['subcategory'].'</td>
-                            <td data-title="Precio compra" class="text-center">'.$pro['price_purchase'].'</td>
-                            <td data-title="Precio venta" class="text-end">'.$pro['price'].'</td>
-                            <td data-title="Precio oferta" class="text-end">'.$pro['discount'].'</td>
-                            <td data-title="Stock" class="text-center">'.$pro['stock'].'</td>
-                            <td data-title="Producto" class="text-center">'.$pro['is_product'].'</td>
-                            <td data-title="Insumo" class="text-center">'.$pro['is_ingredient'].'</td>
-                            <td data-title="Servicio/Receta/Combo" class="text-center">'.$pro['is_combo'].'</td>
-                            <td data-title="Fecha" class="text-center">'.$pro['date'].'</td>
-                            <td data-title="Estado" class="text-center">'.$status.'</td>
-                            <td data-title="Opciones" ><div class="d-flex">'.$pro['options'].'</div></td>
-                        </tr>
-                        ';
-                    }
-                }
-                $arrData = array(
-                    "html"=>$html,
-                    "html_pages"=>$htmlPages,
-                    "total_records"=>$total,
-                    "data"=>$request
-                );
-                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                $request = $this->model->selectProductos($intPage,$intPerPage,$strSearch);
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
