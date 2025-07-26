@@ -91,12 +91,12 @@
                             <h5>Tipo de artículo</h5>
                             <app-input label="checkProduct" @click="intCheckRecipe=false" title="Seleccione si el artículo es un producto" type="switch" v-model="intCheckProduct"></app-input>
                             <app-input label="checkIngredient" @click="intCheckRecipe=false" title="Seleccione si el artículo es un insumo" type="switch" v-model="intCheckIngredient"></app-input>
-                            <app-input label="checkRecipe" @click="intCheckIngredient=false;intCheckProduct=false;" title="Seleccione si el artículo es una fórmula" type="switch" v-model="intCheckRecipe"></app-input>
+                            <app-input label="checkRecipe" @click="intCheckIngredient=false;intCheckProduct=false;" title="Seleccione si el artículo es una fórmula/servicio/combo" type="switch" v-model="intCheckRecipe"></app-input>
                         </div>
                         <app-select label="unidadMedida" title="Unidad de medida" v-model="intUnit"></app-select>
                         <div class="mb-3" v-if="!intCheckRecipe">
                             <h5>Inventario</h5>
-                            <app-input label="checkInventory" title="Marque si el artículo maneja inventario" type="switch" v-model="intCheckStock"></app-input>
+                            <app-input label="checkInventory" title="Seleccione si el artículo maneja inventario" type="switch" v-model="intCheckStock"></app-input>
                             <div class="row" v-if="intCheckStock">
                                 <div class="col-md-6">
                                     <app-input label="stock" type="text" title="Stock" required="true" v-model="intStock"></app-input>
