@@ -21,7 +21,7 @@
         	$resInsert = $insert->execute($this->arrVAlues);
         	if($resInsert)
 	        {
-	        	$lastInsert = $this->conexion->lastInsertId();
+	        	$lastInsert = intval($this->conexion->lastInsertId());
 	        }else{
 	        	$lastInsert = 0;
 	        }
@@ -51,7 +51,7 @@
 			$this->strquery = $query;
 			$this->arrVAlues = $arrValues;
 			$update = $this->conexion->prepare($this->strquery);
-			$resExecute = $update->execute($this->arrVAlues);
+			$resExecute = intval($update->execute($this->arrVAlues));
 	        return $resExecute;
 		}
 		//Eliminar un registros

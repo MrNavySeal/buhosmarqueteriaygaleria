@@ -10,7 +10,7 @@ export default {
         <div class="mb-3" v-else-if="type=='switch'">
             <div  class="form-check form-switch">
                 <label :for="label" class="form-check-label">{{title}} <span class="text-danger" v-if="required == 'true'">*</span></label>
-                <input role="switch" type="checkbox" :value="modelValue" :required="required=='true' ? true : false" :disabled=disabled class="form-check-input" :id="label" @input="$emit('update:modelValue', $event.target.value)"></input>
+                <input role="switch" type="checkbox" :checked="modelValue" :required="required=='true' ? true : false" :disabled=disabled class="form-check-input" :id="label" @input="$emit('update:modelValue', $event.target.checked)"></input>
             </div>
             <ul>
                 <li class="text-danger" v-for="(data,index) in errors">{{data}}<br></li>

@@ -85,6 +85,7 @@
                         $idCategory = intval($_POST['id']);
                         $request = $this->model->selectCategoria($idCategory);
                         if(!empty($request)){
+                            $request['is_visible'] = boolval($request['is_visible']);
                             $request['url'] = media()."/images/uploads/".$request['picture'];
                             $arrResponse = array("status"=>true,"data"=>$request);
                         }else{

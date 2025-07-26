@@ -44,7 +44,7 @@ const App = {
             formData.append("name",this.common.strName);
             formData.append("id",this.common.intId);
             formData.append("status",this.intStatus);
-            formData.append("visible",this.intVisible);
+            formData.append("visible",this.intVisible? 1 : 0);
             formData.append("description",this.strDescription);
             formData.append("image",this.strImage);
             this.common.processing =true;
@@ -88,7 +88,7 @@ const App = {
                 this.intVisible = objData.data.is_visible;
                 this.strDescription =objData.data.description;
                 this.strImgUrl = objData.data.url;
-                this.common.modulesTitle = "Nueva categoría";
+                this.common.modulesTitle = "Editar categoría";
                 this.common.showModalModule = true;
             }else{
                 Swal.fire("Error",objData.msg,"error");

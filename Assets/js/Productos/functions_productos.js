@@ -4,11 +4,13 @@ import AppInput from "../components/input.js";
 import AppSelect from "../components/select.js";
 import AppPagination from "../components/pagination.js"
 import AppTextArea from "../components/textarea.js"
+import AppButtonInput from "../components/button_input.js"
 import {createCommon} from "../components/variables.js";
 const App = {
     components:{
         "app-button":AppButton,
         "app-input":AppInput,
+        "app-button-input":AppButtonInput,
         "app-textarea":AppTextArea,
         "app-select":AppSelect,
         "app-pagination":AppPagination,
@@ -19,13 +21,25 @@ const App = {
             common:createCommon(),
             category:createCommon(),
             subcategory:createCommon(),
-            objCategory:{name:"Todo",id:""},
-            objSubcategory:{name:"Todo",id:"",categoryid:""},
+            objCategory:{name:"",id:""},
+            objSubcategory:{name:"",id:"",categoryid:""},
             intStatus:1,
-            intVisible:false,
-            strDescription:"",
-            strImgUrl:base_url+'/Assets/images/uploads/category.jpg',
-            strImage:"",
+            strName:"",
+            strReference:"",
+            strShortDescription:"",
+            intCheckProduct:false,
+            intCheckIngredient:false,
+            intCheckRecipe:false,
+            intUnit:0,
+            intCheckStock:false,
+            intStock:0,
+            intMinStock:0,
+            intTax:0,
+            intPurchasePrice:0,
+            intSellPrice:0,
+            intOfferPrice:0,
+            intFraming:2,
+            intVisible:true,
         }
     },
     mounted(){
@@ -33,9 +47,30 @@ const App = {
     },
     methods:{
         openModal:function(){
+            document.querySelector("#txtDescription").value ="";
+            setTinymce("#txtDescription",400);
             this.common.showModalProduct = true;
             this.common.strName ="";
             this.common.intId =0;
+            this.objCategory={name:"",id:""},
+            this.objSubcategory={name:"",id:"",categoryid:""},
+            this.intStatus=1,
+            this.strName="",
+            this.strReference="",
+            this.strShortDescription="",
+            this.intCheckProduct=false,
+            this.intCheckIngredient=false,
+            this.intCheckRecipe=false,
+            this.intUnit=0,
+            this.intCheckStock=false,
+            this.intStock=0,
+            this.intMinStock=0,
+            this.intTax=0,
+            this.intPurchasePrice=0,
+            this.intSellPrice=0,
+            this.intOfferPrice=0,
+            this.intFraming=2,
+            this.intVisible=true,
             this.common.productTitle = "Nuevo producto";
         },
         save:async function(){
@@ -138,6 +173,14 @@ const App = {
             }
             this.search();
         },
+        changeArticleType:function(){
+            if(this.intCheckRecipe){
+                this.intCheckProduct = false;
+                this.intCheckIngredient = false;
+            }else if(this.intCheckProduct || this.intCheckIngredient){
+                this.intCheckRecipe = false;
+            }
+        }
     }
 };
 const app = Vue.createApp(App);

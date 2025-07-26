@@ -21,6 +21,7 @@
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Portada</th>
                 <th>Nombre</th>
                 <th>Visible</th>
                 <th>Estado</th>
