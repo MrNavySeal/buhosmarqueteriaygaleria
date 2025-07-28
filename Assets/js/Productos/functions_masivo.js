@@ -70,10 +70,10 @@ const App = {
             this.search();
         },
         selectItem:function(data,type=""){
-            if(type!=""){
+            if(type=="subcategory"){
                 this.objSubcategory=data;
                 this.subcategory.showModalPaginationSubcategory=false
-            }else{
+            }else if(type=="category"){
                 this.objCategory=data; 
                 if(this.objSubcategory.categoryid != this.objCategory.id){
                     this.objSubcategory = {name:"Todo",id:"",categoryid:""};
@@ -116,6 +116,7 @@ const App = {
                 this.objSubcategory = {name:"Todo",id:"",categoryid:""};
             }else{
                 this.objCategory = {name:"Todo",id:"",categoryid:""};
+                this.objSubcategory = {name:"Todo",id:"",categoryid:""};
             }
         },
         download:function(type=""){

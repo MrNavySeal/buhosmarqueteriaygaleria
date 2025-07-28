@@ -28,9 +28,14 @@
                                             <p class="m-0">Subir imágen</p>
                                         </div>
                                     </label>
-                                    <input class="d-none" type="file" id="txtImg" name="txtImg[]" multiple accept="image/*"> 
+                                    <input class="d-none" type="file" id="txtImg" name="txtImg[]" multiple accept="image/*" @change="uploadMultipleImage"> 
                                 </div>
-                                <div class="upload-images d-flex"></div>
+                                <div class="upload-images d-flex">
+                                    <div class="upload-image ms-3" v-for="(data,index) in arrImages" :key="index">
+                                        <img :src="data.route">
+                                        <div class="deleteImg" @click="delImage(data.name)" name="delete">x</div>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <h5>Información de artículo</h5>
@@ -45,7 +50,7 @@
                             </div>
                             <div>
                                 <h5>Descripción de artículo</h5>
-                                <app-input label="descripcionCorta" type="text" title="Descripción corta" required="true"></app-input>
+                                <app-input label="descripcionCorta" type="text" title="Descripción corta" v-model="strShortDescription"></app-input>
                                 <div class="mb-3">
                                     <label for="txtDescription" class="form-label">Descripción </label>
                                     <textarea class="form-control" id="txtDescription" name="txtDescription" rows="5"></textarea>
@@ -61,12 +66,13 @@
                                     :errors="category.errors.category"
                                     btn="primary" icon="new" 
                                     :value="objCategory.name" 
+                                    required="true"
                                     >
                                     <template #left>
-                                        <app-button icon="new" btn="primary" @click="changeCategory()"></app-button>
+                                        <app-button icon="new" btn="primary" @click="changeCategory('category')"></app-button>
                                     </template>
                                     <template #right>
-                                        <app-button icon="delete" btn="danger" @click="del()"></app-button>
+                                        <app-button icon="delete" btn="danger" @click="delTopic('category')"></app-button>
                                     </template>
                                 </app-button-input>
                             </div>
@@ -76,12 +82,13 @@
                                     :errors="subcategory.errors.category"
                                     btn="primary" icon="new" 
                                     :value="objSubcategory.name" 
+                                    required="true"
                                     >
                                         <template #left>
                                             <app-button icon="new" btn="primary" @click="changeCategory('subcategory')"></app-button>
                                         </template>
                                         <template #right>
-                                            <app-button icon="delete" btn="danger" @click="del('subcategory')">
+                                            <app-button icon="delete" btn="danger" @click="delTopic('subcategory')">
                                         </template>
                                     </app-button>
                                 </app-button-input>
@@ -93,7 +100,9 @@
                             <app-input label="checkIngredient" @click="intCheckRecipe=false" title="Seleccione si el artículo es un insumo" type="switch" v-model="intCheckIngredient"></app-input>
                             <app-input label="checkRecipe" @click="intCheckIngredient=false;intCheckProduct=false;" title="Seleccione si el artículo es una fórmula/servicio/combo" type="switch" v-model="intCheckRecipe"></app-input>
                         </div>
-                        <app-select label="unidadMedida" title="Unidad de medida" v-model="intUnit"></app-select>
+                        <app-select label="unidadMedida" title="Unidad de medida" v-model="intMeasure">
+                            <option v-for="(data,index) in arrMeasures" :key="index" :value="data.id">{{data.name}}</option>
+                        </app-select>
                         <div class="mb-3" v-if="!intCheckRecipe">
                             <h5>Inventario</h5>
                             <app-input label="checkInventory" title="Seleccione si el artículo maneja inventario" type="switch" v-model="intCheckStock"></app-input>
@@ -146,9 +155,9 @@
                             <div class="mb-3" v-if="intFraming==1">
                                 <h4>Imagen a enmarcar</h4>
                                 <div class="uploadImg">
-                                    <img src="<?=media()?>/images/uploads/category.jpg">
-                                    <label for="txtImgFrame"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
-                                    <input class="d-none" type="file" id="txtImgFrame" name="txtImgFrame" accept="image/*"> 
+                                    <img :src="strImgUrl">
+                                    <label for="strImage"><a class="btn btn-info text-white"><i class="fas fa-camera"></i></a></label>
+                                    <input class="d-none" type="file" id="strImage" @change="uploadImagen"  accept="image/*"> 
                                 </div>
                             </div>
                         </div>

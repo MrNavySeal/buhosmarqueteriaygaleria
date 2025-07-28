@@ -1,6 +1,8 @@
 <?php 
     headerAdmin($data);
     getModal("Productos/modalProducto");
+    getModal("Paginacion/modalPaginacionCategorias");
+    getModal("Paginacion/modalPaginacionSubcategorias");
 ?>
 <div class="row">
     <div class="col-md-4">

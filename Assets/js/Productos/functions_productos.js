@@ -23,6 +23,10 @@ const App = {
             subcategory:createCommon(),
             objCategory:{name:"",id:""},
             objSubcategory:{name:"",id:"",categoryid:""},
+            arrMeasures:[],
+            arrSpecs:[],
+            arrVariants:[],
+            arrImages:[],
             intStatus:1,
             strName:"",
             strReference:"",
@@ -30,7 +34,6 @@ const App = {
             intCheckProduct:false,
             intCheckIngredient:false,
             intCheckRecipe:false,
-            intUnit:0,
             intCheckStock:false,
             intStock:0,
             intMinStock:0,
@@ -40,12 +43,25 @@ const App = {
             intOfferPrice:0,
             intFraming:2,
             intVisible:true,
+            intMeasure:"",
+            intSpec:"",
+            strImgUrl:base_url+'/Assets/images/uploads/category.jpg',
+            strImage:"",
         }
     },
     mounted(){
+        this.getData();
         this.search();
     },
     methods:{
+        getData:async function(){
+            const response = await fetch(base_url+"/Productos/Productos/getData");
+            const objData = await response.json();
+            this.arrSpecs = objData.specs;
+            this.arrMeasures = objData.measures;
+            this.arrVariants = objData.variants;
+            this.intMeasure = objData.measures[0].id;
+        },
         openModal:function(){
             document.querySelector("#txtDescription").value ="";
             setTinymce("#txtDescription",400);
@@ -97,18 +113,47 @@ const App = {
         },
         search:async function(page=1){
             const formData = new FormData();
-            this.common.intPage = page;
-            formData.append("page",this.common.intPage);
-            formData.append("per_page",this.common.intPerPage);
-            formData.append("search",this.common.strSearch);
-            const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData});
-            const objData = await response.json();
-            this.common.arrData = objData.data;
-            this.common.intStartPage  = objData.start_page;
-            this.common.intTotalButtons = objData.limit_page;
-            this.common.intTotalPages = objData.total_pages;
-            this.common.intTotalResults = objData.total_records;
-            this.common.arrButtons = objData.buttons;
+            if(this.subcategory.modalType=='subcategory'){
+                this.subcategory.intPage = page;
+                formData.append("id",this.objCategory.id);
+                formData.append("page",this.subcategory.intPage);
+                formData.append("per_page",this.subcategory.intPerPage);
+                formData.append("search",this.subcategory.strSearch);
+                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectSubcategorias",{method:"POST",body:formData});
+                const objData = await response.json();
+                this.subcategory.arrData = objData.data;
+                this.subcategory.intStartPage  = objData.start_page;
+                this.subcategory.intTotalButtons = objData.limit_page;
+                this.subcategory.intTotalPages = objData.total_pages;
+                this.subcategory.intTotalResults = objData.total_records;
+                this.subcategory.arrButtons = objData.buttons;
+            }else if(this.subcategory.modalType == "category"){
+                this.category.intPage = page;
+                formData.append("page",this.category.intPage);
+                formData.append("per_page",this.category.intPerPage);
+                formData.append("search",this.category.strSearch);
+                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectCategorias",{method:"POST",body:formData});
+                const objData = await response.json();
+                this.category.arrData = objData.data;
+                this.category.intStartPage  = objData.start_page;
+                this.category.intTotalButtons = objData.limit_page;
+                this.category.intTotalPages = objData.total_pages;
+                this.category.intTotalResults = objData.total_records;
+                this.category.arrButtons = objData.buttons;
+            }else{
+                this.common.intPage = page;
+                formData.append("page",this.common.intPage);
+                formData.append("per_page",this.common.intPerPage);
+                formData.append("search",this.common.strSearch);
+                const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData});
+                const objData = await response.json();
+                this.common.arrData = objData.data;
+                this.common.intStartPage  = objData.start_page;
+                this.common.intTotalButtons = objData.limit_page;
+                this.common.intTotalPages = objData.total_pages;
+                this.common.intTotalResults = objData.total_records;
+                this.common.arrButtons = objData.buttons;
+            }
         },
         edit:async function(data){
             const formData = new FormData();
@@ -128,7 +173,27 @@ const App = {
                 Swal.fire("Error",objData.msg,"error");
             }
         },
-        del:async function(data){
+        delTopic:function(type=""){
+            if(type=="subcategory"){
+                this.objSubcategory = {name:"",id:"",categoryid:""};
+            }else{
+                this.objCategory = {name:"",id:"",};
+                this.objSubcategory = {name:"",id:"",categoryid:""};
+            }
+        },
+        selectItem:function(data,type=""){
+            if(type=="subcategory"){
+                this.objSubcategory=data;
+                this.subcategory.showModalPaginationSubcategory=false
+            }else if(type=="category"){
+                this.objCategory=data; 
+                if(this.objSubcategory.categoryid != this.objCategory.id){
+                    this.objSubcategory = {name:"",id:"",categoryid:""};
+                }
+                this.category.showModalPaginationCategory=false
+            }
+        },
+        /* del:async function(data){
             const objVue = this;
             Swal.fire({
                 title:"¿Esta seguro de eliminar?",
@@ -156,7 +221,7 @@ const App = {
                 }
             });
             
-        },
+        }, */
         view:async function(data,type=""){
             if(type=="shop"){
                 window.open(base_url+"/tienda/producto/"+data.route,"_blank");
@@ -167,7 +232,7 @@ const App = {
                 this.subcategory.modalType=type;
                 this.subcategory.showModalPaginationSubcategory=true;
             }else{
-                this.subcategory.modalType='';
+                this.subcategory.modalType='category';
                 this.category.modalType=type;
                 this.category.showModalPaginationCategory=true;
             }
@@ -180,7 +245,37 @@ const App = {
             }else if(this.intCheckProduct || this.intCheckIngredient){
                 this.intCheckRecipe = false;
             }
-        }
+        },
+        delImage:function(name){
+            const index =this.arrImages.findIndex(function(e){return e.name==name});
+            this.arrImages.splice(index,1);
+        },
+        uploadMultipleImage:function(e){
+            const files = e.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                if(f.type != "image/png" && f.type != "image/jpg" && f.type != "image/jpeg" && f.type != "image/gif"){
+                    Swal.fire("Error","Solo se permite imágenes","error");
+                    return false;
+                }else{
+                    let objectUrl = window.URL || window.webkitURL;
+                    let route = objectUrl.createObjectURL(f);
+                    f.route =route;
+                    this.arrImages.push(f);
+                }   
+            }
+        },
+        uploadImagen:function(e){
+            this.strImage = e.target.files[0];
+            let type = this.strImage.type;
+            if(type != "image/png" && type != "image/jpg" && type != "image/jpeg" && type != "image/gif"){
+                Swal.fire("Error","Solo se permite imágenes.","error");
+            }else{
+                let objectUrl = window.URL || window.webkitURL;
+                let route = objectUrl.createObjectURL(this.strImage);
+                this.strImgUrl = route;
+            }
+        },
     }
 };
 const app = Vue.createApp(App);

@@ -33,7 +33,7 @@
                         <td data-title="Nombre">{{data.name}}</td>
                         <td data-title="Opciones">
                             <div class="d-flex gap-2">
-                                <app-button  icon="new" btn="primary" @click="selectItem(data)"></app-button>
+                                <app-button  icon="new" btn="primary" @click="selectItem(data,'category')"></app-button>
                             </div>
                         </td>
                     </tr>

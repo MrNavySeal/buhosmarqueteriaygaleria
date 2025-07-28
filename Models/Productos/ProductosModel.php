@@ -544,7 +544,7 @@
             return $request;
         }
         public function selectMeasures(){
-            $sql = "SELECT id_measure as id, CONCAT(initials,' - ',name) as name, status FROM measures WHERE status = 1 ORDER BY name ";
+            $sql = "SELECT id_measure as id, CONCAT(initials,' - ',name) as name, status FROM measures WHERE status = 1 ORDER BY id_measure ";
             $request = $this->select_all($sql);
             return $request;
         }

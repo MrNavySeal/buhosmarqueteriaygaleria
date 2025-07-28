@@ -295,7 +295,6 @@
         }
         public function getData(){
             $request['specs'] = $this->model->selectSpecs();
-            $request['categories'] = $this->model->selectCategories();
             $request['measures'] = $this->model->selectMeasures();
             $request['variants'] = $this->model->selectVariants();
             echo json_encode($request,JSON_UNESCAPED_UNICODE);
