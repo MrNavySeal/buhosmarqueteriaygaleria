@@ -5,12 +5,14 @@ import AppSelect from "../components/select.js";
 import AppPagination from "../components/pagination.js"
 import AppTextArea from "../components/textarea.js"
 import AppButtonInput from "../components/button_input.js"
+import AppButtonSelect from "../components/button_select.js";
 import {createCommon} from "../components/variables.js";
 const App = {
     components:{
         "app-button":AppButton,
         "app-input":AppInput,
         "app-button-input":AppButtonInput,
+        "app-button-select":AppButtonSelect,
         "app-textarea":AppTextArea,
         "app-select":AppSelect,
         "app-pagination":AppPagination,
@@ -27,6 +29,7 @@ const App = {
             arrSpecs:[],
             arrVariants:[],
             arrImages:[],
+            arrSpecsAdded:[],
             intStatus:1,
             strName:"",
             strReference:"",
@@ -35,6 +38,7 @@ const App = {
             intCheckIngredient:false,
             intCheckRecipe:false,
             intCheckStock:false,
+            intCheckVariant:false,
             intStock:0,
             intMinStock:0,
             intTax:0,
@@ -173,12 +177,37 @@ const App = {
                 Swal.fire("Error",objData.msg,"error");
             }
         },
-        delTopic:function(type=""){
+        delItem:function(type="",data=""){
             if(type=="subcategory"){
                 this.objSubcategory = {name:"",id:"",categoryid:""};
-            }else{
+            }else if(type=="category"){
                 this.objCategory = {name:"",id:"",};
                 this.objSubcategory = {name:"",id:"",categoryid:""};
+            }else if(type=="image"){
+                const index =this.arrImages.findIndex(function(e){return e.name==data});
+                this.arrImages.splice(index,1);
+            }else if(type=="spec"){
+                const index =this.arrSpecsAdded.findIndex(function(e){return e.id==data.id});
+                this.arrSpecsAdded.splice(index,1);
+            }
+        },
+        addItem:function(type="",data=""){
+            if(type=="spec"){
+                let idSpec = this.intSpec;
+                const arr = this.arrSpecsAdded.filter(function(e){return e.id == idSpec});
+                if(this.intSpec == ""){
+                    Swal.fire("Atención!","Seleccione una caracterítica.","warning");
+                    return false;
+                }
+                if(arr.length > 0){
+                    Swal.fire("Atención!","La característica ya ha sido agregada, seleccione otra.","warning");
+                    return false;
+                }
+                const arrSpecs = [...this.arrSpecs];
+                data = arrSpecs.filter(function(e){return e.id == idSpec})[0];
+                data.value ="";
+                this.arrSpecsAdded.push(data);
+                this.intSpec="";
             }
         },
         selectItem:function(data,type=""){
@@ -193,35 +222,6 @@ const App = {
                 this.category.showModalPaginationCategory=false
             }
         },
-        /* del:async function(data){
-            const objVue = this;
-            Swal.fire({
-                title:"¿Esta seguro de eliminar?",
-                text:"Se eliminará para siempre...",
-                icon: 'warning',
-                showCancelButton:true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText:"Sí, eliminar",
-                cancelButtonText:"No, cancelar"
-            }).then(async function(result){
-                if(result.isConfirmed){
-                    const formData = new FormData();
-                    formData.append("id",data.id);
-                    const response = await fetch(base_url+"/Productos/ProductosCategorias/delCategoria",{method:"POST",body:formData});
-                    const objData = await response.json();
-                    if(objData.status){
-                        Swal.fire("Eliminado!",objData.msg,"success");
-                        objVue.search(objVue.common.intPage);
-                    }else{
-                        Swal.fire("Error",objData.msg,"error");
-                    }
-                }else{
-                    objVue.search(objVue.common.intPage);
-                }
-            });
-            
-        }, */
         view:async function(data,type=""){
             if(type=="shop"){
                 window.open(base_url+"/tienda/producto/"+data.route,"_blank");
@@ -245,10 +245,6 @@ const App = {
             }else if(this.intCheckProduct || this.intCheckIngredient){
                 this.intCheckRecipe = false;
             }
-        },
-        delImage:function(name){
-            const index =this.arrImages.findIndex(function(e){return e.name==name});
-            this.arrImages.splice(index,1);
         },
         uploadMultipleImage:function(e){
             const files = e.target.files;

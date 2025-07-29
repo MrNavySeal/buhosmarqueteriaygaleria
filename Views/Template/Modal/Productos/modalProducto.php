@@ -33,7 +33,7 @@
                                 <div class="upload-images d-flex">
                                     <div class="upload-image ms-3" v-for="(data,index) in arrImages" :key="index">
                                         <img :src="data.route">
-                                        <div class="deleteImg" @click="delImage(data.name)" name="delete">x</div>
+                                        <div class="deleteImg" @click="delItem('image',data.name)" name="delete">x</div>
                                     </div>
                                 </div>
                             </div>
@@ -72,7 +72,7 @@
                                         <app-button icon="new" btn="primary" @click="changeCategory('category')"></app-button>
                                     </template>
                                     <template #right>
-                                        <app-button icon="delete" btn="danger" @click="delTopic('category')"></app-button>
+                                        <app-button icon="delete" btn="danger" @click="delItem('category')"></app-button>
                                     </template>
                                 </app-button-input>
                             </div>
@@ -88,7 +88,7 @@
                                             <app-button icon="new" btn="primary" @click="changeCategory('subcategory')"></app-button>
                                         </template>
                                         <template #right>
-                                            <app-button icon="delete" btn="danger" @click="delTopic('subcategory')">
+                                            <app-button icon="delete" btn="danger" @click="delItem('subcategory')">
                                         </template>
                                     </app-button>
                                 </app-button-input>
@@ -190,42 +190,53 @@
                     </div> -->
                 </form>
             </div>
-            <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="general-tab">
-                <div>
-                    <h5>Características de artículo</h5>
-                    <div id="activeSpecs" class="d-none">
-                        <p class="text-secondary">Agrega características que quieres resaltar de tu artículo como el material, marca modelo, etc.</p>
-                        <div class="mb-3">
-                            <label for="selectTypeSpc" class="form-label">Característica</label>
-                            <div class="d-flex justify-content-start align-items mb-3">
-                                <select class="form-control" aria-label="Default select example" id="selectTypeSpc" name="selectTypeSpc"></select>
-                                <button onclick ="addSpec()" type="button" class="btn btn-info text-white" id="btnSpc"><i class="fas fa-plus"></i></button>
-                            </div>
-                        </div>
-                        <div class="table-responsive overflow-y" style="max-height:50vh">
-                            <table class="table align-middle"><tbody id="tableSpecs"></tbody></table>
-                        </div>
-                    </div>
-                    <div id="addSpecs" class="d-none">
-                        <p class="text-secondary">
-                            No tienes ninguna característica creada. 
-                            <a href="<?=base_url()."/ProductosOpciones/caracteristicas"?>" target="_blank" class="btn btn-primary text-white">
-                                Crear característica
-                            </a>
-                        </p>
+            <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
+                <p class="text-secondary">Agrega características que quieres resaltar de tu artículo como el material, marca modelo, etc.</p>
+                <div v-if="arrSpecs.length == 0">
+                    <p class="text-secondary">
+                        No tienes ninguna característica creada. 
+                        <a href="<?=base_url()."/productos/caracteristicas/"?>" target="_blank" class="btn btn-primary text-white">
+                            Crear característica
+                        </a>
+                    </p>
+                </div>
+                <app-button-select v-if="arrSpecs.length > 0" label="caracteristica" placeholder="Seleccione" title="Características" v-model="intSpec">
+                    <template #options>
+                        <option v-for="(data,index) in arrSpecs" :key="index" :value="data.id">{{data.name}}</option>
+                    </template>
+                    <template #right>
+                        <app-button icon="new" btn="primary" @click="addItem('spec')"></app-button>
+                    </template>
+                </app-button-select>
+                <div v-if="arrSpecsAdded.length > 0">
+                    <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
+                        <table class="table align-middle">
+                            <thead>
+                                <th>Nombre</th>
+                                <th>Valor</th>
+                                <th>Opciones</th>
+                            </thead>
+                            <tbody id="tableSpecs">
+                                <tr v-for="(data,index) in arrSpecsAdded" :key="index">
+                                    <td data-title="Nombre">{{data.name}}</td>
+                                    <td data-title="Valor">
+                                        <div><input type="text" class="form-control" v-model="data.value"></div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <app-button  icon="delete" btn="danger" @click="delItem('spec',data)"></app-button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="variants" role="tabpanel" aria-labelledby="variants-tab">
-                <h5>Variantes de artículo</h5>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" value="" id="productVariant">
-                    <label class="form-check-label" for="productVariant">
-                        Este artículo tiene múltiples opciones como diferentes tallas, tamaños o colores.
-                    </label>
-                </div>
+                <app-input label="checkVariant"  title="Seleccione si el artículo tiene múltiples opciones como diferentes tallas, tamaños o colores" type="switch" v-model="intCheckVariant"></app-input>
                 <hr>
-                <div id="variantOptions" class="d-none mt-3">
+                <div id="variantOptions" class="mt-3" v-if="intCheckVariant">
                     <h5>Opciones</h5>
                     <div class="mb-3">
                         <label for="selectVariantOption" class="form-label">Seleccione una opción</label>
