@@ -30,6 +30,10 @@ const App = {
             arrVariants:[],
             arrImages:[],
             arrSpecsAdded:[],
+            arrVariantsAdded:[],
+            arrVariantsToMix:[],
+            arrVariantsMixed:[],
+            arrCombination:[],
             intStatus:1,
             strName:"",
             strReference:"",
@@ -49,12 +53,12 @@ const App = {
             intVisible:true,
             intMeasure:"",
             intSpec:"",
+            intVariant:"",
             strImgUrl:base_url+'/Assets/images/uploads/category.jpg',
             strImage:"",
         }
     },
     mounted(){
-        this.getData();
         this.search();
     },
     methods:{
@@ -67,6 +71,7 @@ const App = {
             this.intMeasure = objData.measures[0].id;
         },
         openModal:function(){
+            this.getData();
             document.querySelector("#txtDescription").value ="";
             setTinymce("#txtDescription",400);
             this.common.showModalProduct = true;
@@ -95,14 +100,46 @@ const App = {
         },
         save:async function(){
             const formData = new FormData();
-            formData.append("name",this.common.strName);
-            formData.append("id",this.common.intId);
-            formData.append("status",this.intStatus);
-            formData.append("visible",this.intVisible);
-            formData.append("description",this.strDescription);
-            formData.append("image",this.strImage);
+            const arrData = {
+                "general":{
+                    "images":[],
+                    "is_visible":this.intVisible,
+                    "status":this.intStatus,
+                    "id":this.common.intId,
+                    "subcategory":this.objSubcategory.id,
+                    "category":this.objCategory.id,
+                    "framing_mode":this.intFraming,
+                    "measure":this.intMeasure,
+                    "import":this.intTax,
+                    "is_product":this.intCheckProduct,
+                    "is_ingredient":this.intCheckIngredient,
+                    "is_combo":this.intCheckRecipe,
+                    "is_stock":this.intCheckStock,
+                    "price_purchase":intPurchase,
+                    "price_sell":intPrice,
+                    "price_offer":intDiscount,
+                    "product_type":productVariant.checked,
+                    "stock":intStock,
+                    "min_stock":intMinStock,
+                    "short_description":strShortDescription,
+                    "description":strDescription,
+                    "name":strName,
+                    "specs":this.arrSpecsAdded,
+                    "reference":strReference,
+                },
+                "combinations": this.arrCombination,
+                "variants":this.arrVariantsToMix,
+                "is_stock":this.intCheckStock
+            }
+            formData.append("data",JSON.stringify(arrData));
+            formData.append("images[]",[]);
+            if(this.arrImages.length > 0){
+                this.arrImages.forEach(function(e){
+                    formData.append("images[]",e);
+                });
+            }
             this.common.processing =true;
-            const response = await fetch(base_url+"/Productos/ProductosCategorias/setCategoria",{method:"POST",body:formData});
+            const response = await fetch(base_url+"/Productos/Productos/setProduct",{method:"POST",body:formData});
             const objData = await response.json();
             this.common.processing =false;
             if(objData.status){
@@ -189,25 +226,44 @@ const App = {
             }else if(type=="spec"){
                 const index =this.arrSpecsAdded.findIndex(function(e){return e.id==data.id});
                 this.arrSpecsAdded.splice(index,1);
+            }else if(type=="variant"){
+                const index =this.arrVariantsAdded.findIndex(function(e){return e.id==data.id});
+                this.arrVariantsAdded.splice(index,1);
+                this.changeVariant();
             }
         },
         addItem:function(type="",data=""){
             if(type=="spec"){
-                let idSpec = this.intSpec;
-                const arr = this.arrSpecsAdded.filter(function(e){return e.id == idSpec});
+                let id = this.intSpec;
+                const arr = this.arrSpecsAdded.filter(function(e){return e.id == id});
                 if(this.intSpec == ""){
-                    Swal.fire("Atención!","Seleccione una caracterítica.","warning");
+                    Swal.fire("Atención!","Seleccione una característica.","warning");
                     return false;
                 }
                 if(arr.length > 0){
                     Swal.fire("Atención!","La característica ya ha sido agregada, seleccione otra.","warning");
                     return false;
                 }
-                const arrSpecs = [...this.arrSpecs];
-                data = arrSpecs.filter(function(e){return e.id == idSpec})[0];
+                const arrData = [...this.arrSpecs];
+                data = arrData.filter(function(e){return e.id == id})[0];
                 data.value ="";
                 this.arrSpecsAdded.push(data);
                 this.intSpec="";
+            }else if(type=="variant"){
+                let id = this.intVariant;
+                const arr = this.arrVariantsAdded.filter(function(e){return e.id == id});
+                if(this.intVariant == ""){
+                    Swal.fire("Atención!","Seleccione una variante.","warning");
+                    return false;
+                }
+                if(arr.length > 0){
+                    Swal.fire("Atención!","La variante ya ha sido agregada, seleccione otra.","warning");
+                    return false;
+                }
+                const arrData = [...this.arrVariants];
+                data = arrData.filter(function(e){return e.id == id})[0];
+                this.arrVariantsAdded.push(data);
+                this.intVariant="";
             }
         },
         selectItem:function(data,type=""){
@@ -226,6 +282,60 @@ const App = {
             if(type=="shop"){
                 window.open(base_url+"/tienda/producto/"+data.route,"_blank");
             }
+        },
+        /**
+         * This function mix all variants I have selected and mixing all their options to
+         * mix it on purpose to show the combination when I'm selecting or changing my variants and options.
+         */
+        changeVariant:function(){
+            const arrComb= [];
+            this.arrCombination = [];
+            this.arrVariantsToMix = [];
+            for (let i = 0; i < this.arrVariantsAdded.length; i++) {
+                const e =  this.arrVariantsAdded[i];
+                const optionsToMix = [];
+                const options = e.options;
+                options.forEach(op => {
+                    if(op.checked) optionsToMix.push(op.name);
+                });
+                if(optionsToMix.length > 0) this.arrVariantsToMix.push({id:e.id,name:e.name,options:optionsToMix});
+            }
+            let result = [];
+            if(this.arrVariantsToMix.length>0){  
+                /**
+                 * 
+                 * @param {*} oldOptionsMixed Old options mixed
+                 * @param {*} newOptions new options to mix
+                 * @returns the new options mixed
+                 */
+                function addOption( oldOptionsMixed, newOptions){
+                    let newMix = [];
+                    oldOptionsMixed.forEach(ol=>{
+                        newOptions.forEach(ne =>{
+                            newMix.push([...ol,ne]);
+                        })
+                    })
+                    return newMix;
+                }
+                result = this.arrVariantsToMix[0].options.map(option => [option]);
+                for (let i = 1; i < this.arrVariantsToMix.length; i++) {
+                    result = addOption(result,this.arrVariantsToMix[i].options);
+                }
+            }
+            this.arrVariantsMixed = result;
+            this.arrVariantsMixed.forEach(function(e){
+                arrComb.push({
+                    name:e.join("-"),
+                    price_purchase:0,
+                    price_sell:0,
+                    price_offer:0,
+                    stock:0,
+                    min_stock:0,
+                    code:"",
+                    show:false,
+                });
+            });
+            this.arrCombination = arrComb;
         },
         changeCategory:function (type){
             if(type == "subcategory"){
@@ -272,7 +382,7 @@ const App = {
                 this.strImgUrl = route;
             }
         },
-    }
+    },
 };
 const app = Vue.createApp(App);
 app.mount("#app");

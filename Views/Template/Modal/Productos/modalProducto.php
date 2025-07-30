@@ -236,27 +236,50 @@
             <div class="tab-pane fade" id="variants" role="tabpanel" aria-labelledby="variants-tab">
                 <app-input label="checkVariant"  title="Seleccione si el artículo tiene múltiples opciones como diferentes tallas, tamaños o colores" type="switch" v-model="intCheckVariant"></app-input>
                 <hr>
-                <div id="variantOptions" class="mt-3" v-if="intCheckVariant">
-                    <h5>Opciones</h5>
-                    <div class="mb-3">
-                        <label for="selectVariantOption" class="form-label">Seleccione una opción</label>
-                        <div class="d-flex justify-content-start align-items mb-3">
-                            <select class="form-control" aria-label="Default select example" id="selectVariantOption" name="selectVariantOption"></select>
-                            <button onclick ="addVariant()" type="button" class="btn btn-info text-white" id="btnSpc"><i class="fas fa-plus"></i></button>
+                <div class="mt-3" v-if="intCheckVariant">
+                    <app-button-select  label="Variantes" placeholder="Seleccione" title="Variantes" v-model="intVariant">
+                        <template #options>
+                            <option v-for="(data,index) in arrVariants" :key="index" :value="data.id">{{data.name}}</option>
+                        </template>
+                        <template #right>
+                            <app-button icon="new" btn="primary" @click="addItem('variant')"></app-button>
+                        </template>
+                    </app-button-select>
+                    <div v-if="arrVariantsAdded.length > 0">
+                        <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
+                            <table class="table align-middle">
+                                <thead>
+                                    <th>Variante</th>
+                                    <th>Opciones</th>
+                                    <th></th>
+                                </thead>
+                                <tbody >
+                                    <tr v-for="(data,i) in arrVariantsAdded" :key="i">
+                                        <td data-title="Variante">{{data.name}}</td>
+                                        <td data-title="Opciones">
+                                            <div class="d-flex gap-3 flex-wrap align-items-center">
+                                                <app-input
+                                                    @change="changeVariant()" 
+                                                    v-for="(variant,j) in data.options" 
+                                                    :label="'checkVariant'+variant.name"  
+                                                    :title="variant.name" 
+                                                    type="switch"
+                                                    v-model="variant.checked">
+                                                </app-input>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <app-button  icon="delete" btn="danger" @click="delItem('variant',data)"></app-button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="table-responsive overflow-auto mb-3 d-none" style="max-height:50vh" id="divTableVariant">
-                        <table class="table align-middle">
-                            <thead>
-                                <th>Variante</th>
-                                <th>Opciones</th>
-                                <th></th>
-                            </thead>
-                            <tbody id="tableVariants"></tbody>
-                        </table>
-                    </div>
                     <hr class="mb-3">
-                    <div  class="table-responsive overflow-auto d-none" style="max-height:50vh" id="tableVariantsCombination">
+                    <div  v-if="arrCombination.length > 0" class="table-responsive overflow-auto no-more-tables" style="max-height:50vh" id="tableVariantsCombination">
                         <table class="table align-middle">
                             <thead>
                                 <th class="text-nowrap">Variante</th>
@@ -264,15 +287,27 @@
                                 <th class="text-nowrap">Precio de venta</th>
                                 <th class="text-nowrap">Precio de oferta</th>
                                 <th class="text-nowrap d-flex">
-                                    <label class="form-label m-0" for="checkStockVariants">Stock/stock mínimo</label>
-                                    <div class="form-check form-switch m-0 ms-1">
-                                        <input class="form-check-input" type="checkbox" role="switch" id="checkStockVariants">
-                                    </div>
+                                    <app-input label="checkVariantStock"  title="Stock/Stock mínimo" type="switch" v-model="intCheckStock"></app-input>
                                 </th>
                                 <th class="text-nowrap">Código SKU</th>
                                 <th>Mostrar</th>
                             </thead>
-                            <tbody id="tableCombinations"></tbody>
+                            <tbody>
+                                <tr v-for="(data,index) in arrCombination" :key="index">
+                                    <td data-title="Variante">{{data.name}}</td>
+                                    <td data-title="Precio de compra"><div><input type="text" class="form-control" v-model="data.price_purchase" ></div></td>
+                                    <td data-title="Precio de venta"><div><input type="text" class="form-control" v-model="data.price_sell" ></div></td>
+                                    <td data-title="Precio oferta"><div><input type="text" class="form-control" v-model="data.price_offer" ></div></td>
+                                    <td data-title="Stock/Stock mínimo">
+                                        <div class="d-flex">
+                                            <input type="number" class="form-control" v-model="data.stock" :disabled = "intCheckStock ? false : true">
+                                            <input type="number" class="form-control" v-model="data.min_stock" :disabled = "intCheckStock ? false : true">
+                                        </div>
+                                    </td>
+                                    <td data-title="Código SKU"><div><input type="text" class="form-control" v-model="data.code" ></div></td>
+                                    <td data-title="Mostrar"><div><app-input :label="'checkVariant'+data.name" type="switch" v-model="data.show"></app-input></div></td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
