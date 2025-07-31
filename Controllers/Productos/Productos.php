@@ -111,23 +111,16 @@
             }
             die();
         }
-        public function getProduct($id){
+        public function getProduct(){
             if($_SESSION['permitsModule']['r']){
-                $id = intval($id);
+                $id = intval($_POST['id']);
                 $arrProduct = $this->model->selectProduct($id);
                 if(!empty($arrProduct)){
-                    $arrInitial = array(
-                        "categories"=>$this->model->selectCategories(),
-                        'specs' => $this->model->selectSpecs(),
-                        'measures' => $this->model->selectMeasures(),
-                        'variants' => $this->model->selectVariants(),
-                        'subcategories' => $this->model->getSelectSubcategories($arrProduct['idcategory'])
-                    );
-                    $arrData = array("product"=>$arrProduct,"initial"=>$arrInitial);
-                    echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                    $arrResponse = array("status"=>true,"data"=>$arrProduct);
                 }else{
-                    header("location: ".base_url()."/Productos");
+                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                 }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
@@ -138,10 +131,9 @@
                     if(empty($arrData)){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
-                        $arrGeneral = $arrData['general'];
-                        $id = intval($arrGeneral['id']);
-                        $strName = ucwords(strClean($arrGeneral['name']));
-                        $strReference = strtoupper(strClean($arrGeneral['reference']));
+                        $id = intval($arrData['id']);
+                        $strName = ucwords(strClean($arrData['name']));
+                        $strReference = strtoupper(strClean($arrData['reference']));
                         $imgFraming = "";
                         $photoFraming="category.jpg";
                         $reference = $strReference != "" ? $strReference."-" : "";
@@ -149,28 +141,27 @@
                         $route = strtolower(str_replace("¿","",$route));
                         $route = str_replace(" ","-",$route);
                         $route = str_replace("?","",$route);
-
-                        $data = array(
-                            "images"=>array_values(array_filter($arrGeneral['images'],function($e){return !empty($e);})),
-                            "specs"=>$arrGeneral['specs'],
-                            "status"=>intval($arrGeneral['status']),
-                            "subcategory"=>intval($arrGeneral['subcategory']),
-                            "category"=>intval($arrGeneral['category']),
-                            "framing_mode"=> intval($arrGeneral['framing_mode']),
-                            "measure"=>intval($arrGeneral['measure']),
-                            "import"=>intval($arrGeneral['import']),
-                            "is_product"=>intval($arrGeneral['is_product']),
-                            "is_ingredient"=>intval($arrGeneral['is_ingredient']),
-                            "is_combo"=>intval($arrGeneral['is_combo']),
-                            "is_stock"=>intval($arrGeneral['is_stock']),
-                            "price_purchase"=>intval($arrGeneral['price_purchase']),
-                            "price_sell"=>intval($arrGeneral['price_sell']),
-                            "price_offer"=>intval($arrGeneral['price_offer']),
-                            "product_type"=>intval($arrGeneral['product_type']),
-                            "stock"=>intval($arrGeneral['stock']),
-                            "min_stock"=>intval($arrGeneral['min_stock']),
-                            "short_description"=>strClean($arrGeneral['short_description']),
-                            "description"=>strClean($arrGeneral['description']),
+                        $arrData = array(
+                            "images"=>array_values(array_filter($arrData['images'],function($e){return !empty($e);})),
+                            "specs"=>$arrData['specs'],
+                            "status"=>intval($arrData['status']),
+                            "subcategory"=>intval($arrData['subcategory']),
+                            "category"=>intval($arrData['category']),
+                            "framing_mode"=> intval($arrData['framing_mode']),
+                            "measure"=>intval($arrData['measure']),
+                            "import"=>intval($arrData['import']),
+                            "is_product"=>intval($arrData['is_product']),
+                            "is_ingredient"=>intval($arrData['is_ingredient']),
+                            "is_combo"=>intval($arrData['is_combo']),
+                            "is_stock"=>intval($arrData['is_stock']),
+                            "price_purchase"=>doubleval($arrData['price_purchase']),
+                            "price_sell"=>doubleval($arrData['price_sell']),
+                            "price_offer"=>doubleval($arrData['price_offer']),
+                            "product_type"=>intval($arrData['product_type']),
+                            "stock"=>doubleval($arrData['stock']),
+                            "min_stock"=>doubleval($arrData['min_stock']),
+                            "short_description"=>strClean($arrData['short_description']),
+                            "description"=>strClean($arrData['description']),
                             "name"=>$strName,
                             "reference"=>$strReference,
                             "route"=>$route,
@@ -178,52 +169,76 @@
                                 "combinations"=>$arrData['combinations'],
                                 "variations"=>$arrData['variants'],
                                 "is_stock"=>$arrData['is_stock']
-                            )
+                            ),
                         );
-                        if($id == 0){
-                            if($_SESSION['permitsModule']['w']){
-                                if($data['framing_mode']==1){
-                                    if($data['framing_mode']==1 && $_FILES['txtImgFrame']['name'] != ""){
-                                        $imgFraming = $_FILES['txtImgFrame'];
-                                        $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
-                                    }
-                                }
-                                $option = 1;
-                                $data['photo_framing'] = $photoFraming;
-                                $request= $this->model->insertProduct($data,$_FILES['images']);
-                            }
-                        }else{
-                            if($_SESSION['permitsModule']['u']){
-                                $request = $this->model->selectProduct($id);
-                                if($request['framing_mode']==1){
-                                    if($_FILES['txtImgFrame']['name'] == ""){
-                                        $photoFraming = $request['framing_img'];
-                                    }else{
-                                        if($request['framing_img'] != "category.jpg" && $request['framing_img'] != null ){
-                                            deleteFile($request['framing_img']);
-                                        }
-                                        $imgFraming = $_FILES['txtImgFrame'];
-                                        $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
-                                    }
-                                } 
-                                $option = 2;
-                                $data['photo_framing'] = $photoFraming;
-                                $request= $this->model->updateProduct($id,$data,$_FILES['images'] ? $_FILES['images'] : []);
-                            }
+                        $arrValidate = [
+                            "name"=>"required|string",
+                            "category"=>"required|numeric",
+                            "subcategory"=>"required|numeric",
+                            "price_purchase"=>"numeric|min:0",
+                            "price_sell"=>"numeric|min:0",
+                            "price_offer"=>"numeric|min:0",
+                        ];
+                        if($arrData['is_stock']){
+                            $arrValidate["stock"]="numeric|min:0";
+                            $arrValidate["min_stock"]="numeric|min:0";
                         }
-                        if(is_numeric($request) && $request > 0){
-                            if($imgFraming!="" && $photoFraming !=""){
-                                uploadImage($imgFraming,$photoFraming);
-                            }
-                            if($option == 1){
-                                $arrResponse = array("status" => true,"msg"=>"Datos guardados.");
+                        if($arrData['product_type']){
+                            $arrData['combinations'] = $arrData['variants']['combinations']; 
+                            $arrValidate["combinations"]="required|array|min:1";
+                        }
+                        $errors = validator()->validate($arrValidate,$arrData)->getErrors();
+                        if(!$arrData['is_product'] && !$arrData['is_combo'] && !$arrData['is_ingredient']){
+                            $errors['product_type'] = ["Debe seleccionar el tipo de artículo"];
+                        }
+                        if(empty($errors)){
+                            if($id == 0){
+                                if($_SESSION['permitsModule']['w']){
+                                    if($arrData['framing_mode']==1){
+                                        if($arrData['framing_mode']==1 && $_FILES['image']['name'] != ""){
+                                            $imgFraming = $_FILES['image'];
+                                            $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
+                                        }
+                                    }
+                                    $option = 1;
+                                    $arrData['photo_framing'] = $photoFraming;
+                                    $request= $this->model->insertProduct($arrData,$_FILES['images']);
+                                }
                             }else{
-                                $arrResponse = array("status" => true,"msg"=>"Datos actualizados.");
+                                if($_SESSION['permitsModule']['u']){
+                                    $request = $this->model->selectProduct($id);
+                                    if($request['framing_mode']==1){
+                                        if($_FILES['image']['name'] == ""){
+                                            $photoFraming = $request['framing_img'];
+                                        }else{
+                                            if($request['framing_img'] != "category.jpg" && $request['framing_img'] != null ){
+                                                deleteFile($request['framing_img']);
+                                            }
+                                            $imgFraming = $_FILES['image'];
+                                            $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
+                                        }
+                                    } 
+                                    $option = 2;
+                                    $arrData['photo_framing'] = $photoFraming;
+                                    $request= $this->model->updateProduct($id,$arrData,$_FILES['images'] ? $_FILES['images'] : []);
+                                }
                             }
-                        }else if($request == 'exist'){
-                            $arrResponse = array('status' => false, 'msg' => '¡Atención! El producto ya existe, pruebe con otro nombre y referencia.');		
+                            if(is_numeric($request) && $request > 0){
+                                if($imgFraming!="" && $photoFraming !=""){
+                                    uploadImage($imgFraming,$photoFraming);
+                                }
+                                if($option == 1){
+                                    $arrResponse = array("status" => true,"msg"=>"Datos guardados.");
+                                }else{
+                                    $arrResponse = array("status" => true,"msg"=>"Datos actualizados.");
+                                }
+                            }else if($request == 'exist'){
+                                $arrResponse = array('status' => false, 'msg' => '¡Atención! El producto ya existe, pruebe con otro nombre y referencia.');		
+                            }else{
+                                $arrResponse = array("status" => false, "msg" => 'No es posible almacenar los datos.');
+                            }
                         }else{
-                            $arrResponse = array("status" => false, "msg" => 'No es posible almacenar los datos.');
+                            $arrResponse = array("status" => false, "msg" => 'No es posible almacenar los datos. Por favor revise los campos.',"errors"=>$errors);
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
@@ -234,10 +249,10 @@
         public function delProduct(){
             if($_SESSION['permitsModule']['d']){
                 if($_POST){
-                    if(empty($_POST['idProduct'])){
+                    if(empty($_POST['id'])){
                         $arrResponse=array("status"=>false,"msg"=>"Error de datos");
                     }else{
-                        $id = intval($_POST['idProduct']);
+                        $id = intval($_POST['id']);
                         $request = $this->model->deleteProduct($id);
                         if($request=="ok"){
                             $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");

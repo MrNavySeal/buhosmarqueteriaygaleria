@@ -218,18 +218,18 @@
             for ($i=$startPage; $i < $limitPages; $i++) { 
                 array_push($arrButtons,$i);
             }
-            $strIdProducts = implode(",",array_column($request,"idproduct"));
-            $sqlImg = "SELECT *,productid as product_id FROM productimage WHERE productid IN ($strIdProducts) GROUP BY productid";
-            $requestImg = $this->select_all($sqlImg);
-
-            $sqlPrices= "SELECT MIN(price_sell) AS sell,MIN(price_offer) AS offer,MIN(price_purchase) AS purchase,product_id
-            FROM product_variations_options WHERE product_id IN ($strIdProducts) GROUP BY product_id";
-            $requestPrices = $this->select_all($sqlPrices);
-
-            $sqlStock = "SELECT SUM(stock) AS total,product_id FROM product_variations_options WHERE product_id IN ($strIdProducts) GROUP BY product_id";
-            $requestStock = $this->select_all($sqlPrices);
-
+                
             if(!empty($request)> 0){
+                $strIdProducts = implode(",",array_column($request,"idproduct"));
+                $sqlImg = "SELECT *,productid as product_id FROM productimage WHERE productid IN ($strIdProducts) GROUP BY productid";
+                $requestImg = $this->select_all($sqlImg);
+    
+                $sqlPrices= "SELECT MIN(price_sell) AS sell,MIN(price_offer) AS offer,MIN(price_purchase) AS purchase,product_id
+                FROM product_variations_options WHERE product_id IN ($strIdProducts) GROUP BY product_id";
+                $requestPrices = $this->select_all($sqlPrices);
+    
+                $sqlStock = "SELECT SUM(stock) AS total,product_id FROM product_variations_options WHERE product_id IN ($strIdProducts) GROUP BY product_id";
+                $requestStock = $this->select_all($sqlStock);
                 $total = count($request);
                 for ($i=0; $i < $total; $i++) { 
                     $idProduct = $request[$i]['idproduct'];
@@ -275,9 +275,9 @@
                 p.framing_mode,
                 p.framing_img,
                 p.shortdescription,
-                p.price,
+                p.price as price_sell,
                 p.price_purchase,
-                p.discount,
+                p.discount as price_offer,
                 p.description,
                 p.stock,
                 p.min_stock,
@@ -306,7 +306,7 @@
                 $request['image'] = [];
                 if(count($requestImg)){
                     for ($i=0; $i < count($requestImg); $i++) { 
-                        $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name'],"rename"=>$requestImg[$i]['name']);
+                        $request['image'][$i] = array("route"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name'],"rename"=>$requestImg[$i]['name']);
                     }
                 }
                 $sqlSpecs = "SELECT p.specification_id as id,p.value,s.name

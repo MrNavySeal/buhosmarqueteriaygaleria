@@ -25,6 +25,7 @@ const App = {
             subcategory:createCommon(),
             objCategory:{name:"",id:""},
             objSubcategory:{name:"",id:"",categoryid:""},
+            errors:[],
             arrMeasures:[],
             arrSpecs:[],
             arrVariants:[],
@@ -75,64 +76,77 @@ const App = {
             document.querySelector("#txtDescription").value ="";
             setTinymce("#txtDescription",400);
             this.common.showModalProduct = true;
-            this.common.strName ="";
             this.common.intId =0;
-            this.objCategory={name:"",id:""},
-            this.objSubcategory={name:"",id:"",categoryid:""},
+            this.objCategory={name:"",id:""};
+            this.objSubcategory={name:"",id:"",categoryid:""};
             this.intStatus=1,
-            this.strName="",
-            this.strReference="",
-            this.strShortDescription="",
-            this.intCheckProduct=false,
-            this.intCheckIngredient=false,
-            this.intCheckRecipe=false,
-            this.intUnit=0,
-            this.intCheckStock=false,
-            this.intStock=0,
-            this.intMinStock=0,
-            this.intTax=0,
-            this.intPurchasePrice=0,
-            this.intSellPrice=0,
-            this.intOfferPrice=0,
-            this.intFraming=2,
-            this.intVisible=true,
+            this.strName="";
+            this.strReference="";
+            this.strShortDescription="";
+            this.intCheckProduct=false;
+            this.intCheckIngredient=false;
+            this.intCheckRecipe=false;
+            this.intCheckStock=false;
+            this.intStock=0;
+            this.intMinStock=0;
+            this.intTax=0;
+            this.intPurchasePrice=0;
+            this.intSellPrice=0;
+            this.intOfferPrice=0;
+            this.intFraming=2;
+            this.intVisible=true;
+            this.arrImages=[];
+            this.intMeasure="";
+            this.strImage="";
+            this.strImgUrl ="";
+            this.intCheckVariant = false;
+            this.strName="";
+            this.arrSpecsAdded = [];
+            this.strReference="";
+            this.arrCombination = [];
+            this.arrVariantsToMix = [];
+            this.arrVariantsAdded = [];
+            this.errors = [];
+            this.intCheckStock = false;
             this.common.productTitle = "Nuevo producto";
+
         },
         save:async function(){
+            tinymce.triggerSave();
+            const strDescription = document.querySelector("#txtDescription").value;
             const formData = new FormData();
             const arrData = {
-                "general":{
-                    "images":[],
-                    "is_visible":this.intVisible,
-                    "status":this.intStatus,
-                    "id":this.common.intId,
-                    "subcategory":this.objSubcategory.id,
-                    "category":this.objCategory.id,
-                    "framing_mode":this.intFraming,
-                    "measure":this.intMeasure,
-                    "import":this.intTax,
-                    "is_product":this.intCheckProduct,
-                    "is_ingredient":this.intCheckIngredient,
-                    "is_combo":this.intCheckRecipe,
-                    "is_stock":this.intCheckStock,
-                    "price_purchase":intPurchase,
-                    "price_sell":intPrice,
-                    "price_offer":intDiscount,
-                    "product_type":productVariant.checked,
-                    "stock":intStock,
-                    "min_stock":intMinStock,
-                    "short_description":strShortDescription,
-                    "description":strDescription,
-                    "name":strName,
-                    "specs":this.arrSpecsAdded,
-                    "reference":strReference,
-                },
+                "images":this.arrImages.filter(function(e){return e.rename && e.rename!=""}),
+                "is_visible":this.intVisible,
+                "status":this.intStatus,
+                "id":this.common.intId,
+                "subcategory":this.objSubcategory.id,
+                "category":this.objCategory.id,
+                "framing_mode":this.intFraming,
+                "measure":this.intMeasure,
+                "import":this.intTax,
+                "is_product":this.intCheckProduct,
+                "is_ingredient":this.intCheckIngredient,
+                "is_combo":this.intCheckRecipe,
+                "is_stock":this.intCheckStock,
+                "price_purchase":this.intPurchasePrice,
+                "price_sell":this.intSellPrice,
+                "price_offer":this.intOfferPrice,
+                "product_type":this.intCheckVariant,
+                "stock":this.intStock,
+                "min_stock":this.intMinStock,
+                "short_description":this.strShortDescription,
+                "description":strDescription,
+                "name":this.strName,
+                "specs":this.arrSpecsAdded,
+                "reference":this.strReference,
                 "combinations": this.arrCombination,
                 "variants":this.arrVariantsToMix,
                 "is_stock":this.intCheckStock
             }
             formData.append("data",JSON.stringify(arrData));
             formData.append("images[]",[]);
+            formData.append("image",this.strImage);
             if(this.arrImages.length > 0){
                 this.arrImages.forEach(function(e){
                     formData.append("images[]",e);
@@ -145,10 +159,11 @@ const App = {
             if(objData.status){
                 this.common.strName ="";
                 this.common.intId =0;
-                this.common.showModalModule = false;
+                this.common.showModalProduct = false;
                 this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
             }else{
+                this.errors = objData.errors;
                 Swal.fire("Error",objData.msg,"error");
             }
         },
@@ -197,22 +212,93 @@ const App = {
             }
         },
         edit:async function(data){
+            this.getData();
+            setTinymce("#txtDescription",400);
             const formData = new FormData();
-            formData.append("id",data.id);
-            const response = await fetch(base_url+"/Productos/ProductosCategorias/getCategoria",{method:"POST",body:formData});
+            formData.append("id",data.idproduct);
+            const response = await fetch(base_url+"/Productos/Productos/getProduct",{method:"POST",body:formData});
             const objData = await response.json();
             if(objData.status){
-                this.common.strName =objData.data.name;
-                this.common.intId = objData.data.idcategory;
-                this.intStatus = objData.data.status;
-                this.intVisible = objData.data.is_visible;
-                this.strDescription =objData.data.description;
-                this.strImgUrl = objData.data.url;
-                this.common.modulesTitle = "Nueva categoría";
-                this.common.showModalModule = true;
+                const data = objData.data;
+                this.common.showModalProduct = true;
+                this.common.intId =data.idproduct;
+                this.objCategory={name:data.category,id:data.categoryid};
+                this.objSubcategory={name:data.subcategory,id:data.subcategoryid,categoryid:data.categoryid};
+                this.intStatus=data.status;
+                this.strName=data.name;
+                this.strReference=data.reference;
+                this.strShortDescription=data.shortdescription;
+                this.intCheckProduct=data.is_product;
+                this.intCheckIngredient=data.is_ingredient;
+                this.intCheckRecipe=data.is_combo;
+                this.intCheckStock=data.is_stock;
+                this.intCheckVariant = data.product_type;
+                this.intStock=data.stock;
+                this.intMinStock=data.min_stock;
+                this.intTax=data.import;
+                this.intPurchasePrice=data.price_purchase;
+                this.intSellPrice=data.price_sell;
+                this.intOfferPrice=data.price_offer;
+                this.intFraming=data.framing_mode;
+                this.intVisible=true;
+                this.arrImages=data.image;
+                this.strImgUrl=data.framing_url;
+                this.intMeasure=data.measure;
+                this.arrSpecsAdded = data.specs;
+                this.strReference=data.reference;
+                const arrVariants = this.arrVariants;
+                const arrVariations = data.variation.variation;
+                const arrVariantsAdded = [];
+                arrVariations.forEach(e => {
+                    const variant = arrVariants.filter(function(variant){
+                        return variant.id == e.id; 
+                    })[0];
+                    variant.options.forEach(op => {
+                        const options = e.options.filter(function(vop){
+                            return vop == op.name
+                        });
+                        if(options.length > 0){ op.checked=true; }else{op.checked=false}
+                    });
+                    arrVariantsAdded.push(variant);
+                });
+                this.arrVariantsAdded = arrVariantsAdded;
+                this.changeVariant();
+                this.arrCombination = data.options;
+                this.errors = [];
+                document.querySelector("#txtDescription").value = data.description;
+                this.common.productTitle = "Editar producto";
             }else{
                 Swal.fire("Error",objData.msg,"error");
-            }
+            } 
+        },
+        del:async function(data){
+            const objVue = this;
+            Swal.fire({
+                title:"¿Esta seguro de eliminar?",
+                text:"Se eliminará para siempre...",
+                icon: 'warning',
+                showCancelButton:true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText:"Sí, eliminar",
+                cancelButtonText:"No, cancelar"
+            }).then(async function(result){
+                if(result.isConfirmed){
+                    const formData = new FormData();
+                    formData.append("id",data.idproduct);
+                    const response = await fetch(base_url+"/Productos/Productos/delProduct",{method:"POST",body:formData});
+                    const objData = await response.json();
+                    if(objData.status){
+                        Swal.fire("Eliminado!",objData.msg,"success");
+                        objVue.search(objVue.common.intPage);
+                    }else{
+                        Swal.fire("Error",objData.msg,"error");
+                    }
+                }else{
+                    objVue.search(objVue.common.intPage);
+                }
+            });
+            
         },
         delItem:function(type="",data=""){
             if(type=="subcategory"){
@@ -331,8 +417,8 @@ const App = {
                     price_offer:0,
                     stock:0,
                     min_stock:0,
-                    code:"",
-                    show:false,
+                    sku:"",
+                    status:false,
                 });
             });
             this.arrCombination = arrComb;
@@ -347,14 +433,6 @@ const App = {
                 this.category.showModalPaginationCategory=true;
             }
             this.search();
-        },
-        changeArticleType:function(){
-            if(this.intCheckRecipe){
-                this.intCheckProduct = false;
-                this.intCheckIngredient = false;
-            }else if(this.intCheckProduct || this.intCheckIngredient){
-                this.intCheckRecipe = false;
-            }
         },
         uploadMultipleImage:function(e){
             const files = e.target.files;
@@ -386,57 +464,3 @@ const App = {
 };
 const app = Vue.createApp(App);
 app.mount("#app");
-/* 'use strict';
-
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-}
-let arrData = [];
-const searchHtml = document.querySelector("#txtSearch");
-const perPage = document.querySelector("#perPage");
-const initialDateHtml = document.querySelector("#txtInitialDate");
-const finallDateHtml = document.querySelector("#txtFinalDate");
-
-window.addEventListener("load",function(){
-    getData();
-});
-searchHtml.addEventListener("input",function(){getData();});
-perPage.addEventListener("change",function(){getData();});
-
-async function getData(page = 1){
-    const formData = new FormData();
-    formData.append("page",page);
-    formData.append("perpage",perPage.value);
-    formData.append("search",searchHtml.value);
-    const response = await fetch(base_url+"/Productos/Productos/getProducts",{method:"POST",body:formData});
-    const objData = await response.json();
-    arrData = objData.data;
-    tableData.innerHTML =objData.html;
-    document.querySelector("#pagination").innerHTML = objData.html_pages;
-    document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
-}
-function deleteItem(id){
-    Swal.fire({
-        title:"¿Estás seguro de eliminarlo?",
-        text:"Se eliminará para siempre...",
-        icon: 'warning',
-        showCancelButton:true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText:"Sí, eliminar",
-        cancelButtonText:"No, cancelar"
-    }).then(function(result){
-        if(result.isConfirmed){
-            let formData = new FormData();
-            formData.append("idProduct",id);
-            request(base_url+"/Productos/Productos/delProduct",formData,"post").then(function(objData){
-                if(objData.status){
-                    Swal.fire("Eliminado",objData.msg,"success");
-                    getData();
-                }else{
-                    Swal.fire("Error",objData.msg,"error");
-                }
-            });
-        }
-    });
-} */

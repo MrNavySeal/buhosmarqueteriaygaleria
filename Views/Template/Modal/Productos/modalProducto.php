@@ -41,10 +41,10 @@
                                 <h5>Información de artículo</h5>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <app-input label="Nombre" type="text" v-model="common.strName" required="true"></app-input>
+                                        <app-input label="Nombre" :errors="errors.name" type="text" v-model="strName" required="true"></app-input>
                                     </div>
                                     <div class="col-md-6">
-                                        <app-input label="Referencia" type="text" title="Código SKU" v-model="strReference" required="true"></app-input>
+                                        <app-input label="Referencia" type="text" title="Código SKU" v-model="strReference"></app-input>
                                     </div>
                                 </div>
                             </div>
@@ -63,10 +63,10 @@
                             <div class="col-md-6">
                                 <app-button-input 
                                     title="Categorías"
-                                    :errors="category.errors.category"
                                     btn="primary" icon="new" 
                                     :value="objCategory.name" 
                                     required="true"
+                                    :errors="errors.category"
                                     >
                                     <template #left>
                                         <app-button icon="new" btn="primary" @click="changeCategory('category')"></app-button>
@@ -79,10 +79,10 @@
                             <div class="col-md-6">
                                 <app-button-input 
                                     title="Subcategorias"
-                                    :errors="subcategory.errors.category"
                                     btn="primary" icon="new" 
                                     :value="objSubcategory.name" 
                                     required="true"
+                                    :errors="errors.subcategory"
                                     >
                                         <template #left>
                                             <app-button icon="new" btn="primary" @click="changeCategory('subcategory')"></app-button>
@@ -96,9 +96,9 @@
                         </div>
                         <div class="mb-3">
                             <h5>Tipo de artículo</h5>
-                            <app-input label="checkProduct" @click="intCheckRecipe=false" title="Seleccione si el artículo es un producto" type="switch" v-model="intCheckProduct"></app-input>
-                            <app-input label="checkIngredient" @click="intCheckRecipe=false" title="Seleccione si el artículo es un insumo" type="switch" v-model="intCheckIngredient"></app-input>
-                            <app-input label="checkRecipe" @click="intCheckIngredient=false;intCheckProduct=false;" title="Seleccione si el artículo es una fórmula/servicio/combo" type="switch" v-model="intCheckRecipe"></app-input>
+                            <app-input label="checkProduct" :errors="errors.product_type" @click="intCheckRecipe=false" title="Seleccione si el artículo es un producto" type="switch" v-model="intCheckProduct"></app-input>
+                            <app-input label="checkIngredient" :errors="errors.product_type" @click="intCheckRecipe=false" title="Seleccione si el artículo es un insumo" type="switch" v-model="intCheckIngredient"></app-input>
+                            <app-input label="checkRecipe" :errors="errors.product_type" @click="intCheckIngredient=false;intCheckProduct=false;" title="Seleccione si el artículo es una fórmula/servicio/combo" type="switch" v-model="intCheckRecipe"></app-input>
                         </div>
                         <app-select label="unidadMedida" title="Unidad de medida" v-model="intMeasure">
                             <option v-for="(data,index) in arrMeasures" :key="index" :value="data.id">{{data.name}}</option>
@@ -108,10 +108,10 @@
                             <app-input label="checkInventory" title="Seleccione si el artículo maneja inventario" type="switch" v-model="intCheckStock"></app-input>
                             <div class="row" v-if="intCheckStock">
                                 <div class="col-md-6">
-                                    <app-input label="stock" type="text" title="Stock" required="true" v-model="intStock"></app-input>
+                                    <app-input label="stock" :errors="errors.stock" type="text" title="Stock" required="true" v-model="intStock"></app-input>
                                 </div>
                                 <div class="col-md-6">
-                                    <app-input label="minStock" type="text" title="Stock mínimo" required="true" v-model="intMinStock"></app-input>
+                                    <app-input label="minStock" :errors="errors.min_stock" type="text" title="Stock mínimo" required="true" v-model="intMinStock"></app-input>
                                 </div>
                             </div>
                         </div>
@@ -126,13 +126,13 @@
                             <h5>Precio de artículo</h5>
                             <div class="row">
                                 <div class="col-md-4" v-if="!intCheckRecipe">
-                                    <app-input label="purchasePrice" type="number" title="Precio de compra" required="true" v-model="intPurchasePrice"></app-input>
+                                    <app-input label="purchasePrice" type="number" :errors="errors.price_purchase" title="Precio de compra" required="true" v-model="intPurchasePrice"></app-input>
                                 </div>
                                 <div :class="intCheckRecipe ? 'col-md-6' : 'col-md-4'">
-                                    <app-input label="sellPrice" type="number" title="Precio de venta" required="true" v-model="intSellPrice"></app-input>
+                                    <app-input label="sellPrice" type="number" :errors="errors.price_sell" title="Precio de venta" required="true" v-model="intSellPrice"></app-input>
                                 </div>
                                 <div :class="intCheckRecipe ? 'col-md-6' : 'col-md-4'">
-                                    <app-input label="offerPrice" type="number" title="Precio de oferta" required="true" v-model="intOfferPrice"></app-input>
+                                    <app-input label="offerPrice" type="number" :errors="errors.price_offer" title="Precio de oferta" required="true" v-model="intOfferPrice"></app-input>
                                 </div>
                             </div>
                         </div>
@@ -163,32 +163,6 @@
                         </div>
                     </div>
                 </div>
-                <form id="formItem" name="formItem" class="mb-4">  
-                    <!-- <div class="mb-3">
-                        <div id="showCategories" class="d-none row">
-                            <div class="col-md-6 ">
-                                <div class="mb-3">
-                                    <label for="categoryList" class="form-label">Categoría de artículo (<span class="text-danger">*</span>)</label>
-                                    <select class="form-control" onchange="changeCategory()" aria-label="Default select example" id="categoryList" name="categoryList" required></select>
-                                </div>
-                            </div>
-                            <div class="col-md-6" id="selectSubCategory">
-                                <div class="mb-3">
-                                    <label for="subcategoryList" class="form-label">Subcategoria de artículo (<span class="text-danger">*</span>)</label>
-                                    <select class="form-control" aria-label="Default select example" id="subcategoryList" name="subcategoryList" required></select>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="toAddCategories" class="d-none">
-                            <p class="text-secondary">
-                                No tienes ninguna categoría creada. 
-                                <a href="<?=base_url()."/ProductosCategorias/categorias"?>" target="_blank" class="btn btn-primary text-white">
-                                    Crear categoría
-                                </a>
-                            </p>
-                        </div>
-                    </div> -->
-                </form>
             </div>
             <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
                 <p class="text-secondary">Agrega características que quieres resaltar de tu artículo como el material, marca modelo, etc.</p>
@@ -237,7 +211,7 @@
                 <app-input label="checkVariant"  title="Seleccione si el artículo tiene múltiples opciones como diferentes tallas, tamaños o colores" type="switch" v-model="intCheckVariant"></app-input>
                 <hr>
                 <div class="mt-3" v-if="intCheckVariant">
-                    <app-button-select  label="Variantes" placeholder="Seleccione" title="Variantes" v-model="intVariant">
+                    <app-button-select  label="Variantes" :errors="errors.combinations" placeholder="Seleccione" title="Variantes" required="true" v-model="intVariant">
                         <template #options>
                             <option v-for="(data,index) in arrVariants" :key="index" :value="data.id">{{data.name}}</option>
                         </template>
@@ -304,8 +278,8 @@
                                             <input type="number" class="form-control" v-model="data.min_stock" :disabled = "intCheckStock ? false : true">
                                         </div>
                                     </td>
-                                    <td data-title="Código SKU"><div><input type="text" class="form-control" v-model="data.code" ></div></td>
-                                    <td data-title="Mostrar"><div><app-input :label="'checkVariant'+data.name" type="switch" v-model="data.show"></app-input></div></td>
+                                    <td data-title="Código SKU"><div><input type="text" class="form-control" v-model="data.sku" ></div></td>
+                                    <td data-title="Mostrar"><div><app-input :label="'checkVariant'+data.name" type="switch" v-model="data.status"></app-input></div></td>
                                 </tr>
                             </tbody>
                         </table>
