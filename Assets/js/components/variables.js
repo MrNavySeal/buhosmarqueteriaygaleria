@@ -96,6 +96,7 @@ export function createCommon() {
         showModalCategory:false,
         showModalSubcategory:false,
         showModalProduct:false,
+        showModalViewProduct:false,
         
         //Pagination modals
         showModalPaginationCategory:false,

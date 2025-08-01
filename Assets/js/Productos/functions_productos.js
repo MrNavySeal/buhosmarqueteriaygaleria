@@ -211,16 +211,25 @@ const App = {
                 this.common.arrButtons = objData.buttons;
             }
         },
-        edit:async function(data){
+        edit:async function(data,type="edit"){
             this.getData();
-            setTinymce("#txtDescription",400);
             const formData = new FormData();
             formData.append("id",data.idproduct);
             const response = await fetch(base_url+"/Productos/Productos/getProduct",{method:"POST",body:formData});
             const objData = await response.json();
             if(objData.status){
                 const data = objData.data;
-                this.common.showModalProduct = true;
+                if(type=="edit"){
+                    this.common.showModalProduct = true;
+                    this.common.productTitle = "Editar producto";
+                    setTinymce("#txtDescription",400);
+                    document.querySelector("#txtDescription").value = data.description;
+                }else{
+                    this.common.showModalViewProduct = true;
+                    this.common.productTitle = "Ver producto";
+                    setTinymce("#txtViewDescription",400);
+                    document.querySelector("#txtViewDescription").value = data.description;
+                }
                 this.common.intId =data.idproduct;
                 this.objCategory={name:data.category,id:data.categoryid};
                 this.objSubcategory={name:data.subcategory,id:data.subcategoryid,categoryid:data.categoryid};
@@ -240,33 +249,37 @@ const App = {
                 this.intSellPrice=data.price_sell;
                 this.intOfferPrice=data.price_offer;
                 this.intFraming=data.framing_mode;
-                this.intVisible=true;
+                this.intVisible=data.is_visible;
                 this.arrImages=data.image;
                 this.strImgUrl=data.framing_url;
                 this.intMeasure=data.measure;
                 this.arrSpecsAdded = data.specs;
                 this.strReference=data.reference;
-                const arrVariants = this.arrVariants;
-                const arrVariations = data.variation.variation;
-                const arrVariantsAdded = [];
-                arrVariations.forEach(e => {
-                    const variant = arrVariants.filter(function(variant){
-                        return variant.id == e.id; 
-                    })[0];
-                    variant.options.forEach(op => {
-                        const options = e.options.filter(function(vop){
-                            return vop == op.name
+                if(this.intCheckVariant){
+                    const arrVariants = this.arrVariants;
+                    const arrVariations = data.variation.variation;
+                    const arrVariantsAdded = [];
+                    arrVariations.forEach(e => {
+                        const arrVariant = arrVariants.filter(function(variant){
+                            return variant.id == e.id; 
                         });
-                        if(options.length > 0){ op.checked=true; }else{op.checked=false}
+                        if(arrVariant.length > 0){
+                            const variant = arrVariant[0];
+                            variant.options.forEach(op => {
+                                const options = e.options.filter(function(vop){
+                                    return vop == op.name
+                                });
+                                if(options.length > 0){ op.checked=true; }else{op.checked=false}
+                            });
+                            arrVariantsAdded.push(variant);
+                        }
                     });
-                    arrVariantsAdded.push(variant);
-                });
-                this.arrVariantsAdded = arrVariantsAdded;
-                this.changeVariant();
-                this.arrCombination = data.options;
+                    this.arrVariantsAdded = arrVariantsAdded;
+                    this.changeVariant();
+                    this.arrCombination = data.options;
+                }
                 this.errors = [];
-                document.querySelector("#txtDescription").value = data.description;
-                this.common.productTitle = "Editar producto";
+                
             }else{
                 Swal.fire("Error",objData.msg,"error");
             } 
@@ -364,10 +377,8 @@ const App = {
                 this.category.showModalPaginationCategory=false
             }
         },
-        view:async function(data,type=""){
-            if(type=="shop"){
-                window.open(base_url+"/tienda/producto/"+data.route,"_blank");
-            }
+        view:async function(data){
+            window.open(base_url+"/tienda/producto/"+data.route,"_blank");
         },
         /**
          * This function mix all variants I have selected and mixing all their options to

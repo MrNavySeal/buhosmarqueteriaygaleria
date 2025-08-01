@@ -42,8 +42,8 @@ function exportToExcel(id){
     var wb = XLSX.utils.table_to_book(document.getElementById(id));
     XLSX.writeFile(wb, id+".xlsx");
 }
-function setTinymce(selectorId,height=null){
-    tinymce.remove();
+function setTinymce(selectorId,height=null,remove = true){
+    if(remove){tinymce.remove();}
     document.addEventListener('focusin', (e) => {
         if (e.target.closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
             e.stopImmediatePropagation();

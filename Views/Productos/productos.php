@@ -1,6 +1,7 @@
 <?php 
     headerAdmin($data);
     getModal("Productos/modalProducto");
+    getModal("Productos/modalProductoVer");
     getModal("Paginacion/modalPaginacionCategorias");
     getModal("Paginacion/modalPaginacionSubcategorias");
 ?>
@@ -65,13 +66,13 @@
                 </td>
                 <td data-title="Opciones">
                     <div class="d-flex gap-2">
-                        <app-button  v-if="(data.is_product || data.is_combo) && data.visible_category"  icon="globe" btn="primary" @click="view(data,'shop')"></app-button>
+                        <app-button  v-if="(data.is_product || data.is_combo) && data.visible_category"  icon="globe" btn="primary" @click="view(data)"></app-button>
                         <?php if($_SESSION['permitsModule']['r']){ ?>
-                        <app-button  icon="watch" btn="info" @click="view(data)"></app-button>
+                        <app-button  icon="watch" btn="info" @click="edit(data,'view')"></app-button>
                         <?php } ?>
                         <?php if($_SESSION['permitsModule']['u']){ ?>
                         <app-button  icon="list" btn="warning"></app-button>
-                        <app-button  icon="edit" btn="success" @click="edit(data)"></app-button>
+                        <app-button  icon="edit" btn="success" @click="edit(data,'edit')"></app-button>
                         <?php } ?>
                         <?php if($_SESSION['permitsModule']['d']){ ?>
                         <app-button  icon="delete" btn="danger" @click="del(data)"></app-button>
