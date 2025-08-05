@@ -46,10 +46,10 @@
         <script type="text/javascript" src="<?= media()."/js/functions.js?v=".rand()?>"></script>
         
         <?php if(isset($data['panelapp'])){?>
-        <script type="module" src="<?=media();?>/js/<?=$data['panelapp']."?v=".rand()?>"></script>
+        <script type="<?=$data['script_type'] == '' ? '' : $data['script_type']?>"src="<?=media();?>/js/<?=$data['panelapp']."?v=".rand()?>"></script>
         <?php }?>
         <?php if(isset($data['framing'])){?>
-        <script src="<?=media();?>/js/<?=$data['framing']."?v=".rand()?>"></script>
+        <script type="<?=$data['script_type'] == '' ? '' : $data['script_type']?>"src="<?=media();?>/js/<?=$data['framing']."?v=".rand()?>"></script>
         <?php }?>
     </body>
 </html>

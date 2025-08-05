@@ -17,6 +17,7 @@
                 $data['page_tag'] = "Categorías | Productos";
                 $data['page_title'] = "Categorías | Productos";
                 $data['page_name'] = "categorias";
+                $data['script_type'] = "module";
                 $data['panelapp'] = "/Productos/functions_categorias.js";
                 $this->views->getView($this,"categorias",$data);
             }else{
@@ -33,6 +34,7 @@
                 $data['page_tag'] = "Subcategorias | Productos";
                 $data['page_title'] = "Subcategorias | Productos";
                 $data['page_name'] = "subcategorias";
+                $data['script_type'] = "module";
                 $data['panelapp'] = "/Productos/functions_subcategorias.js";
                 $this->views->getView($this,"subcategorias",$data);
             }else{

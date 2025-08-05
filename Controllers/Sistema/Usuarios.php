@@ -18,6 +18,7 @@
                 $data['page_tag'] = "Usuarios | Sistema";
                 $data['page_title'] = "Usuarios | Sistema";
                 $data['page_name'] = "usuarios";
+                $data['script_type'] = "module";
                 $data['panelapp'] = "/Sistema/functions_usuarios.js";
                 $this->views->getView($this,"usuarios",$data);
             }else{

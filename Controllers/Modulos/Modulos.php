@@ -16,6 +16,7 @@
             $data['page_tag'] = "Modulos";
             $data['page_title'] = "Modulos";
             $data['page_name'] = "modulos";
+            $data['script_type'] = "module";
             $data['panelapp'] = "/Modulos/functions_modulos.js";
             $this->views->getView($this,"modulos",$data);
         }

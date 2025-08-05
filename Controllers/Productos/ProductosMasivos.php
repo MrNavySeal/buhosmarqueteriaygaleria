@@ -25,6 +25,7 @@
                 $data['page_tag'] = "Creación & Edición masiva | Productos";
                 $data['page_title'] = "Creación & Edición masiva | Productos";
                 $data['page_name'] = "masivos";
+                $data['script_type'] = "module";
                 $data['panelapp'] = "/Productos/functions_masivo.js";
                 $this->views->getView($this,"productos-masivos",$data);
             }else{

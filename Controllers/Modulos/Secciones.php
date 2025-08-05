@@ -16,6 +16,7 @@
             $data['page_tag'] = "Secciones | Modulos";
             $data['page_title'] = "Secciones | Modulos";
             $data['page_name'] = "secciones";
+            $data['script_type'] = "module";
             $data['panelapp'] = "/Modulos/functions_secciones.js";
             $this->views->getView($this,"secciones",$data);
         }

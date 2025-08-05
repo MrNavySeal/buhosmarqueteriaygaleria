@@ -531,7 +531,7 @@ async function calcularMarco(id=null){
     formData.append("color_border_id",colorBorderId);
     formData.append("type_frame",sortFrame.getAttribute("data-id"));
     document.querySelector(".totalFrame").innerHTML="Calculando...";
-    const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Marqueteria/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
         arrFrame = objData.specs;

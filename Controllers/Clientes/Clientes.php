@@ -19,6 +19,7 @@
                 $data['page_tag'] = "Clientes";
                 $data['page_title'] = "Clientes";
                 $data['page_name'] = "clientes";
+                $data['script_type'] = "module";
                 $data['panelapp'] = "/Clientes/functions_clientes.js";
                 $this->views->getView($this,"clientes",$data);
             }else{

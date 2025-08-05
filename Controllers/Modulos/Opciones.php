@@ -16,6 +16,7 @@
             $data['page_tag'] = "Opciones | Modulos";
             $data['page_title'] = "Opciones | Modulos";
             $data['page_name'] = "opciones";
+            $data['script_type'] = "module";
             $data['panelapp'] = "/Modulos/functions_opciones.js";
             $this->views->getView($this,"opciones",$data);
         }

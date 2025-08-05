@@ -17,6 +17,7 @@
                 $data['page_tag'] = "Roles | Sistema";
                 $data['page_title'] = "Roles | Sistema";
                 $data['page_name'] = "roles";
+                $data['script_type'] = "module";
                 $data['panelapp'] = "/Sistema/functions_roles.js";
                 $this->views->getView($this,"roles",$data);
             }else{
