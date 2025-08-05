@@ -8,7 +8,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/ProductosOpciones/getSpecs",
+        "url": " "+base_url+"/Productos/ProductosOpciones/getSpecs",
         "dataSrc":""
     },
     columns: [
@@ -34,17 +34,15 @@ let table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML = "Nueva característica";
-        document.querySelector("#txtName").value = "";
-        document.querySelector("#statusList").value = 1;
-        document.querySelector("#id").value ="";
-        modal.show();
-    });
+
+function openModal(){
+    document.querySelector(".modal-title").innerHTML = "Nueva característica";
+    document.querySelector("#txtName").value = "";
+    document.querySelector("#statusList").value = 1;
+    document.querySelector("#id").value ="";
+    modal.show();
 }
+
 if(document.querySelector("#formItem")){
     let form = document.querySelector("#formItem");
     form.addEventListener("submit",function(e){
@@ -59,7 +57,7 @@ if(document.querySelector("#formItem")){
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
-        request(base_url+"/ProductosOpciones/setSpec",formData,"post").then(function(objData){
+        request(base_url+"/Productos/ProductosOpciones/setSpec",formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -75,7 +73,7 @@ if(document.querySelector("#formItem")){
 }
      
 function editItem(id){
-    let url = base_url+"/ProductosOpciones/getSpec";
+    let url = base_url+"/Productos/ProductosOpciones/getSpec";
     let formData = new FormData();
     formData.append("id",id);
     request(url,formData,"post").then(function(objData){
@@ -102,7 +100,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/ProductosOpciones/delSpec"
+            let url = base_url+"/Productos/ProductosOpciones/delSpec"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){

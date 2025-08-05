@@ -8,15 +8,13 @@
             }
             parent::__construct();
             sessionCookie();
-            getPermits(11);
-            
         }
         public function unidades(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "unidad";
+                $data['page_tag'] = "Unidades de medida | Productos";
                 $data['page_title'] = "Unidades de medida | Productos";
                 $data['page_name'] = "unidades";
-                $data['panelapp'] = "functions_products_measures.js";
+                $data['panelapp'] = "/Productos/functions_medidas.js";
                 $this->views->getView($this,"unidades",$data);
             }else{
                 header("location: ".base_url());
@@ -25,10 +23,14 @@
         }
         public function caracteristicas(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "caracteristica";
-                $data['page_title'] = "Características de producto | Productos";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/caracteristicas/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w']],
+                ];
+                $data['page_tag'] = "Características | Productos";
+                $data['page_title'] = "Características | Productos";
                 $data['page_name'] = "caracteristicas";
-                $data['panelapp'] = "functions_products_specifications.js";
+                $data['panelapp'] = "/Productos/functions_caracteristicas.js";
                 $this->views->getView($this,"caracteristicas",$data);
             }else{
                 header("location: ".base_url());
@@ -37,10 +39,14 @@
         }
         public function variantes(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "variante";
-                $data['page_title'] = "Variantes de producto | Productos";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/variantes/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w']],
+                ];
+                $data['page_tag'] = "Variantes | Productos";
+                $data['page_title'] = "Variantes | Productos";
                 $data['page_name'] = "variantes";
-                $data['panelapp'] = "functions_products_variants.js";
+                $data['panelapp'] = "/Productos/functions_variantes.js";
                 $this->views->getView($this,"variantes",$data);
             }else{
                 header("location: ".base_url());
