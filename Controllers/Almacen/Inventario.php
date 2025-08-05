@@ -31,7 +31,6 @@
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
                     "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
-                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
                     "pdf" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportPdf()"],
                     "excel" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportExcel()"],
                 ];

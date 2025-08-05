@@ -7,16 +7,17 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(4);
-            
         }
         public function ajuste(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "ajuste";
-                $data['page_title'] = "Ajuste de inventario | Inventario";
-                $data['page_name'] = "Ajuste";
-                $data['panelapp'] = "functions_inventory_adjustment.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "atras" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/almacen/reporte-ajustes/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Almacen/functions_inventory_adjustment.js";
                 $this->views->getView($this,"ajuste",$data);
             }else{
                 header("location: ".base_url());
@@ -25,10 +26,16 @@
         }
         public function reporte(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "ajuste";
-                $data['page_title'] = "Reporte ajuste de inventario | Inventario";
-                $data['page_name'] = "Reporte";
-                $data['panelapp'] = "functions_inventory_adjustment_report.js";
+                $data['botones'] = [
+                    "pdf" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportPdf()"],
+                    "excel" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportExcel()"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/almacen/ajuste-inventario/'"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Almacen/functions_inventory_adjustment_report.js";
                 $this->views->getView($this,"reporte",$data);
             }else{
                 header("location: ".base_url());
@@ -37,10 +44,16 @@
         }
         public function reporteDetalle(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "ajuste";
-                $data['page_title'] = "Reporte ajuste de inventario detalle | Inventario";
-                $data['page_name'] = "Reporte";
-                $data['panelapp'] = "functions_inventory_adjustment_report_det.js";
+                $data['botones'] = [
+                    "pdf" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportPdf()"],
+                    "excel" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportExcel()"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/almacen/ajuste-inventario/'"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Almacen/functions_inventory_adjustment_report_det.js";
                 $this->views->getView($this,"reportedet",$data);
             }else{
                 header("location: ".base_url());

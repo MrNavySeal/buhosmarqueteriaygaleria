@@ -2,8 +2,6 @@ const perPage = document.querySelector("#perPage");
 const initialDateHtml = document.querySelector("#txtInitialDate");
 const finallDateHtml = document.querySelector("#txtFinalDate");
 const searchHtml = document.querySelector("#txtSearch");
-const exportExcel = document.querySelector("#exportExcel");
-const exportPDF = document.querySelector("#exportPDF");
 const modalView = document.querySelector("#modalView") ? new bootstrap.Modal(document.querySelector("#modalView")) :"";
 let arrData = [];
 window.addEventListener("load",function(e){
@@ -27,7 +25,7 @@ async function getData(page = 1){
     formData.append("page",page);
     formData.append("perpage",perPage.value);
     formData.append("search",searchHtml.value);
-    const response = await fetch(base_url+"/inventarioAjuste/getAdjustment",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Almacen/inventarioAjuste/getAdjustment",{method:"POST",body:formData});
     const objData = await response.json();
     const arrHtml = objData.html;
     arrData = objData.export;
@@ -35,8 +33,7 @@ async function getData(page = 1){
     document.querySelector("#tableData").innerHTML =arrHtml.products;
     document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
 }
-
-exportExcel.addEventListener("click",function(){
+function exportExcel(){
     if(arrData.length == 0){
         Swal.fire("Error","No hay datos generados para exportar.","error");
         return false;
@@ -48,11 +45,11 @@ exportExcel.addEventListener("click",function(){
     addField("strFinalDate",finallDateHtml.value,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/InventarioAjusteExport/excel";
+    form.action=base_url+"/Almacen/InventarioAjusteExport/excel";
     form.submit();
     form.remove();
-});
-exportPDF.addEventListener("click",async function(){
+}
+function exportPdf(){
     if(arrData.length == 0){
         Swal.fire("Error","No hay datos generados para exportar.","error");
         return false;
@@ -64,10 +61,10 @@ exportPDF.addEventListener("click",async function(){
     addField("strFinalDate",finallDateHtml.value,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/InventarioAjusteExport/pdf";
+    form.action=base_url+"/Almacen/InventarioAjusteExport/pdf";
     form.submit();
     form.remove();
-});
+}
 function viewItem(id){
     const objCab = arrData.filter(function(e){return e.id == id})[0];
     const objDet = objCab.det;

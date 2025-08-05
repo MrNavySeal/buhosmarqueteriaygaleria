@@ -2,10 +2,6 @@
     headerAdmin($data);
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <div class="d-flex align-items-center mb-4">
-        <a href="<?=base_url()?>/InventarioAjuste/reporte" class="btn btn-primary me-2"><i class="fas fa-arrow-circle-left"></i></a>
-        <h2 class="text-center m-0"><?=$data['page_title']?></h2>
-    </div>
     <div class="row">
         <div class="col-md-5">
             <div class="mt-3">
