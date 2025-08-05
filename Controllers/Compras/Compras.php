@@ -1,19 +1,24 @@
 <?php
-    
     class Compras extends Controllers{
         public function __construct(){
             session_start();
+            if(empty($_SESSION['login'])){
+                header("location: ".base_url());
+                die();
+            }
             parent::__construct();
-            sessionCookie();
-            getPermits(8);
         }
 
         public function compras(){
             if($_SESSION['permitsModule']['r']){
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/compras/nueva-compra/'"],
+                ];
                 $data['page_tag'] = "compras";
                 $data['page_title'] = "Compras";
                 $data['page_name'] = "compras";
-                $data['panelapp'] = "functions_compras.js";
+                $data['panelapp'] = "/Compras/functions_compras.js";
                 $this->views->getView($this,"compras",$data);
             }else{
                 header("location: ".base_url());
@@ -22,10 +27,14 @@
         }
         public function creditos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "compras";
-                $data['page_title'] = "Compras por crédito | Compras";
-                $data['page_name'] = "compras";
-                $data['panelapp'] = "functions_compras_creditos.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/compras/nueva-compra/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Compras/functions_compras_creditos.js";
                 $this->views->getView($this,"creditos",$data);
             }else{
                 header("location: ".base_url());
@@ -34,10 +43,15 @@
         }
         public function detalles(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "compras";
-                $data['page_title'] = "Detalles de compras | Compras";
-                $data['page_name'] = "compras";
-                $data['panelapp'] = "functions_compras_detalles.js";
+                $data['botones'] = [
+                    "atras" => ["mostrar"=>true,"evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/compras/'"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/compras/nueva-compra/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Compras/functions_compras_detalles.js";
                 $this->views->getView($this,"detalles",$data);
             }else{
                 header("location: ".base_url());
@@ -46,10 +60,14 @@
         }
         public function compra(){
             if($_SESSION['permitsModule']['w']){
-                $data['page_tag'] = "compras";
-                $data['page_title'] = "Nueva compra";
-                $data['page_name'] = "compras";
-                $data['panelapp'] = "functions_compra.js";
+                $data['botones'] = [
+                    "atras" => ["mostrar"=>true,"evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/compras/'"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Compras/functions_compra.js";
                 $this->views->getView($this,"compra",$data);
             }else{
                 header("location: ".base_url());

@@ -21,7 +21,7 @@ async function getData(page = 1){
     formData.append("search",searchHtml.value);
     formData.append("initial_date",initialDateHtml.value);
     formData.append("final_date",finallDateHtml.value);
-    const response = await fetch(base_url+"/compras/getDetailPurchases",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Compras/Compras/getDetailPurchases",{method:"POST",body:formData});
     const objData = await response.json();
     arrData = objData.data;
     tableData.innerHTML =objData.html;

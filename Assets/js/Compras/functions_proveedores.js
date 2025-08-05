@@ -10,7 +10,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/compras/getSuppliers",
+        "url": " "+base_url+"/Compras/Compras/getSuppliers",
         "dataSrc":""
     },
     columns: [
@@ -40,22 +40,16 @@ let table = new DataTable("#tableData",{
     "iDisplayLength": 10,
 });
 
-
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML = "Nuevo proveedor";
-        document.querySelector("#txtAddress").value = "";
-        document.querySelector("#txtPhone").value = "";
-        document.querySelector("#txtEmail").value = "";
-        document.querySelector("#txtName").value = "";
-        document.querySelector("#txtNit").value = "";
-        document.querySelector("#idSupplier").value =0;
-        modal.show();
-    });
+function openModal(){
+    document.querySelector(".modal-title").innerHTML = "Nuevo proveedor";
+    document.querySelector("#txtAddress").value = "";
+    document.querySelector("#txtPhone").value = "";
+    document.querySelector("#txtEmail").value = "";
+    document.querySelector("#txtName").value = "";
+    document.querySelector("#txtNit").value = "";
+    document.querySelector("#idSupplier").value =0;
+    modal.show();
 }
-
 if(document.querySelector("#formItem")){
     let form = document.querySelector("#formItem");
     form.addEventListener("submit",function(e){
@@ -78,7 +72,7 @@ if(document.querySelector("#formItem")){
             return false;
         }
         
-        let url = base_url+"/compras/setSupplier";
+        let url = base_url+"/Compras/Compras/setSupplier";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
 
@@ -103,7 +97,7 @@ if(document.querySelector("#formItem")){
 function editItem(id){
     let formData = new FormData();
     formData.append("idSupplier",id);
-    request(base_url+"/compras/getSupplier",formData,"post").then(function(objData){
+    request(base_url+"/Compras/Compras/getSupplier",formData,"post").then(function(objData){
         if(objData.status){
             document.querySelector(".modal-title").innerHTML = "Actualizar proveedor";
             document.querySelector("#txtAddress").value = objData.data.address;
@@ -130,7 +124,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/compras/delSupplier"
+            let url = base_url+"/Compras/Compras/delSupplier"
             let formData = new FormData();
             formData.append("idSupplier",id);
             request(url,formData,"post").then(function(objData){

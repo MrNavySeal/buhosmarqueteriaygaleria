@@ -2,7 +2,7 @@
 
 
 const modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
-const modalView = new bootstrap.Modal(document.querySelector("#modalViewElement"));
+const modalView = document.querySelector("#modalViewElement") ? new bootstrap.Modal(document.querySelector("#modalViewElement")) :"";
 let arrContacts = [];
 let tableData = "";
 let table = new DataTable("#tableData",{
@@ -11,7 +11,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/Proveedores/getSuppliers",
+        "url": " "+base_url+"/Compras/Proveedores/getSuppliers",
         "dataSrc":""
     },
     columns: [
@@ -50,25 +50,21 @@ let table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML = "Nuevo proveedor";
-        document.querySelector(".uploadImg img").setAttribute("src",base_url+"/Assets/images/uploads/category.jpg");
-        document.querySelector("#id").value ="";
-        document.querySelector("#txtName").value = "";
-        document.querySelector("#txtNit").value = "";
-        document.querySelector("#txtEmail").value = "";
-        document.querySelector("#txtPhone").value = "";
-        document.querySelector("#txtWeb").value = "";
-        document.querySelector("#listCountry").value = 0;
-        document.querySelector("#txtAddress").value = "";
-        document.querySelector("#statusList").value =1;
-        document.querySelector("#tableContacts").innerHTML ="";
-        arrContacts = [];
-        modal.show();
-    });
+function openModal(){
+    document.querySelector(".modal-title").innerHTML = "Nuevo proveedor";
+    document.querySelector(".uploadImg img").setAttribute("src",base_url+"/Assets/images/uploads/category.jpg");
+    document.querySelector("#id").value ="";
+    document.querySelector("#txtName").value = "";
+    document.querySelector("#txtNit").value = "";
+    document.querySelector("#txtEmail").value = "";
+    document.querySelector("#txtPhone").value = "";
+    document.querySelector("#txtWeb").value = "";
+    document.querySelector("#listCountry").value = 0;
+    document.querySelector("#txtAddress").value = "";
+    document.querySelector("#statusList").value =1;
+    document.querySelector("#tableContacts").innerHTML ="";
+    arrContacts = [];
+    modal.show();
 }
 if(document.querySelector("#formItem")){
     tableData = document.querySelector("#tableContacts")
@@ -81,18 +77,18 @@ if(document.querySelector("#formItem")){
         uploadImg(img,imgLocation);
     });
 
-    request(base_url+"/proveedores/getCountries","","get").then(function(objData){
+    request(base_url+"/Compras/Proveedores/getCountries","","get").then(function(objData){
         intCountry.innerHTML = objData;
     });
 
     intCountry.addEventListener("change",function(){
-        request(base_url+"/proveedores/getSelectCountry/"+intCountry.value,"","get").then(function(objData){
+        request(base_url+"/Compras/Proveedores/getSelectCountry/"+intCountry.value,"","get").then(function(objData){
             intState.innerHTML = objData;
         });
         intCity.innerHTML = "";
     });
     intState.addEventListener("change",function(){
-        request(base_url+"/proveedores/getSelectState/"+intState.value,"","get").then(function(objData){
+        request(base_url+"/Compras/Proveedores/getSelectState/"+intState.value,"","get").then(function(objData){
             intCity.innerHTML = objData;
         });
     });
@@ -130,7 +126,7 @@ if(document.querySelector("#formItem")){
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
-        request(base_url+"/proveedores/setSupplier",formData,"post").then(function(objData){
+        request(base_url+"/Compras/Proveedores/setSupplier",formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -189,7 +185,7 @@ function deleteContact(item){
 function viewItem(id){
     let formData = new FormData();
     formData.append("id",id);
-    request(base_url+"/Proveedores/getSupplier",formData,"post").then(function(objData){
+    request(base_url+"/Compras/Proveedores/getSupplier",formData,"post").then(function(objData){
         if(objData.status){
             let html = "";
             const contacts = objData.data.contacts;
@@ -264,7 +260,7 @@ function viewItem(id){
 function editItem(id){
     let formData = new FormData();
     formData.append("id",id);
-    request(base_url+"/Proveedores/getSupplier",formData,"post").then(function(objData){
+    request(base_url+"/Compras/Proveedores/getSupplier",formData,"post").then(function(objData){
         if(objData.status){
             document.querySelector(".modal-title").innerHTML = "Actualizar proveedor";
             document.querySelector(".uploadImg img").setAttribute("src",objData.data.img);
@@ -310,7 +306,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/Proveedores/delSupplier"
+            let url = base_url+"/Compras/Proveedores/delSupplier"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){

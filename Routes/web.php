@@ -48,11 +48,11 @@
     $router->setRoute("pedidos/factura/","Pedidos/Pedidos/pdf");
 
     //Compras
-    $router->setRoute("compras/","Compras/compras",false);
-    $router->setRoute("compras/nueva-compra/","Compras/compra",false);
-    $router->setRoute("compras/compras-credito/","Compras/creditos",false);
-    $router->setRoute("compras/compras-detalle/","Compras/detalles",false);
-    $router->setRoute("compras/proveedores/","Proveedores/proveedores",false);
+    $router->setRoute("compras/","Compras/Compras/compras",false);
+    $router->setRoute("compras/nueva-compra/","Compras/Compras/compra",false);
+    $router->setRoute("compras/compras-credito/","Compras/Compras/creditos",false);
+    $router->setRoute("compras/compras-detalle/","Compras/Compras/detalles",false);
+    $router->setRoute("compras/proveedores/","Compras/Proveedores/proveedores",false);
 
     //Contabilidad
     $router->setRoute("contabilidad/categorias/","Contabilidad/categorias",false);

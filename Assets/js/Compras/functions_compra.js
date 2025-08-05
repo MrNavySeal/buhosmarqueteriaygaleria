@@ -22,6 +22,7 @@ window.addEventListener("load",function(){
 });
 
 btnPurchase.addEventListener("click",function(){
+    getSuppliers();
     modalPurchase.show();
 });
 btnClean.addEventListener("click",function(){
@@ -40,7 +41,7 @@ formSetOrder.addEventListener("submit",function(e){
         return false;
     }
     
-    let url = base_url+"/Compras/setPurchase";
+    let url = base_url+"/Compras/Compras/setPurchase";
     let formData = new FormData(formSetOrder);
     formData.append("products",JSON.stringify(arrProducts));
     formData.append("total",JSON.stringify(currentTotal()));
@@ -107,7 +108,7 @@ function delItem(element){
     element.remove();
 }
 function getSuppliers(){
-    request(base_url+"/compras/getSuppliers","","get").then(function(res){
+    request(base_url+"/Compras/Compras/getSuppliers","","get").then(function(res){
         arrSuppliers = res;
     });
 }
@@ -117,7 +118,7 @@ async function getProducts(page = 1){
     formData.append("page",page);
     formData.append("perpage",perPage.value);
     formData.append("search",searchHtml.value);
-    const response = await fetch(base_url+"/Compras/getProducts",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Compras/Compras/getProducts",{method:"POST",body:formData});
     const objData = await response.json();
     const arrHtml = objData.html;
     arrData = objData.data;

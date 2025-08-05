@@ -7,15 +7,17 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(11);
         }
         public function proveedores(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "proveedor";
-                $data['page_title'] = "Proveedores | Compras";
-                $data['page_name'] = "proveedor";
-                $data['panelapp'] = "functions_supplier.js";
+                $data['botones'] = [
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Compras/functions_supplier.js";
                 $this->views->getView($this,"proveedores",$data);
             }else{
                 header("location: ".base_url());

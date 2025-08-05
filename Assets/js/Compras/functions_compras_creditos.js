@@ -27,7 +27,7 @@ async function getData(page = 1){
     formData.append("search",searchHtml.value);
     formData.append("initial_date",initialDateHtml.value);
     formData.append("final_date",finallDateHtml.value);
-    const response = await fetch(base_url+"/compras/getCreditPurchases",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Compras/Compras/getCreditPurchases",{method:"POST",body:formData});
     const objData = await response.json();
     arrData = objData.data;
     tableData.innerHTML =objData.html;
@@ -47,7 +47,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/compras/delPurchase"
+            let url = base_url+"/Compras/Compras/delPurchase"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){
@@ -238,7 +238,7 @@ async function saveAdvance(){
     btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
     btnAdd.removeAttribute("disabled");
 
-    const response = await fetch(base_url+"/compras/setAdvance",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Compras/Compras/setAdvance",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
         Swal.fire("Guardado",objData.msg,"success");
