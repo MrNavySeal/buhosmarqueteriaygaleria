@@ -32,11 +32,11 @@
     $router->setRoute("marqueteria/ejemplos/","Marqueteria/MarqueteriaEjemplos/ejemplos",false);
 
     //Almacén
-    $router->setRoute("almacen/inventario/","Inventario/inventario",false);
-    $router->setRoute("almacen/kardex/","Inventario/kardex",false);
-    $router->setRoute("almacen/ajuste-inventario/","InventarioAjuste/ajuste",false);
-    $router->setRoute("almacen/reporte-ajustes/","InventarioAjuste/reporte",false);
-    $router->setRoute("almacen/reporte-ajustes-detalle/","InventarioAjuste/reporteDetalle",false);
+    $router->setRoute("almacen/inventario/","Almacen/Inventario/inventario",false);
+    $router->setRoute("almacen/kardex/","Almacen/Inventario/kardex",false);
+    $router->setRoute("almacen/ajuste-inventario/","Almacen/InventarioAjuste/ajuste",false);
+    $router->setRoute("almacen/reporte-ajustes/","Almacen/InventarioAjuste/reporte",false);
+    $router->setRoute("almacen/reporte-ajustes-detalle/","Almacen/InventarioAjuste/reporteDetalle",false);
 
     //Pedidos
     $router->setRoute("pedidos/cotizaciones/","Cotizaciones/cotizaciones",false);

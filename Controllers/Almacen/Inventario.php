@@ -7,16 +7,20 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(4);
             
         }
         public function inventario(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "inventario";
-                $data['page_title'] = "Inventario | Panel";
-                $data['page_name'] = "inventario";
-                $data['panelapp'] = "functions_inventory.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                    "pdf" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportPdf()"],
+                    "excel" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportExcel()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Almacen/functions_inventory.js";
                 $this->views->getView($this,"inventario",$data);
             }else{
                 header("location: ".base_url());
@@ -25,10 +29,16 @@
         }
         public function kardex(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Kardex";
-                $data['page_title'] = "Kardex | Panel";
-                $data['page_name'] = "kardex";
-                $data['panelapp'] = "functions_inventory_kardex.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                    "pdf" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportPdf()"],
+                    "excel" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportExcel()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Almacen/functions_inventory_kardex.js";
                 $this->views->getView($this,"kardex",$data);
             }else{
                 header("location: ".base_url());

@@ -4,6 +4,8 @@
     $duplicar = $data['botones']['duplicar']['titulo'];
     $nuevo = $data['botones']['nuevo']['titulo'];
     $guardar = $data['botones']['guardar']['titulo'];
+    $excel = $data['botones']['excel']['titulo'];
+    $pdf = $data['botones']['pdf']['titulo'];
 ?>
 <div class="d-flex justify-content-end mb-3">
     <?php if($data['botones']['atras']['mostrar']) { ?>
@@ -11,6 +13,13 @@
     <?php }?>
     <?php if($data['botones']['buscar']['mostrar']) { ?>
         <button type="button" class="btn btn-primary mx-1" <?=$data['botones']['buscar']['evento']."=".'"'.$data['botones']['buscar']['funcion'].'"'?>><?= $buscar != "" ? $buscar : "Buscar"?> <i class="fas fa-search"></i></button>
+    <?php }?>
+    
+    <?php if($data['botones']['pdf']['mostrar']) { ?>
+        <button type="button" class="btn btn-primary mx-1" <?=$data['botones']['pdf']['evento']."=".'"'.$data['botones']['pdf']['funcion'].'"'?>><?= $pdf != "" ? $pdf : "PDF"?> <i class="fas fa-file-pdf"></i></button>
+    <?php }?>
+    <?php if($data['botones']['excel']['mostrar']) { ?>
+        <button type="button" class="btn btn-primary mx-1" <?=$data['botones']['excel']['evento']."=".'"'.$data['botones']['excel']['funcion'].'"'?>><?= $excel != "" ? $excel : "Excel"?> <i class="fas fa-file-excel"></i></button>
     <?php }?>
     <?php if($data['botones']['duplicar']['mostrar']) { ?>
         <button type="button" class="btn btn-primary mx-1" <?=$data['botones']['duplicar']['evento']."=".'"'.$data['botones']['duplicar']['funcion'].'"'?>><?= $duplicar != "" ? $duplicar : "Duplicar ventana"?> <i class="fas fa-window-restore"></i></button>

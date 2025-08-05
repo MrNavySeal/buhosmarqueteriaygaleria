@@ -20,7 +20,7 @@ btnSave.addEventListener("click",function(){
         Swal.fire("Atención!","Debe agregar al menos un artículo.","warning");
         return false;
     }
-    let url = base_url+"/InventarioAjuste/setAdjustment";
+    let url = base_url+"/Almacen/InventarioAjuste/setAdjustment";
     let formData = new FormData();
     formData.append("concept",document.querySelector("#txtNote").value);
     formData.append("products",JSON.stringify(arrProducts));
@@ -57,7 +57,7 @@ async function getProducts(page = 1){
     formData.append("page",page);
     formData.append("perpage",perPage.value);
     formData.append("search",searchHtml.value);
-    const response = await fetch(base_url+"/inventarioAjuste/getProducts",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Almacen/inventarioAjuste/getProducts",{method:"POST",body:formData});
     const objData = await response.json();
     const arrHtml = objData.html;
     arrData = objData.data;
