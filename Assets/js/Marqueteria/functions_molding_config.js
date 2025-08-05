@@ -8,7 +8,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/MarqueteriaConfiguracion/getCategories",
+        "url": " "+base_url+"/Marqueteria/MarqueteriaConfiguracion/getCategories",
         "dataSrc":""
     },
     columns: [
@@ -61,7 +61,7 @@ if(document.querySelector("#formItem")){
             arrProps.push(obj);
         }
         
-        let url = base_url+"/MarqueteriaConfiguracion/setConfig";
+        let url = base_url+"/Marqueteria/MarqueteriaConfiguracion/setConfig";
         let formData = new FormData(form);
         formData.append("props",JSON.stringify(arrProps));
         formData.append("is_cost", isCost ? 1 : 0);
@@ -85,7 +85,7 @@ if(document.querySelector("#formItem")){
     })
 }
 async function getData(){
-    const response = await fetch(base_url+"/MarqueteriaConfiguracion/getData");
+    const response = await fetch(base_url+"/Marqueteria/MarqueteriaConfiguracion/getData");
     const objData = await response.json();
     const arrFraming = objData.framing;
     const arrProps = objData.properties;
@@ -123,7 +123,7 @@ async function editItem(id){
     document.querySelector("#id").value = id;
     const formData = new FormData();
     formData.append("id",id);
-    const response = await fetch(base_url+"/MarqueteriaConfiguracion/getConfig",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Marqueteria/MarqueteriaConfiguracion/getConfig",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
         const data = objData.data;

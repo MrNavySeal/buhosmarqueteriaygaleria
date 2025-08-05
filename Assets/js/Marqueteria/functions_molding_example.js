@@ -8,7 +8,7 @@ const table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/MarqueteriaEjemplos/getExamples",
+        "url": " "+base_url+"/Marqueteria/MarqueteriaEjemplos/getExamples",
         "dataSrc":""
     },
     columns: [
@@ -46,10 +46,7 @@ const table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    const btnNew = document.querySelector("#btnNew");
+function openModal(){
     const modalFrameCategory = new bootstrap.Modal(document.querySelector("#modalFrameSetExample"));
     modalFrame = new bootstrap.Modal(document.querySelector("#modalFrame"));
     const tableMolding = new DataTable("#tableMolding",{
@@ -57,7 +54,7 @@ if(document.querySelector("#btnNew")){
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "ajax":{
-            "url": " "+base_url+"/MarqueteriaEjemplos/getMoldingProducts",
+            "url": " "+base_url+"/Marqueteria/MarqueteriaEjemplos/getMoldingProducts",
             "dataSrc":""
         },
         "initComplete":function( settings, json){
@@ -77,17 +74,15 @@ if(document.querySelector("#btnNew")){
         "aServerSide":true,
         "iDisplayLength": 10,
     });
-    btnNew.addEventListener("click",function(){
-        document.querySelector("#idExample").value = 0;
-        document.querySelector("#modalTitleFrame").innerHTML = "Nuevo ejemplo";
-        document.querySelector("#strDate").value = new Date().toISOString().split('T')[0];
-        document.querySelector(".uploadImg img").setAttribute("src",base_url+"/assets/images/uploads/category.jpg");
-        document.querySelector("#orderList").value = 5;
-        document.querySelector("#isVisible").checked = 0;
-        document.querySelector("#strReview").value = "";
-        document.querySelector("#strName").value = "";
-        modalFrameCategory.show();
-    });
+    document.querySelector("#idExample").value = 0;
+    document.querySelector("#modalTitleFrame").innerHTML = "Nuevo ejemplo";
+    document.querySelector("#strDate").value = new Date().toISOString().split('T')[0];
+    document.querySelector(".uploadImg img").setAttribute("src",base_url+"/assets/images/uploads/category.jpg");
+    document.querySelector("#orderList").value = 5;
+    document.querySelector("#isVisible").checked = 0;
+    document.querySelector("#strReview").value = "";
+    document.querySelector("#strName").value = "";
+    modalFrameCategory.show();
 }
 if(document.querySelector("#formItem")){
     let form = document.querySelector("#formItem");
@@ -111,7 +106,7 @@ if(document.querySelector("#formItem")){
                 return false;
             }
         }
-        let url = base_url+"/MarqueteriaEjemplos/setExample";
+        let url = base_url+"/Marqueteria/MarqueteriaEjemplos/setExample";
         let formData = new FormData(form);
         formData.append("frame",JSON.stringify(objProduct));
         formData.append("is_visible",isVisible ? 1 : 0);
@@ -183,7 +178,7 @@ function addProduct(product={},topic=1){
 function viewItem(id){
     let formData = new FormData();
     formData.append("id",id);
-    request(base_url+"/MarqueteriaEjemplos/getExample",formData,"post").then(function(objData){
+    request(base_url+"/Marqueteria/MarqueteriaEjemplos/getExample",formData,"post").then(function(objData){
         const data = objData.data;
         const specs = data.specs;
         let html="";
@@ -215,7 +210,7 @@ function viewItem(id){
 function editItem(id){
     let formData = new FormData();
     formData.append("id",id);
-    request(base_url+"/MarqueteriaEjemplos/getExample",formData,"post").then(function(objData){
+    request(base_url+"/Marqueteria/MarqueteriaEjemplos/getExample",formData,"post").then(function(objData){
         const data = objData.data;
         const specs = data.specs;
         let html="";
@@ -271,7 +266,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/MarqueteriaEjemplos/delExample"
+            let url = base_url+"/Marqueteria/MarqueteriaEjemplos/delExample"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){

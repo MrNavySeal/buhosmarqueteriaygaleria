@@ -7,17 +7,18 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(12);
-            
         }
         public function ejemplos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Ejemplos";
-                $data['page_title'] = "Ejemplos | Marquetería";
-                $data['page_name'] = "ejemplos";
-                $data['panelapp'] = "functions_molding_example.js";
-                $data['framing'] = "functions_molding_custom.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL."/marqueteria/ejemplos/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Marqueteria/functions_molding_example.js";
+                $data['framing'] = "/Marqueteria/functions_molding_custom.js";
                 $this->views->getView($this,"ejemplos",$data);
             }else{
                 header("location: ".base_url());

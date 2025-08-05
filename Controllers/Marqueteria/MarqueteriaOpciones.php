@@ -7,16 +7,17 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(12);
-            
         }
         public function opciones(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Opciones";
-                $data['page_title'] = "Opciones de propiedad | Marquetería";
-                $data['page_name'] = "opciones";
-                $data['panelapp'] = "functions_molding_options.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL."/marqueteria/opciones-propiedades/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Marqueteria/functions_molding_options.js";
                 $this->views->getView($this,"opciones",$data);
             }else{
                 header("location: ".base_url());

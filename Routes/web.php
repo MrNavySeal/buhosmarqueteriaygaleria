@@ -24,12 +24,12 @@
     $router->setRoute("productos/caracteristicas/","Productos/ProductosOpciones/caracteristicas",false);
 
     //Marquetería
-    $router->setRoute("marqueteria/colores/","Marqueteria/colores",false);
-    $router->setRoute("marqueteria/categorias/","Marqueteria/categorias",false);
-    $router->setRoute("marqueteria/opciones-propiedades/","Marqueteria/propiedades",false);
-    $router->setRoute("marqueteria/categorias/","MarqueteriaOpciones/opciones",false);
-    $router->setRoute("marqueteria/configuracion/","MarqueteriaConfiguracion/configuracion",false);
-    $router->setRoute("marqueteria/ejemplos/","MarqueteriaEjemplos/ejemplos",false);
+    $router->setRoute("marqueteria/colores/","Marqueteria/Marqueteria/colores",false);
+    $router->setRoute("marqueteria/categorias/","Marqueteria/Marqueteria/categorias",false);
+    $router->setRoute("marqueteria/propiedades/","Marqueteria/Marqueteria/propiedades",false);
+    $router->setRoute("marqueteria/opciones-propiedades/","Marqueteria/MarqueteriaOpciones/opciones",false);
+    $router->setRoute("marqueteria/configuracion/","Marqueteria/MarqueteriaConfiguracion/configuracion",false);
+    $router->setRoute("marqueteria/ejemplos/","Marqueteria/MarqueteriaEjemplos/ejemplos",false);
 
     //Almacén
     $router->setRoute("almacen/inventario/","Inventario/inventario",false);

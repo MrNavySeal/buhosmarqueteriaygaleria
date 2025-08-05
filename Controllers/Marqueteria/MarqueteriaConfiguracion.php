@@ -7,16 +7,16 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(12);
-            
         }
         public function configuracion(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Configuración";
-                $data['page_title'] = "Configuracion de categorias | Marquetería";
-                $data['page_name'] = "configuracion";
-                $data['panelapp'] = "functions_molding_config.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL."/marqueteria/configuracion/"."','','');mypop.focus();"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Marqueteria/functions_molding_config.js";
                 $this->views->getView($this,"configuracion",$data);
             }else{
                 header("location: ".base_url());

@@ -7,7 +7,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/Marqueteria/getProperties",
+        "url": " "+base_url+"/Marqueteria/Marqueteria/getProperties",
         "dataSrc":""
     },
     columns: [
@@ -34,17 +34,13 @@ let table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-if(document.querySelector("#btnNew")){
+function openModal(){
     getFraming();
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML = "Nueva propiedad";
-        document.querySelector("#id").value = "";
-        document.querySelector("#txtName").value = "";
-        document.querySelector("#statusList").value = 1;
-        modal.show();
-    });
+    document.querySelector(".modal-title").innerHTML = "Nueva propiedad";
+    document.querySelector("#id").value = "";
+    document.querySelector("#txtName").value = "";
+    document.querySelector("#statusList").value = 1;
+    modal.show();
 }
 if(document.querySelector("#formItem")){
     let form = document.querySelector("#formItem");
@@ -67,7 +63,7 @@ if(document.querySelector("#formItem")){
             }
             arrFraming.push(obj);
         }
-        let url = base_url+"/Marqueteria/setProperty";
+        let url = base_url+"/Marqueteria/Marqueteria/setProperty";
         let formData = new FormData(form);
         formData.append("is_visible",isVisible ? 1 : 0);
         formData.append("framing",JSON.stringify(arrFraming));
@@ -92,7 +88,7 @@ if(document.querySelector("#formItem")){
 function editItem(id){
     let formData = new FormData();
     formData.append("id",id);
-    request(base_url+"/Marqueteria/getProperty",formData,"post").then(function(objData){
+    request(base_url+"/Marqueteria/Marqueteria/getProperty",formData,"post").then(function(objData){
         document.querySelector("#id").value = objData.data.id;
         document.querySelector("#txtName").value = objData.data.name;
         document.querySelector("#statusList").value = objData.data.status;
@@ -118,7 +114,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/marqueteria/delProperty"
+            let url = base_url+"/Marqueteria/Marqueteria/delProperty"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){
@@ -133,6 +129,6 @@ function deleteItem(id){
     });
 }
 async function getFraming(){
-    const response = await fetch(base_url+"/Marqueteria/getFraming");
+    const response = await fetch(base_url+"/Marqueteria/Marqueteria/getFraming");
     document.querySelector("#tableFraming").innerHTML =await response.json(); 
 }

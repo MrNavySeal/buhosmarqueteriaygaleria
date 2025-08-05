@@ -12,7 +12,7 @@ const table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/MarqueteriaOpciones/getOptions",
+        "url": " "+base_url+"/Marqueteria/MarqueteriaOpciones/getOptions",
         "dataSrc":""
     },
     columns: [
@@ -39,9 +39,7 @@ const table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    const btnNew = document.querySelector("#btnNew");
+function openModal(){
     const divMargin = document.querySelector("#divMargin");
     const checkMargin = document.querySelector("#isMargin");
     checkMargin.addEventListener("change",function(){
@@ -51,22 +49,19 @@ if(document.querySelector("#btnNew")){
             divMargin.classList.add("d-none");
         }
     });
-    btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML = "Nueva opción de propiedad";
-        document.querySelector("#id").value = "";
-        document.querySelector("#txtName").value = "";
-        document.querySelector("#txtTag").value = "";
-        document.querySelector("#txtTagFrame").value = "";
-        document.querySelector("#statusList").value = 1;
-        document.querySelector("#isMargin").checked = false;
-        document.querySelector("#isColor").checked = false;
-        document.querySelector("#isDblFrame").checked = false;
-        document.querySelector("#isBocel").checked = false;
-        document.querySelector("#isVisible").checked = false;
-        document.querySelector("#txtMargin").value = 5;
-        modal.show();
-    });
-    
+    document.querySelector(".modal-title").innerHTML = "Nueva opción de propiedad";
+    document.querySelector("#id").value = "";
+    document.querySelector("#txtName").value = "";
+    document.querySelector("#txtTag").value = "";
+    document.querySelector("#txtTagFrame").value = "";
+    document.querySelector("#statusList").value = 1;
+    document.querySelector("#isMargin").checked = false;
+    document.querySelector("#isColor").checked = false;
+    document.querySelector("#isDblFrame").checked = false;
+    document.querySelector("#isBocel").checked = false;
+    document.querySelector("#isVisible").checked = false;
+    document.querySelector("#txtMargin").value = 5;
+    modal.show();
     getData();
 }
 if(document.querySelector("#formItem")){
@@ -89,7 +84,7 @@ if(document.querySelector("#formItem")){
             return false;
         }
         
-        let url = base_url+"/MarqueteriaOpciones/setOption";
+        let url = base_url+"/Marqueteria/MarqueteriaOpciones/setOption";
         let formData = new FormData(form);
         formData.append("is_margin",isMargin ? 1 : 0);
         formData.append("is_color",isColor ? 1 : 0);
@@ -117,7 +112,7 @@ if(document.querySelector("#formItem")){
     })
 }
 async function getData(){
-    const response = await fetch(base_url+"/MarqueteriaOpciones/getData");
+    const response = await fetch(base_url+"/Marqueteria/MarqueteriaOpciones/getData");
     const objData = await response.json();
     const arrProperties = objData.properties;
     arrMaterials = objData.materials;
@@ -148,7 +143,7 @@ async function saveMaterial(){
     formData.append("material",JSON.stringify(arrSelectedMaterial));
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
-    const response = await fetch(base_url+"/MarqueteriaOpciones/setMaterial",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Marqueteria/MarqueteriaOpciones/setMaterial",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
         Swal.fire("Guardado",objData.msg,"success");
@@ -208,7 +203,7 @@ function deleteMaterial(item,id){
 function editItem(id){
     let formData = new FormData();
     formData.append("id",id);
-    request(base_url+"/MarqueteriaOpciones/getOption",formData,"post").then(function(objData){
+    request(base_url+"/Marqueteria/MarqueteriaOpciones/getOption",formData,"post").then(function(objData){
         document.querySelector("#id").value = objData.data.id;
         document.querySelector("#txtName").value = objData.data.name;
         document.querySelector("#txtTag").value = objData.data.tag;
@@ -243,7 +238,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/MarqueteriaOpciones/delOption"
+            let url = base_url+"/Marqueteria/MarqueteriaOpciones/delOption"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){

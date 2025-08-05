@@ -6,17 +6,19 @@
                 header("location: ".base_url());
                 die();
             }
-            parent::__construct();
-            sessionCookie();
-            getPermits(12);
-            
+            parent::__construct(); 
         }
         public function categorias(){
+            
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Categorias";
-                $data['page_title'] = "Categorias | Marquetería";
-                $data['page_name'] = "categorias";
-                $data['panelapp'] = "functions_moldingcategory.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL."/marqueteria/categorias/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Marqueteria/functions_moldingcategory.js";
                 $this->views->getView($this,"categorias",$data);
             }else{
                 header("location: ".base_url());
@@ -25,10 +27,14 @@
         }
         public function propiedades(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Propiedades";
-                $data['page_title'] = "Propiedades | Marquetería";
-                $data['page_name'] = "propiedades";
-                $data['panelapp'] = "functions_molding_props.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL."/marqueteria/propiedades/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Marqueteria/functions_molding_props.js";
                 $this->views->getView($this,"propiedades",$data);
             }else{
                 header("location: ".base_url());
@@ -37,10 +43,14 @@
         }
         public function colores(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Colores";
-                $data['page_title'] = "Colores";
-                $data['page_name'] = "colores";
-                $data['panelapp'] = "functions_molding_colors.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL."/marqueteria/colores/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Marqueteria/functions_molding_colors.js";
                 $this->views->getView($this,"colores",$data);
             }else{
                 header("location: ".base_url());
