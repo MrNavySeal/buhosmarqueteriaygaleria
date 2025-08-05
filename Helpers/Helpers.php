@@ -746,6 +746,7 @@
                         $request['module'] = $module['name'];
                         $request['option'] = $optionSection['name'];
                         $request['moduleid'] = $module['id'];
+                        $request['route'] = "/".$optionSection['route'];
                         $arrOptionsPermits[$arrOptionsPermits['route']] = $request;
                     }
                     $section['options'] = $arrOptionsSection;
@@ -780,6 +781,7 @@
                     $request['option'] = $option['name'];
                     $request['module'] = $module['name'];
                     $request['moduleid'] = $module['id'];
+                    $request['route'] = "/".$option['route'];
                     $arrOptionsPermits[$option['route']] = $request;
                 }
                 $module['options'] = $arrOptions;
