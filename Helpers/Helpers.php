@@ -744,6 +744,7 @@
                         }
                         $request['roleid'] = $intRolId;
                         $request['module'] = $module['name'];
+                        $request['option'] = $optionSection['name'];
                         $request['moduleid'] = $module['id'];
                         $arrOptionsPermits[$arrOptionsPermits['route']] = $request;
                     }
@@ -776,6 +777,7 @@
                         $request["d"] = 1;
                     }
                     $request['roleid'] = $intRolId;
+                    $request['option'] = $option['name'];
                     $request['module'] = $module['name'];
                     $request['moduleid'] = $module['id'];
                     $arrOptionsPermits[$option['route']] = $request;
