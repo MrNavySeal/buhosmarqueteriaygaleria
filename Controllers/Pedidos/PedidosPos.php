@@ -9,16 +9,18 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(6);
         }
         public function venta(){
             if($_SESSION['permitsModule']['w']){
-                $data['page_tag'] = "Punto de venta";
-                $data['page_title'] = "Punto de venta | Pedidos";
-                $data['page_name'] = "punto de venta";
-                $data['panelapp'] = "functions_orders_venta.js";
-                $data['framing'] = "functions_molding_custom.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "atras" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Pedidos/functions_orders_venta.js";
+                $data['framing'] = "/Marqueteria/functions_molding_custom.js";
                 $this->views->getView($this,"venta",$data);
             }else{
                 header("location: ".base_url());

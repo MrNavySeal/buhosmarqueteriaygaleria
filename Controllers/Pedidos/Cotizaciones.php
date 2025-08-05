@@ -1,23 +1,24 @@
 <?php
     class Cotizaciones extends Controllers{
         public function __construct(){
-            
             session_start();
             if(empty($_SESSION['login'])){
                 header("location: ".base_url());
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(6);
         }
 
         public function cotizaciones(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "cotizaciones";
-                $data['page_title'] = "Cotizaciones | Pedidos";
-                $data['page_name'] = "cotizaciones";
-                $data['panelapp'] = "functions_quotes.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/punto-venta/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Pedidos/functions_quotes.js";
                 $this->views->getView($this,"cotizaciones",$data);
             }else{
                 header("location: ".base_url());
@@ -134,7 +135,7 @@
                     for ($i=0; $i < count($request); $i++) { 
                         $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['id'].')"><i class="fas fa-eye"></i></button>';
                         $btnWpp="";
-                        $btnPdf='<a href="'.base_url().'/Cotizaciones/pdf/'.$request[$i]['id'].'" target="_blank" class="btn btn-primary text-white m-1" type="button" title="Imprimir factura"><i class="fas fa-print"></i></a>';
+                        $btnPdf='<a href="'.base_url().'/Pedidos/Cotizaciones/pdf/'.$request[$i]['id'].'" target="_blank" class="btn btn-primary text-white m-1" type="button" title="Imprimir factura"><i class="fas fa-print"></i></a>';
                         $btnEdit ="";
                         $status=$request[$i]['status'];
                         $currentDate = date("Y-m-d",strtotime("now"));

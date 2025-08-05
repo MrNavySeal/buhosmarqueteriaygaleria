@@ -27,7 +27,7 @@ let tableMolding = new DataTable("#tableMolding",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/PedidosPos/getMoldingProducts",
+        "url": " "+base_url+"/Pedidos/PedidosPos/getMoldingProducts",
         "dataSrc":""
     },
     "initComplete":function( settings, json){
@@ -62,7 +62,7 @@ async function getProducts(page = 1){
     formData.append("page",page);
     formData.append("perpage",perPage.value);
     formData.append("search",searchHtml.value);
-    const response = await fetch(base_url+"/PedidosPos/getProducts",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Pedidos/PedidosPos/getProducts",{method:"POST",body:formData});
     const objData = await response.json();
     const arrHtml = objData.html;
     arrData = objData.data;
@@ -73,6 +73,7 @@ async function getProducts(page = 1){
 
 /*************************Events*******************************/
 btnPurchase.addEventListener("click",function(){
+    getCustomers();
     modalPurchase.show();
     orderType = 1;
     document.querySelector("#modalPurchase .modal-title").innerHTML="Información de pago";
@@ -125,7 +126,7 @@ formSetOrder.addEventListener("submit",function(e){
         Swal.fire("Error","Debe agregar al menos un artículo","error");
         return false;
     }
-    let url = base_url+"/PedidosPos/setOrder";
+    let url = base_url+"/Pedidos/PedidosPos/setOrder";
     let formData = new FormData(formSetOrder);
     formData.append("products",JSON.stringify(arrProducts));
     formData.append("order_type",orderType);
@@ -168,7 +169,7 @@ function delItem(element){
     element.remove();
 }
 function getCustomers(){
-    request(base_url+"/PedidosPos/getCustomers","","get").then(function(res){
+    request(base_url+"/Pedidos/PedidosPos/getCustomers","","get").then(function(res){
         arrCustomers = res;
     });
 }

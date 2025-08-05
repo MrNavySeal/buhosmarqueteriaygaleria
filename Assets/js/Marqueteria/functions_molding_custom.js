@@ -623,7 +623,7 @@ async function getConfig(element,id){
     formData.append("id",id);
     element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     element.setAttribute("disabled","");
-    const response = await fetch(base_url+"/PedidosPos/getConfig",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Pedidos/PedidosPos/getConfig",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
         document.querySelector("#idCategory").value = id;
@@ -868,7 +868,7 @@ async function showDefaultFraming(id){
     formData.append("color_border_id",colorBorderId);
     formData.append("type_frame",sortFrame.getAttribute("data-id"));
     formData.append("img","");
-    const response = await fetch(base_url+"/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
+    const response = await fetch(base_url+"/Marqueteria/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData})
     const objData = await response.json();
     if(objData.status){
         arrFrame = objData.specs;

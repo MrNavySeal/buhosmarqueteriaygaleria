@@ -1,23 +1,24 @@
 <?php
     class Pedidos extends Controllers{
         public function __construct(){
-            
             session_start();
             if(empty($_SESSION['login'])){
                 header("location: ".base_url());
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(6);
         }
 
         public function pedidos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "pedido";
-                $data['page_title'] = "Pedidos";
-                $data['page_name'] = "pedidos";
-                $data['panelapp'] = "functions_orders.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/punto-venta/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Pedidos/functions_orders.js";
                 $this->views->getView($this,"pedidos",$data);
             }else{
                 header("location: ".base_url());
@@ -26,10 +27,14 @@
         }
         public function creditos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "pedido";
-                $data['page_title'] = "Pedidos a crédito | Pedidos";
-                $data['page_name'] = "creditos";
-                $data['panelapp'] = "functions_orders_creditos.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/punto-venta/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Pedidos/functions_orders_creditos.js";
                 $this->views->getView($this,"creditos",$data);
             }else{
                 header("location: ".base_url());
@@ -38,10 +43,15 @@
         }
         public function detalle(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "pedido";
-                $data['page_title'] = "Detalle de pedidos | Pedidos";
-                $data['page_name'] = "creditos";
-                $data['panelapp'] = "functions_orders_detail.js";
+                $data['botones'] = [
+                    "atras" => ["mostrar"=>true,"evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/'"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/punto-venta/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Pedidos/functions_orders_detail.js";
                 $this->views->getView($this,"detalle",$data);
             }else{
                 header("location: ".base_url());
@@ -55,10 +65,15 @@
                     $idPerson= $_SESSION['idUser'];
                 }
                 $data['transaction'] = $this->model->selectTransaction($idTransaction,$idPerson);
-                $data['page_tag'] = "Transacción";
-                $data['page_title'] = "Transacción | Pedidos";
-                $data['page_name'] = "transaccion";
-                $data['panelapp'] = "functions_orders.js";
+                $data['botones'] = [
+                    "atras" => ["mostrar"=>true,"evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/'"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/punto-venta/'"],
+                ];
+                $data['page_tag'] = "Transacción | ".$_SESSION['permitsModule']['module'];
+                $data['page_title'] = "Transacción | ".$_SESSION['permitsModule']['module'];
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['module']);
+                $data['panelapp'] = "/Pedidos/functions_orders.js";
                 $this->views->getView($this,"transaccion",$data);
                 
             }else{
@@ -68,7 +83,7 @@
         }
         public function pdf($params){
             if($_SESSION['permitsModule']['r']){
-                $data['page_title'] = " Factura de venta No. ".$params." | "."Pedidos";
+                $data['page_title'] = " Factura de venta No. ".$params." | ".$_SESSION['permitsModule']['module'];
                 $data['file_name'] = 'factura_venta_'.$params.'_'.rand()*10;
                 $data['data'] = $this->model->selectOrder($params);
                 $this->views->getView($this,"pedido-pdf",$data);
@@ -100,7 +115,7 @@
                     for ($i=0; $i < count($request); $i++) { 
                         $btnView = '<button class="btn btn-info m-1 text-white" type="button" title="Ver" onclick="viewItem('.$request[$i]['idorder'].')"><i class="fas fa-eye"></i></button>';
                         $btnWpp="";
-                        $btnPdf='<a href="'.base_url().'/Pedidos/pdf/'.$request[$i]['idorder'].'" target="_blank" class="btn btn-primary text-white m-1" type="button" title="Imprimir factura"><i class="fas fa-print"></i></a>';
+                        $btnPdf='<a href="'.base_url().'/pedidos/factura/'.$request[$i]['idorder'].'" target="_blank" class="btn btn-primary text-white m-1" type="button" title="Imprimir factura"><i class="fas fa-print"></i></a>';
                         $btnPaypal='';
                         $btnDelete ="";
                         $btnEdit ="";

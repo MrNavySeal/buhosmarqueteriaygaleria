@@ -37,7 +37,7 @@ async function getData(page = 1){
     formData.append("final_date",finallDateHtml.value);
     formData.append("status_payment",selectPago.value);
     formData.append("status_order",selectPedido.value);
-    const response = await fetch(base_url+"/pedidos/getCreditOrders",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Pedidos/Pedidos/getCreditOrders",{method:"POST",body:formData});
     const objData = await response.json();
     tableData.innerHTML =objData.html;
     arrData = objData.full_data;
@@ -192,7 +192,7 @@ async function updateItem(){
     formData.append("status_order",document.querySelector("#statusOrder").value);
     btnAdd.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
-    const response = await fetch(base_url+"/pedidos/updateOrder",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Pedidos/Pedidos/updateOrder",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
         Swal.fire("Actualizado",objData.msg,"success");
@@ -216,7 +216,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/pedidos/delOrder"
+            let url = base_url+"/Pedidos/Pedidos/delOrder"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){
@@ -335,7 +335,7 @@ async function saveAdvance(){
     btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
     btnAdd.removeAttribute("disabled");
 
-    const response = await fetch(base_url+"/pedidos/setAdvance",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Pedidos/Pedidos/setAdvance",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
         Swal.fire("Guardado",objData.msg,"success");

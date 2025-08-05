@@ -39,11 +39,13 @@
     $router->setRoute("almacen/reporte-ajustes-detalle/","Almacen/InventarioAjuste/reporteDetalle",false);
 
     //Pedidos
-    $router->setRoute("pedidos/cotizaciones/","Cotizaciones/cotizaciones",false);
-    $router->setRoute("pedidos/","Pedidos/pedidos",false);
-    $router->setRoute("pedidos/pedidos-credito/","Pedidos/creditos",false);
-    $router->setRoute("pedidos/pedidos-detalle/","Pedidos/detalle",false);
-    $router->setRoute("pedidos/punto-venta/","PedidosPos/venta",false);
+    $router->setRoute("pedidos/cotizaciones/","Pedidos/Cotizaciones/cotizaciones",false);
+    $router->setRoute("pedidos/","Pedidos/Pedidos",false);
+    $router->setRoute("pedidos/pedidos-credito/","Pedidos/Pedidos/creditos",false);
+    $router->setRoute("pedidos/pedidos-detalle/","Pedidos/Pedidos/detalle",false);
+    $router->setRoute("pedidos/punto-venta/","Pedidos/PedidosPos/venta",false);
+    $router->setRoute("pedidos/transaccion/","Pedidos/Pedidos/transaccion");
+    $router->setRoute("pedidos/factura/","Pedidos/Pedidos/pdf");
 
     //Compras
     $router->setRoute("compras/","Compras/compras",false);

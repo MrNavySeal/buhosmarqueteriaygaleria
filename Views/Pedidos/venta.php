@@ -22,7 +22,6 @@ if($_SESSION['permitsModule']['w']){
     </div>
 </div>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <h2 class="text-center"><?=$data['page_title']?></h2>
     <?php if($_SESSION['permitsModule']['w']){?>
         <ul class="nav nav-pills mb-3" id="product-tab">
             <li class="nav-item">

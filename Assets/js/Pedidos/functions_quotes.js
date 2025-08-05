@@ -32,7 +32,7 @@ btnAddPos.addEventListener("click",function(e){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            const url = base_url+"/cotizaciones/setOrder";
+            const url = base_url+"/Pedidos/Cotizaciones/setOrder";
             const formData= new FormData();
             formData.append("id",document.querySelector("#id").value);
             formData.append("type",document.querySelector("#paymentList").value);
@@ -66,7 +66,7 @@ async function getData(page = 1){
     formData.append("search",searchHtml.value);
     formData.append("initial_date",initialDateHtml.value);
     formData.append("final_date",finallDateHtml.value);
-    const response = await fetch(base_url+"/cotizaciones/getQuotes",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Pedidos/Cotizaciones/getQuotes",{method:"POST",body:formData});
     const objData = await response.json();
     arrData = objData.data;
     tableData.innerHTML =objData.html;
