@@ -44,7 +44,7 @@
                         $arrPermits = $_SESSION['permissions'];
                         $arrKeysOptions = array_keys($arrPermits);
                         foreach ($arrKeysOptions as $option) {
-                            if(strpos($route,$option) !== false){
+                            if($route == $option){
                                 $_SESSION['permitsModule'] = $arrPermits[$option];
                                 break;
                             }
