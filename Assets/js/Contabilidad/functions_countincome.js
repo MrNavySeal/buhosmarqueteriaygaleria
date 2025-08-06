@@ -7,7 +7,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/contabilidad/getIncomes",
+        "url": " "+base_url+"/Contabilidad/Contabilidad/getIncomes",
         "dataSrc":""
     },
     columns: [
@@ -36,18 +36,12 @@ let table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        document.querySelector("#idIncome").value ="";
-        document.querySelector(".modal-title").innerHTML ="Nuevo ingreso";
-        formItem.reset();
-        modal.show();
-    });
+function openModal(){
+    document.querySelector("#idIncome").value ="";
+    document.querySelector(".modal-title").innerHTML ="Nuevo ingreso";
+    formItem.reset();
+    modal.show();
 }
-
 window.addEventListener("load",function(){
     formItem.addEventListener("submit",function(e){
         e.preventDefault();
@@ -68,7 +62,7 @@ window.addEventListener("load",function(){
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
 
-        request(base_url+"/contabilidad/setIncome",formData,"post").then(function(objData){
+        request(base_url+"/Contabilidad/Contabilidad/setIncome",formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -82,7 +76,7 @@ window.addEventListener("load",function(){
     });
 });
 function editItem(id){
-    let url = base_url+"/contabilidad/getIncome";
+    let url = base_url+"/Contabilidad/Contabilidad/getIncome";
     let formData = new FormData();
     formData.append("idIncome",id);
     request(url,formData,"post").then(function(objData){
@@ -110,7 +104,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/contabilidad/delIncome"
+            let url = base_url+"/Contabilidad/Contabilidad/delIncome"
             let formData = new FormData();
             formData.append("idIncome",id);
             request(url,formData,"post").then(function(objData){

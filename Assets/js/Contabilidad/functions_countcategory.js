@@ -7,7 +7,7 @@ let table = new DataTable("#tableData",{
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "ajax":{
-        "url": " "+base_url+"/contabilidad/getCategories",
+        "url": " "+base_url+"/Contabilidad/Contabilidad/getCategories",
         "dataSrc":""
     },
     columns: [
@@ -34,16 +34,11 @@ let table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
-
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        document.querySelector("#idCategory").value ="";
-        document.querySelector(".modal-title").innerHTML ="Nueva categoría";
-        formItem.reset();
-        modal.show();
-    });
+function openModal(){
+    document.querySelector("#idCategory").value ="";
+    document.querySelector(".modal-title").innerHTML ="Nueva categoría";
+    formItem.reset();
+    modal.show();
 }
 
 window.addEventListener("load",function(){
@@ -62,7 +57,7 @@ window.addEventListener("load",function(){
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
 
-        request(base_url+"/contabilidad/setCategory",formData,"post").then(function(objData){
+        request(base_url+"/Contabilidad/Contabilidad/setCategory",formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -76,7 +71,7 @@ window.addEventListener("load",function(){
     });
 });
 function editItem(id){
-    let url = base_url+"/contabilidad/getCategory";
+    let url = base_url+"/Contabilidad/Contabilidad/getCategory";
     let formData = new FormData();
     formData.append("idCategory",id);
     request(url,formData,"post").then(function(objData){
@@ -100,7 +95,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/contabilidad/delCategory"
+            let url = base_url+"/Contabilidad/Contabilidad/delCategory"
             let formData = new FormData();
             formData.append("idCategory",id);
             request(url,formData,"post").then(function(objData){

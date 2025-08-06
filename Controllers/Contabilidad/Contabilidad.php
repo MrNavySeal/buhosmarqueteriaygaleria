@@ -3,16 +3,22 @@
     class Contabilidad extends Controllers{
         public function __construct(){
             session_start();
+            if(empty($_SESSION['login'])){
+                header("location: ".base_url());
+                die();
+            }
             parent::__construct();
-            sessionCookie();
-            getPermits(7);
         }
         public function categorias(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Categorias";
-                $data['page_title'] = "Contabilidad | Categorias";
-                $data['page_name'] = "categorias";
-                $data['panelapp'] = "functions_countcategory.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Contabilidad/functions_countcategory.js";
                 $this->views->getView($this,"categorias",$data);
             }else{
                 header("location: ".base_url());
@@ -21,12 +27,17 @@
         }
         public function movimientos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Movimientos";
-                $data['page_title'] = "Contabilidad | Movimientos";
-                $data['page_name'] = "movimiento";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+
                 $data['categories'] = $this->model->selectCatIncome(1);
                 $data['payment_methods'] = getOptionPago(); 
-                $data['panelapp'] = "functions_count_movement.js";
+                $data['panelapp'] = "/Contabilidad/functions_count_movement.js";
                 $this->views->getView($this,"movimientos",$data);
             }else{
                 header("location: ".base_url());
@@ -35,11 +46,14 @@
         }
         public function informe(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Informe";
-                $data['page_title'] = "Contabilidad | Informe";
-                $data['page_name'] = "informe";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
                 $data['categories'] = $this->model->selectCatIncome(1);
-                $data['panelapp'] = "functions_countinfo.js";
+                $data['panelapp'] = "/Contabilidad/functions_countinfo.js";
                 $year = date('Y');
                 $month = date('m');
                 $data['resumenMensual'] = $this->model->selectAccountMonth($year,$month);

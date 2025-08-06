@@ -33,7 +33,7 @@ btnContabilidadMes.addEventListener("click",function(){
     btnContabilidadMes.setAttribute("disabled","");
     let formData = new FormData();
     formData.append("date",contabilidadMes);
-    request(base_url+"/contabilidad/getContabilidadMes",formData,"post").then(function(objData){
+    request(base_url+"/Contabilidad/Contabilidad/getContabilidadMes",formData,"post").then(function(objData){
         btnContabilidadMes.innerHTML=`<i class="fas fa-search"></i>`;
         btnContabilidadMes.removeAttribute("disabled");
         document.querySelector("#txtMensual").innerHTML = `Mes de ${objData.mes+" "+objData.anio}`;
@@ -64,7 +64,7 @@ btnContabilidadAnio.addEventListener("click",function(){
 
     let formData = new FormData();
     formData.append("date",salesYear);
-    request(base_url+"/contabilidad/getContabilidadAnio",formData,"post").then(function(objData){
+    request(base_url+"/Contabilidad/Contabilidad/getContabilidadAnio",formData,"post").then(function(objData){
         btnContabilidadAnio.innerHTML=`<i class="fas fa-search"></i>`;
         btnContabilidadAnio.removeAttribute("disabled");
 
@@ -83,7 +83,7 @@ btnContabilidadAnio.addEventListener("click",function(){
 });
 
 search.addEventListener('input',function() {
-    request(base_url+"/contabilidad/search/"+search.value,"","get").then(function(objData){
+    request(base_url+"/Contabilidad/Contabilidad/search/"+search.value,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{
@@ -93,7 +93,7 @@ search.addEventListener('input',function() {
 });
 
 sort.addEventListener("change",function(){
-    request(base_url+"/contabilidad/sort/"+sort.value,"","get").then(function(objData){
+    request(base_url+"/Contabilidad/Contabilidad/sort/"+sort.value,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{
@@ -203,7 +203,7 @@ function addItem(){
             return false;
         }
         
-        let url = base_url+"/contabilidad/setCost";
+        let url = base_url+"/Contabilidad/Contabilidad/setCost";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
 
@@ -225,7 +225,7 @@ function addItem(){
     })
 }
 function viewItem(id){
-    let url = base_url+"/contabilidad/getCost";
+    let url = base_url+"/Contabilidad/Contabilidad/getCost";
     let formData = new FormData();
     formData.append("idContabilidad",id);
     request(url,formData,"post").then(function(objData){
@@ -294,7 +294,7 @@ function viewItem(id){
     });
 }
 function editItem(id){
-    let url = base_url+"/contabilidad/getCost";
+    let url = base_url+"/Contabilidad/Contabilidad/getCost";
     let formData = new FormData();
     formData.append("idContabilidad",id);
     request(url,formData,"post").then(function(objData){
@@ -389,7 +389,7 @@ function editItem(id){
                 return false;
             }
             
-            let url = base_url+"/contabilidad/setCost";
+            let url = base_url+"/Contabilidad/Contabilidad/setCost";
             let formData = new FormData(form);
             let btnAdd = document.querySelector("#btnAdd");
     
@@ -423,7 +423,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/contabilidad/delCost"
+            let url = base_url+"/Contabilidad/Contabilidad/delCost"
             let formData = new FormData();
             formData.append("idContabilidad",id);
             request(url,formData,"post").then(function(objData){

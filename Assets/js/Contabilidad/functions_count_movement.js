@@ -9,16 +9,13 @@ const typeList = document.querySelector("#typeList");
 const selectType = document.querySelector("#selectType");
 const selectTopic = document.querySelector("#selectTopic");
 const searchHtml = document.querySelector("#txtSearch");
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        document.querySelector("#id").value ="";
-        document.querySelector(".modal-title").innerHTML ="Nuevo movimiento";
-        formItem.reset();
-        document.querySelector("#txtDate").value = new Date().toISOString().split("T")[0];
-        modal.show();
-    });
+
+function openModal(){
+    document.querySelector("#id").value ="";
+    document.querySelector(".modal-title").innerHTML ="Nuevo movimiento";
+    formItem.reset();
+    document.querySelector("#txtDate").value = new Date().toISOString().split("T")[0];
+    modal.show();
 }
 window.addEventListener("load",function(){
     
@@ -50,7 +47,7 @@ window.addEventListener("load",function(){
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
 
-        request(base_url+"/contabilidad/setEgress",formData,"post").then(function(objData){
+        request(base_url+"/Contabilidad/Contabilidad/setEgress",formData,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
@@ -65,7 +62,7 @@ window.addEventListener("load",function(){
     getData();
 });
 typeList.addEventListener("change",function(){
-    request(base_url+"/contabilidad/getSelectCategories/"+typeList.value,"","get").then(function(objData){
+    request(base_url+"/Contabilidad/Contabilidad/getSelectCategories/"+typeList.value,"","get").then(function(objData){
         document.querySelector("#categoryList").innerHTML=objData.data;
     });
     getData();
@@ -74,7 +71,7 @@ selectType.addEventListener("change",function(){
     if(selectType.value!=""){
         searchHtml.parentElement.parentElement.classList.replace("col-md-4","col-md-2");
         selectTopic.parentElement.parentElement.classList.remove("d-none");
-        request(base_url+"/contabilidad/getSelectCategories/"+selectType.value,"","get").then(function(objData){
+        request(base_url+"/Contabilidad/Contabilidad/getSelectCategories/"+selectType.value,"","get").then(function(objData){
             selectTopic.innerHTML='<option value="">Todo</option>'+objData.data;
         });
     }else{
@@ -98,7 +95,7 @@ async function getData(page = 1){
     formData.append("search",searchHtml.value);
     formData.append("initial_date",initialDateHtml.value);
     formData.append("final_date",finallDateHtml.value);
-    const response = await fetch(base_url+"/contabilidad/getOutgoings",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Contabilidad/Contabilidad/getOutgoings",{method:"POST",body:formData});
     const objData = await response.json();
     tableData.innerHTML =objData.html;
     arrData = objData.full_data;
@@ -107,7 +104,7 @@ async function getData(page = 1){
     document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
 }
 function editItem(id){
-    let url = base_url+"/contabilidad/getEgress";
+    let url = base_url+"/Contabilidad/Contabilidad/getEgress";
     let formData = new FormData();
     formData.append("id",id);
     request(url,formData,"post").then(function(objData){
@@ -137,7 +134,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/contabilidad/delEgress"
+            let url = base_url+"/Contabilidad/Contabilidad/delEgress"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){

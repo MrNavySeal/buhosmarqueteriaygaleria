@@ -30,7 +30,7 @@ btnContabilidadMes.addEventListener("click",function(){
     btnContabilidadMes.setAttribute("disabled","");
     let formData = new FormData();
     formData.append("date",contabilidadMes);
-    request(base_url+"/contabilidad/getContabilidadMes",formData,"post").then(function(objData){
+    request(base_url+"/Contabilidad/Contabilidad/getContabilidadMes",formData,"post").then(function(objData){
         btnContabilidadMes.innerHTML=`<i class="fas fa-search"></i>`;
         btnContabilidadMes.removeAttribute("disabled");
         $("#monthChart").html(objData.script);
@@ -58,7 +58,7 @@ btnContabilidadAnio.addEventListener("click",function(){
 
     let formData = new FormData();
     formData.append("date",salesYear);
-    request(base_url+"/contabilidad/getContabilidadAnio",formData,"post").then(function(objData){
+    request(base_url+"/Contabilidad/Contabilidad/getContabilidadAnio",formData,"post").then(function(objData){
         btnContabilidadAnio.innerHTML=`<i class="fas fa-search"></i>`;
         btnContabilidadAnio.removeAttribute("disabled");
 
