@@ -5,7 +5,7 @@ let sortPanel = document.querySelector("#sortBy");
 let element = document.querySelector("#listItem");
 
 searchPanel.addEventListener('input',function() {
-    request(base_url+"/paginas/search/"+searchPanel.value,"","get").then(function(objData){
+    request(base_url+"/Configuracion/Paginas/search/"+searchPanel.value,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{
@@ -15,7 +15,7 @@ searchPanel.addEventListener('input',function() {
 });
 
 sortPanel.addEventListener("change",function(){
-    request(base_url+"/paginas/sort/"+sortPanel.value,"","get").then(function(objData){
+    request(base_url+"/Configuracion/Paginas/sort/"+sortPanel.value,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{
@@ -123,7 +123,7 @@ function addItem(){
             return false;
         }
         
-        let url = base_url+"/paginas/setPage";
+        let url = base_url+"/Configuracion/Paginas/setPage";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
@@ -155,7 +155,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/paginas/delPage"
+            let url = base_url+"/Configuracion/Paginas/delPage"
             let formData = new FormData();
             formData.append("id",id);
             request(url,formData,"post").then(function(objData){

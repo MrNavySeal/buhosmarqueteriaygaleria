@@ -8,7 +8,6 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
         }
 
         public function empresa(){
@@ -16,7 +15,7 @@
                 $data['page_tag'] = "Empresa";
                 $data['page_title'] = "Empresa";
                 $data['page_name'] = "empresa";
-                $data['panelapp'] = "functions_company.js";
+                $data['panelapp'] = "/Configuracion/functions_company.js";
                 $data['company'] = $this->model->selectCompany();
                 $data['currencies'] = $this->model->selectCurrencies();
                 $data['countries'] = $this->model->selectCountries();

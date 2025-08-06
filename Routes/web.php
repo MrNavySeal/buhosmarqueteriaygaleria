@@ -55,25 +55,25 @@
     $router->setRoute("compras/proveedores/","Compras/Proveedores/proveedores",false);
 
     //Contabilidad
-    $router->setRoute("contabilidad/categorias/","Contabilidad/categorias",false);
-    $router->setRoute("contabilidad/movimientos/","Contabilidad/movimientos",false);
-    $router->setRoute("contabilidad/informe/","Contabilidad/informe",false);
+    $router->setRoute("contabilidad/categorias/","Contabilidad/Contabilidad/categorias",false);
+    $router->setRoute("contabilidad/movimientos/","Contabilidad/Contabilidad/movimientos",false);
+    $router->setRoute("contabilidad/informe/","Contabilidad/Contabilidad/informe",false);
 
     //Configuracion
-    $router->setRoute("configuracion/empresa/","Empresa/empresa",false);
-    $router->setRoute("configuracion/envios/","Administracion/envios",false);
-    $router->setRoute("configuracion/paginas/","Paginas/paginas",false);
-    $router->setRoute("configuracion/banners/","Banners/banners",false);
+    $router->setRoute("configuracion/parametros/","Configuracion/Empresa/empresa",false);
+    $router->setRoute("configuracion/envios/","Configuracion/Administracion/envios",false);
+    $router->setRoute("configuracion/paginas/","Configuracion/Paginas/paginas",false);
+    $router->setRoute("configuracion/banners/","Configuracion/Banners/banners",false);
 
     //Marketing
-    $router->setRoute("marketing/cupones/","Descuentos/cupones",false);
-    $router->setRoute("marketing/descuentos/","Descuentos/descuentos",false);
-    $router->setRoute("marketing/suscriptores/","Administracion/suscriptores",false);
-    $router->setRoute("marketing/correo/","Administracion/correo",false);
+    $router->setRoute("marketing/cupones/","Marketing/Descuentos/cupones",false);
+    $router->setRoute("marketing/descuentos/","Marketing/Descuentos/descuentos",false);
+    $router->setRoute("marketing/suscriptores/","Configuracion/Administracion/suscriptores",false);
+    $router->setRoute("marketing/correo/","Configuracion/Administracion/correo",false);
 
     //Comentarios
-    $router->setRoute("comentarios/","Comentarios/comentarios",false);
-    $router->setRoute("comentarios/opiniones/","Comentarios/opiniones",false);
+    $router->setRoute("comentarios/","Comentarios/Comentarios/comentarios",false);
+    $router->setRoute("comentarios/opiniones/","Comentarios/Comentarios/opiniones",false);
 
     //Blog
     $router->setRoute("blog/","Articulos/articulos",false);

@@ -1,8 +1,6 @@
 <?php headerAdmin($data)?>
 <div id="modalItem"></div>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <h2 class="text-center"><?=$data['page_title']?></h2>
-    <button type="button" class="btn btn-success text-white" id="exportExcel" data-name="table<?=$data['page_title']?>" title="Export to excel" ><i class="fas fa-file-excel"></i></button>
     <div class="row mb-3">
         <div class="col-md-6 mt-3">
             <input class="form-control" type="search" placeholder="Search" aria-label="Search" id="search" name="search">

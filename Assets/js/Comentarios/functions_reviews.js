@@ -6,7 +6,7 @@ let sort = document.querySelector("#sortBy");
 let element = document.querySelector("#listItem");
 
 sort.addEventListener("change",function(){
-    request(base_url+"/comentarios/sort/"+sort.value,"","get").then(function(objData){
+    request(base_url+"/Comentarios/Comentarios/sort/"+sort.value,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{
@@ -28,7 +28,7 @@ element.addEventListener("click",function(e) {
     }
 });
 function viewItem(id){
-    let url = base_url+"/comentarios/getReview";
+    let url = base_url+"/Comentarios/Comentarios/getReview";
     let formData = new FormData();
     
     formData.append("idReview",id);
@@ -81,7 +81,7 @@ function setItem(id,status){
     let formData = new FormData();
     formData.append("id",id);
     formData.append("status",status);
-    request(base_url+"/comentarios/setReview",formData,"post").then(function(objData){
+    request(base_url+"/Comentarios/Comentarios/setReview",formData,"post").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{
@@ -93,7 +93,7 @@ function delItem(id,status){
     let formData = new FormData();
     formData.append("id",id);
     formData.append("status",status);
-    request(base_url+"/comentarios/setReview",formData,"post").then(function(objData){
+    request(base_url+"/Comentarios/Comentarios/setReview",formData,"post").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
         }else{

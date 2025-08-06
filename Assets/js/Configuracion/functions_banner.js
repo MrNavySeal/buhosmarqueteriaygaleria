@@ -95,7 +95,7 @@ function addItem(){
             return false;
         }
         
-        let url = base_url+"/banners/setBanner";
+        let url = base_url+"/Configuracion/Banners/setBanner";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
@@ -115,7 +115,7 @@ function addItem(){
     })
 }
 function editItem(id){
-    let url = base_url+"/banners/getBanner";
+    let url = base_url+"/Configuracion/Banners/getBanner";
     let formData = new FormData();
     formData.append("idBanner",id);
     request(url,formData,"post").then(function(objData){
@@ -198,7 +198,7 @@ function editItem(id){
                 return false;
             }
             
-            let url = base_url+"/banners/setBanner";
+            let url = base_url+"/Configuracion/Banners/setBanner";
             let formData = new FormData(form);
             let btnAdd = document.querySelector("#btnAdd");
 
@@ -231,7 +231,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/banners/delBanner"
+            let url = base_url+"/Configuracion/Banners/delBanner"
             let formData = new FormData();
             formData.append("idBanner",id);
             request(url,formData,"post").then(function(objData){

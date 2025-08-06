@@ -8,8 +8,6 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(9);
         }
         public function opiniones(){
             if($_SESSION['permitsModule']['r']){
@@ -17,7 +15,7 @@
                 $data['page_title'] = "Opiniones";
                 $data['page_name'] = "opiniones";
                 $data['data'] = $this->getReviews();
-                $data['panelapp'] = "functions_reviews.js";
+                $data['panelapp'] = "/Comentarios/functions_reviews.js";
                 $this->views->getView($this,"opiniones",$data);
             }else{
                 header("location: ".base_url());

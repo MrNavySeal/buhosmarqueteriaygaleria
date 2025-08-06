@@ -2,14 +2,11 @@
     class Administracion extends Controllers{
         public function __construct(){
             session_start();
-            
             if(empty($_SESSION['login'])){
                 header("location: ".base_url());
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(5);
         }
 
         /*************************Views*******************************/
@@ -21,7 +18,7 @@
                 $data['page_tag'] = "Correo";
                 $data['page_title'] = "Correo";
                 $data['page_name'] = "correo";
-                $data['panelapp'] = "functions_mailbox.js";
+                $data['panelapp'] = "/Configuracion/functions_mailbox.js";
                 $this->views->getView($this,"correo",$data);
             }else{
                 header("location: ".base_url());
@@ -36,10 +33,10 @@
                     $data['page_tag'] = "Mensaje";
                     $data['page_title'] = "Mensaje";
                     $data['page_name'] = "mensaje";
-                    $data['panelapp'] = "functions_mailbox.js";
+                    $data['panelapp'] = "/Configuracion/functions_mailbox.js";
                     $this->views->getView($this,"mensaje",$data);
                 }else{
-                    header("location: ".base_url()."/administracion/mailbox");
+                    header("location: ".base_url()."/Configuracion/administracion/mailbox");
                     die();
                 }
             }else{
@@ -57,7 +54,7 @@
                     $data['page_name'] = "enviados";
                     $this->views->getView($this,"enviado",$data);
                 }else{
-                    header("location: ".base_url()."/administracion/mailbox");
+                    header("location: ".base_url()."/Configuracion/Administracion/mailbox");
                     die();
                 }
             }else{
@@ -67,6 +64,9 @@
         }
         public function suscriptores(){
             if($_SESSION['permitsModule']['r']){
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                ];
                 $data['page_tag'] = "Suscriptores";
                 $data['page_title'] = "Suscriptores";
                 $data['page_name'] = "suscriptores";
@@ -79,20 +79,22 @@
         }
         public function envios(){
             if($_SESSION['permitsModule']['r']){
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                ];
                 $data['page_tag'] = "Envios";
                 $data['page_title'] = "Envios";
                 $data['page_name'] = "envios";
                 $data['countries'] = $this->model->selectCountries();
                 $data['ShippingCities'] = $this->getShippingCities();
                 $data['flat'] = $this->model->selectFlatRate();
-                $data['panelapp'] = "functions_shipping.js";
+                $data['panelapp'] = "/Configuracion/functions_shipping.js";
                 $this->views->getView($this,"envios",$data);
             }else{
                 header("location: ".base_url());
                 die();
             }
         }
-        
         
         /*************************Mailbox methods*******************************/
         public function getMails(){
@@ -103,7 +105,7 @@
                 if(count($request)>0){
                     for ($i=0; $i < count($request); $i++) { 
                         $status ="";
-                        $url = base_url()."/administracion/mensaje/".$request[$i]['id'];
+                        $url = base_url()."/Configuracion/Administracion/mensaje/".$request[$i]['id'];
                         if($request[$i]['status'] == 1){
                             $status="text-black-50";
                         }else{
@@ -203,7 +205,7 @@
                         $status ="";
                         $total = 0;
                         $email = explode("@",$request[$i]['email']);
-                        $url = base_url()."/administracion/enviado/".$request[$i]['id'];
+                        $url = base_url()."/Configuracion/Administracion/enviado/".$request[$i]['id'];
                         $html.='
                         <div class="mail-item text-black-50">
                             <div class="row position-relative">

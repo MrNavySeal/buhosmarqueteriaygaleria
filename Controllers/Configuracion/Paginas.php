@@ -8,8 +8,6 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(5);
         }
         public function paginas(){
             if($_SESSION['permitsModule']['r']){
@@ -17,7 +15,7 @@
                 $data['page_title'] = "Paginas";
                 $data['page_name'] = "pagina";
                 $data['data'] = $this->getPages();
-                $data['panelapp'] = "functions_pages.js";
+                $data['panelapp'] = "/Configuracion/functions_pages.js";
                 $this->views->getView($this,"paginas",$data);
             }else{
                 header("location: ".base_url());
@@ -33,7 +31,7 @@
                         $data['page_tag'] = $data['page']['name'];
                         $data['page_title'] = $data['page']['name'];
                         $data['page_name'] = "pagina";
-                        $data['panelapp'] = "functions_page.js";
+                        $data['panelapp'] = "/Configuracion/functions_page.js";
                         $this->views->getView($this,"pagina",$data);
                     }else{
                         header("location: ".base_url()."/paginas");
@@ -66,7 +64,7 @@
                         $btnDelete="";
                         $pagina ="";
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<a class="btn btn-success m-1 text-white" href="'.base_url().'/paginas/pagina/'.$request[$i]['id'].'" title="Edit" name="btnEdit"><i class="fas fa-pencil-alt"></i></a>';
+                            $btnEdit = '<a class="btn btn-success m-1 text-white" href="'.base_url().'/Configuracion/paginas/pagina/'.$request[$i]['id'].'" title="Edit" name="btnEdit"><i class="fas fa-pencil-alt"></i></a>';
                         }
                         if($_SESSION['permitsModule']['d'] && $request[$i]['id']>3){
                             $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Delete" data-id="'.$request[$i]['id'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';

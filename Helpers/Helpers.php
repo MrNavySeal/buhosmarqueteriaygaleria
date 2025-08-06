@@ -6,7 +6,7 @@
     require_once('Libraries/PHPMailer/PHPMailer.php');
     require_once('Libraries/PHPMailer/SMTP.php');
     function getCompanyInfo(){
-        require_once('Models/EmpresaModel.php');
+        require_once('Models/Configuracion/EmpresaModel.php');
         $con = new EmpresaModel();
         $data = $con->selectCompany();
         $data['password'] = openssl_encrypt($data['password'],METHOD,KEY);
@@ -110,7 +110,7 @@
         return $num;
     }
     function emailNotification(){
-        require_once("Models/AdministracionModel.php");
+        require_once("Models/Configuracion/AdministracionModel.php");
         $obj = new AdministracionModel();
         $request = $obj->selectMails();
         $total = 0;
@@ -122,7 +122,7 @@
         return $total;
     }
     function commentNotification(){
-        require_once("Models/ComentariosModel.php");
+        require_once("Models/Comentarios/ComentariosModel.php");
         $obj = new ComentariosModel();
         $request = $obj->selectCountReviews();
         return $request;

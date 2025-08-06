@@ -2,7 +2,6 @@
 headerAdmin($data);
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <h2 class="text-center"><?=$data['page_title']?></h2>
     <form id="formPage" name="formPage" class="mb-4 mt-4">
         <div class="mb-3 uploadImg">
             <img src="<?=$data['page']['picture']?>">

@@ -17,7 +17,7 @@
                 $data['page_title'] = "Banners";
                 $data['page_name'] = "banners";
                 $data['data'] = $this->getBanners();
-                $data['panelapp'] = "functions_banner.js";
+                $data['panelapp'] = "/Configuracion/functions_banner.js";
                 $this->views->getView($this,"banners",$data);
             }else{
                 header("location: ".base_url());

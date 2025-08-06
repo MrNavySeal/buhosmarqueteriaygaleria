@@ -13,14 +13,14 @@ img.addEventListener("change",function(){
 });
 
 intCountry.addEventListener("change",function(){
-    let url = base_url+"/empresa/getSelectCountry/"+intCountry.value;
+    let url = base_url+"/Configuracion/Empresa/getSelectCountry/"+intCountry.value;
     request(url,"","get").then(function(objData){
         intState.innerHTML = objData;
     });
     intCity.innerHTML = "";
 });
 intState.addEventListener("change",function(){
-    let url = base_url+"/empresa/getSelectState/"+intState.value;
+    let url = base_url+"/Configuracion/Empresa/getSelectState/"+intState.value;
     request(url,"","get").then(function(objData){
         intCity.innerHTML = objData;
     });
@@ -68,7 +68,7 @@ formCompany.addEventListener("submit",function(e){
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
 
-    request(base_url+"/empresa/setCompany",formData,"post").then(function(objData){
+    request(base_url+"/Configuracion/Empresa/setCompany",formData,"post").then(function(objData){
         if(objData.status){
             Swal.fire("Guardado",objData.msg,"success");
         }else{
@@ -86,7 +86,7 @@ formSocial.addEventListener("submit",function(e){
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
 
-    request(base_url+"/empresa/setSocial",formData,"post").then(function(objData){
+    request(base_url+"/Configuracion/Empresa/setSocial",formData,"post").then(function(objData){
         if(objData.status){
             Swal.fire("Guardado",objData.msg,"success");
         }else{
@@ -112,7 +112,7 @@ formPayment.addEventListener("submit",function(e){
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
 
-    request(base_url+"/empresa/setCredentials",formData,"post").then(function(objData){
+    request(base_url+"/Configuracion/Empresa/setCredentials",formData,"post").then(function(objData){
         if(objData.status){
             Swal.fire("Guardado",objData.msg,"success");
         }else{

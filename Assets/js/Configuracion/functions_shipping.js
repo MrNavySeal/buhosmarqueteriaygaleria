@@ -25,7 +25,7 @@ for (let i = 0; i < forms.length; i++) {
         let formData = new FormData(form);
         btnShipping[i].innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnShipping[i].setAttribute("disabled","");
-        request(base_url+"/administracion/setShippingMode",formData,"post").then(function(objData){
+        request(base_url+"/Configuracion/Administracion/setShippingMode",formData,"post").then(function(objData){
             btnShipping[i].innerHTML=`Guardar`;
             btnShipping[i].removeAttribute("disabled");
             if(objData.status){
@@ -38,13 +38,13 @@ for (let i = 0; i < forms.length; i++) {
 }
 if(document.querySelector("#addCity")){
     intCountry.addEventListener("change",function(){
-        request(base_url+"/administracion/getSelectCountry/"+intCountry.value,"","get").then(function(objData){
+        request(base_url+"/Configuracion/Administracion/getSelectCountry/"+intCountry.value,"","get").then(function(objData){
             intState.innerHTML = objData;
         });
         intCity.innerHTML = "";
     });
     intState.addEventListener("change",function(){
-        request(base_url+"/administracion/getSelectState/"+intState.value,"","get").then(function(objData){
+        request(base_url+"/Configuracion/Administracion/getSelectState/"+intState.value,"","get").then(function(objData){
             intCity.innerHTML = objData;
         });
     });
@@ -65,7 +65,7 @@ if(document.querySelector("#addCity")){
         addCity.innerHTML=`
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         addCity.setAttribute("disabled","");
-        request(base_url+"/administracion/setShippingCity",formData,"post").then(function(objData){
+        request(base_url+"/Configuracion/Administracion/setShippingCity",formData,"post").then(function(objData){
             addCity.innerHTML="+";
             addCity.removeAttribute("disabled");
             if(objData.status){
@@ -78,7 +78,7 @@ if(document.querySelector("#addCity")){
 }
 
 function deleteCityShipp(id){
-    request(base_url+"/administracion/delShippingCity/"+id,"","get").then(function(objData){
+    request(base_url+"/Configuracion/Administracion/delShippingCity/"+id,"","get").then(function(objData){
         if(objData.status){
             document.querySelector("#listItem").innerHTML = objData.html;
         }else{
