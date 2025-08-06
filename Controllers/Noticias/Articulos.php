@@ -8,16 +8,19 @@
                 die();
             }
             parent::__construct();
-            getPermits(10);
         }
         
         public function articulos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Articulos";
-                $data['page_title'] = "Articulos";
-                $data['page_name'] = "articulos";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/noticias/articulo/'"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
                 $data['data'] = $this->getArticles();
-                $data['panelapp'] = "functions_blog.js";
+                $data['panelapp'] = "/Noticias/functions_blog.js";
                 $this->views->getView($this,"articulos",$data);
             }else{
                 header("location: ".base_url());
@@ -29,10 +32,20 @@
                 $data['page_tag'] = "Articulo";
                 $data['page_title'] = "Articulo";
                 $data['page_name'] = "articulo";
-                $data['panelapp'] = "functions_article.js";
+                $data['panelapp'] = "/Noticias/functions_article.js";
                 if($params==""){
+                    $data['botones'] = [
+                        "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/noticias/articulo/'"],
+                        "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."articulo/','','');mypop.focus();"],
+                        "atras" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/noticias/'"],
+                    ];
                     $this->views->getView($this,"creararticulo",$data);
                 }else{
+                    $data['botones'] = [
+                        "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/noticias/articulo/'"],
+                        "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."articulo/$params','','');mypop.focus();"],
+                        "atras" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/noticias/'"],
+                    ];
                     $id = intval(strClean($params));
                     $data['article'] = $this->getArticle($id);
                     $this->views->getView($this,"editararticulo",$data);
@@ -62,7 +75,7 @@
                         $btnEdit="";
                         $btnDelete="";
                         if($_SESSION['permitsModule']['u']){
-                            $btnEdit = '<a href="'.base_url().'/articulos/articulo/'.$request[$i]['idarticle'].'" class="btn btn-success m-1 text-white" title="Editar" name="btnEdit"><i class="fas fa-pencil-alt"></i></a>';
+                            $btnEdit = '<a href="'.base_url().'/noticias/articulo/'.$request[$i]['idarticle'].'" class="btn btn-success m-1 text-white" title="Editar" name="btnEdit"><i class="fas fa-pencil-alt"></i></a>';
                         }
                         if($_SESSION['permitsModule']['d']){
                             $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Delete" data-id="'.$request[$i]['idarticle'].'" name="btnDelete"><i class="fas fa-trash-alt"></i></button>';
@@ -160,11 +173,10 @@
                                 uploadImage($photo,$photoPost);
                             }
                             if($option == 1){
-                                $arrResponse = $this->getArticles();
+                                $arrResponse = array('status' => true, 'msg' => 'Datos guardados.',"id"=>$request_article);		
                                 $arrResponse['msg'] = 'Datos guardados.';
                             }else{
-                                $arrResponse = $this->getArticles();
-                                $arrResponse['msg'] = 'Datos actualizados.';
+                                $arrResponse = array('status' => true, 'msg' => 'Datos actualizados.',"id"=>$idArticle);		
                             }
                         }else if($request_article == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => '¡Atención! el título ya está registrado, pruebe con otro.');		

@@ -1,15 +1,6 @@
 'use strict';
 
 let element = document.querySelector("#listItem");
-
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        window.location.href=base_url+"/articulos/articulo";
-    });
-}
-
 element.addEventListener("click",function(e) {
     let element = e.target;
     let id = element.getAttribute("data-id");
@@ -31,7 +22,7 @@ function deleteItem(id){
         if(result.isConfirmed){
             let formData = new FormData();
             formData.append("idArticle",id);
-            request(base_url+"/articulos/delArticle",formData,"post").then(function(objData){
+            request(base_url+"/Noticias/Articulos/delArticle",formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
                     element.innerHTML = objData.data;

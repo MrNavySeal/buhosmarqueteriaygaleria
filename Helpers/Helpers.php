@@ -30,13 +30,13 @@
         return $arrData = $obj->getInfo();
     }
     function getCredentials(){
-        require_once('Models/EmpresaModel.php');
+        require_once('Models/Configuracion/EmpresaModel.php');
         $con = new EmpresaModel();
         $data = $con->selectCredentials();
         return $data;
     }
     function getSocialMedia(){
-        require_once('Models/EmpresaModel.php');
+        require_once('Models/Configuracion/EmpresaModel.php');
         $con = new EmpresaModel();
         $request = $con->selectSocial();
         $arrSocial = array(

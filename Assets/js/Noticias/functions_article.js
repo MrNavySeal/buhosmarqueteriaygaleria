@@ -26,11 +26,11 @@ window.addEventListener("load",function(){
         btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         btnAdd.setAttribute("disabled","");
 
-        request(base_url+"/articulos/setArticle",data,"post").then(function(objData){
+        request(base_url+"/Noticias/Articulos/setArticle",data,"post").then(function(objData){
             btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
             btnAdd.removeAttribute("disabled");
             if(objData.status){
-                window.location.href=base_url+"/articulos/articulos";
+                window.location.href=base_url+"/noticias/articulo/"+objData.id;
             }else{
                 Swal.fire("Error",objData.msg,"error");
             }

@@ -76,5 +76,6 @@
     $router->setRoute("comentarios/opiniones/","Comentarios/Comentarios/opiniones",false);
 
     //Blog
-    $router->setRoute("blog/","Articulos/articulos",false);
+    $router->setRoute("noticias/","Noticias/Articulos/articulos",false);
+    $router->setRoute("noticias/articulo/","Noticias/Articulos/articulo");
 ?>
