@@ -3,18 +3,12 @@
 let element = document.querySelector("#listItem");
 let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
 
-
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        document.querySelector(".modal-title").innerHTML ="Nuevo descuento";
-        document.querySelector("#idDiscount").value = "";
-        document.querySelector("#intDiscount").value = "";
-        modalView.show();
-    });
+function openModal(){
+    document.querySelector(".modal-title").innerHTML ="Nuevo descuento";
+    document.querySelector("#idDiscount").value = "";
+    document.querySelector("#intDiscount").value = "";
+    modalView.show();
 }
-
 window.addEventListener("DOMContentLoaded",function() {
     showItems(element);
     let categoryList = document.querySelector("#categoryList");
@@ -24,7 +18,7 @@ window.addEventListener("DOMContentLoaded",function() {
     categoryList.addEventListener("change",function(){
         let formData = new FormData();
         formData.append("idCategory",categoryList.value);
-        request(base_url+"/descuentos/getSelectSubcategories",formData,"post").then(function(objData){
+        request(base_url+"/Marketing/Descuentos/getSelectSubcategories",formData,"post").then(function(objData){
             document.querySelector("#subcategoryList").innerHTML = objData.data;
         });
     });
@@ -60,7 +54,7 @@ window.addEventListener("DOMContentLoaded",function() {
             Swal.fire("Error","Por favor, seleccione una subcategoría","error");
             return false;
         }
-        let url = base_url+"/descuentos/setDiscount";
+        let url = base_url+"/Marketing/Descuentos/setDiscount";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
 
@@ -95,7 +89,7 @@ element.addEventListener("click",function(e) {
 });
 
 function showItems(element){
-    let url = base_url+"/descuentos/getDiscounts";
+    let url = base_url+"/Marketing/Descuentos/getDiscounts";
     request(url,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
@@ -105,7 +99,7 @@ function showItems(element){
     })
 }
 function editItem(id){
-    let url = base_url+"/descuentos/getDiscount";
+    let url = base_url+"/Marketing/Descuentos/getDiscount";
     let formData = new FormData();
     formData.append("idDiscount",id);
     request(url,formData,"post").then(function(objData){
@@ -139,7 +133,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/descuentos/delDiscount"
+            let url = base_url+"/Marketing/Descuentos/delDiscount"
             let formData = new FormData();
             formData.append("idDiscount",id);
             request(url,formData,"post").then(function(objData){

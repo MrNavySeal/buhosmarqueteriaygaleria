@@ -2,22 +2,23 @@
     class Descuentos extends Controllers{
         public function __construct(){
             session_start();
-            
             if(empty($_SESSION['login'])){
                 header("location: ".base_url());
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(5);
         }
         /*************************Views*******************************/
         public function cupones(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Cupones";
-                $data['page_title'] = "Cupones";
-                $data['page_name'] = "cupones";
-                $data['panelapp'] = "functions_coupon.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"addItem()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Marketing/functions_coupon.js";
                 $this->views->getView($this,"cupones",$data);
             }else{
                 header("location: ".base_url());
@@ -26,10 +27,14 @@
         }
         public function descuentos(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Descuentos";
-                $data['page_title'] = "Descuentos";
-                $data['page_name'] = "descuentos";
-                $data['panelapp'] = "functions_discount.js";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['panelapp'] = "/Marketing/functions_discount.js";
                 $data['categories'] = $this->getSelectCategories();
                 $this->views->getView($this,"descuentos",$data);
             }else{

@@ -1,13 +1,6 @@
 'use strict';
 
 let element = document.querySelector("#listItem");
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        addItem();
-    });
-}
 
 window.addEventListener("DOMContentLoaded",function() {
     showItems(element);
@@ -26,7 +19,7 @@ element.addEventListener("click",function(e) {
 });
 
 function showItems(element){
-    let url = base_url+"/descuentos/getCoupons";
+    let url = base_url+"/Marketing/Descuentos/getCoupons";
     request(url,"","get").then(function(objData){
         if(objData.status){
             element.innerHTML = objData.data;
@@ -98,7 +91,7 @@ function addItem(){
             Swal.fire("Error","El campo de descuento no puede ser superior al 100%","error");
             return false;
         }
-        let url = base_url+"/descuentos/setCoupon";
+        let url = base_url+"/Marketing/Descuentos/setCoupon";
         let formData = new FormData(form);
         let btnAdd = document.querySelector("#btnAdd");
 
@@ -119,7 +112,7 @@ function addItem(){
     })
 }
 function editItem(id){
-    let url = base_url+"/descuentos/getCoupon";
+    let url = base_url+"/Marketing/Descuentos/getCoupon";
     let formData = new FormData();
     formData.append("idCoupon",id);
     request(url,formData,"post").then(function(objData){
@@ -192,7 +185,7 @@ function editItem(id){
                 return false;
             }
             
-            let url = base_url+"/descuentos/setCoupon";
+            let url = base_url+"/Marketing/Descuentos/setCoupon";
             let formData = new FormData(form);
             let btnAdd = document.querySelector("#btnAdd");
 
@@ -225,7 +218,7 @@ function deleteItem(id){
         cancelButtonText:"No, cancelar"
     }).then(function(result){
         if(result.isConfirmed){
-            let url = base_url+"/descuentos/delCoupon"
+            let url = base_url+"/Marketing/Descuentos/delCoupon"
             let formData = new FormData();
             formData.append("idCoupon",id);
             request(url,formData,"post").then(function(objData){
