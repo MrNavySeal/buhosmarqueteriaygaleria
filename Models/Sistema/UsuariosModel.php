@@ -363,31 +363,29 @@
             return $arrModules;
         }
         /*************************Profile methods*******************************/
-        public function updateProfile(int $intId,string $strNombre, string $strApellido,string $intTelefono, string $intPaisTelefono, string $strCorreo, string $strDireccion, 
-        int $intPais, int $intDepartamento, int $intCiudad,string $strContrasena,$intTipoDocumento,string $strDocumento, $strImagenNombre){
-            $this->intId = $intId;
-            $this->strImagenNombre = $strImagenNombre;
-			$this->strNombre = $strNombre;
-			$this->strApellido = $strApellido;
-            $this->strDocumento = $strDocumento;
-            $this->intTipoDocumento = $intTipoDocumento;
-            $this->strCorreo = $strCorreo;
-			$this->intTelefono = $intTelefono;
-            $this->intPaisTelefono = $intPaisTelefono;
-            $this->strDireccion = $strDireccion;
-            $this->intPais = $intPais;
-            $this->intDepartamento = $intDepartamento;
-            $this->intCiudad = $intCiudad;
-            $this->strContrasena = $strContrasena;
-
-            $sql= "SELECT * FROM person WHERE (identification = '{$this->strDocumento}' OR phone = '{$this->intTelefono}' OR email = '{$this->strCorreo}') AND  idperson != $this->intId";
-            $request = $this->select_all($sql);
+        public function updatePerfil(int $idUser, string $strName,string $strLastName, string $strPicture, string $intPhone,string $strAddress, 
+            int $intCountry, int $intState,int $intCity,string $strIdentification, string $strEmail, string $strPassword){
             
+            $this->intId = $idUser;
+			$this->strNombre = $strName;
+			$this->strApellido = $strLastName;
+			$this->intTelefono = $intPhone;
+			$this->strCorreo = $strEmail;
+			$this->strContrasena = $strPassword;
+            $this->strImagenNombre = $strPicture;
+            $this->strDireccion = $strAddress;
+            $this->intPais = $intCountry;
+            $this->intEstado = $intState;
+            $this->intCiudad = $intCity;
+            $this->strDocumento = $strIdentification;
+
+			$sql = "SELECT * FROM person WHERE (email = '{$this->strCorreo}' OR identification = '{$this->strDocumento}' OR phone = '{$this->intTelefono}') AND idperson != $this->intId";
+			$request = $this->select_all($sql);
+
 			if(empty($request)){
 				if($this->strContrasena  != ""){
-					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,cityid=?,identification=?, 
-                    password=?,typeid=?,phone_country=? 
-                    WHERE idperson = $this->intId";
+					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?, address=?, countryid=?, stateid=?, cityid=?,identification=?, password=? 
+							WHERE idperson = $this->intId";
 					$arrData = array(
                         $this->strImagenNombre,
                         $this->strNombre,
@@ -396,17 +394,14 @@
                         $this->intTelefono,
                         $this->strDireccion,
                         $this->intPais,
-                        $this->intDepartamento,
+                        $this->intEstado,
                         $this->intCiudad,
                         $this->strDocumento,
-                        $this->strContrasena,
-                        $this->intTipoDocumento,
-                        $this->intPaisTelefono,
+                        $this->strContrasena
                     );
 				}else{
-					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,cityid=?,
-                    identification=?,typeid=?,phone_country=? 
-                    WHERE idperson = $this->intId";
+					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?, address=?, countryid=?, stateid=?, cityid=?,identification=?
+							WHERE idperson = $this->intId";
 					$arrData = array(
                         $this->strImagenNombre,
                         $this->strNombre,
@@ -415,18 +410,19 @@
                         $this->intTelefono,
                         $this->strDireccion,
                         $this->intPais,
-                        $this->intDepartamento,
+                        $this->intEstado,
                         $this->intCiudad,
-                        $this->strDocumento,
-                        $this->intTipoDocumento,
-                        $this->intPaisTelefono,
+                        $this->strDocumento
                     );
 				}
 				$request = $this->update($sql,$arrData);
+                $_SESSION['userData'] = sessionUser($this->intId);
+
 			}else{
 				$request = "exist";
 			}
 			return $request;
+		
 		}
     }
 ?>

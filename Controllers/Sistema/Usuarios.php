@@ -271,7 +271,7 @@
             $data['page_tag'] = "Perfil";
             $data['page_title'] = "Perfil";
             $data['page_name'] = "perfil";
-            $data['panelapp'] = "functions_perfil.js";
+            $data['panelapp'] = "/Sistema/functions_perfil.js";
             $this->views->getView($this,"perfil",$data);
         }
         public function getPerfil(){
@@ -284,67 +284,104 @@
             echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
+        public function getSelectLocationInfo(){
+
+            $idCountry = $_SESSION['userData']['countryid'];
+            $idState = $_SESSION['userData']['stateid'];
+            $idCity = $_SESSION['userData']['cityid'];
+
+            $countries = getPaises();
+            $states = getDepartamentos($idCountry);
+            $cities = getCiudades($idState);
+            //dep($countries);exit;
+            $countrieshtml='<option value="0">Seleccione</option>';
+            $stateshtml='';
+            $citieshtml='';
+            foreach ($countries as $country) {
+                if($idCountry == $country['id']){
+                    $countrieshtml.='<option value="'.$country['id'].'" selected>'.$country['name'].'</option>';
+                }else{
+                    $countrieshtml.='<option value="'.$country['id'].'">'.$country['name'].'</option>';
+                }
+            }
+            for ($i=0; $i < count($states) ; $i++) { 
+                if($idState == $states[$i]['id']){
+                    $stateshtml.='<option value="'.$states[$i]['id'].'" selected>'.$states[$i]['name'].'</option>';
+                }else{
+                    $stateshtml.='<option value="'.$states[$i]['id'].'">'.$states[$i]['name'].'</option>';
+                }
+            }
+            for ($i=0; $i < count($cities) ; $i++) { 
+                if($idCity == $cities[$i]['id']){
+                    $citieshtml.='<option value="'.$cities[$i]['id'].'" selected>'.$cities[$i]['name'].'</option>';
+                }else{
+                    $citieshtml.='<option value="'.$cities[$i]['id'].'">'.$cities[$i]['name'].'</option>';
+                }
+            }
+            $arrResponse = array("countries"=>$countrieshtml,"states"=>$stateshtml,"cities"=>$citieshtml);
+            echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+            die();
+        }
         public function updatePerfil(){
             if($_POST){
-                if(empty($_POST['nombre']) || empty($_POST['apellido']) || empty($_POST['tipo_documento']) || empty($_POST['documento'])
-                    || empty($_POST['correo']) || empty($_POST['pais']) || empty($_POST['departamento']) || empty($_POST['ciudad'])
-                    || empty($_POST['pais_telefono']) || empty($_POST['telefono'])
-                    ){
-                        $arrResponse = array("status" => false, "msg" => 'Todos los campos con (*) son obligatorios');
-                    }else{ 
-                    $intId = intval($_POST['id']);
-                    $strNombre = ucwords(strClean($_POST['nombre']));
-                    $strApellido = ucwords(strClean($_POST['apellido']));
-                    $intTelefono = doubleval(strClean($_POST['telefono']));
-                    $intPaisTelefono = doubleval(strClean($_POST['pais_telefono']));
-                    $strCorreo = $_POST['correo'] != "" ? strtolower(strClean($_POST['correo'])) : "generico@generico.co";
-                    $strDireccion = strClean($_POST['direccion']);
-                    $intPais = intval($_POST['pais']) != 0 ? intval($_POST['pais']) : 99999;
-                    $intDepartamento = isset($_POST['departamento']) && intval($_POST['departamento']) != 0   ? intval($_POST['departamento']) : 99999;
-                    $intCiudad = isset($_POST['ciudad']) && intval($_POST['ciudad']) != 0 ? intval($_POST['ciudad']) : 99999;
-                    $strContrasena = strClean($_POST['contrasena']);
-                    $request = "";
-                    $intTipoDocumento = intval($_POST['tipo_documento']);
-                    $strDocumento = strClean($_POST['documento']) !="" ? strClean($_POST['documento']) : "222222222";
-                    $strImagen = "";
-                    $strImagenNombre="";
+                if(empty($_POST['txtFirstName']) || empty($_POST['txtLastName']) || empty($_POST['txtPhone']) || empty($_POST['countryList'] ) || empty($_POST['stateList'] )
+                || empty($_POST['txtEmail']) || empty($_POST['cityList'] ) || empty($_POST['txtAddress'] || empty($_POST['txtDocument']))){
+                    $arrResponse = array("status" => false, "msg" => 'Error de datos');
+                }else{ 
+                    $idUser = intval($_POST['idUser']);
+                    $strName = ucwords(strClean($_POST['txtFirstName']));
+                    $strLastName = ucwords(strClean($_POST['txtLastName']));
+                    $intPhone = intval(strClean($_POST['txtPhone']));
+                    $strEmail = strtolower(strClean($_POST['txtEmail']));
+                    $strPassword = strClean($_POST['txtPassword']);
+                    $strAddress = strClean($_POST['txtAddress']);
+                    $intCountry = intval(strClean($_POST['countryList']));
+                    $intState = intval($_POST['stateList']);
+                    $intCity = intval($_POST['cityList']);
+                    $strDocument = strClean($_POST['txtDocument']);
 
-                    $request = $this->model->selectUsuario($intId);
-                    if($_FILES['imagen']['name'] == ""){
-                        $strImagenNombre = $request['image'] != "" ? $request['image'] :"user.jpg";
+                    $request_user = "";
+                    $photo = "";
+                    $photoProfile="";
+
+                    $option = 2;
+                    $request = $this->model->selectUsuario($idUser);
+
+                    if($_FILES['txtImg']['name'] == ""){
+                        $photoProfile = $request['image'];
                     }else{
                         if($request['image'] != "user.jpg"){
                             deleteFile($request['image']);
                         }
-                        $strImagen = $_FILES['imagen'];
-                        $strImagenNombre = 'profile_'.bin2hex(random_bytes(6)).'.png';
+                        $photo = $_FILES['txtImg'];
+                        $photoProfile = 'profile_'.bin2hex(random_bytes(6)).'.png';
+                    }
+
+                    if($strPassword!=""){
+                        $strPassword =  hash("SHA256",$strPassword);
                     }
                     
-                    if($strContrasena!=""){ $strContrasena =  hash("SHA256",$strContrasena); }    
-                    $request = doubleval($this->model->updateProfile(
-                        $intId, 
-                        $strNombre, 
-                        $strApellido,
-                        $intTelefono,
-                        $intPaisTelefono,
-                        $strCorreo, 
-                        $strDireccion, 
-                        $intPais,
-                        $intDepartamento,
-                        $intCiudad,
-                        $strContrasena,
-                        $intTipoDocumento,
-                        $strDocumento,
-                        $strImagenNombre,
-                    ));
+                    $request_user = $this->model->updatePerfil(
+                        $idUser, 
+                        $strName, 
+                        $strLastName,
+                        $photoProfile, 
+                        $intPhone, 
+                        $strAddress,
+                        $intCountry,
+                        $intState,
+                        $intCity,
+                        $strDocument,
+                        $strEmail,
+                        $strPassword
+                    );
                         
-                    if($request > 0 ){
-                        if($strImagen!=""){
-                            uploadImage($strImagen,$strImagenNombre);
+                    if($request_user > 0 ){
+                        if($photo!=""){
+                            uploadImage($photo,$photoProfile);
                         }
-                        resetUserData();
                         $arrResponse = array('status' => true, 'msg' => 'Datos actualizados');
-                    }else if($request == 'exist'){
+                    }else if($request_user == 'exist'){
                         $arrResponse = array('status' => false, 'msg' => '¡Atención! el correo electrónico, la cédula o el número de teléfono ya están registrados, pruebe con otro.');		
                     }else{
                         $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos');

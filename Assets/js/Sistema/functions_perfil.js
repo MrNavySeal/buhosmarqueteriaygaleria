@@ -10,30 +10,34 @@ let intState = document.querySelector("#stateList");
 let intCity = document.querySelector("#cityList");
 let formProfile = document.querySelector("#formProfile");
 
-request(base_url+"/usuarios/getSelectLocationInfo","","get").then(function(objData){
+request(base_url+"/Sistema/Usuarios/getSelectLocationInfo","","get").then(function(objData){
     intCountry.innerHTML = objData.countries;
     intState.innerHTML = objData.states;
     intCity.innerHTML = objData.cities;
 });
 
 intCountry.addEventListener("change",function(){
-    let url = base_url+"/usuarios/getSelectCountry/"+intCountry.value;
+    let url = base_url+"/Sistema/Usuarios/getEstados/estado/"+intCountry.value;
     request(url,"","get").then(function(objData){
-        intState.innerHTML = objData;
+        let html='<option value="0" selected>Seleccione</option>';
+        objData.forEach(e => { html+=`<option value="${e.id}">${e.name}</option>`});
+        intState.innerHTML = html;
     });
     intCity.innerHTML = "";
 });
 intState.addEventListener("change",function(){
-    let url = base_url+"/usuarios/getSelectState/"+intState.value;
+    let url = base_url+"/Sistema/Usuarios/getEstados/ciudad/"+intState.value;
     request(url,"","get").then(function(objData){
-        intCity.innerHTML = objData;
+        let html='<option value="0" selected>Seleccione</option>';
+        objData.forEach(e => { html+=`<option value="${e.id}">${e.name}</option>`});
+        intCity.innerHTML = html;
     });
 });
 
 formProfile.addEventListener("submit",function(e){
     e.preventDefault();
 
-    let url = base_url+"/usuarios/updateProfile";
+    let url = base_url+"/Sistema/Usuarios/updatePerfil";
     let strFirstName = document.querySelector("#txtFirstName").value;
     let strLastName = document.querySelector("#txtLastName").value;
     let strEmail = document.querySelector("#txtEmail").value;
