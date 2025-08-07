@@ -245,22 +245,11 @@
 
                         $request = $this->setCustomerT($strName,$strPicture,$strEmail,$strPassword,$rolid);
                         
-                        if($request > 0){
-                            require_once("Models/RolesModel.php");
+                        if(is_numeric($request) && $request > 0){
                             $_SESSION['idUser'] = $request;
                             $_SESSION['login'] = true;
-							
-                            $arrData = $this->login->sessionLogin($_SESSION['idUser']);
-                            $roleModel = new RolesModel();
-							$idrol = intval($_SESSION['userData']['roleid']);
-							$arrPermisos = $roleModel->permitsModule($idrol);
-							$permisos = '';
-							if(count($arrPermisos)>0){
-								$permisos = $arrPermisos;
-							}
-							$_SESSION['permit'] = $permisos;
+                            $this->login->sessionLogin($_SESSION['idUser']);
                             $company = getCompanyInfo();
-						    
                             sessionUser($_SESSION['idUser']);
                             $arrResponse = array("status" => true,"msg"=>"Se ha registrado con éxito.");
                             $data = array(

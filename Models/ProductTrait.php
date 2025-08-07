@@ -598,7 +598,7 @@
             }
             return $request;
         }
-        public function getProductT(int $idProduct,$variant){
+        public function getProductT(int $idProduct,$variant=""){
             $this->con=new Mysql();
             $this->intIdProduct = $idProduct;
             $sql = "SELECT 
