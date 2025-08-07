@@ -29,7 +29,7 @@
                 $controller = $arrUrl['controller'];
                 $method=$arrUrl['method'];
                 $params=$arrUrl['params'];
-                $route = $arrUrl['name'];
+                $route = $arrUrl['route'];
                 $arrControllerFile = explode(".php",$controllerFile);
                 $controllerFile = count($arrControllerFile) > 1 ? $controllerFile : $controllerFile.".php";
                 require_once $controllerFile;
@@ -37,6 +37,19 @@
                 $controller = new $controller(); //Creo la instancia del controlador
                 $controller->load($controllerFile);
                 if(method_exists($controller, $method)){//Valido si existe el método
+                    //Asigno permisos a la sesión
+                    getPermisos();
+                    sessionCookie();
+                    if(isset($_SESSION['permissions'])){
+                        $arrPermits = $_SESSION['permissions'];
+                        $arrKeysOptions = array_keys($arrPermits);
+                        foreach ($arrKeysOptions as $option) {
+                            if($route == $option){
+                                $_SESSION['permitsModule'] = $arrPermits[$option];
+                                break;
+                            }
+                        }
+                    }
                     $controller->{$method}($params);//Utilizo el método
                 }else{
                     getError(3);
@@ -78,7 +91,7 @@
                     $strName.=$name."/";
                     $strName = str_replace(".php","",$strName);
                 }
-            }           
+            }       
             if(empty($arrRouteContent)){
                 $arrUrl = explode("/",$this->strUrl);
                 $controllerFile = "Controllers/";
@@ -89,7 +102,7 @@
                     $cont = str_replace(".php","",ucwords($arrUrl[$i])).".php";
                     if(file_exists($controllerFile.$cont)){
                         $controller = $cont;
-                        $method = isset($arrUrl[$i+1]) ? $arrUrl[$i+1] : $cont;
+                        $method = !empty($arrUrl[$i+1]) ? $arrUrl[$i+1] : $cont;
                         $method = str_replace(".php","",$method);
                         if(isset($arrUrl[$i+2])){
                             $params = implode(",",array_slice($arrUrl,$i+2));
@@ -98,8 +111,8 @@
                         $controllerFile = $controllerFile.$controller;
                         $routeName = strtolower(str_replace(".php","",$controller))."/".$method;
                         $routeName.= $params!= "" ? "/".str_replace(",","/",$params):"";
-                        $route = BASE_URL."/".$routeName;
-                        $arrRouteContent = array("controller"=>$controller,"method"=>$method,"params"=>$params,"file"=>$controllerFile,"name"=>$route);
+                        $url = BASE_URL."/".$routeName;
+                        $arrRouteContent = array("controller"=>$controller,"method"=>$method,"params"=>$params,"file"=>$controllerFile,"route"=>$strName,"url"=>$url);
                         break;
                     }else{
                         $controllerFile.=str_replace(".php","",$cont)."/";
@@ -108,8 +121,9 @@
             }else{
                 $routeName = $arrRouteContent['name'];
                 $routeName.= $arrRouteContent['params']!= "" ? $arrRouteContent['params']:"";
-                $route = BASE_URL."/".$routeName;
-                $arrRouteContent['name'] = $route;
+                $url = BASE_URL."/".$routeName;
+                $arrRouteContent['route'] = $strName;
+                $arrRouteContent['url'] = $url;
             }
             return $arrRouteContent;
         }

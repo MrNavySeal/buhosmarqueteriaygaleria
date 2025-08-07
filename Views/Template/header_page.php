@@ -228,7 +228,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <i class="fas fa-angle-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item " href="<?=base_url()?>/usuarios/perfil">Perfil</a></li>
+                            <li><a class="dropdown-item " href="<?=base_url()?>/sistema/usuarios/perfil">Perfil</a></li>
                             <li id="logout"><a href="#" class="dropdown-item">Cerrar sesión</a></li>
                         </ul>
                     </div>

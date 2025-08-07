@@ -27,7 +27,6 @@ if(!empty($refunds)){
 ?>
 <div id="modalItem"></div>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-    <h2 class="text-center"><?=$data['page_title']?></h2>
     <div id="orderInfo">
         <div class="d-flex justify-content-between align-items-center flex-wrap">
             <img src="<?=media()?>/images/uploads/mercadopago.jpg" style="width=100px;height:100px;" alt="">
@@ -61,11 +60,8 @@ if(!empty($refunds)){
         <?php }?>
     </div>
     <div class="row mt-3">
-        <div class="col-6 text-start">
-            <a href="<?=base_url()?>/pedidos" class="btn btn-secondary text-white"><i class="fas fa-arrow-circle-left"></i> Regresar</a>
-        </div>
-        <div class="col-6 text-end">
-        <button type="button" onclick="printJS({ printable: 'orderInfo', type: 'html', targetStyles: ['*']})" class="btn btn-primary"><i class="fas fa-print"></i> Imprimir</button>
+        <div class="col-12 text-end">
+            <button type="button" onclick="printJS({ printable: 'orderInfo', type: 'html', targetStyles: ['*']})" class="btn btn-primary"><i class="fas fa-print"></i> Imprimir</button>
         </div>
     </div>
 </div>
