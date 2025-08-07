@@ -345,7 +345,7 @@
                     $combinations[$i]['stock'],
                     $combinations[$i]['min_stock'],
                     strtoupper(strClean($combinations[$i]['sku'])),
-                    $combinations[$i]['status']
+                    1
                 );
                 $request = $this->insert($sql,$arrData);
             }

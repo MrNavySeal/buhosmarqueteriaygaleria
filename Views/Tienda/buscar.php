@@ -95,69 +95,7 @@
                     </div>
                     <div class="row mt-5" id="productItems">
                         <p class="text-center t-color-2 fw-bold fs-4"><?=$data['products']['total']?> resultados para "<?=$data['products']['buscar']?>"</p>
-                            <?php
-                            if(!empty($productos)){
-                                for ($i=0; $i < count($productos) ; $i++) { 
-                                    $id = openssl_encrypt($productos[$i]['idproduct'],METHOD,KEY);
-                                    $resultDiscount = "";
-                                    if($productos[$i]['discount'] > 0){
-                                        $resultDiscount = floor((1-($productos[$i]['discount']/$productos[$i]['price']))*100);
-                                    }
-                                    $discount = "";
-                                    $reference = $productos[$i]['reference']!="" ? "REF: ".$productos[$i]['reference'] : "";
-                                    $variant = $productos[$i]['product_type']? "Desde " : "";
-                                    $price ='</span><span class="current">'.$variant.formatNum($productos[$i]['price']).'</span>';
-                                    $favorite="";
-                                    if($productos[$i]['favorite']== 0){
-                                        $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav "><i class="far fa-heart "></i></button>';
-                                    }else{
-                                        $favorite = '<button type="button" onclick="addWishList(this)" data-id="'.$id.'" class="btn btn-bg-3 btn-fav active"><i class="fas fa-heart text-danger "></i></button>';
-                                    }
-                                    if($productos[$i]['is_stock']){
-                                        if($productos[$i]['discount'] > 0 && $productos[$i]['stock'] > 0){
-                                            $discount = '<span class="discount">-'.$resultDiscount.'%</span>';
-                                            $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['discount'],false).'</span><span class="compare">'.formatNum($productos[$i]['price']).'</span>';
-                                        }else if($productos[$i]['stock'] <= 0){
-                                            $price = '<span class="current sale me-2">Agotado</span>';
-                                        }
-                                    }else{
-                                        if($productos[$i]['discount']>0){
-                                            $discount = '<span class="discount">-'.$resultDiscount.'%</span>';
-                                            $price ='<span class="current sale me-2">'.$variant.formatNum($productos[$i]['discount'],false).'</span><span class="compare">'.formatNum($productos[$i]['price']).'</span>';
-                                        }
-                                    }
-                            ?>
-                            <div class="col-6 col-lg-3 col-md-6">
-                                <div class="card--product">
-                                    <div class="card--product-img">
-                                        <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>">
-                                            <?=$discount?>
-                                            <img src="<?=$productos[$i]['url']?>" alt="<?=$productos[$i]['category']." ".$productos[$i]['subcategory']?>">
-                                        </a>
-                                    </div>
-                                    <div class="card--product-info">
-                                        <h4><a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>"><?=$productos[$i]['name']?></a></h4>
-                                        <p class="text-center t-color-3 m-0 fs-6"><?=$reference?></p>
-                                        <div class="card--price">
-                                            <?=$price?>
-                                        </div>
-                                        
-                                    </div>
-                                    <div class="card--product-btns">
-                                        <div class="d-flex">
-                                            <?=$favorite?>
-                                            <?php if(!$productos[$i]['product_type'] && $productos[$i]['is_stock'] && $productos[$i]['stock'] > 0){?>
-                                            <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
-                                            <?php }else if(!$productos[$i]['product_type'] && !$productos[$i]['is_stock']){?>
-                                            <button type="button" class="btn btn-bg-1" data-id="<?=$id?>" data-topic="2" onclick="addCart(this)"><i class="fas fa-shopping-cart"></i></button>
-                                            <?php }else if($productos[$i]['product_type']){?>
-                                            <a href="<?=base_url()."/tienda/producto/".$productos[$i]['route']?>" class="btn btn-bg-1 w-100"><i class="fas fa-exchange-alt"></i></a>
-                                            <?php }?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } }?>
+                        <?php  if(!empty($productos)){ getComponent("cardProducts",$productos);} ?>
                     </div>
                     <div class="pagination">
                         <?php if($current > 1){?>

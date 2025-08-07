@@ -205,7 +205,7 @@
                                     <app-input label="checkVariantStock"  disabled title="Stock/Stock mínimo" type="switch" v-model="intCheckStock"></app-input>
                                 </th>
                                 <th class="text-nowrap">Código SKU</th>
-                                <th>Mostrar</th>
+                                <!-- <th>Mostrar</th> -->
                             </thead>
                             <tbody>
                                 <tr v-for="(data,index) in arrCombination" :key="index">
@@ -220,7 +220,7 @@
                                         </div>
                                     </td>
                                     <td data-title="Código SKU"><div><input  disabled type="text" class="form-control" v-model="data.sku" ></div></td>
-                                    <td data-title="Mostrar"><div><app-input disabled  :label="'checkVariant'+data.name" type="switch" v-model="data.status"></app-input></div></td>
+                                    <!-- <td data-title="Mostrar"><div><app-input disabled  :label="'checkVariant'+data.name" type="switch" v-model="data.status"></app-input></div></td> -->
                                 </tr>
                             </tbody>
                         </table>
