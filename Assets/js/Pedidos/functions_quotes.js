@@ -19,40 +19,42 @@ window.addEventListener("load",function(){
     finallDateHtml.value = new Date().toISOString().split("T")[0]; 
     getData();
 });
-btnAddPos.addEventListener("click",function(e){
-    e.preventDefault();
-    Swal.fire({
-        title:"¿Estás segur@ de facturar esta cotización?",
-        text:"",
-        icon: 'warning',
-        showCancelButton:true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText:"Sí, facturar",
-        cancelButtonText:"No, cancelar"
-    }).then(function(result){
-        if(result.isConfirmed){
-            const url = base_url+"/Pedidos/Cotizaciones/setOrder";
-            const formData= new FormData();
-            formData.append("id",document.querySelector("#id").value);
-            formData.append("type",document.querySelector("#paymentList").value);
-            formData.append("statusOrder",document.querySelector("#statusOrder").value);
-            btnAddPos.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            btnAddPos.setAttribute("disabled","");
-            request(url,formData,"post").then(function(objData){
-                btnAddPos.removeAttribute("disabled");
-                btnAddPos.innerHTML="Guardar";
-                if(objData.status){
-                    Swal.fire("Facturado",objData.msg,"success");
-                    modalEdit.hide();
-                    getData();
-                }else{
-                    Swal.fire("Error",objData.msg,"error");
-                }
-            });
-        }
+if(document.querySelector("#btnSetPurchase")){
+    btnAddPos.addEventListener("click",function(e){
+        e.preventDefault();
+        Swal.fire({
+            title:"¿Estás segur@ de facturar esta cotización?",
+            text:"",
+            icon: 'warning',
+            showCancelButton:true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText:"Sí, facturar",
+            cancelButtonText:"No, cancelar"
+        }).then(function(result){
+            if(result.isConfirmed){
+                const url = base_url+"/Pedidos/Cotizaciones/setOrder";
+                const formData= new FormData();
+                formData.append("id",document.querySelector("#id").value);
+                formData.append("type",document.querySelector("#paymentList").value);
+                formData.append("statusOrder",document.querySelector("#statusOrder").value);
+                btnAddPos.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+                btnAddPos.setAttribute("disabled","");
+                request(url,formData,"post").then(function(objData){
+                    btnAddPos.removeAttribute("disabled");
+                    btnAddPos.innerHTML="Guardar";
+                    if(objData.status){
+                        Swal.fire("Facturado",objData.msg,"success");
+                        modalEdit.hide();
+                        getData();
+                    }else{
+                        Swal.fire("Error",objData.msg,"error");
+                    }
+                });
+            }
+        });
     });
-});
+}
 
 searchHtml.addEventListener("input",function(){getData();});
 perPage.addEventListener("change",function(){getData();});
