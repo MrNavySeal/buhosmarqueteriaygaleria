@@ -116,7 +116,6 @@
                             </div>
                         </div>
                         <div>
-                            <app-input label="isVisible" title="Habilitar si el artículo es visible en la tienda" type="switch" disabled v-model="intVisible"></app-input>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <app-select disabled label="Modo enmarcar"  v-model="intFraming">

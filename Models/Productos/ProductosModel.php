@@ -41,8 +41,8 @@
                 $sql =  "INSERT INTO product(categoryid,
                 subcategoryid,reference,name,shortdescription,description,measure,
                 price,price_purchase,discount,stock,min_stock,status,route,
-                framing_mode,framing_img,product_type,import,is_product,is_ingredient,is_combo,is_stock,is_visible) 
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                framing_mode,framing_img,product_type,import,is_product,is_ingredient,is_combo,is_stock) 
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 
 	        	$arrData = array(
                     $this->arrData['category'],
@@ -67,7 +67,6 @@
                     $this->arrData['is_ingredient'],
                     $this->arrData['is_combo'],
                     $this->arrData['is_stock'],
-                    $this->arrData['is_visible']
         		);
 	        	$request = $this->insert($sql,$arrData);
                 $this->insertImages($request,$images);
@@ -96,7 +95,7 @@
                 $sql = "UPDATE product SET categoryid=?,
                 subcategoryid=?,reference=?,name=?,shortdescription=?,description=?,measure=?,
                 price=?,price_purchase=?,discount=?,stock=?,min_stock=?,status=?,route=?,
-                framing_mode=?,framing_img=?,product_type=?,import=?,is_product=?,is_ingredient=?,is_combo=?,is_stock=?,is_visible=?
+                framing_mode=?,framing_img=?,product_type=?,import=?,is_product=?,is_ingredient=?,is_combo=?,is_stock=?
                 WHERE idproduct = $this->intIdProduct";
                 $arrData = array(
                     $this->arrData['category'],
@@ -121,7 +120,6 @@
                     $this->arrData['is_ingredient'],
                     $this->arrData['is_combo'],
                     $this->arrData['is_stock'],
-                    $this->arrData['is_visible']
         		);
 				$request = $this->update($sql,$arrData);
                 if(!empty($this->arrData['images'])){
@@ -290,7 +288,6 @@
                 p.is_product,
                 p.is_ingredient,
                 p.is_combo,
-                p.is_visible,
                 c.idcategory,
                 c.name as category,
                 s.idsubcategory,

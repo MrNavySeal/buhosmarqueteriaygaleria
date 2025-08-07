@@ -155,7 +155,6 @@
                             "is_ingredient"=>intval($arrData['is_ingredient']),
                             "is_combo"=>intval($arrData['is_combo']),
                             "is_stock"=>intval($arrData['is_stock']),
-                            "is_visible"=>intval($arrData['is_visible']),
                             "price_purchase"=>doubleval($arrData['price_purchase']),
                             "price_sell"=>doubleval($arrData['price_sell']),
                             "price_offer"=>doubleval($arrData['price_offer']),
