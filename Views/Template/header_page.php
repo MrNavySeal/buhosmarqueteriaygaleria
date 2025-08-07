@@ -368,7 +368,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 if(isset($_SESSION['login'])){
             ?>
             <li><a class="text-black" href="<?=base_url()?>/favoritos"><i class="fas fa-heart"></i></a></li>
-            <li><a class="text-black" href="<?=base_url()?>/usuarios/perfil"><i class="fas fa-user c-p" id="btnProfile"></i></a></li>
+            <li><a class="text-black" href="<?=base_url()?>/sistema/usuarios/perfil"><i class="fas fa-user c-p" id="btnProfile"></i></a></li>
             <?php }else{ ?>
             <li onclick="openLoginModal();" class="c-p"><i class="fas fa-heart"></i></li>
             <li onclick="openLoginModal();" class="c-p"><i class="fas fa-user"></i></li>

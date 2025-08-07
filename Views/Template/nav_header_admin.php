@@ -18,7 +18,7 @@
                 <span class="d-none d-lg-inline-flex"><?=$_SESSION['userData']['firstname']." ".$_SESSION['userData']['lastname']?></span>
             </a>
             <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                <a href="<?=base_url()?>/usuarios/perfil" class="dropdown-item">Mi perfil</a>
+                <a href="<?=base_url()?>/sistema/usuarios/perfil" class="dropdown-item">Mi perfil</a>
                 <a href="<?=base_url()?>/logout" class="dropdown-item">Cerrar sesión</a>
             </div>
         </div>
