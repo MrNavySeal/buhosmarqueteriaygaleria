@@ -2,6 +2,7 @@ let modal = document.querySelector("#modalElement") ? new bootstrap.Modal(docume
 let formItem = document.querySelector("#formItem");
 let tableData = document.querySelector("#tableData");
 let arrData = [];
+let intPage = 1;
 const perPage = document.querySelector("#perPage");
 const initialDateHtml = document.querySelector("#txtInitialDate");
 const finallDateHtml = document.querySelector("#txtFinalDate");
@@ -87,8 +88,9 @@ finallDateHtml.addEventListener("input",function(){getData();});
 searchHtml.addEventListener("input",function(){getData();});
 selectTopic.addEventListener("change",function(){getData();});
 async function getData(page = 1){
+    intPage = page;
     const formData = new FormData();
-    formData.append("page",page);
+    formData.append("page",intPage);
     formData.append("perpage",perPage.value);
     formData.append("type",selectType.value);
     formData.append("topic",selectTopic.value);
@@ -140,7 +142,7 @@ function deleteItem(id){
             request(url,formData,"post").then(function(objData){
                 if(objData.status){
                     Swal.fire("Eliminado",objData.msg,"success");
-                    table.ajax.reload();
+                    getData(intPage);
                 }else{
                     Swal.fire("Error",objData.msg,"error");
                 }

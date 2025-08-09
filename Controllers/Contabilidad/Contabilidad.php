@@ -348,7 +348,7 @@
                         $arrResponse=array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $id = intval($_POST['id']);
-                        $request = $this->model->deleteIncome($id);
+                        $request = $this->model->deleteEgress($id);
 
                         if($request=="ok"){
                             $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
