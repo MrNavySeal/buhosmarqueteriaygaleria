@@ -4,7 +4,9 @@ let intState = document.querySelector("#listState");
 let intCity = document.querySelector("#listCity");
 let formOrder = document.querySelector("#formOrder");
 let checkData = document.querySelector("#checkData");
-
+let publicKey = document.querySelector("#publicKey").value;
+let mp = new MercadoPago("'"+publicKey+"'");
+console.log(mp);
 request(base_url+"/pago/getCountries","","get").then(function(objData){
     intCountry.innerHTML = objData;
 });
