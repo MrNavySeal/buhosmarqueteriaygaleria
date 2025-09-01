@@ -11,9 +11,13 @@
         }
         public function unidades(){
             if($_SESSION['permitsModule']['r']){
-                $data['page_tag'] = "Unidades de medida | Productos";
-                $data['page_title'] = "Unidades de medida | Productos";
-                $data['page_name'] = "unidades";
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
+                $data['page_tag'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
+                $data['page_title'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
+                $data['page_name'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
                 $data['panelapp'] = "/Productos/functions_medidas.js";
                 $this->views->getView($this,"unidades",$data);
             }else{
@@ -24,12 +28,12 @@
         public function caracteristicas(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
-                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/caracteristicas/"."','','');mypop.focus();"],
-                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w']],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
                 ];
-                $data['page_tag'] = "Características | Productos";
-                $data['page_title'] = "Características | Productos";
-                $data['page_name'] = "caracteristicas";
+                $data['page_tag'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
+                $data['page_title'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
+                $data['page_name'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
                 $data['panelapp'] = "/Productos/functions_caracteristicas.js";
                 $this->views->getView($this,"caracteristicas",$data);
             }else{
@@ -40,12 +44,12 @@
         public function variantes(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
-                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/variantes/"."','','');mypop.focus();"],
-                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w']],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
                 ];
-                $data['page_tag'] = "Variantes | Productos";
-                $data['page_title'] = "Variantes | Productos";
-                $data['page_name'] = "variantes";
+                $data['page_tag'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
+                $data['page_title'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
+                $data['page_name'] = "{$_SESSION['permitsModule']['option']} | {$_SESSION['permitsModule']['module']}";
                 $data['panelapp'] = "/Productos/functions_variantes.js";
                 $this->views->getView($this,"variantes",$data);
             }else{

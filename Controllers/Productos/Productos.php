@@ -11,12 +11,12 @@
         public function productos(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
-                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/productos/"."','','');mypop.focus();"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
                     "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
                 ];
-                $data['page_tag'] = "Productos";
-                $data['page_title'] = "Productos";
-                $data['page_name'] = "productos";
+                $data['page_tag'] = $_SESSION['permitsModule']['module'];
+                $data['page_title'] = $_SESSION['permitsModule']['module'];
+                $data['page_name'] = $_SESSION['permitsModule']['module'];
                 $data['script_type'] = "module";
                 $data['panelapp'] = "/Productos/functions_productos.js";
                 $this->views->getView($this,"productos",$data);
