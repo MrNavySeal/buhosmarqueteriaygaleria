@@ -64,6 +64,7 @@
 
 ?>
 <script src="https://sdk.mercadopago.com/js/v2"></script>
+<input type="hidden" id="publicKey" value="<?=$data['credentials']['client']?>">
 <main id="<?=$data['page_name']?>">
     <div class="container">
         <nav class="mt-2 mb-2" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
