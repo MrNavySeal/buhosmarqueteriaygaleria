@@ -1,5 +1,6 @@
 <?php
     headerPage($data);
+    getModal("modalPago");
     $total = 0;
     require_once("Libraries/vendor/autoload.php");
     MercadoPago\SDK::setAccessToken($data['credentials']['secret']);
@@ -217,16 +218,6 @@
         </div>
     </div>
 </main>
-<script>
-const mp = new MercadoPago('<?=$data['credentials']['client']?>', {
-    locale: 'en-US'
-})
-const checkout = mp.checkout({
-    preference: {
-        id: '<?php echo $preference->id; ?>'
-    }
-});
-    </script>
 <?php
     footerPage($data);
 ?>

@@ -20,7 +20,26 @@ intState.addEventListener("change",function(){
         intCity.innerHTML = objData;
     });
 });
-btnOrder.addEventListener("click",function(e){
+btnOrder.addEventListener("click",async function(e){
+    const response = await fetch(base_url+"/Api/PasarelaMercadoPago/getPaymentMethods");
+    const arrPayment = await response.json();
+    console.log(objData);
+    /* const mp = new MercadoPago(PUBLIC_KEY, {
+        locale: 'en-US'
+    });
+    const arrDocumentType = await mp.getIdentificationTypes(); */
+    /* 
+    const arrIssuers = await mp.getIssuers();
+    const arrInstallments = await mp.getInstallments(); */
+    /* 
+    console.log(arrIssuers);
+    console.log(arrInstallments);
+    console.log(arrFields); */
+
+    let modalView = new bootstrap.Modal(document.querySelector("#modalPago"));
+    modalView.show();
+});
+/* btnOrder.addEventListener("click",function(e){
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
@@ -82,7 +101,7 @@ btnOrder.addEventListener("click",function(e){
             Swal.fire("Error",objData.msg,"error");
         }
     });
-});
+}); */
 
 if(document.querySelector("#btnCoupon")){
     let btnCoupon = document.querySelector("#btnCoupon");
