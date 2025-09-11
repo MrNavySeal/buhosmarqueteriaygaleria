@@ -9,7 +9,10 @@
         }
 
         public function getPaymentMethods(){
-            $arrData = curlConnectionGet("https://api.mercadopago.com/v1/payment_methods","application/json");
+            $arrPayments = curlConnectionGet("https://api.mercadopago.com/v1/payment_methods","application/json");
+            $arrData = array(
+                "pse" => array_values(array_filter($arrPayments,function($e){return $e->id =="pse";}))[0]
+            );
             echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
         }
     }
