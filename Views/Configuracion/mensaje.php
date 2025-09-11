@@ -24,7 +24,7 @@
     <hr>
     <div class="row">
         <div class="col-6 text-start">
-            <a href="<?=base_url()?>/administracion/correo" class="btn btn-secondary text-white mb-4"><i class="fas fa-arrow-circle-left"></i> Regresar</a>   
+            <a href="<?=base_url()?>/marketing/correo/" class="btn btn-secondary text-white mb-4"><i class="fas fa-arrow-circle-left"></i> Regresar</a>   
         </div>
     </div>
     <?php }else{?>
