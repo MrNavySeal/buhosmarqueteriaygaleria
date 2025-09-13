@@ -132,8 +132,10 @@
                 $request = $this->con->insert($sql,$arrData);
                 if($request>0){
                     $this->updateDateBeat($request);
-                    $this->insertIncome($request,3,1,"Venta de producto",$total,1);
-                    $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
+                    if($status=="approved"){ 
+                        $this->insertIncome($request,3,1,"Venta de producto",$total,1);
+                        $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
+                    }
                 }
             }
             return $request;

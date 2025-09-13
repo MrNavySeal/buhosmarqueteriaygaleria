@@ -674,6 +674,16 @@
         $request = $con->select("SELECT * FROM cities WHERE id = $id");
         return $request;
     }
+    function getDepartamento(int $id){
+        $con = new Mysql();
+        $request = $con->select("SELECT * FROM states WHERE id = $id");
+        return $request;
+    }
+    function getPais(int $id){
+        $con = new Mysql();
+        $request = $con->select("SELECT * FROM countries WHERE id = $id");
+        return $request;
+    }
     function getPermisos(){
         if(isset($_SESSION['userData'])){
             $con = new Mysql();

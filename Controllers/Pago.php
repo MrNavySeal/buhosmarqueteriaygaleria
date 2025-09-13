@@ -98,11 +98,27 @@
         }
         public function setPayment(){
             try {
-                //code...
+                $strName = ucwords(strClean($_POST['strCheckName']));
+                $strLastname = ucwords(strClean($_POST['strCheckLastname']));
+                $strFullName = $strName." ".$strLastname;
+                $strDocument = strClean($_POST['strCheckDocument']);
+                $strEmail = strClean($_POST['strCheckEmail']);
+                $strPhone = strClean($_POST['strCheckPhone']);
+                $intCity = intval($_POST['listCity']);
+                $intCountry = intval($_POST['listCountry']);
+                $intState = intval($_POST['listState']);
+                $strCity = getCiudad($intCity)['name'];
+                $strState = getDepartamento($intState)['name'];
+                $strCountry = getPais($intCountry)['name'];
+                $strPostal = strClean($_POST['strCheckCode']);
+                $cupon = "";
+                $situ = "false";
+                $type ="mercadopago";
                 $arrTotal = $this->calcTotalCart($_SESSION['arrCart']);
-                $strAddress = $_POST['strCheckAddress'];
+                $strAddress = strClean($_POST['strCheckAddress']);
                 $arrAddress = explode(" ",$strAddress);
-                $strCity = getCiudad(intval($_POST['listCity']))['name'];
+                $strAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
+                
                 MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
                 $client = new PaymentClient();
                 $request_options = new RequestOptions();
@@ -112,8 +128,8 @@
                     "transaction_amount" => $arrTotal['total'],
                     "description" => "Productos",
                     "payment_method_id" => "pse",
-                    "callback_url" => "https://buhosmarqueteriaygaleria.co/",
-                    "notification_url" => "https://buhosmarqueteriaygaleria.co/",
+                    "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/",
+                    "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/",
                     "additional_info" => [
                         "ip_address" => getIp()
                     ],
@@ -121,16 +137,16 @@
                         "financial_institution" => $_POST['strCheckBank']
                     ],
                     "payer" => [
-                        "email" => $_POST['strCheckEmail'],
+                        "email" => $strEmail,
                         "entity_type" => $_POST['strCheckPersonType'],
-                        "first_name" => $_POST['strCheckName'],
-                        "last_name" => $_POST['strCheckLastname'],
+                        "first_name" => $strName,
+                        "last_name" => $strLastname,
                         "identification" => [
                             "type" => $_POST['strCheckDocumentType'],
                             "number" => $_POST['strCheckDocument']
                         ],
                         "address" => [
-                            "zip_code" => $_POST['strCheckCode'] !="" ? $_POST['strCheckCode'] : 50000,
+                            "zip_code" => $strPostal !="" ? $strPostal : 50000,
                             "street_name" => $arrAddress[0],
                             "street_number" => isset($arrAddress[1]) ? $arrAddress[1] : $arrAddress[1],
                             "neighborhood" => isset($arrAddress[2]) ? $arrAddress[2] : $arrAddress[2],
@@ -143,7 +159,45 @@
                     ],
                 ];
                 $payment = $client->create($createRequest, $request_options);
-                print_r($payment);exit;
+                $details = $payment->transaction_details;
+                $strTransaction = $details->transaction_id;
+                if($payment->status == "pending"){
+                    $strStatus = "pendent";
+                }else if($payment->status == "rejected"){
+                    $strStatus = "canceled";
+                }else{
+                    $strStatus = "approved";
+                }
+                if(!$_SESSION['login']){
+                    $strName = ucwords(strClean($_POST['txtSignName']));
+                    $strEmail = strtolower(strClean($_POST['txtSignEmail']));
+                    $strPassword = hash("SHA256",bin2hex(random_bytes(6)));
+                    $strPicture = "user.jpg";
+                    $rolid = 2;
+                    
+                    $request = $this->setCustomerT($strName,$strPicture,$strEmail,$strPassword,$rolid);
+                    if(is_numeric($request) && $request > 0){
+                        $_SESSION['idUser'] = $request;
+                        $_SESSION['login'] = true;
+                        $this->login->sessionLogin($_SESSION['idUser']);
+                        sessionUser($_SESSION['idUser']);
+                    }
+                }
+                $idOrder = $this->setOrder([
+                    "name"=>$strFullName,
+                    "email"=>$strEmail,
+                    "phone"=>$strPhone,
+                    "address"=>$strAddress,
+                    "note"=>"",
+                    "cupon"=>$cupon,
+                    "situ"=>$situ,
+                    "document"=>$strDocument,
+                    "city"=>$strCity,
+                    "transaction"=>$strTransaction,
+                    "status"=>$strStatus
+                ]);
+                dep($payment->status);
+                dep($payment);exit;
             } catch (MercadoPago\Exceptions\MPApiException $e) {
                 echo "API Error: " . $e->getMessage() . "\n";
                 echo "Status Code: " . $e->getApiResponse()->getStatusCode() . "\n";
@@ -258,10 +312,10 @@
             $strAddress = $arrData['address'];
             $cupon = $arrData['cupon'];
             $strNote = $arrData['note'];
-            $status = $arrData['status']!="" ? $arrData['status'] : "approved";
+            $status = $arrData['status'];
             $idTransaction =$arrData['transaction'];
-            $type ="mercadopago";
             $situ = $arrData['situ'];
+            $type ="mercadopago";
             $envio = 0;
             $statusOrder ="confirmado";
             $arrProducts = $_SESSION['arrCart'];
@@ -269,9 +323,9 @@
             $cupon = $arrTotal['discount'];
             $total = $arrTotal['total'];
 
-            if($type==""){
+            /* if($type==""){
                 $status = "approved";
-            }
+            } */
 
             $arrShipping = $this->selectShippingMode();
             if($arrShipping['id']<3){
@@ -282,7 +336,6 @@
             if($situ =="true"){
                 $envio = 0;
             }
-            //$total +=$envio;
             $request = $this->insertOrder($idUser, $idTransaction,$strName,$strDocument,$strEmail,$strPhone,$strAddress,$strNote,$cupon,$envio,$total,$status,$type,$statusOrder);          
             if($request>0){
                 $arrOrder = array(
@@ -307,8 +360,8 @@
                 $idOrder = openssl_encrypt($request,METHOD,KEY);
                 $idTransaction = openssl_encrypt($orderInfo['order']['idtransaction'],METHOD,KEY);
                 $orderData = array("order"=>$idOrder,"transaction"=>$idTransaction);
-                unset($_SESSION['arrCart']);
-                unset($_SESSION['shippingcity']);
+                /* unset($_SESSION['arrCart']);
+                unset($_SESSION['shippingcity']); */
             }
             return $orderData;
         }

@@ -249,15 +249,15 @@
                             $_SESSION['idUser'] = $request;
                             $_SESSION['login'] = true;
                             $this->login->sessionLogin($_SESSION['idUser']);
-                            $company = getCompanyInfo();
                             sessionUser($_SESSION['idUser']);
+                            $company = getCompanyInfo();
                             $arrResponse = array("status" => true,"msg"=>"Se ha registrado con éxito.");
                             $data = array(
                                 'nombreUsuario'=> $strName, 
                                 'email_remitente' => $company['email'], 
                                 'email_usuario'=>$strEmail, 
                                 'company'=>$company,
-                                'asunto' =>"¡Registración exitosa! Bienvenido a ".$company['name']);
+                                'asunto' =>"Registro exitoso! Bienvenido a ".$company['name']);
                             sendEmail($data,"email_welcome");
                         }else if($request =="exist"){
                             $arrResponse = array("status" => false,"msg"=>"El usuario ya existe, por favor inicie sesión.");
