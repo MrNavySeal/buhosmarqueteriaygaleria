@@ -258,6 +258,9 @@
                 $html="";
                 for ($i=0; $i < count($arrProducts) ; $i++) { 
                     $arrProducts[$i]['index'] = $i;
+                    $arrProducts[$i]['subtotal'] = $arrProducts[$i]['price']*$arrProducts[$i]['qty'];
+                    $arrProducts[$i]['subtotal_format'] = formatNum($arrProducts[$i]['subtotal'],false);
+                    $arrProducts[$i]['price_format'] = formatNum($arrProducts[$i]['price'],false);
                     if($arrProducts[$i]['topic'] == 1){
                         $photo = $arrProducts[$i]['img'] != "" ? $arrProducts[$i]['img'] : media()."/images/uploads/".$arrProducts[$i]['cat_img'];
                         $url = base_url()."/enmarcar/personalizar/".$arrProducts[$i]['route'];
@@ -275,7 +278,7 @@
                                         <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                     </span>
                                 </div>
-                                <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
+                                <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                             </div>
                             <span class="delItem" ><i class="fas fa-times"></i></span>
                         </li>
@@ -295,7 +298,7 @@
                                             <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                         </span>
                                     </div>
-                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
+                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                                 </div>
                                 <span class="delItem"><i class="fas fa-times"></i></span>
                             </li>
@@ -331,7 +334,7 @@
                                             <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                         </span>
                                     </div>
-                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
+                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                                 </div>
                                 <span class="delItem"><i class="fas fa-times"></i></span>
                             </li>
@@ -340,17 +343,19 @@
                     }
                 }
                 $_SESSION['arrCart'] = $arrProducts;
+                $subtotal = 0;
                 $total =0;
                 $qty = 0;
                 foreach ($arrProducts as $pro) {
                     $total+=$pro['qty']*$pro['price'];
+                    $subtotal+=$pro['qty']*$pro['price'];
                     $qty+=$pro['qty'];
                 }
                 $status=false;
                 if(isset($_SESSION['login']) && !empty($_SESSION['arrCart'])){
                     $status=true;
                 }
-                $arrResponse = array("status"=>$status,"items"=>$html,"total"=>formatNum($total),"qty"=>$qty);
+                $arrResponse = array("status"=>$status,"items"=>$html,"total"=>formatNum($total),"subtotal"=>formatNum($subtotal),"qty"=>$qty,"products"=>$arrProducts);
             }else{
                 $arrResponse = array("items"=>"","total"=>formatNum(0),"qty"=>0);
             }

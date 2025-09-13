@@ -1,8 +1,7 @@
 <?php
     headerPage($data);
-    getModal("modalPago");
     $total = 0;
-    require_once("Libraries/vendor/autoload.php");
+    /* require_once("Libraries/vendor/autoload.php");
     MercadoPago\SDK::setAccessToken($data['credentials']['secret']);
 
     $preference = new MercadoPago\Preference();
@@ -12,7 +11,7 @@
         ),
         "installments" => 12
       );
-    $item = new MercadoPago\Item();
+    $item = new MercadoPago\Item(); */
     $arrProducts = $_SESSION['arrCart'];
     $arrShipping = $data['shipping'];
     $total = 0;
@@ -48,7 +47,7 @@
         $envio = $_SESSION['shippingcity'];
         $total+= $envio;
     }
-    $item->title = "productos";
+    /* $item->title = "productos";
     $item->quantity = 1;
     $item->unit_price = floor($total);
     $item->currency_id=$data['company']['currency']['code'];
@@ -59,7 +58,7 @@
     );
     $preference->auto_return = "approved";
     $preference->binary_mode = true;
-    $preference->save();
+    $preference->save(); */
 
 
 ?>
@@ -97,7 +96,6 @@
                                 <input type="number" class="form-control" id="txtDocument" name="txtDocument" value="<?=$_SESSION['userData']['identification']?>" placeholder="12345678" required="">
                             </div>
                         </div>
-                        
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="txtEmailOrder" class="form-label">Email <span class="text-danger">*</span></label>
@@ -142,7 +140,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="txtPostCodeOrder" class="form-label"> Código postal</label>
-                                <input type="text" class="form-control" id="txtPostCodeOrder" name="txtPostCodeOrder" placeholder="500001">
+                                <input type="text" class="form-control" id="txtPostCodeOrder" name="txtPostCodeOrder" placeholder="50001">
                             </div>
                         </div>
                     </div>
@@ -213,7 +211,7 @@
                         <p class="m-0 fw-bold fs-5">Total</p>
                         <p class="m-0 fw-bold fs-5" id="totalResume"><?=formatNum($total)?></p>
                     </div>
-                    <button type="button" class="mb-3 w-100 btn btn-bg-1" id="btnOrder" red="<?=$preference->init_point; ?>">Pagar</button>
+                    <button type="button" class="mb-3 w-100 btn btn-bg-1" id="btnOrder" onclick="modalCheckout()">Pagar</button>
                 </div>
             </div>
         </div>

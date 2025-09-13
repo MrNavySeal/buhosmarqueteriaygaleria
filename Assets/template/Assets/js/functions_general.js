@@ -19,6 +19,7 @@ for (let i = 0; i < mobile.length; i++) {
 var loading = document.querySelector("#divLoading");
 /***************************Nav Events****************************** */
 const btnSearch = document.querySelector("#btnSearch");
+const btnCheckout = document.querySelector("#btnCheckout");
 const closeSearch = document.querySelector("#closeSearch");
 const search = document.querySelector(".search");
 const cartbar = document.querySelector(".cartbar");
@@ -30,6 +31,9 @@ const navMask = document.querySelector(".navmobile--mask");
 const btnNav = document.querySelector("#btnNav");
 const closeNav = document.querySelector("#closeNav");
 const toastLive = document.getElementById('liveToast');
+let intCountry = document.querySelector("#listCountry");
+let intState = document.querySelector("#listState");
+let intCity = document.querySelector("#listCity");
 /********************************Search******************************** */
 btnSearch.addEventListener("click",function(){
     search.classList.add("active");
@@ -71,11 +75,6 @@ navMask.addEventListener("click",function(){
     document.querySelector("body").style.overflow="auto";
 });
 
-
-document.addEventListener("DOMContentLoaded",function(){
-    loading.classList.add("d-none");
-});
-
 btnCart.addEventListener("click",function(){
     request(base_url+"/carrito/currentCart","","get").then(function(objData){
         //document.querySelector("#qtyCart").innerHTML=objData.qty;
@@ -98,7 +97,13 @@ btnCart.addEventListener("click",function(){
         }
     })
 });
-
+/********************************Checkout******************************** */
+btnCheckout.addEventListener("click",async function(){
+    const formCheckout = document.querySelector("#formCheckout");
+    const formData = new FormData(formCheckout);
+    const response = await fetch(base_url+"/Pago/checkInfo",{method:"POST",body:formData});
+    const objData = await response.json();
+});
 if(document.querySelector("#logout")){
     let logout = document.querySelector("#logout");
     logout.addEventListener("click",function(e){
@@ -215,6 +220,14 @@ window.addEventListener("load",function(){
         
     }
 });
+document.addEventListener("DOMContentLoaded",function(){
+    loading.classList.add("d-none");
+    request(base_url+"/pago/getCountries","","get").then(function(objData){
+        intCountry.innerHTML = objData;
+        intCountry.value = intCountry.getAttribute("data-country");
+        getSelectCountry();
+    });
+});
 
 if(document.querySelector("#formSuscriber")){
     let formSuscribe = document.querySelector("#formSuscriber");
@@ -254,6 +267,47 @@ if(document.querySelector("#formSuscriber")){
     });
 }
 /***************************Essentials Functions****************************** */
+function modalCheckout(){
+    let modalView = new bootstrap.Modal(document.querySelector("#modalPago"));
+    request(base_url+"/Api/PasarelaMercadoPago/getPaymentMethods","","get").then(function(objData){
+        let html="";
+        const pse =  objData.data.filter(function(e){return e.id ==="pse";})[0];
+        let arrBanks = pse.financial_institutions;
+        arrBanks.sort((a, b) => a.description.localeCompare(b.description));
+        arrBanks.forEach(e => { html+=` <option value="${e.id}">${e.description}</option>`; });
+        document.querySelector("#strCheckBank").innerHTML = html;
+        
+        request(base_url+"/carrito/currentCart","","get").then(function(objData){
+            document.querySelector("#checkSubtotal").innerHTML =objData.subtotal;
+            document.querySelector("#checkTotal").innerHTML =objData.total;
+            const checkoutResume = document.querySelector("#checkoutResume");
+            const arrProducts = objData.products;
+            let html="";
+            arrProducts.forEach(e => {
+                html+=`
+                    <div class="d-flex justify-content-between">
+                        <p>${e.name} x ${e.price_format}</p>
+                        <p>${e.subtotal_format}</p>
+                    </div>
+                `;
+            });
+            checkoutResume.innerHTML = html;
+            modalView.show();
+        });
+    });
+    
+}
+function getSelectCountry(){
+    request(base_url+"/pago/getSelectCountry/"+intCountry.value,"","get").then(function(objData){
+        intState.innerHTML = objData;
+    });
+    intCity.innerHTML = "";
+}
+function getSelectState(){
+    request(base_url+"/pago/getSelectState/"+intState.value,"","get").then(function(objData){
+        intCity.innerHTML = objData;
+    });
+}
 function openLoginModal(){
     let modalItem = document.querySelector("#modalLogin");
     let modal= `

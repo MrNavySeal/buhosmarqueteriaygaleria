@@ -124,6 +124,7 @@ src="https://www.facebook.com/tr?id=1407018373490206&ev=PageView&noscript=1"
 
 </head>
 <body>
+    
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MRN4742X"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -377,5 +378,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <!--<a href="#" class="back--top d-none"><i class="fas fa-backward"></i></a><a id="btnWhatsapp" href="<?="https://wa.me/".$company['phonecode'].$company['phone']?>" target="_blank"><i class="fab fa-whatsapp"></i></a>-->
     <div id="modalLogin"></div>
+    <?php getModal("modalPago");?>
     
     

@@ -1,6 +1,5 @@
 <?php
-    use MercadoPago\Client\Payment\PaymentClient;
-    use MercadoPago\Client\Common\RequestOptions;
+    use MercadoPago\Client\PaymentMethod\PaymentMethodClient;
     use MercadoPago\MercadoPagoConfig;
     class PasarelaMercadoPago extends Controllers{
         public function __construct(){
@@ -9,11 +8,10 @@
         }
 
         public function getPaymentMethods(){
-            $arrPayments = curlConnectionGet("https://api.mercadopago.com/v1/payment_methods","application/json");
-            $arrData = array(
-                "pse" => array_values(array_filter($arrPayments,function($e){return $e->id =="pse";}))[0]
-            );
-            echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+            MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
+            $client = new PaymentMethodClient();
+            $payment_methods = $client->list();
+            echo json_encode($payment_methods,JSON_UNESCAPED_UNICODE);
         }
     }
 ?>

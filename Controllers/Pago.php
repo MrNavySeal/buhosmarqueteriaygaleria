@@ -141,6 +141,7 @@
         }
         /******************************Checkout methods************************************/
         public function checkInfo(){
+            dep($_POST);exit;
             if($_POST){
                 if(empty($_POST['txtNameOrder']) || empty($_POST['txtLastNameOrder']) || empty($_POST['txtEmailOrder'])
                 || empty($_POST['txtPhoneOrder']) || empty($_POST['txtAddressOrder']) || empty($_POST['listCountry']) ||

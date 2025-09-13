@@ -1,13 +1,8 @@
 document.querySelector("#btnCart").classList.add("d-none");
-let intCountry = document.querySelector("#listCountry");
-let intState = document.querySelector("#listState");
-let intCity = document.querySelector("#listCity");
 let formOrder = document.querySelector("#formOrder");
 let checkData = document.querySelector("#checkData");
 let publicKey = document.querySelector("#publicKey").value;
-let mp = new MercadoPago("'"+publicKey+"'");
-console.log(mp);
-request(base_url+"/pago/getCountries","","get").then(function(objData){
+/* request(base_url+"/pago/getCountries","","get").then(function(objData){
     intCountry.innerHTML = objData;
 });
 
@@ -21,123 +16,7 @@ intState.addEventListener("change",function(){
     request(base_url+"/pago/getSelectState/"+intState.value,"","get").then(function(objData){
         intCity.innerHTML = objData;
     });
-});
-btnOrder.addEventListener("click",async function(e){
-    const response = await fetch(base_url+"/Api/PasarelaMercadoPago/getPaymentMethods");
-    const arrData = await response.json();
-    const arrPse = arrData.pse;
-    document.querySelector("#pills-pse-tab").innerHTML=`<img width="20" src="${arrPse.secure_thumbnail}">`;
-    console.log(arrPse);
-    const cardForm = mp.cardForm({
-    amount: "100.5",
-    iframe: true,
-    form: {
-        id: "form-checkout",
-        cardNumber: {
-            id: "form-checkout__cardNumber",
-            placeholder: "Card Number",
-        },
-        expirationDate: {
-            id: "form-checkout__expirationDate",
-            placeholder: "MM/YY",
-        },
-        securityCode: {
-            id: "form-checkout__securityCode",
-            placeholder: "Security Code",
-        },
-        cardholderName: {
-            id: "form-checkout__cardholderName",
-            placeholder: "Cardholder",
-        },
-        issuer: {
-            id: "form-checkout__issuer",
-            placeholder: "Issuing bank",
-        },
-        installments: {
-            id: "form-checkout__installments",
-            placeholder: "Installments",
-        },
-        identificationType: {
-            id: "form-checkout__identificationType",
-            placeholder: "Document type",
-        },
-        identificationNumber: {
-            id: "form-checkout__identificationNumber",
-            placeholder: "Document number",
-        },
-        cardholderEmail: {
-            id: "form-checkout__cardholderEmail",
-            placeholder: "Email",
-        },
-    },
-    callbacks: {
-        onFormMounted: error => {
-            if (error) return console.warn("Form Mounted handling error: ", error);
-            console.log("Form mounted");
-        },
-        onSubmit: event => {
-            event.preventDefault();
-            const {
-                paymentMethodId: payment_method_id,
-                issuerId: issuer_id,
-                cardholderEmail: email,
-                amount,
-                token,
-                installments,
-                identificationNumber,
-                identificationType,
-            } = cardForm.getCardFormData();
-
-            fetch("/process_payment", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    token,
-                    issuer_id,
-                    payment_method_id,
-                    transaction_amount: Number(amount),
-                    installments: Number(installments),
-                    description: "Product Description",
-                    payer: {
-                        email,
-                        identification: {
-                            type: identificationType,
-                            number: identificationNumber,
-                        },
-                    },
-                }),
-            });
-        },
-        onFetching: (resource) => {
-            console.log("Fetching resource: ", resource);
-
-            // Animate progress bar
-            const progressBar = document.querySelector(".progress-bar");
-            progressBar.removeAttribute("value");
-
-            return () => {
-                progressBar.setAttribute("value", "0");
-            };
-        }
-    },
-});
-    /* const mp = new MercadoPago(PUBLIC_KEY, {
-        locale: 'en-US'
-    });
-    const arrDocumentType = await mp.getIdentificationTypes(); */
-    /* 
-    const arrIssuers = await mp.getIssuers();
-    const arrInstallments = await mp.getInstallments(); */
-    /* 
-    console.log(arrIssuers);
-    console.log(arrInstallments);
-    console.log(arrFields); */
-
-    let modalView = new bootstrap.Modal(document.querySelector("#modalPago"));
-    modalView.show();
-});
+}); */
 /* btnOrder.addEventListener("click",function(e){
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
