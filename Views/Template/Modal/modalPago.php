@@ -28,8 +28,8 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="txtEmailOrder" class="form-label">Correo <span class="text-danger">*</span></label>
-                                                <input type="email" class="form-control" id="txtEmailOrder" name="txtEmailOrder" value="<?=$_SESSION['userData']['email']?>" required="">
+                                                <label for="strCheckEmail" class="form-label">Correo <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" id="strCheckEmail" name="strCheckEmail" value="<?=$_SESSION['userData']['email']?>" required="">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -41,17 +41,17 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="strPersonType" class="form-label">Tipo de persona <span class="text-danger">*</span></label>
-                                                <select class="form-control" aria-label="Default select example" id="strCheckPersonType" name="strPersonType" required>
-                                                    <option value="natural">Natural</option>
-                                                    <option value="juridica">Jurídica</option>
+                                                <select class="form-control" aria-label="Default select example" id="strCheckPersonType" name="strCheckPersonType" required>
+                                                    <option value="individual">Natural</option>
+                                                    <option value="association">Jurídica</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="strTypeDocument" class="form-label">Tipo y número de documento <span class="text-danger">*</span></label>
+                                                <label for="strCheckDocumentType" class="form-label">Tipo y número de documento <span class="text-danger">*</span></label>
                                                 <div class="d-flex">
-                                                    <select class="form-control" aria-label="Default select example" id="strCheckTypeDocument" name="strTypeDocument" required>
+                                                    <select class="form-control" aria-label="Default select example" id="strCheckDocumentType" name="strCheckDocumentType" required>
                                                         <option value="CC">Cédula de ciudadania</option>
                                                         <option value="TE">Tarjeta de extranjeria</option>
                                                         <option value="CE">Cédula de extranjeria</option>
@@ -61,7 +61,7 @@
                                                         <option value="TI">Tarjeta de identidad</option>
                                                         <option value="RC">Registro civil de nacimiento</option>
                                                     </select>
-                                                    <input type="text" class="form-control" id="strDocumentNumber" name="strCheckDocument" value="<?=$_SESSION['userData']['identification']?>" required>
+                                                    <input type="text" class="form-control" id="strCheckDocument" name="strCheckDocument" value="<?=$_SESSION['userData']['identification']?>" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -93,7 +93,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="strCheckAddress" class="form-label"> Dirección<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="strCheckAddress" value="<?=$_SESSION['userData']['address']?>" name="strCheckAddress" required="" placeholder="Carrera, calle, barrio...">

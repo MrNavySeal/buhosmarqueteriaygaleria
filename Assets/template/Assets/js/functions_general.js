@@ -101,7 +101,7 @@ btnCart.addEventListener("click",function(){
 btnCheckout.addEventListener("click",async function(){
     const formCheckout = document.querySelector("#formCheckout");
     const formData = new FormData(formCheckout);
-    const response = await fetch(base_url+"/Pago/checkInfo",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData});
     const objData = await response.json();
 });
 if(document.querySelector("#logout")){
@@ -269,7 +269,7 @@ if(document.querySelector("#formSuscriber")){
 /***************************Essentials Functions****************************** */
 function modalCheckout(){
     let modalView = new bootstrap.Modal(document.querySelector("#modalPago"));
-    request(base_url+"/Api/PasarelaMercadoPago/getPaymentMethods","","get").then(function(objData){
+    request(base_url+"/Pago/getPaymentMethods","","get").then(function(objData){
         let html="";
         const pse =  objData.data.filter(function(e){return e.id ==="pse";})[0];
         let arrBanks = pse.financial_institutions;

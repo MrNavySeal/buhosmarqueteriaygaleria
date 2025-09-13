@@ -669,6 +669,11 @@
         $request = $con->select_all("SELECT * FROM cities WHERE state_id = $id ORDER BY name");
         return $request;
     }
+    function getCiudad(int $id){
+        $con = new Mysql();
+        $request = $con->select("SELECT * FROM cities WHERE id = $id");
+        return $request;
+    }
     function getPermisos(){
         if(isset($_SESSION['userData'])){
             $con = new Mysql();

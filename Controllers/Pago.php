@@ -3,6 +3,10 @@
     require_once("Models/ProductTrait.php");
     require_once("Models/CustomerTrait.php");
     require_once("Models/LoginModel.php");
+    use MercadoPago\Client\Common\RequestOptions;
+    use MercadoPago\Client\Payment\PaymentClient;
+    use MercadoPago\Client\PaymentMethod\PaymentMethodClient;
+    use MercadoPago\MercadoPagoConfig;
     class Pago extends Controllers{
         use ProductTrait, CustomerTrait;
         private $login;
@@ -86,7 +90,68 @@
             $data['page_name'] = "Error";
             $this->views->getView($this,"error",$data); 
         }
-        public function calcTotalCart($arrProducts,$code=null,$city=null,$situ){
+        public function getPaymentMethods(){
+            MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
+            $client = new PaymentMethodClient();
+            $payment_methods = $client->list();
+            echo json_encode($payment_methods,JSON_UNESCAPED_UNICODE);
+        }
+        public function setPayment(){
+            try {
+                //code...
+                $arrTotal = $this->calcTotalCart($_SESSION['arrCart']);
+                $strAddress = $_POST['strCheckAddress'];
+                $arrAddress = explode(" ",$strAddress);
+                $strCity = getCiudad(intval($_POST['listCity']))['name'];
+                MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
+                $client = new PaymentClient();
+                $request_options = new RequestOptions();
+                $token = token();
+                $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
+                $createRequest = [
+                    "transaction_amount" => $arrTotal['total'],
+                    "description" => "Productos",
+                    "payment_method_id" => "pse",
+                    "callback_url" => "https://buhosmarqueteriaygaleria.co/",
+                    "notification_url" => "https://buhosmarqueteriaygaleria.co/",
+                    "additional_info" => [
+                        "ip_address" => getIp()
+                    ],
+                    "transaction_details" => [
+                        "financial_institution" => $_POST['strCheckBank']
+                    ],
+                    "payer" => [
+                        "email" => $_POST['strCheckEmail'],
+                        "entity_type" => $_POST['strCheckPersonType'],
+                        "first_name" => $_POST['strCheckName'],
+                        "last_name" => $_POST['strCheckLastname'],
+                        "identification" => [
+                            "type" => $_POST['strCheckDocumentType'],
+                            "number" => $_POST['strCheckDocument']
+                        ],
+                        "address" => [
+                            "zip_code" => $_POST['strCheckCode'] !="" ? $_POST['strCheckCode'] : 50000,
+                            "street_name" => $arrAddress[0],
+                            "street_number" => isset($arrAddress[1]) ? $arrAddress[1] : $arrAddress[1],
+                            "neighborhood" => isset($arrAddress[2]) ? $arrAddress[2] : $arrAddress[2],
+                            "city" => $strCity,
+                        ],
+                        "phone" => [
+                            "area_code" => "+57",
+                            "number" => $_POST['strCheckPhone']
+                        ],
+                    ],
+                ];
+                $payment = $client->create($createRequest, $request_options);
+                print_r($payment);exit;
+            } catch (MercadoPago\Exceptions\MPApiException $e) {
+                echo "API Error: " . $e->getMessage() . "\n";
+                echo "Status Code: " . $e->getApiResponse()->getStatusCode() . "\n";
+                echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n";
+            }
+            die();
+        }
+        public function calcTotalCart($arrProducts,$code=null,$city=null,$situ=null){
             $arrShipping = $this->selectShippingMode();
             $total=0;
             $subtotal=0;
