@@ -65,6 +65,7 @@
             }
         }
         public function confirmar(){
+            dep($_GET);exit;
             $company=getCompanyInfo();
             $data['page_tag'] = $company['name'];
             $data['page_title'] ="Estado de pedido | ".$company['name'];
@@ -150,9 +151,9 @@
                     ],
                 ];
                 $payment = $client->create($createRequest, $request_options);
+                $strTransaction = $payment->id;
                 $details = $payment->transaction_details;
                 $externalUrl = $details->external_resource_url;
-                $strTransaction = $details->transaction_id;
                 if($payment->status == "pending"){
                     $strStatus = "pendent";
                 }else if($payment->status == "rejected"){
