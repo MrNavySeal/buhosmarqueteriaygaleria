@@ -65,23 +65,11 @@
             }
         }
         public function confirmar(){
-            if(isset($_SESSION['orderDataInfo'])){
-                $company=getCompanyInfo();
-                $data['page_tag'] = $company['name'];
-                $data['page_title'] ="Confirmar pedido | ".$company['name'];
-                $data['page_name'] = "confirmar";
-                $arrData = $_SESSION['orderDataInfo'];
-                $arrData['transaction'] = strClean($_GET['payment_id']);
-                $arrData['status'] = strClean($_GET['status']);
-                $arrData['type'] = strClean($_GET['payment_type']);
-                $orderData = $this->setOrder($arrData);
-                $data['orderData'] = $orderData;
-                unset($_SESSION['orderDataInfo']);
-                $this->views->getView($this,"confirmar",$data); 
-            }else{
-                header("location: ".base_url());
-                die();
-            }
+            $company=getCompanyInfo();
+            $data['page_tag'] = $company['name'];
+            $data['page_title'] ="Estado de pedido | ".$company['name'];
+            $data['page_name'] = "Estado de pedido";
+            $this->views->getView($this,"confirmar",$data);   
         }
         public function error(){
             $company=getCompanyInfo();
@@ -95,6 +83,9 @@
             $client = new PaymentMethodClient();
             $payment_methods = $client->list();
             echo json_encode($payment_methods,JSON_UNESCAPED_UNICODE);
+        }
+        public function updatePayment(){
+            echo "hola";
         }
         public function setPayment(){
             try {
@@ -128,8 +119,8 @@
                     "transaction_amount" => $arrTotal['total'],
                     "description" => "Productos",
                     "payment_method_id" => "pse",
-                    "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/",
-                    "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/",
+                    "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/confirmar",
+                    "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/updatePayment",
                     "additional_info" => [
                         "ip_address" => getIp()
                     ],
@@ -160,6 +151,7 @@
                 ];
                 $payment = $client->create($createRequest, $request_options);
                 $details = $payment->transaction_details;
+                $externalUrl = $details->external_resource_url;
                 $strTransaction = $details->transaction_id;
                 if($payment->status == "pending"){
                     $strStatus = "pendent";
@@ -183,7 +175,7 @@
                         sessionUser($_SESSION['idUser']);
                     }
                 }
-                $idOrder = $this->setOrder([
+                $this->setOrder([
                     "name"=>$strFullName,
                     "email"=>$strEmail,
                     "phone"=>$strPhone,
@@ -196,12 +188,14 @@
                     "transaction"=>$strTransaction,
                     "status"=>$strStatus
                 ]);
-                dep($payment->status);
-                dep($payment);exit;
+                $arrData = array("status"=>true,"url"=>$externalUrl);
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             } catch (MercadoPago\Exceptions\MPApiException $e) {
-                echo "API Error: " . $e->getMessage() . "\n";
+                $arrData = array("status"=>false,"msg"=>"Algo sucedió, inténtelo de nuevo.");
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                /* echo "API Error: " . $e->getMessage() . "\n";
                 echo "Status Code: " . $e->getApiResponse()->getStatusCode() . "\n";
-                echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n";
+                echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n"; */
             }
             die();
         }

@@ -93,7 +93,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="strCheckAddress" class="form-label"> Dirección<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="strCheckAddress" value="<?=$_SESSION['userData']['address']?>" name="strCheckAddress" required="" placeholder="Carrera, calle, barrio...">
