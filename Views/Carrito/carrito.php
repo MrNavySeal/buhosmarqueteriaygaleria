@@ -207,12 +207,8 @@
                         <input type="text" class="form-control" placeholder="Coupon code" aria-label="Coupon code" aria-describedby="button-addon2">
                         <button class="btn btnc-primary" type="button" id="button-addon2">+</button>
                     </div>-->
-                    <?php if(isset($_SESSION['login'])){ 
-                    ?>
-                    <a href="<?=base_url()."/pago".$urlCupon?>" class="mb-3 w-100 btn btn-bg-1">Pagar</a>
-                    <?php }else{ ?>
-                    <button type="button" onclick="openLoginModal();" class="mb-3 w-100 btn btn-bg-1">Pagar</button>
-                    <?php }?>
+
+                    <button type="button" onclick="modalCheckout()" class="mb-3 w-100 btn btn-bg-1 btnModalCheckout">Pagar</button>
                     <a href="<?=base_url()?>/tienda" class="w-100 btn btn-bg-2">Continuar comprando</a>
                 </div>
             </div>

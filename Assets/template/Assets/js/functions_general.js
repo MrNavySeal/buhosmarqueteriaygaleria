@@ -105,8 +105,8 @@ btnCheckout.addEventListener("click",async function(){
     btnCheckout.setAttribute("disabled","");
     const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData});
     const objData = await response.json();
-    btn.innerHTML=`Pagar`;    
-    btn.removeAttribute("disabled");
+    btnCheckout.innerHTML=`Pagar`;    
+    btnCheckout.removeAttribute("disabled");
     if(objData.status){
         window.location.href=objData.url;
     }else{
@@ -277,7 +277,10 @@ if(document.querySelector("#formSuscriber")){
 }
 /***************************Essentials Functions****************************** */
 function modalCheckout(){
+    const btnModalCheckout = document.querySelector(".btnModalCheckout");
     let modalView = new bootstrap.Modal(document.querySelector("#modalPago"));
+    btnModalCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
+    btnModalCheckout.setAttribute("disabled","");
     request(base_url+"/Pago/getPaymentMethods","","get").then(function(objData){
         let html="";
         const pse =  objData.data.filter(function(e){return e.id ==="pse";})[0];
@@ -300,6 +303,8 @@ function modalCheckout(){
                     </div>
                 `;
             });
+            btnModalCheckout.innerHTML=`Pagar`;    
+            btnModalCheckout.removeAttribute("disabled");
             checkoutResume.innerHTML = html;
             modalView.show();
         });
