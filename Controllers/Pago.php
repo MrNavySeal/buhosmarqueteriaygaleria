@@ -103,8 +103,8 @@
             $payment_methods = $client->list();
             echo json_encode($payment_methods,JSON_UNESCAPED_UNICODE);
         }
-        public function updatePayment(){
-            $paymentId = strClean($_GET['payment_id']);
+        public function notificacion(){
+            $paymentId = strClean($_POST["data"]["id"]);
             $request = $this->getOrder($paymentId);
             if(!empty($request)){
                 try {
@@ -152,8 +152,8 @@
                     "transaction_amount" => $arrTotal['total'],
                     "description" => "Productos",
                     "payment_method_id" => "pse",
-                    "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/confirmar",
-                    "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/updatePayment",
+                    "callback_url" => base_url()."/pago/confirmar",
+                    "notification_url" => base_url()."/pago/notificacion?source_news=webhooks",
                     "additional_info" => [
                         "ip_address" => getIp()
                     ],
