@@ -104,7 +104,21 @@
             echo json_encode($payment_methods,JSON_UNESCAPED_UNICODE);
         }
         public function updatePayment(){
-            echo "hola";
+            $paymentId = strClean($_GET['payment_id']);
+            $request = $this->getOrder($paymentId);
+            if(!empty($request)){
+                try {
+                    MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
+                    $client = new PaymentClient();
+                    $token = token();  
+                    $request_options = new RequestOptions();
+                    $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
+                    $order = $client->get($paymentId);
+                    $this->updateOrder($paymentId,$order->status,$request['amount']);
+                } catch (MercadoPago\Exceptions\MPApiException $e) {
+                     header("location: ".base_url()."/errors");
+                }
+            }
         }
         public function setPayment(){
             try {
