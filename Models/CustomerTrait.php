@@ -233,14 +233,34 @@
         public function getOrder($idOrder){
             $this->con = new Mysql();
             $this->intIdOrder =$idOrder;
-            $sql = "SELECT *, DATE_FORMAT(date, '%d/%m/%Y') as date FROM orderdata WHERE idorder = $this->intIdOrder";
+            $sql = "SELECT *, DATE_FORMAT(date, '%d/%m/%Y') as date FROM orderdata WHERE idorder = '$this->intIdOrder' OR idtransaction = '$this->intIdOrder'";
             $order = $this->con->select($sql);
             if(!empty($order)){
-                $sql = "SELECT * FROM orderdetail WHERE orderid = $this->intIdOrder";
+                $sql = "SELECT * FROM orderdetail WHERE orderid = '{order[idorder]}'";
                 $detail = $this->con->select_all($sql);
                 $arrData = array("order"=>$order,"detail"=>$detail);
             }   
             return $arrData;
+        }
+        public function updateOrder($strIdTransaction,$status,$total){
+            $this->con = new Mysql();
+            $this->strIdTransaction = $strIdTransaction;
+            $statusOrder="confirmado";
+            $sql = "UPDATE orderdata SET status=?, statusorder =? WHERE idtransaction = $this->strIdTransaction";
+            if($status == "rejected"){
+                $status = "canceled";
+                $statusOrder = "rechazado";
+            }else if ($status =="pending"){
+                $status = "pendent";
+            }else{
+                $status = "approved";
+            }
+            $arrData = [$status,$statusOrder];
+            $request = $this->con->insert($sql,$arrData);
+            if($status=="approved"){ 
+                $this->insertIncome($request,3,1,"Venta de producto",$total,1);
+                $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
+            }
         }
         public function setMessage($strName,$strPhone,$strEmail,$strSubject,$strMessage){
             $this->con = new Mysql();

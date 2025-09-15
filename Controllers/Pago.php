@@ -65,12 +65,30 @@
             }
         }
         public function confirmar(){
-            dep($_GET);exit;
-            $company=getCompanyInfo();
-            $data['page_tag'] = $company['name'];
-            $data['page_title'] ="Estado de pedido | ".$company['name'];
-            $data['page_name'] = "Estado de pedido";
-            $this->views->getView($this,"confirmar",$data);   
+            $paymentId = strClean($_GET['payment_id']);
+            $request = $this->getOrder($paymentId);
+            if(!empty($request)){
+                try {
+                    MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
+                    $client = new PaymentClient();
+                    $token = token();  
+                    $request_options = new RequestOptions();
+                    $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
+                    $order = $client->get($paymentId);
+                    $this->updateOrder($paymentId,$order->status,$request['amount']);
+                    $company=getCompanyInfo();
+                    $data['page_tag'] = $company['name'];
+                    $data['data'] = $this->getOrder($paymentId);
+                    $data['page_title'] ="Estado de pedido | ".$company['name'];
+                    $data['page_name'] = "Estado de pedido";
+                    $this->views->getView($this,"confirmar",$data);   
+                } catch (MercadoPago\Exceptions\MPApiException $e) {
+                     header("location: ".base_url()."/errors");
+                }
+            }else{
+                header("location: ".base_url()."/errors");
+            }
+            die();
         }
         public function error(){
             $company=getCompanyInfo();
