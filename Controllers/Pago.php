@@ -117,8 +117,11 @@
                     $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
                     $order = $client->get($paymentId);
                     $this->updateOrder($paymentId,$order->status,$request['amount']);
+                    echo "Pedido actualizado";
                 } catch (MercadoPago\Exceptions\MPApiException $e) {
-                     header("location: ".base_url()."/errors");
+                    echo "API Error: " . $e->getMessage() . "\n";
+                    echo "Status Code: " . $e->getApiResponse()->getStatusCode() . "\n";
+                    echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n";
                 }
             }
         }
