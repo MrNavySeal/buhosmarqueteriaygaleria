@@ -392,8 +392,8 @@
                 $idOrder = openssl_encrypt($request,METHOD,KEY);
                 $idTransaction = openssl_encrypt($orderInfo['order']['idtransaction'],METHOD,KEY);
                 $orderData = array("order"=>$idOrder,"transaction"=>$idTransaction);
-                /* unset($_SESSION['arrCart']);
-                unset($_SESSION['shippingcity']); */
+                unset($_SESSION['arrCart']);
+                unset($_SESSION['shippingcity']);
             }
             return $orderData;
         }
