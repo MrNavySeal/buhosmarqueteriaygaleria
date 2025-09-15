@@ -104,7 +104,9 @@
             echo json_encode($payment_methods,JSON_UNESCAPED_UNICODE);
         }
         public function notificacion(){
-            $paymentId = strClean($_POST["data"]["id"]);
+            $input = file_get_contents("php://input");
+            $data = json_decode($input, true);
+            $paymentId = strClean($data["data"]["id"]);
             $request = $this->getOrder($paymentId);
             if(!empty($request)){
                 try {
@@ -153,7 +155,7 @@
                     "description" => "Productos",
                     "payment_method_id" => "pse",
                     "callback_url" => base_url()."/pago/confirmar",
-                    "notification_url" => base_url()."/pago/notificacion?source_news=webhooks",
+                    "notification_url" => base_url()."/pago/notificacion",
                     "additional_info" => [
                         "ip_address" => getIp()
                     ],
