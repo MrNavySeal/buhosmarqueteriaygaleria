@@ -266,7 +266,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <div id="btnsCartBar" class="d-none">
                     <a href="<?=base_url()?>/carrito" class="btn btn-bg-2 d-block w-100 mb-3"> Ver carrito</a>
-                    <button type="button" class="btn d-block btn-bg-1 btnModalCheckout w-100" onclick="modalCheckout()"> Pagar</a>
+                    <button type="button" class="btn d-block btn-bg-1 btnModalCheckout w-100" onclick="modalCheckout(this)"> Pagar</a>
                 </div>
             </div>
         </div>

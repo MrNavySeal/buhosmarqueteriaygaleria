@@ -14,7 +14,7 @@
         <div class="container mt-4 mb-4 p-5">
             <?php if($order['status'] == "canceled"){?>
             <p class="text-center p-2 bg-danger text-white fw-bold">Oops! el pago de tu pedido fue cancelado.</p>
-            <p class="text-center">Te invitamos a intentar el pago nuevamente.</p>
+            <p class="text-center">Te invitamos a intentarlo nuevamente.</p>
             <?php }else if($order['status'] == "pendent"){?>
             <p class="text-center p-2 bg-warning fw-bold">El pago de tu pedido se encuentra pendiente y en espera de confirmación.</p>
             <p class="text-center">Su pedido será aprobada una vez realizado el pago.</p>
@@ -49,9 +49,13 @@
                 </table>
             </div>
             <hr>
-            <div class="mt-3 d-flex flex-column align-items-center">
-                <p class="m-0 mb-3">Puedes ver los pedidos en tu perfil de usuario</p>
-                <a href="<?=base_url()?>" class="btn btn-bg-1">Ir a la tienda</a>
+            <p class="m-0 mb-3 text-center">Puedes ver los pedidos en tu perfil de usuario</p>
+            <div class="d-flex gap-2 justify-content-center">
+                <?php if($order['status'] == "canceled"){?>
+                <button type="button" onclick="modalCheckout(this)" class="btn btn-bg-1 btnModalCheckout">Pagar</button>
+                <?php }?>
+                <a href="<?=base_url()?>/tienda" class="btn btn-bg-2">Ir a la tienda</a>
+                <a href="<?=base_url()?>/enmarcar" class="btn btn-bg-2">Enmarcar</a>
             </div>
         </div>
     </main>

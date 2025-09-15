@@ -208,7 +208,7 @@
                         <button class="btn btnc-primary" type="button" id="button-addon2">+</button>
                     </div>-->
 
-                    <button type="button" onclick="modalCheckout()" class="mb-3 w-100 btn btn-bg-1 btnModalCheckout">Pagar</button>
+                    <button type="button" onclick="modalCheckout(this)" class="mb-3 w-100 btn btn-bg-1 btnModalCheckout">Pagar</button>
                     <a href="<?=base_url()?>/tienda" class="w-100 btn btn-bg-2">Continuar comprando</a>
                 </div>
             </div>

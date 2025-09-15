@@ -84,14 +84,14 @@ btnCart.addEventListener("click",function(){
             document.querySelector(".cartlist--items").innerHTML = objData.items;
             document.querySelector("#totalCart").innerHTML = objData.total;
             delProduct(document.querySelectorAll(".delItem"));
-            let btnCheckoutCart = document.querySelector(".btnCheckoutCart");
+            /* let btnCheckoutCart = document.querySelector(".btnCheckoutCart");
             btnCheckoutCart.addEventListener("click",function(){
                 if(objData.status){
                     window.location.href=base_url+"/pago";
                 }else{
                     openLoginModal();
                 }
-            });
+            }); */
         }else{
             document.querySelector("#btnsCartBar").classList.add("d-none");
         }
@@ -276,8 +276,8 @@ if(document.querySelector("#formSuscriber")){
     });
 }
 /***************************Essentials Functions****************************** */
-function modalCheckout(){
-    const btnModalCheckout = document.querySelector(".btnModalCheckout");
+function modalCheckout(element){
+    const btnModalCheckout = element;
     let modalView = new bootstrap.Modal(document.querySelector("#modalPago"));
     btnModalCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
     btnModalCheckout.setAttribute("disabled","");
