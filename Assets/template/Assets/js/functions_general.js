@@ -101,12 +101,12 @@ btnCart.addEventListener("click",function(){
 btnCheckout.addEventListener("click",async function(){
     const formCheckout = document.querySelector("#formCheckout");
     const formData = new FormData(formCheckout);
-    btnCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
-    btnCheckout.setAttribute("disabled","");
+    /* btnCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
+    btnCheckout.setAttribute("disabled",""); */
     const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData});
     const objData = await response.json();
-    btnCheckout.innerHTML=`Pagar`;    
-    btnCheckout.removeAttribute("disabled");
+    /* btnCheckout.innerHTML=`Pagar`;    
+    btnCheckout.removeAttribute("disabled"); */
     if(objData.status){
         window.location.href=objData.url;
     }else{
@@ -276,6 +276,44 @@ if(document.querySelector("#formSuscriber")){
     });
 }
 /***************************Essentials Functions****************************** */
+function setCoupon(element){
+    let btnCoupon = element;
+    let coupon = document.querySelector("#coupon").value;
+    const divCoupon = document.querySelector("#divCoupon");
+    const htmlCoupon = document.querySelector("#htmlCoupon");
+    const htmlDiscount = document.querySelector("#htmlDiscount");
+    const contentCoupon = document.querySelector("#contentCoupon");
+    btnCoupon.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnCoupon.setAttribute("disabled","");
+
+    let formData = new FormData();
+    formData.append("cupon",coupon);
+    request(base_url+"/pago/setCouponCode",formData,"post").then(function(objData){
+        btnCoupon.innerHTML=`+`;
+        btnCoupon.removeAttribute("disabled");
+        if(objData.status){
+            contentCoupon.classList.add("d-none");
+            divCoupon.classList.remove("d-none");
+            htmlCoupon.innerHTML = objData.data.arrcupon.code;
+            htmlDiscount.innerHTML =  objData.data.arrcupon.discount+"%";
+            document.querySelector("#checkSubtotal").innerHTML =objData.data.subtotal;
+            document.querySelector("#checkTotal").innerHTML =objData.data.total;
+        }else{
+            
+        }
+    });
+}
+function delCoupon(){
+    request(base_url+"/carrito/currentCart","","get").then(function(objData){
+        const divCoupon = document.querySelector("#divCoupon");
+        const contentCoupon = document.querySelector("#contentCoupon");
+        contentCoupon.classList.remove("d-none");
+        divCoupon.classList.add("d-none");
+        document.querySelector("#coupon").value="";
+        document.querySelector("#checkSubtotal").innerHTML = objData.subtotal;
+        document.querySelector("#checkTotal").innerHTML = objData.total;
+    });
+}
 function modalCheckout(element){
     const btnModalCheckout = element;
     let modalView = new bootstrap.Modal(document.querySelector("#modalPago"));

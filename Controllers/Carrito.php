@@ -409,22 +409,5 @@
             }
             die();
         }
-        public function setCouponCode(){
-            if($_POST){
-                if(empty($_POST['cupon'])){
-                    $arrResponse = array("status"=>false,"msg"=>"Error de datos"); 
-                }else{
-                    $strCoupon = strClean(strtoupper($_POST['cupon']));
-                    $request = $this->selectCouponCode($strCoupon);
-                    if(!empty($request)){
-                        $arrResponse = array("status"=>true,"data"=>$request); 
-                    }else{
-                        $arrResponse = array("status"=>false,"msg"=>"El cupón no existe o está inactivo."); 
-                    }
-                }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
     }
 ?>

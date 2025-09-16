@@ -114,13 +114,21 @@
                                         <p class="m-0 fw-bold">Subtotal:</p>
                                         <p class="m-0" id="checkSubtotal"></p>
                                     </div>
-                                    <form id="formCoupon" class="mb-3">
+                                    <div id="contentCoupon" class="mb-3">
                                         <div class="input-group">
-                                            <input type="text" id="txtCoupon" name="cupon" class="form-control" placeholder="Código de descuento" aria-label="Coupon code" aria-describedby="button-addon2">
-                                            <button type="button" class="btn btn-bg-1" type="button" id="btnCoupon">+</button>
+                                            <input type="text" id="coupon" name="cupon" class="form-control" placeholder="Código de descuento" aria-label="Coupon code" aria-describedby="button-addon2">
+                                            <button type="button" class="btn btn-bg-1" type="button" onclick="setCoupon(this)">+</button>
                                         </div>
-                                        <div class="alert alert-danger mt-3 d-none" id="checkAlertCoupon" role="alert"></div>
-                                    </form>
+                                    </div>
+                                    <div id="divCoupon" class="d-none">
+                                        <p class="m-0 fw-bold">Cupón:</p>
+                                        <div class="d-flex justify-content-between">
+                                            <p class="m-0" id="htmlCoupon"></p>
+                                            <p class="m-0" id="htmlDiscount" ></p>
+                                        </div>
+                                        <p><a href="#" class="pe-auto mb-3" onclick="delCoupon()">Remover cupón</a></p>
+                                    </div>
+                                    
                                     <div class="d-flex justify-content-between mt-3 mb-3 position-relative af-b-line">
                                         <p class="m-0 fw-bold fs-5">Total</p>
                                         <p class="m-0 fw-bold fs-5" id="checkTotal"></p>

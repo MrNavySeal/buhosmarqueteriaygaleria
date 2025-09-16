@@ -84,20 +84,18 @@
             $this->intIdUser = $idUser;
             $sql = "SELECT * FROM usedcoupon WHERE personid = $this->intIdUser AND couponid = $idCoupon";
             $request = $this->con->select($sql);
-            if(!empty($request)){
-                $request = true;
-            }else{
-                $request = false;
-            }
-            return $request;
+            return !empty($request);
         }
-        public function setCoupon($idCoupon,$idUser,$code){
+        public function setCoupon($idCoupon,$idUser,$code,$idOrder){
             $this->con = new Mysql();
             $this->intIdUser = $idUser;
-            $sql = "INSERT INTO usedcoupon(couponid,personid,code) VALUE(?,?,?)";
-            $arrData = array($idCoupon,$this->intIdUser,$code);
-            $request = $this->con->insert($sql,$arrData);
-            return;
+            $sql = "INSERT INTO usedcoupon(couponid,personid,code,orderid) VALUE(?,?,?,?)";
+            $arrData = array($idCoupon,$this->intIdUser,$code,$idOrder);
+            $this->con->insert($sql,$arrData);
+        }
+        public function delCoupon($idOrder){
+            $this->con = new Mysql();
+            $this->con->delete("DELETE FROM usedcoupon WHERE orderid = $idOrder");
         }
         public function insertOrder(int $idUser, string $idTransaction, string $strName,string $strCedula,string $strEmail,string $strPhone,string $strAddress,
         string $strNote,string $cupon,int $envio,int $total,string $status, string $type,string $statusOrder){
@@ -254,6 +252,8 @@
                 $status = "pendent";
             }else{
                 $status = "approved";
+                unset($_SESSION['arrCart']);
+                unset($_SESSION['shippingcity']);
             }
             $arrData = [$status,$statusOrder];
             $request = $this->con->insert($sql,$arrData);
