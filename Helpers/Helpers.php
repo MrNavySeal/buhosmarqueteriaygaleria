@@ -806,6 +806,26 @@
             $_SESSION['navegation'] = $arrModules;
         }
     }
+    function getShippingMode(){
+        $con = new Mysql();
+        $sql = "SELECT * FROM shipping WHERE status = 1";
+        $request = $con->select($sql);
+        if($request['id'] == 3){
+            $sqlCities = "SELECT
+            sh.id,
+            c.name as country,
+            s.name as state,
+            cy.name as city,
+            sh.value
+            FROM shippingcity sh
+            INNER JOIN countries c, states s, cities cy
+            WHERE c.id = sh.country_id AND s.id = sh.state_id AND cy.id = sh.city_id
+            ORDER BY cy.name ASC";
+            $cities = $con->select_all($sqlCities);
+            $request['cities'] = $cities;
+        }
+        return $request;
+    }
     function validator(){
         return new Validator();
     }

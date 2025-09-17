@@ -101,12 +101,12 @@ btnCart.addEventListener("click",function(){
 btnCheckout.addEventListener("click",async function(){
     const formCheckout = document.querySelector("#formCheckout");
     const formData = new FormData(formCheckout);
-    /* btnCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
-    btnCheckout.setAttribute("disabled",""); */
+    btnCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
+    btnCheckout.setAttribute("disabled","");
     const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData});
     const objData = await response.json();
-    /* btnCheckout.innerHTML=`Pagar`;    
-    btnCheckout.removeAttribute("disabled"); */
+    btnCheckout.innerHTML=`Pagar`;    
+    btnCheckout.removeAttribute("disabled");
     if(objData.status){
         window.location.href=objData.url;
     }else{

@@ -1,3 +1,6 @@
+<?php 
+    $arrShipping = getShippingMode();
+?>
 <div class="modal fade" id="modalPago">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
@@ -128,7 +131,20 @@
                                         </div>
                                         <p><a href="#" class="pe-auto mb-3" onclick="delCoupon()">Remover cupón</a></p>
                                     </div>
-                                    
+                                    <?php if($arrShipping['id']!= 3){?>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <p class="m-0 fw-bold">Envio <?= $arrShipping['id'] == 4 ? "contra entrega": ""?>:</p>
+                                        <p class="m-0"><?=formatNum($arrShipping['value'])?></p>
+                                    </div>
+                                    <?php }else{?>
+                                        <p class="m-0 fw-bold">Envio:</p>
+                                        <select class="form-select" aria-label="Default select example" id="selectCity" name="selectCity">
+                                            <option value ="0" selected>Seleccionar ciudad</option>
+                                            <?php for ($i=0; $i < count($arrShipping['cities']); $i++) { ?>
+                                            <option value="<?=$arrShipping['cities'][$i]['id']?>"><?=$arrShipping['cities'][$i]['city']." - ".formatNum($arrShipping['cities'][$i]['value'],false)?></option>
+                                            <?php }?>
+                                        </select>
+                                    <?php }?>
                                     <div class="d-flex justify-content-between mt-3 mb-3 position-relative af-b-line">
                                         <p class="m-0 fw-bold fs-5">Total</p>
                                         <p class="m-0 fw-bold fs-5" id="checkTotal"></p>
