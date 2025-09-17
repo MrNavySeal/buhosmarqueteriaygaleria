@@ -75,7 +75,7 @@
                     $request_options = new RequestOptions();
                     $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
                     $order = $client->get($paymentId);
-                    $this->updateOrder($paymentId,$order->status,$request['amount']);
+                    $this->updateOrder($paymentId,$order->status,$request['order']['amount']);
                     $company=getCompanyInfo();
                     if($order->status == "rejected"){ $this->delCoupon($request['idorder']);}
                     $data['page_tag'] = $company['name'];
