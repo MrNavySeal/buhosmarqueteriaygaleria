@@ -5,7 +5,7 @@
     if($order['status'] == "approved"){
         $status ='<span class="badge bg-success text-white">aprobado</span>';;
     }else if($order['status'] == "pendent"){
-        $status ='<span class="badge bg-warning text-black">pediente</span>';;
+        $status ='<span class="badge bg-warning text-black">pendiente</span>';;
     }else if($order['status'] == "canceled"){
         $status ='<span class="badge bg-danger text-white">cancelado</span>';;
     }

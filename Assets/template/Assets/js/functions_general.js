@@ -110,6 +110,19 @@ btnCheckout.addEventListener("click",async function(){
     if(objData.status){
         window.location.href=objData.url;
     }else{
+        const errores = objData.errors;
+        showErrors("strCheckName",errores.strCheckName);
+        showErrors("strCheckLastname",errores.strCheckLastname);
+        showErrors("strCheckDocument",errores.strCheckDocument);
+        showErrors("strCheckEmail",errores.strCheckEmail);
+        showErrors("strCheckPhone",errores.strCheckPhone);
+        showErrors("strCheckAddress",errores.strCheckAddress);
+        showErrors("listCountry",errores.listCountry);
+        showErrors("listState",errores.listState);
+        showErrors("listCity",errores.listCity);
+        showErrors("strCheckPersonType",errores.strCheckPersonType);
+        showErrors("strCheckDocumentType",errores.strCheckDocumentType);
+        showErrors("strCheckBank",errores.strCheckBank);
         Swal.fire("Error", objData.msg, "error");
     }
 });
@@ -348,6 +361,17 @@ function modalCheckout(element){
         });
     });
     
+}
+function showErrors(field,errors){
+    field = document.querySelector("."+field);
+    field.innerHTML="";
+    let html="";
+    if(errors != undefined){
+        errors.forEach(e => {
+            html+=`<li>${e}</li>`;
+        });
+    }
+    field.innerHTML = html;
 }
 function getSelectCountry(){
     request(base_url+"/pago/getSelectCountry/"+intCountry.value,"","get").then(function(objData){

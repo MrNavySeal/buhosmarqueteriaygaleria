@@ -21,33 +21,38 @@
                                             <div class="mb-3">
                                                 <label for="strCheckName" class="form-label">Nombres <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="strCheckName" name="strCheckName" value="<?=$_SESSION['userData']['firstname']?>" required>
+                                                <ul class="strCheckName text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="strCheckLastname" class="form-label">Apellidos <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="strCheckLastname" name="strCheckLastname" value="<?=$_SESSION['userData']['lastname']?>" required>
+                                                <ul class="strCheckLastname text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="strCheckEmail" class="form-label">Correo <span class="text-danger">*</span></label>
                                                 <input type="email" class="form-control" id="strCheckEmail" name="strCheckEmail" value="<?=$_SESSION['userData']['email']?>" required="">
+                                                <ul class="strCheckEmail text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="strCheckPhone" class="form-label">Teléfono <span class="text-danger">*</span></label>
                                                 <input type="number" class="form-control" id="strCheckPhone" name="strCheckPhone" value="<?=$_SESSION['userData']['phone']?>" required placeholder="312 345 6789">
+                                                <ul class="strCheckPhone text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="strPersonType" class="form-label">Tipo de persona <span class="text-danger">*</span></label>
+                                                <label for="strCheckPersonType" class="form-label">Tipo de persona <span class="text-danger">*</span></label>
                                                 <select class="form-control" aria-label="Default select example" id="strCheckPersonType" name="strCheckPersonType" required>
                                                     <option value="individual">Natural</option>
                                                     <option value="association">Jurídica</option>
                                                 </select>
+                                                <ul class="strCheckPersonType text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -66,6 +71,8 @@
                                                     </select>
                                                     <input type="text" class="form-control" id="strCheckDocument" name="strCheckDocument" value="<?=$_SESSION['userData']['identification']?>" required>
                                                 </div>
+                                                <ul class="strCheckDocumentType text-danger"></ul>
+                                                <ul class="strCheckDocument text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
@@ -73,6 +80,7 @@
                                                 <label for="strCheckBank" class="form-label">Banco <span class="text-danger">*</span></label>
                                                 <select class="form-control" aria-label="Default select example" id="strCheckBank" name="strCheckBank" required>
                                                 </select>
+                                                <ul class="strCheckBank text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -80,6 +88,7 @@
                                                 <label for="listCountry" class="form-label">País <span class="text-danger">*</span></label>
                                                 <select class="form-select" id="listCountry" name="listCountry" aria-label="Default select example" data-country="<?=$_SESSION['userData']['countryid']?>" required onchange="getSelectCountry()">
                                                 </select>
+                                                <ul class="listCountry text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -87,6 +96,7 @@
                                                 <label for="listState" class="form-label">Departamento <span class="text-danger">*</span></label>
                                                 <select class="form-select" id="listState" name="listState" aria-label="Default select example"  required onchange="getSelectState()">
                                                 </select>
+                                                <ul class="listState text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -94,12 +104,14 @@
                                                 <label for="listCity" class="form-label">Ciudad <span class="text-danger">*</span></label>
                                                 <select class="form-select" id="listCity" name="listCity" aria-label="Default select example" required="">
                                                 </select>
+                                                <ul class="listCity text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="strCheckAddress" class="form-label"> Dirección<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="strCheckAddress" value="<?=$_SESSION['userData']['address']?>" name="strCheckAddress" required="" placeholder="Carrera, calle, barrio...">
+                                                <ul class="strCheckAddress text-danger"></ul>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -150,7 +162,10 @@
                                         <p class="m-0 fw-bold fs-5" id="checkTotal"></p>
                                     </div>
                                 </div>
+                                
                             </div>
+                            <p>Al realizar una compra en nuestro sitio web, aceptas <a href="<?=base_url()?>/politicas/terminos" target="_blank">nuestras políticas de uso</a> y 
+                            <a href="<?=base_url()?>/politicas/privacidad" target="_blank">de privacidad</a>.</p>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-bg-1" id="btnCheckout" >Pagar</button>
                                 <button type="button" class="btn btn-bg-2 text-white" data-bs-dismiss="modal">Cerrar</button>

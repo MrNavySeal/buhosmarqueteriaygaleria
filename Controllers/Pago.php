@@ -67,7 +67,7 @@
         public function confirmar(){
             $paymentId = strClean($_GET['payment_id']);
             $request = $this->getOrder($paymentId);
-            if(!empty($request)){
+            if(!empty($request) && $request['order']['status']!="approved"){
                 try {
                     MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
                     $client = new PaymentClient();
@@ -75,19 +75,20 @@
                     $request_options = new RequestOptions();
                     $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
                     $order = $client->get($paymentId);
-                    $this->updateOrder($paymentId,$order->status,$request['order']['amount']);
+                    $this->updateOrder($paymentId,$order->status,$request['order']['amount'],$request['order']['idorder']);
                     $company=getCompanyInfo();
-                    if($order->status == "rejected"){ $this->delCoupon($request['idorder']);}
+                    if($order->status == "rejected"){ $this->delCoupon($request['order']['idorder']);}
                     $data['page_tag'] = $company['name'];
                     $data['data'] = $request;
                     $data['page_title'] ="Estado de pedido | ".$company['name'];
                     $data['page_name'] = "Estado de pedido";
-                    $this->views->getView($this,"confirmar",$data);   
+                    $this->views->getView($this,"confirmar",$data);
+                    
                 } catch (MercadoPago\Exceptions\MPApiException $e) {
-                     header("location: ".base_url()."/errors");
+                    header("location: ".base_url()."/errors");
                 }
             }else{
-                header("location: ".base_url()."/errors");
+                header("location: ".base_url());
             }
             die();
         }
@@ -117,8 +118,8 @@
                     $request_options = new RequestOptions();
                     $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
                     $order = $client->get($paymentId);
-                    $this->updateOrder($paymentId,$order->status,$request['amount']);
-                    if($order->status == "rejected"){ $this->delCoupon($request['idorder']);}
+                    $this->updateOrder($paymentId,$order->status,$request['order']['amount'],$request['order']['idorder']);
+                    if($order->status == "rejected"){ $this->delCoupon($request['order']['idorder']);}
                     echo "Pedido actualizado";
                 } catch (MercadoPago\Exceptions\MPApiException $e) {
                     echo "API Error: " . $e->getMessage() . "\n";
@@ -140,6 +141,9 @@
                     "listCountry"=>"required;país",
                     "listState"=>"required;departamento",
                     "listCity"=>"required;ciudad",
+                    "strCheckPersonType"=>"required|string;tipo de persona",
+                    "strCheckDocumentType"=>"required|string|min:2|max:3;tipo de documento",
+                    "strCheckBank"=>"required|numeric;banco"
                 ])->getErrors();
                 if(empty($errors)){
                     try {
@@ -162,7 +166,7 @@
                         $arrTotal = $this->calcTotalCart($_SESSION['arrCart'],$cupon);
                         $strAddress = strClean($_POST['strCheckAddress']);
                         $arrAddress = explode(" ",$strAddress);
-                        $strAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
+                        $strFullAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
                         
                         MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
                         $client = new PaymentClient();
@@ -173,8 +177,8 @@
                             "transaction_amount" => $arrTotal['total'],
                             "description" => "Productos",
                             "payment_method_id" => "pse",
-                            "callback_url" => base_url()."/pago/confirmar",
-                            "notification_url" => base_url()."/pago/notificacion",
+                            "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/confirmar",
+                            "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/notificacion",
                             "additional_info" => [
                                 "ip_address" => getIp()
                             ],
@@ -215,25 +219,26 @@
                             $strStatus = "approved";
                         }
                         if(!$_SESSION['login']){
-                            $strName = ucwords(strClean($_POST['txtSignName']));
-                            $strEmail = strtolower(strClean($_POST['txtSignEmail']));
                             $strPassword = hash("SHA256",bin2hex(random_bytes(6)));
                             $strPicture = "user.jpg";
                             $rolid = 2;
                             
-                            $request = $this->setCustomerT($strName,$strPicture,$strEmail,$strPassword,$rolid);
+                            $request = $this->setCheckoutCustomerT($strName,$strLastname,$strDocument,$strPicture,
+                            $strEmail,$strPhone,$intCountry,$intState,$intCity,$strAddress,$strPassword,$rolid);
                             if(is_numeric($request) && $request > 0){
                                 $_SESSION['idUser'] = $request;
-                                $_SESSION['login'] = true;
-                                $this->login->sessionLogin($_SESSION['idUser']);
-                                sessionUser($_SESSION['idUser']);
+                            }else{
+                                $_SESSION['idUser'] = $request['id'];
                             }
+                            $_SESSION['login'] = true;
+                            $this->login->sessionLogin($_SESSION['idUser']);
+                            sessionUser($_SESSION['idUser']);
                         }
                         $request = $this->setOrder([
                             "name"=>$strFullName,
                             "email"=>$strEmail,
                             "phone"=>$strPhone,
-                            "address"=>$strAddress,
+                            "address"=>$strFullAddress,
                             "note"=>"",
                             "cupon"=>$cupon,
                             "situ"=>$situ,
@@ -253,7 +258,7 @@
                         echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n"; */
                     }
                 }else{
-                    echo json_encode(["status"=>false,"msg"=>"Por favor, revise los campos obligatorios."],JSON_UNESCAPED_UNICODE);
+                    echo json_encode(["status"=>false,"msg"=>"Por favor, revise los campos obligatorios.","errors"=>$errors],JSON_UNESCAPED_UNICODE);
                 }
             }
             die();
