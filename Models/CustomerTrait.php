@@ -357,7 +357,7 @@
             $request = $this->con->update($sql,$arrData);
             return $request;
         }
-        public function insertIncome(int $id, int $intType,int $intTopic,string $strName,int $intAmount,int $intStatus){
+        public function insertIncome(int $id, int $intType,int $intTopic,string $strName,$intAmount,int $intStatus){
             $this->con = new Mysql();
             $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?,?)";		  
             $arrData = array(
