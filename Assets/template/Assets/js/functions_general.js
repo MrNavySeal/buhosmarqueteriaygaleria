@@ -43,6 +43,12 @@ closeSearch.addEventListener("click",function(){
     search.classList.remove("active");
     document.querySelector("body").style.overflow="auto";
 });
+search.addEventListener("click",function(e){
+    if(e.target.classList[0] == "search"){
+        search.classList.remove("active");
+        document.querySelector("body").style.overflow="auto";
+    }
+});
 
 /********************************Aside cart******************************** */
 btnCart.addEventListener("click",function(){
@@ -83,7 +89,6 @@ btnCart.addEventListener("click",function(){
             document.querySelector("#qtyCartbar").innerHTML=objData.qty;
             document.querySelector(".cartlist--items").innerHTML = objData.items;
             document.querySelector("#totalCart").innerHTML = objData.total;
-            delProduct(document.querySelectorAll(".delItem"));
             /* let btnCheckoutCart = document.querySelector(".btnCheckoutCart");
             btnCheckoutCart.addEventListener("click",function(){
                 if(objData.status){
@@ -312,7 +317,7 @@ function setCoupon(element){
             document.querySelector("#checkSubtotal").innerHTML =objData.data.subtotal;
             document.querySelector("#checkTotal").innerHTML =objData.data.total;
         }else{
-            
+            Swal.fire("Error", objData.msg, "error");
         }
     });
 }
@@ -349,7 +354,7 @@ function modalCheckout(element){
             arrProducts.forEach(e => {
                 html+=`
                     <div class="d-flex justify-content-between">
-                        <p>${e.name} x ${e.price_format}</p>
+                        <p>${e.name} - ${e.qty} x ${e.price_format}</p>
                         <p>${e.subtotal_format}</p>
                     </div>
                 `;
@@ -780,30 +785,25 @@ function checkPopup(){
     let status = localStorage.getItem(COMPANY+"popup");
     return status;
 }
-function delProduct(elements){
-    for (let i = 0; i < elements.length; i++) {
-        let element = elements[i];
-        element.addEventListener("click",function(){
-            let formData = new FormData();
-            let id = element.parentElement.getAttribute("data-id");
-            formData.append("id",id);
-            element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            element.setAttribute("disabled","");
-            request(base_url+"/carrito/delCart",formData,"post").then(function(objData){
-                element.innerHTML=`<i class="fas fa-times"></i>`;
-                element.removeAttribute("disabled");
-                if(objData.status){
-                    document.querySelector("#qtyCart").innerHTML=objData.qty;
-                    document.querySelector("#totalCart").innerHTML = objData.subtotal;
-                    document.querySelector("#qtyCartbar").innerHTML=objData.qty;
-                    element.parentElement.remove();
-                    if(objData.qty == 0){
-                        document.querySelector("#btnsCartBar").classList.add("d-none");
-                    }
-                }
-            });
-        });
-    }
+function delProduct(element,id){
+    let formData = new FormData();
+    formData.append("id",id);
+    element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    element.setAttribute("disabled","");
+    request(base_url+"/carrito/delCart",formData,"post").then(function(objData){
+        element.innerHTML=`<i class="fas fa-times"></i>`;
+        element.removeAttribute("disabled");
+        if(objData.status){
+            document.querySelector("#qtyCart").innerHTML=objData.qty;
+            document.querySelector("#totalCart").innerHTML = objData.subtotal;
+            document.querySelector("#qtyCartbar").innerHTML=objData.qty;
+            element.parentElement.remove();
+            if(objData.qty == 0){
+                document.querySelector("#btnsCartBar").classList.add("d-none");
+            }
+        }
+    });
+
 }
 function addWishList(element){
     

@@ -297,9 +297,9 @@
                 $status = "pendent";
             }else{
                 $status = "approved";
-                unset($_SESSION['arrCart']);
-                unset($_SESSION['shippingcity']);
             }
+            unset($_SESSION['arrCart']);
+            unset($_SESSION['shippingcity']);
             $sql = "UPDATE orderdata SET status=?, statusorder =? WHERE idtransaction = $this->strIdTransaction";
             $arrData = [$status,$statusOrder];
             $request = $this->con->insert($sql,$arrData);
@@ -474,7 +474,9 @@
             $urlTransaction ="https://api.mercadopago.com/v1/payments/".$idTransaction;
             $objTransaction = curlConnectionGet($urlTransaction,"application/json");
             $comision = $objTransaction->fee_details[0]->amount;
+            $comision = $comision != null || $comision !=""  ? $comision : 0;  
             $retencion = $objTransaction->taxes_amount;
+            $retencion = $retencion != null || $retencion !=""  ? $retencion : 0;  
             $this->con = new Mysql();
             $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?,?)";		  
             $arrData = array( $id,$intType,$intTopic,$strName,$comision,$intStatus,"mercadopago");

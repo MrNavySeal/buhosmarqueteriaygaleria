@@ -18,7 +18,7 @@
         }
 
         /******************************Views************************************/
-        public function pago(){
+        /* public function pago(){
             if(isset($_SESSION['login']) && isset($_SESSION['arrCart']) && !empty($_SESSION['arrCart'])){
                 $company=getCompanyInfo();
                 $data['page_tag'] = $company['name'];
@@ -63,7 +63,7 @@
                 header("location: ".base_url());
                 die();
             }
-        }
+        } */
         public function confirmar(){
             $paymentId = strClean($_GET['payment_id']);
             $request = $this->getOrder($paymentId);
@@ -177,8 +177,8 @@
                             "transaction_amount" => $arrTotal['total'],
                             "description" => "Productos",
                             "payment_method_id" => "pse",
-                            "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/confirmar",
-                            "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/notificacion",
+                            "callback_url" => base_url()."/pago/confirmar",
+                            "notification_url" => base_url()."/pago/notificacion",
                             "additional_info" => [
                                 "ip_address" => getIp()
                             ],
@@ -247,7 +247,7 @@
                             "transaction"=>$strTransaction,
                             "status"=>$strStatus
                         ]);
-                        $arrTotal = $this->calcTotalCart($_SESSION['arrCart'],$cupon,null,null,$request,true);
+                        $arrTotal = $this->calcTotalCart($_SESSION['arrCart'],$cupon,null,null,$request['order'],true);
                         $arrData = array("status"=>true,"url"=>$externalUrl);
                         echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
                     } catch (MercadoPago\Exceptions\MPApiException $e) {
@@ -376,8 +376,8 @@
                     'order' => $orderInfo);
 
                 try {sendEmail($dataEmailOrden,'email_order');} catch (Exception $e) {}
-                $idOrder = openssl_encrypt($request,METHOD,KEY);
-                $idTransaction = openssl_encrypt($orderInfo['order']['idtransaction'],METHOD,KEY);
+                $idOrder = $request;
+                $idTransaction = $orderInfo['order']['idtransaction'];
                 $orderData = array("order"=>$idOrder,"transaction"=>$idTransaction);
             }
             return $orderData;
@@ -390,7 +390,7 @@
                     $strCoupon = strClean(strtoupper($_POST['cupon']));
                     $request = $this->selectCouponCode($strCoupon);
                     if(!empty($request)){
-                        if(!$this->checkCoupon($_SESSION['idUser'],$strCoupon)){
+                        if(!$this->checkCoupon($_SESSION['idUser'],$request['id'])){
                             $arrProducts = $_SESSION['arrCart'];
                             $data = $this->calcTotalCart($arrProducts,$strCoupon);
                             $data['subtotal'] = formatNum($data['subtotal']);

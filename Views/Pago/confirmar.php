@@ -17,7 +17,7 @@
             <p class="text-center">Te invitamos a intentarlo nuevamente.</p>
             <?php }else if($order['status'] == "pendent"){?>
             <p class="text-center p-2 bg-warning fw-bold">El pago de tu pedido se encuentra pendiente y en espera de confirmación.</p>
-            <p class="text-center">Su pedido será aprobada una vez realizado el pago.</p>
+            <p class="text-center">Su pedido será aprobado una vez realizado el pago.</p>
             <?php }else if($order['status'] == "approved"){?>
             <p class="text-center p-2 bg-success text-white fw-bold">Gracias por tu compra!.</p>
             <p class="text-center">El pago de su pedido fue realizado correctamente.</p>
