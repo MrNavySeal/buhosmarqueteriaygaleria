@@ -6,7 +6,7 @@
 			session_start();
 			session_regenerate_id(true);
 			if(isset($_SESSION['login'])){
-				header('Location: '.base_url()."/user/profile");
+				header('Location: '.base_url()."/sistema/usuarios/perfil");
 				die();
 			}
 			parent::__construct();

@@ -1,11 +1,8 @@
 document.querySelector("#btnCart").classList.add("d-none");
-let intCountry = document.querySelector("#listCountry");
-let intState = document.querySelector("#listState");
-let intCity = document.querySelector("#listCity");
 let formOrder = document.querySelector("#formOrder");
 let checkData = document.querySelector("#checkData");
-
-request(base_url+"/pago/getCountries","","get").then(function(objData){
+let publicKey = document.querySelector("#publicKey").value;
+/* request(base_url+"/pago/getCountries","","get").then(function(objData){
     intCountry.innerHTML = objData;
 });
 
@@ -19,8 +16,8 @@ intState.addEventListener("change",function(){
     request(base_url+"/pago/getSelectState/"+intState.value,"","get").then(function(objData){
         intCity.innerHTML = objData;
     });
-});
-btnOrder.addEventListener("click",function(e){
+}); */
+/* btnOrder.addEventListener("click",function(e){
     let urlSearch = window.location.search;
     let params = new URLSearchParams(urlSearch);
     let cupon = "";
@@ -82,7 +79,7 @@ btnOrder.addEventListener("click",function(e){
             Swal.fire("Error",objData.msg,"error");
         }
     });
-});
+}); */
 
 if(document.querySelector("#btnCoupon")){
     let btnCoupon = document.querySelector("#btnCoupon");

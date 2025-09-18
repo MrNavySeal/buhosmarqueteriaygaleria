@@ -223,7 +223,7 @@ foreach ($arrDet as $data) {
 		</tfoot>
 		</table>
 		<div class="text-center">
-			<h4>Gracias por tu compra!</h4>		
+			<h4>Gracias por tu pedido!</h4>		
 			<p>Recuerda que puedes ver tu pedido en tu perfil de usuario</p>	
 		</div>
 	</div>									

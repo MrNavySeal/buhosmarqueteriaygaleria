@@ -2,7 +2,7 @@
 $discount = statusCoupon();
 $company = getCompanyInfo();
 $social = getSocialMedia();
-
+$publicKey= getCredentials()['client'];
 $links ="";
 for ($i=0; $i < count($social) ; $i++) { 
     if($social[$i]['link']!=""){
@@ -146,6 +146,7 @@ for ($i=0; $i < count($social) ; $i++) {
     <!------------------------------My functions--------------------------------->
     <script>
         const base_url = "<?= base_url(); ?>";
+        const PUBLIC_KEY = "<?=$publicKey?>";
         const MS = "<?=$company['currency']['symbol'];?>";
         const MD = "<?=$company['currency']['code']?>";
         const COMPANY = "<?=$company['name']?>";

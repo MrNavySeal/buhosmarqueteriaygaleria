@@ -22,18 +22,21 @@
             foreach ($fields as $field => $rule) {
                 $content = $arrFields[$field];
                 $arrRules = explode("|",$rule);
+                $arrNickName = explode(";",implode(",",$arrRules));
+                $strNickName =!empty($arrNickName) ? $arrNickName[1] : "";
                 foreach ($arrRules as $ruleSet) {
                     $params = null;
                     if(strpos($ruleSet,":") !== false){
                         [$ruleName,$params] = explode(":",$ruleSet);
+                        $params = explode(";",$params)[0];
                     }else{
-                        $ruleName = $ruleSet;
+                        $ruleName = explode(";",$ruleSet)[0];
                     }
                     $method = "validate".ucFirst(strtolower($ruleName));
                     if(method_exists($this,$method)){
                         $result = $this->$method($content,$params);
                         if(!$result){
-                            $this->errors[$field][] = $this->getMessage($ruleName,$params,$content);
+                            $this->errors[$field][] = $this->getMessage($strNickName != "" ? $strNickName : $field,$ruleName,$params,$content);
                         }
                     }
                 }
@@ -84,24 +87,36 @@
                 return count($content) <= intval($params);
             }
         }
-        private function getMessage($rule,$params,$content){
+        private function validateEmail($content){
+            if(filter_var($content, FILTER_VALIDATE_EMAIL)){
+                $flag = true;
+            }else{
+                $flag = false;
+            }
+            return $flag;
+        }
+        private function getMessage($field,$rule,$params,$content){
             $messages = [
-                "required" => "El campo es obligatorio",
-                "string"=>"El campo debe ser texto",
-                "numeric"=>"El campo debe ser numérico",
-                "array"=>"El campo debe ser una lista",
-                "integer"=>"El campo debe ser un número entero",
-                "double"=>"El campo debe ser un número con decimales",
-                "string_min"=>"El campo debe tener al menos $params carácteres",
-                "string_max"=>"El campo debe tener máximo $params carácteres",
-                "array_min"=>"El campo debe tener al menos $params elementos",
-                "array_max"=>"El campo debe tener máximo $params elementos",
-                "numeric_min"=>"El campo debe ser mayor o igual a $params",
-                "numeric_max"=>"El campo debe ser menor o igual a $params",
-                "integer_min"=>"El campo debe ser mayor o igual a $params",
-                "integer_max"=>"El campo debe ser menor o igual a $params",
-                "double_min"=>"El campo debe ser mayor o igual a $params",
-                "double_max"=>"El campo debe ser menor o igual a $params",
+                "email"=>"El campo $field debe ser un correo válido",
+                "required" => "El campo $field es obligatorio",
+                "string"=>"El campo $field debe ser texto",
+                "numeric"=>"El campo $field debe ser numérico",
+                "array"=>"El campo $field debe ser una lista",
+                "integer"=>"El campo $field debe ser un número entero",
+                "double"=>"El campo $field debe ser un número con decimales",
+                "greater"=>"El campo $field debe ser mayor que $params",
+                "less"=>"El campo $field debe ser menor que $params",
+                "equal"=>"El campo $field debe ser igual a $params",
+                "string_min"=>"El campo $field debe tener al menos $params carácteres",
+                "string_max"=>"El campo $field debe tener máximo $params carácteres",
+                "array_min"=>"El campo $field debe tener al menos $params elementos",
+                "array_max"=>"El campo $field debe tener máximo $params elementos",
+                "numeric_min"=>"El campo $field debe ser mayor o igual a $params",
+                "numeric_max"=>"El campo $field debe ser menor o igual a $params",
+                "integer_min"=>"El campo $field debe ser mayor o igual a $params",
+                "integer_max"=>"El campo $field debe ser menor o igual a $params",
+                "double_min"=>"El campo $field debe ser mayor o igual a $params",
+                "double_max"=>"El campo $field debe ser menor o igual a $params",
             ];
             $type = gettype($content);
             $rule = in_array($rule,["min","max"]) ? $type."_".$rule : $rule; 

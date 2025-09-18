@@ -19,6 +19,7 @@ for (let i = 0; i < mobile.length; i++) {
 var loading = document.querySelector("#divLoading");
 /***************************Nav Events****************************** */
 const btnSearch = document.querySelector("#btnSearch");
+const btnCheckout = document.querySelector("#btnCheckout");
 const closeSearch = document.querySelector("#closeSearch");
 const search = document.querySelector(".search");
 const cartbar = document.querySelector(".cartbar");
@@ -30,6 +31,9 @@ const navMask = document.querySelector(".navmobile--mask");
 const btnNav = document.querySelector("#btnNav");
 const closeNav = document.querySelector("#closeNav");
 const toastLive = document.getElementById('liveToast');
+let intCountry = document.querySelector("#listCountry");
+let intState = document.querySelector("#listState");
+let intCity = document.querySelector("#listCity");
 /********************************Search******************************** */
 btnSearch.addEventListener("click",function(){
     search.classList.add("active");
@@ -38,6 +42,12 @@ btnSearch.addEventListener("click",function(){
 closeSearch.addEventListener("click",function(){
     search.classList.remove("active");
     document.querySelector("body").style.overflow="auto";
+});
+search.addEventListener("click",function(e){
+    if(e.target.classList[0] == "search"){
+        search.classList.remove("active");
+        document.querySelector("body").style.overflow="auto";
+    }
 });
 
 /********************************Aside cart******************************** */
@@ -71,11 +81,6 @@ navMask.addEventListener("click",function(){
     document.querySelector("body").style.overflow="auto";
 });
 
-
-document.addEventListener("DOMContentLoaded",function(){
-    loading.classList.add("d-none");
-});
-
 btnCart.addEventListener("click",function(){
     request(base_url+"/carrito/currentCart","","get").then(function(objData){
         //document.querySelector("#qtyCart").innerHTML=objData.qty;
@@ -84,21 +89,48 @@ btnCart.addEventListener("click",function(){
             document.querySelector("#qtyCartbar").innerHTML=objData.qty;
             document.querySelector(".cartlist--items").innerHTML = objData.items;
             document.querySelector("#totalCart").innerHTML = objData.total;
-            delProduct(document.querySelectorAll(".delItem"));
-            let btnCheckoutCart = document.querySelector(".btnCheckoutCart");
+            /* let btnCheckoutCart = document.querySelector(".btnCheckoutCart");
             btnCheckoutCart.addEventListener("click",function(){
                 if(objData.status){
                     window.location.href=base_url+"/pago";
                 }else{
                     openLoginModal();
                 }
-            });
+            }); */
         }else{
             document.querySelector("#btnsCartBar").classList.add("d-none");
         }
     })
 });
-
+/********************************Checkout******************************** */
+btnCheckout.addEventListener("click",async function(){
+    const formCheckout = document.querySelector("#formCheckout");
+    const formData = new FormData(formCheckout);
+    btnCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
+    btnCheckout.setAttribute("disabled","");
+    const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData});
+    const objData = await response.json();
+    btnCheckout.innerHTML=`Pagar`;    
+    btnCheckout.removeAttribute("disabled");
+    if(objData.status){
+        window.location.href=objData.url;
+    }else{
+        const errores = objData.errors;
+        showErrors("strCheckName",errores.strCheckName);
+        showErrors("strCheckLastname",errores.strCheckLastname);
+        showErrors("strCheckDocument",errores.strCheckDocument);
+        showErrors("strCheckEmail",errores.strCheckEmail);
+        showErrors("strCheckPhone",errores.strCheckPhone);
+        showErrors("strCheckAddress",errores.strCheckAddress);
+        showErrors("listCountry",errores.listCountry);
+        showErrors("listState",errores.listState);
+        showErrors("listCity",errores.listCity);
+        showErrors("strCheckPersonType",errores.strCheckPersonType);
+        showErrors("strCheckDocumentType",errores.strCheckDocumentType);
+        showErrors("strCheckBank",errores.strCheckBank);
+        Swal.fire("Error", objData.msg, "error");
+    }
+});
 if(document.querySelector("#logout")){
     let logout = document.querySelector("#logout");
     logout.addEventListener("click",function(e){
@@ -215,6 +247,14 @@ window.addEventListener("load",function(){
         
     }
 });
+document.addEventListener("DOMContentLoaded",function(){
+    loading.classList.add("d-none");
+    request(base_url+"/pago/getCountries","","get").then(function(objData){
+        intCountry.innerHTML = objData;
+        intCountry.value = intCountry.getAttribute("data-country");
+        getSelectCountry();
+    });
+});
 
 if(document.querySelector("#formSuscriber")){
     let formSuscribe = document.querySelector("#formSuscriber");
@@ -254,6 +294,101 @@ if(document.querySelector("#formSuscriber")){
     });
 }
 /***************************Essentials Functions****************************** */
+function setCoupon(element){
+    let btnCoupon = element;
+    let coupon = document.querySelector("#coupon").value;
+    const divCoupon = document.querySelector("#divCoupon");
+    const htmlCoupon = document.querySelector("#htmlCoupon");
+    const htmlDiscount = document.querySelector("#htmlDiscount");
+    const contentCoupon = document.querySelector("#contentCoupon");
+    btnCoupon.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnCoupon.setAttribute("disabled","");
+
+    let formData = new FormData();
+    formData.append("cupon",coupon);
+    request(base_url+"/pago/setCouponCode",formData,"post").then(function(objData){
+        btnCoupon.innerHTML=`+`;
+        btnCoupon.removeAttribute("disabled");
+        if(objData.status){
+            contentCoupon.classList.add("d-none");
+            divCoupon.classList.remove("d-none");
+            htmlCoupon.innerHTML = objData.data.arrcupon.code;
+            htmlDiscount.innerHTML =  objData.data.arrcupon.discount+"%";
+            document.querySelector("#checkSubtotal").innerHTML =objData.data.subtotal;
+            document.querySelector("#checkTotal").innerHTML =objData.data.total;
+        }else{
+            Swal.fire("Error", objData.msg, "error");
+        }
+    });
+}
+function delCoupon(){
+    request(base_url+"/carrito/currentCart","","get").then(function(objData){
+        const divCoupon = document.querySelector("#divCoupon");
+        const contentCoupon = document.querySelector("#contentCoupon");
+        contentCoupon.classList.remove("d-none");
+        divCoupon.classList.add("d-none");
+        document.querySelector("#coupon").value="";
+        document.querySelector("#checkSubtotal").innerHTML = objData.subtotal;
+        document.querySelector("#checkTotal").innerHTML = objData.total;
+    });
+}
+function modalCheckout(element){
+    const btnModalCheckout = element;
+    let modalView = new bootstrap.Modal(document.querySelector("#modalPago"));
+    btnModalCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
+    btnModalCheckout.setAttribute("disabled","");
+    request(base_url+"/Pago/getPaymentMethods","","get").then(function(objData){
+        let html="";
+        const pse =  objData.data.filter(function(e){return e.id ==="pse";})[0];
+        let arrBanks = pse.financial_institutions;
+        arrBanks.sort((a, b) => a.description.localeCompare(b.description));
+        arrBanks.forEach(e => { html+=` <option value="${e.id}">${e.description}</option>`; });
+        document.querySelector("#strCheckBank").innerHTML = html;
+        
+        request(base_url+"/carrito/currentCart","","get").then(function(objData){
+            document.querySelector("#checkSubtotal").innerHTML =objData.subtotal;
+            document.querySelector("#checkTotal").innerHTML =objData.total;
+            const checkoutResume = document.querySelector("#checkoutResume");
+            const arrProducts = objData.products;
+            let html="";
+            arrProducts.forEach(e => {
+                html+=`
+                    <div class="d-flex justify-content-between">
+                        <p>${e.name} - ${e.qty} x ${e.price_format}</p>
+                        <p>${e.subtotal_format}</p>
+                    </div>
+                `;
+            });
+            btnModalCheckout.innerHTML=`Pagar`;    
+            btnModalCheckout.removeAttribute("disabled");
+            checkoutResume.innerHTML = html;
+            modalView.show();
+        });
+    });
+    
+}
+function showErrors(field,errors){
+    field = document.querySelector("."+field);
+    field.innerHTML="";
+    let html="";
+    if(errors != undefined){
+        errors.forEach(e => {
+            html+=`<li>${e}</li>`;
+        });
+    }
+    field.innerHTML = html;
+}
+function getSelectCountry(){
+    request(base_url+"/pago/getSelectCountry/"+intCountry.value,"","get").then(function(objData){
+        intState.innerHTML = objData;
+    });
+    intCity.innerHTML = "";
+}
+function getSelectState(){
+    request(base_url+"/pago/getSelectState/"+intState.value,"","get").then(function(objData){
+        intCity.innerHTML = objData;
+    });
+}
 function openLoginModal(){
     let modalItem = document.querySelector("#modalLogin");
     let modal= `
@@ -650,30 +785,25 @@ function checkPopup(){
     let status = localStorage.getItem(COMPANY+"popup");
     return status;
 }
-function delProduct(elements){
-    for (let i = 0; i < elements.length; i++) {
-        let element = elements[i];
-        element.addEventListener("click",function(){
-            let formData = new FormData();
-            let id = element.parentElement.getAttribute("data-id");
-            formData.append("id",id);
-            element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            element.setAttribute("disabled","");
-            request(base_url+"/carrito/delCart",formData,"post").then(function(objData){
-                element.innerHTML=`<i class="fas fa-times"></i>`;
-                element.removeAttribute("disabled");
-                if(objData.status){
-                    document.querySelector("#qtyCart").innerHTML=objData.qty;
-                    document.querySelector("#totalCart").innerHTML = objData.subtotal;
-                    document.querySelector("#qtyCartbar").innerHTML=objData.qty;
-                    element.parentElement.remove();
-                    if(objData.qty == 0){
-                        document.querySelector("#btnsCartBar").classList.add("d-none");
-                    }
-                }
-            });
-        });
-    }
+function delProduct(element,id){
+    let formData = new FormData();
+    formData.append("id",id);
+    element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    element.setAttribute("disabled","");
+    request(base_url+"/carrito/delCart",formData,"post").then(function(objData){
+        element.innerHTML=`<i class="fas fa-times"></i>`;
+        element.removeAttribute("disabled");
+        if(objData.status){
+            document.querySelector("#qtyCart").innerHTML=objData.qty;
+            document.querySelector("#totalCart").innerHTML = objData.subtotal;
+            document.querySelector("#qtyCartbar").innerHTML=objData.qty;
+            element.parentElement.remove();
+            if(objData.qty == 0){
+                document.querySelector("#btnsCartBar").classList.add("d-none");
+            }
+        }
+    });
+
 }
 function addWishList(element){
     

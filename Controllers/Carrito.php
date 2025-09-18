@@ -222,15 +222,14 @@
         }
         public function delCart(){
             if($_POST){
-                $id = $_POST['id'];
+                $id = intval($_POST['id']);
                 $code = isset($_POST['cupon']) ? strClean($_POST['cupon']) : "";
                 $situ = isset($_POST['situ'])  ? strtolower(strClean($_POST['situ'])):"";
                 $city = isset($_POST['city']) ? intval($_POST['city']) : 0;
                 $total=0;
                 $qtyCart=0;
                 $arrCart = $_SESSION['arrCart'];
-                $index = array_values(array_filter($arrCart,function($e) use($id) {return $e['index'] == $id;}))[0]['index'];
-                unset($arrCart[$index]);
+                unset($arrCart[$id]);
                 $arrCart = array_values($arrCart);
                 for ($i=0; $i < count($arrCart) ; $i++) { 
                     $qtyCart += $arrCart[$i]['qty'];
@@ -258,6 +257,9 @@
                 $html="";
                 for ($i=0; $i < count($arrProducts) ; $i++) { 
                     $arrProducts[$i]['index'] = $i;
+                    $arrProducts[$i]['subtotal'] = $arrProducts[$i]['price']*$arrProducts[$i]['qty'];
+                    $arrProducts[$i]['subtotal_format'] = formatNum($arrProducts[$i]['subtotal'],false);
+                    $arrProducts[$i]['price_format'] = formatNum($arrProducts[$i]['price'],false);
                     if($arrProducts[$i]['topic'] == 1){
                         $photo = $arrProducts[$i]['img'] != "" ? $arrProducts[$i]['img'] : media()."/images/uploads/".$arrProducts[$i]['cat_img'];
                         $url = base_url()."/enmarcar/personalizar/".$arrProducts[$i]['route'];
@@ -275,9 +277,9 @@
                                         <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                     </span>
                                 </div>
-                                <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
+                                <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                             </div>
-                            <span class="delItem" ><i class="fas fa-times"></i></span>
+                            <span class="delItem" onclick="delProduct(this,'.$arrProducts[$i]['index'].')" ><i class="fas fa-times"></i></span>
                         </li>
                         ';
                     }else if($arrProducts[$i]['topic'] == 2){
@@ -295,9 +297,9 @@
                                             <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                         </span>
                                     </div>
-                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
+                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                                 </div>
-                                <span class="delItem"><i class="fas fa-times"></i></span>
+                                <span class="delItem" onclick="delProduct(this,'.$arrProducts[$i]['index'].')"><i class="fas fa-times"></i></span>
                             </li>
                             ';
                         }else{
@@ -331,26 +333,28 @@
                                             <span class="item--price">'.formatNum($arrProducts[$i]['price'],false).'</span>
                                         </span>
                                     </div>
-                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['price']*$arrProducts[$i]['qty'],false).'</span>
+                                    <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                                 </div>
-                                <span class="delItem"><i class="fas fa-times"></i></span>
+                                <span class="delItem" onclick="delProduct(this,'.$arrProducts[$i]['index'].')"><i class="fas fa-times"></i></span>
                             </li>
                             ';
                         }
                     }
                 }
                 $_SESSION['arrCart'] = $arrProducts;
+                $subtotal = 0;
                 $total =0;
                 $qty = 0;
                 foreach ($arrProducts as $pro) {
                     $total+=$pro['qty']*$pro['price'];
+                    $subtotal+=$pro['qty']*$pro['price'];
                     $qty+=$pro['qty'];
                 }
                 $status=false;
                 if(isset($_SESSION['login']) && !empty($_SESSION['arrCart'])){
                     $status=true;
                 }
-                $arrResponse = array("status"=>$status,"items"=>$html,"total"=>formatNum($total),"qty"=>$qty);
+                $arrResponse = array("status"=>$status,"items"=>$html,"total"=>formatNum($total),"subtotal"=>formatNum($subtotal),"qty"=>$qty,"products"=>$arrProducts);
             }else{
                 $arrResponse = array("items"=>"","total"=>formatNum(0),"qty"=>0);
             }
@@ -401,23 +405,6 @@
                 $arrData['total'] = formatNum($arrData['total']);
                 $arrData['cupon'] = formatNum($arrData['cupon']); 
                 echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function setCouponCode(){
-            if($_POST){
-                if(empty($_POST['cupon'])){
-                    $arrResponse = array("status"=>false,"msg"=>"Error de datos"); 
-                }else{
-                    $strCoupon = strClean(strtoupper($_POST['cupon']));
-                    $request = $this->selectCouponCode($strCoupon);
-                    if(!empty($request)){
-                        $arrResponse = array("status"=>true,"data"=>$request); 
-                    }else{
-                        $arrResponse = array("status"=>false,"msg"=>"El cupón no existe o está inactivo."); 
-                    }
-                }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }

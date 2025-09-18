@@ -121,16 +121,18 @@
                         $btnEdit ="";
                         $status="";
                         $statusOrder="";
-                        if($request[$i]['type'] == "mercadopago"){
+                        if($request[$i]['type'] == "mercadopago" && $request[$i]['status'] =="approved"){
                             $btnPaypal = '<a href="'.base_url().'/pedidos/transaccion/'.$request[$i]['idtransaction'].'" class="btn btn-info m-1 text-white " type="button" title="Ver transacción" name="btnPaypal"><i class="fas fa-receipt"></i></a>';
                         }
                         
-                        if($request[$i]['status'] =="pendent"){
+                        if($request[$i]['status'] =="pendent" && $request[$i]['type'] != "mercadopago"){
                             $status = '<span class="badge bg-warning text-black">Credito</span>';
                         }else if($request[$i]['status'] =="approved"){
                             $status = '<span class="badge bg-success text-white">Pagado</span>';
                         }else if($request[$i]['status'] =="canceled"){
                             $status = '<span class="badge bg-danger text-white">Anulado</span>';
+                        }else if($request[$i]['status'] =="pendent" && $request[$i]['type'] == "mercadopago"){
+                            $status = '<span class="badge bg-warning text-black">Pendiente</span>';
                         }
                         if($request[$i]['statusorder'] =="confirmado"){
                             $statusOrder = '<span class="badge bg-dark text-white">Confirmado</span>';
