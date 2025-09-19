@@ -182,7 +182,7 @@
                                 "warranty"=> false,
                             ]);
                         }
-                        $idOrder = $this->setOrder([
+                        $arrOrder = $this->setOrder([
                             "name"=>$strFullName,
                             "email"=>$strEmail,
                             "phone"=>$strPhone,
@@ -195,7 +195,7 @@
                             "transaction"=>"",
                             "status"=>"pendent",
                         ]);
-                        
+                        $idOrder = $arrOrder['order'];
                         MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
                         $client = new PaymentClient();
                         $request_options = new RequestOptions();
@@ -207,6 +207,8 @@
                             "payment_method_id" => "pse",
                             "callback_url" => base_url()."/pago/confirmar",
                             "notification_url" => base_url()."/pago/notificacion",
+                            /* "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/confirmar",
+                            "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/notificacion", */
                             "additional_info" => [
                                 "ip_address" => getIp()
                             ],

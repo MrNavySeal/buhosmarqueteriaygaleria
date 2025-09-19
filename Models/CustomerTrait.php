@@ -151,32 +151,29 @@
             $this->strPhone = $strPhone;
             $this->strAddress = $strAddress;
             $this->strCedula = $strCedula;
-            $prov = $this->con->select_all("SELECT * FROM orderdata WHERE idtransaction = $this->strIdTransaction");
-            if(empty($prov)){
-                $sql ="INSERT INTO orderdata(personid,idtransaction,name,identification,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                $arrData = array(
-                    $this->intIdUser, 
-                    $this->strIdTransaction,
-                    $this->strName,
-                    $this->strCedula,
-                    $this->strEmail,
-                    $this->strPhone,
-                    $this->strAddress,
-                    $strNote,
-                    $total,
-                    $status,
-                    $cupon,
-                    $envio,
-                    $type,
-                    $statusOrder
-                );
-                $request = $this->con->insert($sql,$arrData);
-                if($request>0){
-                    $this->updateDateBeat($request);
-                    if($status=="approved"){ 
-                        $this->insertIncome($request,3,1,"Venta de producto",$total,1);
-                        $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
-                    }
+            $sql ="INSERT INTO orderdata(personid,idtransaction,name,identification,email,phone,address,note,amount,status,coupon,shipping,type,statusorder) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            $arrData = array(
+                $this->intIdUser, 
+                $this->strIdTransaction,
+                $this->strName,
+                $this->strCedula,
+                $this->strEmail,
+                $this->strPhone,
+                $this->strAddress,
+                $strNote,
+                $total,
+                $status,
+                $cupon,
+                $envio,
+                $type,
+                $statusOrder
+            );
+            $request = $this->con->insert($sql,$arrData);
+            if($request>0){
+                $this->updateDateBeat($request);
+                if($status=="approved"){ 
+                    $this->insertIncome($request,3,1,"Venta de producto",$total,1);
+                    $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
                 }
             }
             return $request;
