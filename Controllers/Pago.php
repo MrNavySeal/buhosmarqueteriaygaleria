@@ -175,7 +175,7 @@
                                 "title"=>$pro['name'],
                                 "description"=>$pro['name'],
                                 "picture_url"=> $pro['image'],
-                                "category_id"=> $pro['category_id'],
+                                "category_id"=> $pro['category'],
                                 "quantity"=> $pro['qty'],
                                 "unit_price"=> $pro['price'],
                                 "type"=> $pro['category'],
