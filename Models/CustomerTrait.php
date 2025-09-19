@@ -262,6 +262,14 @@
                 $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
             }
         }
+        public function setTransaction($idOrder,$idTransaction){
+            $this->con = new Mysql();
+            $this->strIdTransaction = $idTransaction;
+            $this->intIdOrder =$idOrder;
+            $sql = "UPDATE orderdata SET idtransaction=? WHERE idorder = $this->intIdOrder";
+            $request = $this->con->update($sql,[$this->strIdTransaction]);
+            return $request;
+        }
         public function setMessage($strName,$strPhone,$strEmail,$strSubject,$strMessage){
             $this->con = new Mysql();
             $this->strName = $strName;

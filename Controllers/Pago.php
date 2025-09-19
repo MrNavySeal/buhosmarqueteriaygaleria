@@ -143,6 +143,8 @@
                 ])->getErrors();
                 if(empty($errors)){
                     try {
+                        $arrProducts = $_SESSION['arrCart'];
+                        dep($arrProducts);exit;
                         $strName = ucwords(strClean($_POST['strCheckName']));
                         $strLastname = ucwords(strClean($_POST['strCheckLastname']));
                         $strFullName = $strName." ".$strLastname;
@@ -159,10 +161,29 @@
                         $cupon = $_POST['cupon'] != "" ? strtoupper(strClean($_POST['cupon'])) : "";
                         $situ = "false";
                         $type ="mercadopago";
-                        $arrTotal = $this->calcTotalCart($_SESSION['arrCart'],$cupon);
+                        $arrTotal = $this->calcTotalCart($arrProducts,$cupon);
                         $strAddress = strClean($_POST['strCheckAddress']);
                         $arrAddress = explode(" ",$strAddress);
                         $strAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
+                        $items = [];
+                        foreach ($arrProducts as $pro) {
+                            array_push([
+                                "id"=>$pro['']
+                            ]);
+                        }
+                        $idOrder = $this->setOrder([
+                            "name"=>$strFullName,
+                            "email"=>$strEmail,
+                            "phone"=>$strPhone,
+                            "address"=>$strAddress,
+                            "note"=>"",
+                            "cupon"=>$cupon,
+                            "situ"=>$situ,
+                            "document"=>$strDocument,
+                            "city"=>$strCity,
+                            "transaction"=>"",
+                            "status"=>"pendent",
+                        ]);
                         
                         MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
                         $client = new PaymentClient();
@@ -178,9 +199,12 @@
                             "additional_info" => [
                                 "ip_address" => getIp()
                             ],
+                            "external_reference"=>$idOrder,
                             "transaction_details" => [
                                 "financial_institution" => $_POST['strCheckBank']
                             ],
+                            "statement_descriptor"=> "pse",
+                            /* "additional_info"=> */
                             "payer" => [
                                 "email" => $strEmail,
                                 "entity_type" => $_POST['strCheckPersonType'],
@@ -207,13 +231,7 @@
                         $strTransaction = $payment->id;
                         $details = $payment->transaction_details;
                         $externalUrl = $details->external_resource_url;
-                        if($payment->status == "pending"){
-                            $strStatus = "pendent";
-                        }else if($payment->status == "rejected"){
-                            $strStatus = "canceled";
-                        }else{
-                            $strStatus = "approved";
-                        }
+                        $this->setTransaction($idOrder,$strTransaction);
                         if(!$_SESSION['login']){
                             $strName = ucwords(strClean($_POST['txtSignName']));
                             $strEmail = strtolower(strClean($_POST['txtSignEmail']));
@@ -229,20 +247,7 @@
                                 sessionUser($_SESSION['idUser']);
                             }
                         }
-                        $request = $this->setOrder([
-                            "name"=>$strFullName,
-                            "email"=>$strEmail,
-                            "phone"=>$strPhone,
-                            "address"=>$strAddress,
-                            "note"=>"",
-                            "cupon"=>$cupon,
-                            "situ"=>$situ,
-                            "document"=>$strDocument,
-                            "city"=>$strCity,
-                            "transaction"=>$strTransaction,
-                            "status"=>$strStatus
-                        ]);
-                        $arrTotal = $this->calcTotalCart($_SESSION['arrCart'],$cupon,null,null,$request,true);
+                        $arrTotal = $this->calcTotalCart($arrProducts,$cupon,null,null,$request,true);
                         $arrData = array("status"=>true,"url"=>$externalUrl);
                         echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
                     } catch (MercadoPago\Exceptions\MPApiException $e) {
