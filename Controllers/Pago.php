@@ -225,7 +225,7 @@
                                     "financial_institution" => $_POST['strCheckBank']
                                 ],
                                 "statement_descriptor"=> $company['name'],
-                                "description" => "Payment for product",
+                                "description" => "Pago de productos",
                                 "payer" => [
                                     "email" => $strEmail,
                                     "entity_type" => $_POST['strCheckPersonType'],
