@@ -130,7 +130,6 @@
         }
         public function setPayment(){
             if($_POST){
-                
                 $errors = validator()->validate([   
                     "strCheckName"=>"required|min:1|max:32;nombres",
                     "strCheckLastname"=>"required|min:1|max:32;apellidos",
@@ -147,6 +146,7 @@
                     ])->getErrors();
                     if(empty($errors)){
                         try {
+                            $idDevice = $_POST['device_id'];
                             $arrProducts = $_SESSION['arrCart'];
                             $strName = ucwords(strClean($_POST['strCheckName']));
                             $strLastname = ucwords(strClean($_POST['strCheckLastname']));
@@ -208,7 +208,7 @@
                             $client = new PaymentClient();
                             $request_options = new RequestOptions();
                             $token = token();
-                            $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
+                            $request_options->setCustomHeaders(["X-Idempotency-Key: $token","X-meli-session-id: $idDevice"]);
                             $createRequest = [
                                 "transaction_amount" => $arrTotal['total'],
                                 "description" => "Productos",

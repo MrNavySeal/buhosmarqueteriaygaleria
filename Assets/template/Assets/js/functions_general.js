@@ -107,9 +107,10 @@ btnCart.addEventListener("click",function(){
 btnCheckout.addEventListener("click",async function(){
     const formCheckout = document.querySelector("#formCheckout");
     const formData = new FormData(formCheckout);
+    formData.append("device_id", MP_DEVICE_SESSION_ID);
     btnCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
     btnCheckout.setAttribute("disabled","");
-    const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData,headers:{"X-meli-session-id": MP_DEVICE_SESSION_ID}});
+    const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData});
     const objData = await response.json();
     btnCheckout.innerHTML=`Pagar`;    
     btnCheckout.removeAttribute("disabled");
