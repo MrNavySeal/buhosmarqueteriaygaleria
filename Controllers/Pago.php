@@ -205,10 +205,8 @@
                             "transaction_amount" => $arrTotal['total'],
                             "description" => "Productos",
                             "payment_method_id" => "pse",
-                            /* "callback_url" => base_url()."/pago/confirmar",
-                            "notification_url" => base_url()."/pago/notificacion", */
-                            "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/confirmar",
-                            "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/notificacion",
+                            "callback_url" => base_url()."/pago/confirmar",
+                            "notification_url" => base_url()."/pago/notificacion",
                             "additional_info" => [
                                 "ip_address" => getIp(),
                                 "items"=>$items
