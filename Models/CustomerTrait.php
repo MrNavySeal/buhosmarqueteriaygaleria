@@ -506,6 +506,14 @@
             $arrData = array($dateBeat);
             $this->con->update("UPDATE orderdata SET date_beat=? WHERE idorder=$idOrder",$arrData);
         }
+        public function setTransaction($idOrder,$idTransaction){
+            $this->con = new Mysql();
+            $this->strIdTransaction = $idTransaction;
+            $this->intIdOrder =$idOrder;
+            $sql = "UPDATE orderdata SET idtransaction=? WHERE idorder = $this->intIdOrder";
+            $request = $this->con->update($sql,[$this->strIdTransaction]);
+            return $request;
+        }
     }
     
 ?>

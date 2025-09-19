@@ -80,7 +80,9 @@
                             "stock"=>$request['stock'],
                             "is_stock"=>$request['is_stock'],
                             "variant"=>$variant,
-                            "props"=>$props
+                            "props"=>$props,
+                            "category"=>$request['category'],
+                            "category_id"=>$request['categoryid'],
                         );
                         //dep($arrProduct);exit;
                         if(isset($_SESSION['arrCart'])){

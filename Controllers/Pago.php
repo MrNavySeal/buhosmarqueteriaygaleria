@@ -148,7 +148,6 @@
                 if(empty($errors)){
                     try {
                         $arrProducts = $_SESSION['arrCart'];
-                        dep($arrProducts);exit;
                         $strName = ucwords(strClean($_POST['strCheckName']));
                         $strLastname = ucwords(strClean($_POST['strCheckLastname']));
                         $strFullName = $strName." ".$strLastname;
@@ -171,8 +170,16 @@
                         $strAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
                         $items = [];
                         foreach ($arrProducts as $pro) {
-                            array_push([
-                                "id"=>$pro['']
+                            array_push($items,[
+                                "id"=>$pro['topic'] == 1 ? $pro['index'] : openssl_decrypt($pro['id'],METHOD,KEY),
+                                "title"=>$pro['name'],
+                                "description"=>$pro['name'],
+                                "picture_url"=> $pro['image'],
+                                "category_id"=> $pro['category_id'],
+                                "quantity"=> $pro['qty'],
+                                "unit_price"=> $pro['price'],
+                                "type"=> $pro['category'],
+                                "warranty"=> false,
                             ]);
                         }
                         $idOrder = $this->setOrder([
@@ -208,7 +215,9 @@
                                 "financial_institution" => $_POST['strCheckBank']
                             ],
                             "statement_descriptor"=> "pse",
-                            /* "additional_info"=> */
+                            "additional_info"=> [
+                                "items"=>$items
+                            ],
                             "payer" => [
                                 "email" => $strEmail,
                                 "entity_type" => $_POST['strCheckPersonType'],
