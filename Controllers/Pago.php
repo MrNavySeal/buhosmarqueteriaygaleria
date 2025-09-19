@@ -18,7 +18,7 @@
         }
 
         /******************************Views************************************/
-        public function pago(){
+        /* public function pago(){
             if(isset($_SESSION['login']) && isset($_SESSION['arrCart']) && !empty($_SESSION['arrCart'])){
                 $company=getCompanyInfo();
                 $data['page_tag'] = $company['name'];
@@ -63,11 +63,11 @@
                 header("location: ".base_url());
                 die();
             }
-        }
+        } */
         public function confirmar(){
             $paymentId = strClean($_GET['payment_id']);
             $request = $this->getOrder($paymentId);
-            if(!empty($request)){
+            if(!empty($request) && $request['order']['status']!="approved"){
                 try {
                     MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
                     $client = new PaymentClient();
@@ -75,19 +75,20 @@
                     $request_options = new RequestOptions();
                     $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
                     $order = $client->get($paymentId);
-                    $this->updateOrder($paymentId,$order->status,$request['order']['amount']);
+                    $this->updateOrder($paymentId,$order->status,$request['order']['amount'],$request['order']['idorder']);
                     $company=getCompanyInfo();
-                    if($order->status == "rejected"){ $this->delCoupon($request['idorder']);}
+                    if($order->status == "rejected"){ $this->delCoupon($request['order']['idorder']);}
                     $data['page_tag'] = $company['name'];
                     $data['data'] = $request;
                     $data['page_title'] ="Estado de pedido | ".$company['name'];
                     $data['page_name'] = "Estado de pedido";
-                    $this->views->getView($this,"confirmar",$data);   
+                    $this->views->getView($this,"confirmar",$data);
+                    
                 } catch (MercadoPago\Exceptions\MPApiException $e) {
-                     header("location: ".base_url()."/errors");
+                    header("location: ".base_url()."/errors");
                 }
             }else{
-                header("location: ".base_url()."/errors");
+                header("location: ".base_url());
             }
             die();
         }
@@ -117,8 +118,8 @@
                     $request_options = new RequestOptions();
                     $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
                     $order = $client->get($paymentId);
-                    $this->updateOrder($paymentId,$order->status,$request['amount']);
-                    if($order->status == "rejected"){ $this->delCoupon($request['idorder']);}
+                    $this->updateOrder($paymentId,$order->status,$request['order']['amount'],$request['order']['idorder']);
+                    if($order->status == "rejected"){ $this->delCoupon($request['order']['idorder']);}
                     echo "Pedido actualizado";
                 } catch (MercadoPago\Exceptions\MPApiException $e) {
                     echo "API Error: " . $e->getMessage() . "\n";
@@ -140,6 +141,9 @@
                     "listCountry"=>"required;país",
                     "listState"=>"required;departamento",
                     "listCity"=>"required;ciudad",
+                    "strCheckPersonType"=>"required|string;tipo de persona",
+                    "strCheckDocumentType"=>"required|string|min:2|max:3;tipo de documento",
+                    "strCheckBank"=>"required|numeric;banco"
                 ])->getErrors();
                 if(empty($errors)){
                     try {
@@ -233,19 +237,20 @@
                         $externalUrl = $details->external_resource_url;
                         $this->setTransaction($idOrder,$strTransaction);
                         if(!$_SESSION['login']){
-                            $strName = ucwords(strClean($_POST['txtSignName']));
-                            $strEmail = strtolower(strClean($_POST['txtSignEmail']));
                             $strPassword = hash("SHA256",bin2hex(random_bytes(6)));
                             $strPicture = "user.jpg";
                             $rolid = 2;
                             
-                            $request = $this->setCustomerT($strName,$strPicture,$strEmail,$strPassword,$rolid);
+                            $request = $this->setCheckoutCustomerT($strName,$strLastname,$strDocument,$strPicture,
+                            $strEmail,$strPhone,$intCountry,$intState,$intCity,$strAddress,$strPassword,$rolid);
                             if(is_numeric($request) && $request > 0){
                                 $_SESSION['idUser'] = $request;
-                                $_SESSION['login'] = true;
-                                $this->login->sessionLogin($_SESSION['idUser']);
-                                sessionUser($_SESSION['idUser']);
+                            }else{
+                                $_SESSION['idUser'] = $request['id'];
                             }
+                            $_SESSION['login'] = true;
+                            $this->login->sessionLogin($_SESSION['idUser']);
+                            sessionUser($_SESSION['idUser']);
                         }
                         $arrTotal = $this->calcTotalCart($arrProducts,$cupon,null,null,$request,true);
                         $arrData = array("status"=>true,"url"=>$externalUrl);
@@ -258,7 +263,7 @@
                         echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n"; */
                     }
                 }else{
-                    echo json_encode(["status"=>false,"msg"=>"Por favor, revise los campos obligatorios."],JSON_UNESCAPED_UNICODE);
+                    echo json_encode(["status"=>false,"msg"=>"Por favor, revise los campos obligatorios.","errors"=>$errors],JSON_UNESCAPED_UNICODE);
                 }
             }
             die();
@@ -376,8 +381,8 @@
                     'order' => $orderInfo);
 
                 try {sendEmail($dataEmailOrden,'email_order');} catch (Exception $e) {}
-                $idOrder = openssl_encrypt($request,METHOD,KEY);
-                $idTransaction = openssl_encrypt($orderInfo['order']['idtransaction'],METHOD,KEY);
+                $idOrder = $request;
+                $idTransaction = $orderInfo['order']['idtransaction'];
                 $orderData = array("order"=>$idOrder,"transaction"=>$idTransaction);
             }
             return $orderData;
@@ -390,7 +395,7 @@
                     $strCoupon = strClean(strtoupper($_POST['cupon']));
                     $request = $this->selectCouponCode($strCoupon);
                     if(!empty($request)){
-                        if(!$this->checkCoupon($_SESSION['idUser'],$strCoupon)){
+                        if(!$this->checkCoupon($_SESSION['idUser'],$request['id'])){
                             $arrProducts = $_SESSION['arrCart'];
                             $data = $this->calcTotalCart($arrProducts,$strCoupon);
                             $data['subtotal'] = formatNum($data['subtotal']);

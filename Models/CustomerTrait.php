@@ -3,6 +3,7 @@
     trait CustomerTrait{
         private $con;
         private $strName;
+        private $strLastName;
         private $strPicture;
         private $strPassword;
         private $intRoleId;
@@ -11,8 +12,8 @@
         private $strCoupon;
         private $intIdOrder;
         private $strFirstName;
-        private $strLastName;
         private $strEmail;
+        private $strDocument;
         private $strPhone;
         private $strCountry;
         private $strState;
@@ -51,6 +52,48 @@
                 $return = $request_insert;
             }else{
                 $return ="exist";
+            }
+            return $return;
+        }
+        public function setCheckoutCustomerT($strName,$strLastName,$strDocument,$strPicture,
+            $strEmail,$strPhone,$intCountry,$intState,$intCity,$strAddress,$strPassword,$rolid){
+            $this->con = new Mysql();
+            $this->strName = $strName;
+            $this->strLastName = $strLastName;
+            $this->strDocument = $strDocument;
+            $this->strPicture = $strPicture; 
+            $this->strEmail =  $strEmail;
+            $this->strPassword = $strPassword;
+            $this->strPhone = $strPhone;
+            $this->strCountry = $intCountry;
+            $this->strState = $intState;
+            $this->strCity = $intCity;
+            $this->strAddress = $strAddress;
+            $this->intRolId = $rolid;
+            $return="";
+            
+            $sql = "SELECT * FROM person WHERE email = '$this->strEmail'";
+            $request = $this->con->select($sql);
+            if(empty($request)){
+                $query = "INSERT INTO person(firstname,lastname,email,phone,identification,countryid,stateid,cityid,address,image,password,roleid) VALUE(?,?,?,?,?,?,?,?,?,?,?,?)";
+                $arrData = array(
+                    $this->strName,
+                    $this->strLastName,
+                    $this->strEmail,
+                    $this->strPhone,
+                    $this->strDocument,
+                    $this->strCountry,
+                    $this->strState,
+                    $this->strCity,
+                    $this->strAddress,
+                    $this->strPicture,
+                    $this->strPassword,
+                    $this->intRolId
+                );
+                $request_insert = $this->con->insert($query,$arrData);
+                $return = $request_insert;
+            }else{
+                $return =array("status"=>"exist","id"=>$request['idperson']);
             }
             return $return;
         }
@@ -234,27 +277,30 @@
             $sql = "SELECT *, DATE_FORMAT(date, '%d/%m/%Y') as date FROM orderdata WHERE idorder = '$this->intIdOrder' OR idtransaction = '$this->intIdOrder'";
             $order = $this->con->select($sql);
             if(!empty($order)){
-                $sql = "SELECT * FROM orderdetail WHERE orderid = '{order[idorder]}'";
+                $sql = "SELECT * FROM orderdetail WHERE orderid = '$this->intIdOrder'";
                 $detail = $this->con->select_all($sql);
                 $arrData = array("order"=>$order,"detail"=>$detail);
             }   
             return $arrData;
         }
-        public function updateOrder($strIdTransaction,$status,$total){
+        public function updateOrder($strIdTransaction,$status,$total,$id){
             $this->con = new Mysql();
             $this->strIdTransaction = $strIdTransaction;
             $statusOrder="confirmado";
-            $sql = "UPDATE orderdata SET status=?, statusorder =? WHERE idtransaction = $this->strIdTransaction";
             if($status == "rejected"){
                 $status = "canceled";
                 $statusOrder = "rechazado";
+                $sql = "SELECT * FROM orderdetail WHERE orderid  = $id AND topic = 2";
+                $request = $this->con->select_all($sql);
+                $this->insertAdjustment($id,$request);
             }else if ($status =="pending"){
                 $status = "pendent";
             }else{
                 $status = "approved";
-                unset($_SESSION['arrCart']);
-                unset($_SESSION['shippingcity']);
             }
+            unset($_SESSION['arrCart']);
+            unset($_SESSION['shippingcity']);
+            $sql = "UPDATE orderdata SET status=?, statusorder =? WHERE idtransaction = $this->strIdTransaction";
             $arrData = [$status,$statusOrder];
             $request = $this->con->insert($sql,$arrData);
             if($status=="approved"){ 
@@ -262,13 +308,56 @@
                 $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
             }
         }
-        public function setTransaction($idOrder,$idTransaction){
+        public function insertAdjustment($id,$arrData){
             $this->con = new Mysql();
-            $this->strIdTransaction = $idTransaction;
-            $this->intIdOrder =$idOrder;
-            $sql = "UPDATE orderdata SET idtransaction=? WHERE idorder = $this->intIdOrder";
-            $request = $this->con->update($sql,[$this->strIdTransaction]);
-            return $request;
+            $this->intIdOrder = $id;
+            $total = $this->con->select("SELECT amount FROM orderdata WHERE idorder = $this->intIdOrder")['amount'];
+            $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
+            $request = $this->con->insert($sql,["Factura de venta No. ".$id." Anulada",$total,$_SESSION['userData']['idperson']]);
+            foreach ($arrData as $data) {
+                $description = json_decode($data['description'],true);
+                $variantName ="";
+                if(is_array($description)){
+                    $arrDet = $description['detail'];
+                    $variantName = implode("-",array_values(array_column($arrDet,"option")));
+                    $sqlProduct = "SELECT pv.stock,p.is_stock,product_type
+                    FROM product_variations_options pv
+                    INNER JOIN product p ON p.idproduct = pv.product_id
+                    WHERE pv.name='$variantName' AND pv.product_id = $data[productid]";
+                    $requestProduct = $this->con->select($sqlProduct);
+                }else{
+                    $sqlProduct = "SELECT stock,is_stock,product_type FROM product WHERE idproduct = $data[productid]";
+                    $requestProduct = $this->con->select($sqlProduct);
+                }
+                if($requestProduct['is_stock']){
+                    $stock = $requestProduct['stock']+$data['quantity'];
+                    $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
+                    $arrValues = [
+                        $request,
+                        $data['productid'],
+                        $requestProduct['stock'],
+                        $data['quantity'],
+                        $data['price'],
+                        1,
+                        $stock,
+                        $variantName,
+                        $data['quantity']*$data['price']
+                    ];
+                    $this->con->insert($sql,$arrValues);
+                    //Update products
+                    $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
+                    WHERE idproduct = $data[productid]";
+                    if($requestProduct['product_type']){
+                        $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
+                        WHERE product_id = $data[productid] AND name = '$variantName'";
+                    } 
+                    $price_purchase = getLastPrice($data['productid'],$variantName);
+                    if($price_purchase == 0){
+                        $price_purchase = $data['price_purchase'];
+                    }
+                    $this->con->update($sqlProduct,[$stock,$price_purchase]);
+                }
+            }
         }
         public function setMessage($strName,$strPhone,$strEmail,$strSubject,$strMessage){
             $this->con = new Mysql();
@@ -385,7 +474,9 @@
             $urlTransaction ="https://api.mercadopago.com/v1/payments/".$idTransaction;
             $objTransaction = curlConnectionGet($urlTransaction,"application/json");
             $comision = $objTransaction->fee_details[0]->amount;
+            $comision = $comision != null || $comision !=""  ? $comision : 0;  
             $retencion = $objTransaction->taxes_amount;
+            $retencion = $retencion != null || $retencion !=""  ? $retencion : 0;  
             $this->con = new Mysql();
             $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?,?)";		  
             $arrData = array( $id,$intType,$intTopic,$strName,$comision,$intStatus,"mercadopago");

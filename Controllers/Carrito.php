@@ -222,15 +222,14 @@
         }
         public function delCart(){
             if($_POST){
-                $id = $_POST['id'];
+                $id = intval($_POST['id']);
                 $code = isset($_POST['cupon']) ? strClean($_POST['cupon']) : "";
                 $situ = isset($_POST['situ'])  ? strtolower(strClean($_POST['situ'])):"";
                 $city = isset($_POST['city']) ? intval($_POST['city']) : 0;
                 $total=0;
                 $qtyCart=0;
                 $arrCart = $_SESSION['arrCart'];
-                $index = array_values(array_filter($arrCart,function($e) use($id) {return $e['index'] == $id;}))[0]['index'];
-                unset($arrCart[$index]);
+                unset($arrCart[$id]);
                 $arrCart = array_values($arrCart);
                 for ($i=0; $i < count($arrCart) ; $i++) { 
                     $qtyCart += $arrCart[$i]['qty'];
@@ -280,7 +279,7 @@
                                 </div>
                                 <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                             </div>
-                            <span class="delItem" ><i class="fas fa-times"></i></span>
+                            <span class="delItem" onclick="delProduct(this,'.$arrProducts[$i]['index'].')" ><i class="fas fa-times"></i></span>
                         </li>
                         ';
                     }else if($arrProducts[$i]['topic'] == 2){
@@ -300,7 +299,7 @@
                                     </div>
                                     <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                                 </div>
-                                <span class="delItem"><i class="fas fa-times"></i></span>
+                                <span class="delItem" onclick="delProduct(this,'.$arrProducts[$i]['index'].')"><i class="fas fa-times"></i></span>
                             </li>
                             ';
                         }else{
@@ -336,7 +335,7 @@
                                     </div>
                                     <span class="text-secondary fw-bold">'.formatNum($arrProducts[$i]['subtotal'],false).'</span>
                                 </div>
-                                <span class="delItem"><i class="fas fa-times"></i></span>
+                                <span class="delItem" onclick="delProduct(this,'.$arrProducts[$i]['index'].')"><i class="fas fa-times"></i></span>
                             </li>
                             ';
                         }
