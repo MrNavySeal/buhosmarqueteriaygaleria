@@ -205,21 +205,19 @@
                             "transaction_amount" => $arrTotal['total'],
                             "description" => "Productos",
                             "payment_method_id" => "pse",
-                            "callback_url" => base_url()."/pago/confirmar",
-                            "notification_url" => base_url()."/pago/notificacion",
-                            /* "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/confirmar",
-                            "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/notificacion", */
+                            /* "callback_url" => base_url()."/pago/confirmar",
+                            "notification_url" => base_url()."/pago/notificacion", */
+                            "callback_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/confirmar",
+                            "notification_url" => "https://pruebas.buhosmarqueteriaygaleria.co/pago/notificacion",
                             "additional_info" => [
-                                "ip_address" => getIp()
+                                "ip_address" => getIp(),
+                                "items"=>$items
                             ],
                             "external_reference"=>$idOrder,
                             "transaction_details" => [
                                 "financial_institution" => $_POST['strCheckBank']
                             ],
                             "statement_descriptor"=> "pse",
-                            "additional_info"=> [
-                                "items"=>$items
-                            ],
                             "payer" => [
                                 "email" => $strEmail,
                                 "entity_type" => $_POST['strCheckPersonType'],
@@ -269,9 +267,9 @@
                     } catch (MercadoPago\Exceptions\MPApiException $e) {
                         $arrData = array("status"=>false,"msg"=>"Algo sucedió, inténtelo de nuevo.");
                         echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
-                        /* echo "API Error: " . $e->getMessage() . "\n";
+                        echo "API Error: " . $e->getMessage() . "\n";
                         echo "Status Code: " . $e->getApiResponse()->getStatusCode() . "\n";
-                        echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n"; */
+                        echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n";
                     }
                 }else{
                     echo json_encode(["status"=>false,"msg"=>"Por favor, revise los campos obligatorios.","errors"=>$errors],JSON_UNESCAPED_UNICODE);
