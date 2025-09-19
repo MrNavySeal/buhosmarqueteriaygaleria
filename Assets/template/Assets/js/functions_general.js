@@ -6,16 +6,17 @@ for (let i = 0; i < desktop.length; i++) {
     if(desktop[i].href.includes(activePage)){
         desktop[i].parentElement.classList.add("active");
         break;
-    }
-}
-for (let i = 0; i < mobile.length; i++) {
-    if(mobile[i].href.includes(activePage)){
-        mobile[i].parentElement.classList.add("active");
-        break;
-    }
-}
-*/
-
+        }
+        }
+        for (let i = 0; i < mobile.length; i++) {
+            if(mobile[i].href.includes(activePage)){
+                mobile[i].parentElement.classList.add("active");
+                break;
+                }
+                }
+                */
+               
+const mp = new window.MercadoPago(PUBLIC_KEY, { locale: "en-US", });
 var loading = document.querySelector("#divLoading");
 /***************************Nav Events****************************** */
 const btnSearch = document.querySelector("#btnSearch");
