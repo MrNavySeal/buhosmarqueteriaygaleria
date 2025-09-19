@@ -215,7 +215,7 @@
                             "transaction_details" => [
                                 "financial_institution" => $_POST['strCheckBank']
                             ],
-                            "statement_descriptor"=> "pse",
+                            "statement_descriptor"=> "MercadoPago",
                             "payer" => [
                                 "email" => $strEmail,
                                 "entity_type" => $_POST['strCheckPersonType'],
