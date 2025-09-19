@@ -51,9 +51,6 @@
             <hr>
             <p class="m-0 mb-3 text-center">Puedes ver los pedidos en tu perfil de usuario</p>
             <div class="d-flex gap-2 justify-content-center">
-                <?php if($order['status'] == "canceled"){?>
-                <button type="button" onclick="modalCheckout(this)" class="btn btn-bg-1 btnModalCheckout">Pagar</button>
-                <?php }?>
                 <a href="<?=base_url()?>/tienda" class="btn btn-bg-2">Ir a la tienda</a>
                 <a href="<?=base_url()?>/enmarcar" class="btn btn-bg-2">Enmarcar</a>
             </div>
