@@ -144,131 +144,139 @@
                     "strCheckPersonType"=>"required|string;tipo de persona",
                     "strCheckDocumentType"=>"required|string|min:2|max:3;tipo de documento",
                     "strCheckBank"=>"required|numeric;banco"
-                ])->getErrors();
-                if(empty($errors)){
-                    try {
-                        $arrProducts = $_SESSION['arrCart'];
-                        $strName = ucwords(strClean($_POST['strCheckName']));
-                        $strLastname = ucwords(strClean($_POST['strCheckLastname']));
-                        $strFullName = $strName." ".$strLastname;
-                        $strDocument = strClean($_POST['strCheckDocument']);
-                        $strEmail = strClean($_POST['strCheckEmail']);
-                        $strPhone = strClean($_POST['strCheckPhone']);
-                        $intCity = intval($_POST['listCity']);
-                        $intCountry = intval($_POST['listCountry']);
-                        $intState = intval($_POST['listState']);
-                        $strCity = getCiudad($intCity)['name'];
-                        $strState = getDepartamento($intState)['name'];
-                        $strCountry = getPais($intCountry)['name'];
-                        $strPostal = strClean($_POST['strCheckCode']);
-                        $cupon = $_POST['cupon'] != "" ? strtoupper(strClean($_POST['cupon'])) : "";
-                        $situ = "false";
-                        $type ="mercadopago";
-                        $arrTotal = $this->calcTotalCart($arrProducts,$cupon);
-                        $strAddress = strClean($_POST['strCheckAddress']);
-                        $arrAddress = explode(" ",$strAddress);
-                        $strAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
-                        $items = [];
-                        foreach ($arrProducts as $pro) {
-                            array_push($items,[
-                                "id"=>$pro['topic'] == 1 ? $pro['index'] : openssl_decrypt($pro['id'],METHOD,KEY),
-                                "title"=>$pro['name'],
-                                "description"=>$pro['name'],
-                                "picture_url"=> $pro['image'],
-                                "category_id"=> $pro['category'],
-                                "quantity"=> $pro['qty'],
-                                "unit_price"=> $pro['price'],
-                                "type"=> $pro['category'],
-                                "warranty"=> false,
-                            ]);
-                        }
-                        $arrOrder = $this->setOrder([
-                            "name"=>$strFullName,
-                            "email"=>$strEmail,
-                            "phone"=>$strPhone,
-                            "address"=>$strAddress,
-                            "note"=>"",
-                            "cupon"=>$cupon,
-                            "situ"=>$situ,
-                            "document"=>$strDocument,
-                            "city"=>$strCity,
-                            "transaction"=>"",
-                            "status"=>"pendent",
-                        ]);
-                        $idOrder = $arrOrder['order'];
-                        MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
-                        $client = new PaymentClient();
-                        $request_options = new RequestOptions();
-                        $token = token();
-                        $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
-                        $createRequest = [
-                            "transaction_amount" => $arrTotal['total'],
-                            "description" => "Productos",
-                            "payment_method_id" => "pse",
-                            "callback_url" => base_url()."/pago/confirmar",
-                            "notification_url" => base_url()."/pago/notificacion",
-                            "additional_info" => [
-                                "ip_address" => getIp(),
-                                "items"=>$items
-                            ],
-                            "external_reference"=>$idOrder,
-                            "transaction_details" => [
-                                "financial_institution" => $_POST['strCheckBank']
-                            ],
-                            "statement_descriptor"=> "MercadoPago",
-                            "payer" => [
-                                "email" => $strEmail,
-                                "entity_type" => $_POST['strCheckPersonType'],
-                                "first_name" => $strName,
-                                "last_name" => $strLastname,
-                                "identification" => [
-                                    "type" => $_POST['strCheckDocumentType'],
-                                    "number" => $_POST['strCheckDocument']
-                                ],
-                                "address" => [
-                                    "zip_code" => $strPostal !="" ? $strPostal : 50000,
-                                    "street_name" => $arrAddress[0],
-                                    "street_number" => isset($arrAddress[1]) ? $arrAddress[1] : $arrAddress[1],
-                                    "neighborhood" => isset($arrAddress[2]) ? $arrAddress[2] : $arrAddress[2],
-                                    "city" => $strCity,
-                                ],
-                                "phone" => [
-                                    "area_code" => "+57",
-                                    "number" => $_POST['strCheckPhone']
-                                ],
-                            ],
-                        ];
-                        $payment = $client->create($createRequest, $request_options);
-                        $strTransaction = $payment->id;
-                        $details = $payment->transaction_details;
-                        $externalUrl = $details->external_resource_url;
-                        $this->setTransaction($idOrder,$strTransaction);
-                        if(!$_SESSION['login']){
-                            $strPassword = hash("SHA256",bin2hex(random_bytes(6)));
-                            $strPicture = "user.jpg";
-                            $rolid = 2;
-                            
-                            $request = $this->setCheckoutCustomerT($strName,$strLastname,$strDocument,$strPicture,
-                            $strEmail,$strPhone,$intCountry,$intState,$intCity,$strAddress,$strPassword,$rolid);
-                            if(is_numeric($request) && $request > 0){
-                                $_SESSION['idUser'] = $request;
-                            }else{
-                                $_SESSION['idUser'] = $request['id'];
+                    ])->getErrors();
+                    if(empty($errors)){
+                        try {
+                            $arrProducts = $_SESSION['arrCart'];
+                            $strName = ucwords(strClean($_POST['strCheckName']));
+                            $strLastname = ucwords(strClean($_POST['strCheckLastname']));
+                            $strFullName = $strName." ".$strLastname;
+                            $strDocument = strClean($_POST['strCheckDocument']);
+                            $strEmail = strClean($_POST['strCheckEmail']);
+                            $strPhone = strClean($_POST['strCheckPhone']);
+                            $intCity = intval($_POST['listCity']);
+                            $intCountry = intval($_POST['listCountry']);
+                            $intState = intval($_POST['listState']);
+                            $strCity = getCiudad($intCity)['name'];
+                            $strState = getDepartamento($intState)['name'];
+                            $strCountry = getPais($intCountry)['name'];
+                            $strPostal = strClean($_POST['strCheckCode']);
+                            $cupon = $_POST['cupon'] != "" ? strtoupper(strClean($_POST['cupon'])) : "";
+                            $situ = "false";
+                            $type ="mercadopago";
+                            $arrTotal = $this->calcTotalCart($arrProducts,$cupon);
+                            $strAddress = strClean($_POST['strCheckAddress']);
+                            $arrAddress = explode(" ",$strAddress);
+                            $strAddress = $strAddress.", ".$strCity."/".$strState."/".$strCountry." ".$strPostal;
+                            $items = [];
+                            foreach ($arrProducts as $pro) {
+                                $id = openssl_decrypt($pro['id'],METHOD,KEY);
+                                $category = $pro['category'];
+                                $image = $pro['image'];
+                                if($pro['topic'] == 1){
+                                    $id = $pro['index'];
+                                    $category = $pro['name'];
+                                    $image = media()."/images/uploads/".$pro['cat_img'];
+                                }
+                                array_push($items,[
+                                    "id"=>$pro['topic'] == 1 ? $pro['index'] : $id,
+                                    "title"=>$pro['name'],
+                                    "description"=>$pro['name'],
+                                    "picture_url"=> $image,
+                                    "category_id"=> $category,
+                                    "quantity"=> $pro['qty'],
+                                    "unit_price"=> $pro['price'],
+                                    "type"=> $category,
+                                    "warranty"=> false,
+                                ]);
                             }
-                            $_SESSION['login'] = true;
-                            $this->login->sessionLogin($_SESSION['idUser']);
-                            sessionUser($_SESSION['idUser']);
+                            $arrOrder = $this->setOrder([
+                                "name"=>$strFullName,
+                                "email"=>$strEmail,
+                                "phone"=>$strPhone,
+                                "address"=>$strAddress,
+                                "note"=>"",
+                                "cupon"=>$cupon,
+                                "situ"=>$situ,
+                                "document"=>$strDocument,
+                                "city"=>$strCity,
+                                "transaction"=>"",
+                                "status"=>"pendent",
+                            ]);
+                            $idOrder = $arrOrder['order'];
+                            MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
+                            $client = new PaymentClient();
+                            $request_options = new RequestOptions();
+                            $token = token();
+                            $request_options->setCustomHeaders(["X-Idempotency-Key: $token"]);
+                            $createRequest = [
+                                "transaction_amount" => $arrTotal['total'],
+                                "description" => "Productos",
+                                "payment_method_id" => "pse",
+                                "callback_url" => base_url()."/pago/confirmar",
+                                "notification_url" => base_url()."/pago/notificacion",
+                                "additional_info" => [
+                                    "ip_address" => getIp(),
+                                    "items"=>$items
+                                ],
+                                "external_reference"=>$idOrder,
+                                "transaction_details" => [
+                                    "financial_institution" => $_POST['strCheckBank']
+                                ],
+                                "statement_descriptor"=> "MercadoPago",
+                                "payer" => [
+                                    "email" => $strEmail,
+                                    "entity_type" => $_POST['strCheckPersonType'],
+                                    "first_name" => $strName,
+                                    "last_name" => $strLastname,
+                                    "identification" => [
+                                        "type" => $_POST['strCheckDocumentType'],
+                                        "number" => $_POST['strCheckDocument']
+                                    ],
+                                    "address" => [
+                                        "zip_code" => $strPostal !="" ? $strPostal : 50000,
+                                        "street_name" => $arrAddress[0],
+                                        "street_number" => isset($arrAddress[1]) ? $arrAddress[1] : $arrAddress[1],
+                                        "neighborhood" => isset($arrAddress[2]) ? $arrAddress[2] : $arrAddress[2],
+                                        "city" => $strCity,
+                                    ],
+                                    "phone" => [
+                                        "area_code" => "+57",
+                                        "number" => $_POST['strCheckPhone']
+                                    ],
+                                ],
+                            ];
+                            $payment = $client->create($createRequest, $request_options);
+                            $strTransaction = $payment->id;
+                            $details = $payment->transaction_details;
+                            $externalUrl = $details->external_resource_url;
+                            $this->setTransaction($idOrder,$strTransaction);
+                            if(!$_SESSION['login']){
+                                $strPassword = hash("SHA256",bin2hex(random_bytes(6)));
+                                $strPicture = "user.jpg";
+                                $rolid = 2;
+                                
+                                $request = $this->setCheckoutCustomerT($strName,$strLastname,$strDocument,$strPicture,
+                                $strEmail,$strPhone,$intCountry,$intState,$intCity,$strAddress,$strPassword,$rolid);
+                                if(is_numeric($request) && $request > 0){
+                                    $_SESSION['idUser'] = $request;
+                                }else{
+                                    $_SESSION['idUser'] = $request['id'];
+                                }
+                                $_SESSION['login'] = true;
+                                $this->login->sessionLogin($_SESSION['idUser']);
+                                sessionUser($_SESSION['idUser']);
+                            }
+                            $arrTotal = $this->calcTotalCart($arrProducts,$cupon,null,null,$request,true);
+                            $arrData = array("status"=>true,"url"=>$externalUrl);
+                            echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                        } catch (MercadoPago\Exceptions\MPApiException $e) {
+                            $arrData = array("status"=>false,"msg"=>"Algo sucedió, inténtelo de nuevo.");
+                            echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+                            echo "API Error: " . $e->getMessage() . "\n";
+                            echo "Status Code: " . $e->getApiResponse()->getStatusCode() . "\n";
+                            echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n";
                         }
-                        $arrTotal = $this->calcTotalCart($arrProducts,$cupon,null,null,$request,true);
-                        $arrData = array("status"=>true,"url"=>$externalUrl);
-                        echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
-                    } catch (MercadoPago\Exceptions\MPApiException $e) {
-                        $arrData = array("status"=>false,"msg"=>"Algo sucedió, inténtelo de nuevo.");
-                        echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
-                        echo "API Error: " . $e->getMessage() . "\n";
-                        echo "Status Code: " . $e->getApiResponse()->getStatusCode() . "\n";
-                        echo "Response Body: " . json_encode($e->getApiResponse()->getContent()) . "\n";
-                    }
                 }else{
                     echo json_encode(["status"=>false,"msg"=>"Por favor, revise los campos obligatorios.","errors"=>$errors],JSON_UNESCAPED_UNICODE);
                 }
