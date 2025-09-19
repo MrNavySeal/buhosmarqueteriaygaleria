@@ -152,6 +152,7 @@ for ($i=0; $i < count($social) ; $i++) {
         const COMPANY = "<?=$company['name']?>";
         const SHAREDHASH ="<?=strtolower(str_replace(" ","",$company['name']))?>";
     </script>
+    <script src="https://www.mercadopago.com/v2/security.js" view="checkout" output="deviceId"></script>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="<?=media();?>/js/functions.js?v=<?=rand()?>"></script>
     <script src="<?=media();?>/template/Assets/js/functions_general.js?v=<?=rand()?>"></script>

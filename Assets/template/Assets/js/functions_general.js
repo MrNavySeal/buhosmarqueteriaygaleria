@@ -109,7 +109,7 @@ btnCheckout.addEventListener("click",async function(){
     const formData = new FormData(formCheckout);
     btnCheckout.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;    
     btnCheckout.setAttribute("disabled","");
-    const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Pago/setPayment",{method:"POST",body:formData,headers:{"X-meli-session-id": MP_DEVICE_SESSION_ID}});
     const objData = await response.json();
     btnCheckout.innerHTML=`Pagar`;    
     btnCheckout.removeAttribute("disabled");
