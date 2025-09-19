@@ -146,6 +146,7 @@
                     ])->getErrors();
                     if(empty($errors)){
                         try {
+                            $company = getCompanyInfo();
                             $idDevice = $_POST['device_id'];
                             $arrProducts = $_SESSION['arrCart'];
                             $strName = ucwords(strClean($_POST['strCheckName']));
@@ -223,7 +224,8 @@
                                 "transaction_details" => [
                                     "financial_institution" => $_POST['strCheckBank']
                                 ],
-                                "statement_descriptor"=> "MercadoPago",
+                                "statement_descriptor"=> $company['name'],
+                                "description" => "Payment for product",
                                 "payer" => [
                                     "email" => $strEmail,
                                     "entity_type" => $_POST['strCheckPersonType'],
