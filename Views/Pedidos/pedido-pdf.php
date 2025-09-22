@@ -281,7 +281,7 @@
         $pdf->MultiCell(20,$h,$pro['quantity'],"LRBT",'C',false,0,'','',true,0,false,true,0,'M',true);
         $pdf->MultiCell(20,$h,formatNum($subtotalProduct),"LRBT",'R',false,0,'','',true,0,false,true,0,'M',true);
         $pdf->ln();
-        if($pdf->GetY() > 250){
+        if($pdf->GetY() > 230){
             $pdf->AddPage();
             $pdf->ln(10);
         }
