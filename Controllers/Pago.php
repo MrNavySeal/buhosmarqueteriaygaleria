@@ -191,6 +191,22 @@
                                     "warranty"=> false,
                                 ]);
                             }
+                            if(!$_SESSION['login']){
+                                $strPassword = hash("SHA256",bin2hex(random_bytes(6)));
+                                $strPicture = "user.jpg";
+                                $rolid = 2;
+                                
+                                $request = $this->setCheckoutCustomerT($strName,$strLastname,$strDocument,$strPicture,
+                                $strEmail,$strPhone,$intCountry,$intState,$intCity,$strAddress,$strPassword,$rolid);
+                                if(is_numeric($request) && $request > 0){
+                                    $_SESSION['idUser'] = $request;
+                                }else{
+                                    $_SESSION['idUser'] = $request['id'];
+                                }
+                                $_SESSION['login'] = true;
+                                $this->login->sessionLogin($_SESSION['idUser']);
+                                sessionUser($_SESSION['idUser']);
+                            }
                             $arrOrder = $this->setOrder([
                                 "name"=>$strFullName,
                                 "email"=>$strEmail,
@@ -253,23 +269,7 @@
                             $details = $payment->transaction_details;
                             $externalUrl = $details->external_resource_url;
                             $this->setTransaction($idOrder,$strTransaction);
-                            if(!$_SESSION['login']){
-                                $strPassword = hash("SHA256",bin2hex(random_bytes(6)));
-                                $strPicture = "user.jpg";
-                                $rolid = 2;
-                                
-                                $request = $this->setCheckoutCustomerT($strName,$strLastname,$strDocument,$strPicture,
-                                $strEmail,$strPhone,$intCountry,$intState,$intCity,$strAddress,$strPassword,$rolid);
-                                if(is_numeric($request) && $request > 0){
-                                    $_SESSION['idUser'] = $request;
-                                }else{
-                                    $_SESSION['idUser'] = $request['id'];
-                                }
-                                $_SESSION['login'] = true;
-                                $this->login->sessionLogin($_SESSION['idUser']);
-                                sessionUser($_SESSION['idUser']);
-                            }
-                            $arrTotal = $this->calcTotalCart($arrProducts,$cupon,null,null,$request,true);
+                            $arrTotal = $this->calcTotalCart($arrProducts,$cupon,null,null,$idOrder,true);
                             $arrData = array("status"=>true,"url"=>$externalUrl);
                             echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
                         } catch (MercadoPago\Exceptions\MPApiException $e) {
