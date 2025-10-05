@@ -130,7 +130,7 @@
                     );
                 }
                 //Update products
-                if($this->arrData[$i]['topic'] == 2){
+                if($this->arrData[$i]['topic'] == 2 && $this->arrData[$i]['is_stock']){
                     $sqlStock = "SELECT stock FROM product WHERE idproduct = {$this->arrData[$i]['product_id']}";
                     //$sqlPurchase = "SELECT AVG(price) as price_purchase FROM orderdetail WHERE product_id = {$this->arrData[$i]['id']}";
                     $sqlProduct ="UPDATE product SET stock=? 
