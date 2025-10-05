@@ -496,7 +496,7 @@
                     }else{
                         $id = intval($_POST['id']);
                         $request = $this->model->deletePurchase($id);
-                        if($request=="ok"){
+                        if($request > 0){
                             $arrResponse = array("status"=>true,"msg"=>"La factura ha sido anulada correctamente.");
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"No es posible anular, intenta de nuevo.");
