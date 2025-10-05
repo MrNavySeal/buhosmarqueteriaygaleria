@@ -66,22 +66,24 @@
                 );
                 $this->insert($sql,$arrData);
                 //Update products
-                $sqlProduct ="UPDATE product SET stock=?, price=?, price_purchase=? 
-                WHERE idproduct = {$this->arrData[$i]['id']}";
-                if($this->arrData[$i]['product_type']){
-                    $sqlProduct = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
-                    WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
-                } 
-                $price_purchase = getLastPrice($this->arrData[$i]['id'],$this->arrData[$i]['variant_name']);
-                if($price_purchase == 0){
-                    $price_purchase = $this->arrData[$i]['price_purchase'];
+                if($this->arrData[$i]['is_stock']){
+                    $sqlProduct ="UPDATE product SET stock=?, price=?, price_purchase=? 
+                    WHERE idproduct = {$this->arrData[$i]['id']}";
+                    if($this->arrData[$i]['product_type']){
+                        $sqlProduct = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
+                        WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
+                    } 
+                    $price_purchase = getLastPrice($this->arrData[$i]['id'],$this->arrData[$i]['variant_name']);
+                    if($price_purchase == 0){
+                        $price_purchase = $this->arrData[$i]['price_purchase'];
+                    }
+                    $arrData = array(
+                        $this->arrData[$i]['is_stock'] ? $this->arrData[$i]['qty']+$this->arrData[$i]['stock'] : 0,
+                        $this->arrData[$i]['price_sell'],
+                        $price_purchase
+                    );
+                    $this->update($sqlProduct,$arrData);
                 }
-                $arrData = array(
-                    $this->arrData[$i]['is_stock'] ? $this->arrData[$i]['qty']+$this->arrData[$i]['stock'] : 0,
-                    $this->arrData[$i]['price_sell'],
-                    $price_purchase
-                );
-                $this->update($sqlProduct,$arrData);
             }
         }
         public function deletePurchase($id){

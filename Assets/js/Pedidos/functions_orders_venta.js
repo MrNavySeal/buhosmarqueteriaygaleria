@@ -51,6 +51,7 @@ let tableMolding = new DataTable("#tableMolding",{
 window.addEventListener("load",function(){
     getCustomers();
     getProducts();
+    document.querySelector("#txtDate").value = new Date().toISOString().split("T")[0];
 });
 
 searchHtml.addEventListener("input",function(){getProducts();});

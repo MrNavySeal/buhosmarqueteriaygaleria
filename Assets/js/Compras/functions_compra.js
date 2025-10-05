@@ -19,6 +19,7 @@ let arrData = [];
 window.addEventListener("load",function(){
     getProducts();
     getSuppliers();
+    document.querySelector("#txtDate").value = new Date().toISOString().split("T")[0];
 });
 
 btnPurchase.addEventListener("click",function(){
