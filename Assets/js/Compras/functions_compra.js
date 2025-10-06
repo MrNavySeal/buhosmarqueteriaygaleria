@@ -56,6 +56,7 @@ formSetOrder.addEventListener("submit",function(e){
             formSetOrder.reset();
             arrProducts = [];
             tablePurchase.innerHTML ="";
+            document.querySelector("#txtDate").value = new Date().toISOString().split("T")[0];
             document.querySelector("#subtotalProducts").innerHTML = "$0";
             document.querySelector("#ivaProducts").innerHTML = "$0";
             document.querySelector("#discountProducts").innerHTML = "$0";
