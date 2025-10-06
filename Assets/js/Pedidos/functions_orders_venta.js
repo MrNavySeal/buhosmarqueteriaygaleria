@@ -140,6 +140,7 @@ formSetOrder.addEventListener("submit",function(e){
         if(objData.status){
             Swal.fire("Guardado",objData.msg,"success");
             formSetOrder.reset();
+            document.querySelector("#txtDate").value = new Date().toISOString().split("T")[0];
             arrProducts = [];
             tablePurchase.innerHTML ="";
             document.querySelector("#subtotalProducts").innerHTML = "$0";
