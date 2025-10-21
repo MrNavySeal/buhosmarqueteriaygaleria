@@ -20,6 +20,7 @@ const App = {
         return {
             common:createCommon(),
             category:createCommon(),
+            pagination:createCommon(),
             intStatus:1,
             strDescription:"",
             objCategory:{name:"",id:""}
