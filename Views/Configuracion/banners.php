@@ -5,6 +5,7 @@
         <table class="table items align-middle" id="table<?=$data['page_title']?>">
             <thead>
                 <tr>
+                    <th>Portada</th>
                     <th>Titulo</th>
                     <th>Estado</th>
                     <th>Opciones</th>
