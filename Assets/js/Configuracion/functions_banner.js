@@ -1,27 +1,5 @@
 'use strict';
-
-
 let element = document.querySelector("#listItem");
-
-
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        addItem();
-    });
-}
-
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
-    }else if(element.name == "btnEdit"){
-        editItem(id);
-    }
-});
-     
 function addItem(){
     let modalItem = document.querySelector("#modalItem");
     let modal= `
@@ -107,6 +85,7 @@ function addItem(){
             if(objData.status){
                 Swal.fire("Agregado",objData.msg,"success");
                 element.innerHTML = objData.data;
+                modalView.hide();
                 form.reset();
             }else{
                 Swal.fire("Error",objData.msg,"error");
