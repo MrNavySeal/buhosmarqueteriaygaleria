@@ -9,10 +9,11 @@
         private $arrProducts;
         private $arrCustomer;
         private $arrConfig;
+
         public function __construct(){
             parent::__construct();
         }
-        /*************************methods to get products*******************************/
+
         public function selectTotalInventory(string $strSearch){
             $sql = "SELECT coalesce(count(*),0) as total
             FROM product p
@@ -25,6 +26,7 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+
         public function selectProducts(string $strSearch,int $intPerPage,int $intPageNow){
             $start = ($intPageNow-1)*$intPerPage;
             $arrProducts = [];
@@ -127,6 +129,7 @@
             }
             return array("products"=>$arrProducts,"pages"=>$totalPages);
         }
+
         public function selectProduct($id){
             $this->intId = $id;
             $sql = "SELECT 
@@ -158,12 +161,13 @@
             }
             return $request;
         }
-        /*************************methods to get customers*******************************/
+
         public function selectCustomers(){
             $sql = "SELECT *,CONCAT(firstname,' ',lastname) as name FROM person WHERE roleid=2 AND status = 1 ORDER BY idperson DESC";
             $request = $this->select_all($sql);
             return $request;
         }
+
         public function selectCustomer($id){
             $this->intIdUser = $id;
             $sql = "SELECT 
@@ -183,7 +187,13 @@
             $request = $this->select($sql);
             return $request;
         }
-        /*************************methods to set order*******************************/
+
+        public function selectPaymentTypes(){
+            $sql = "SELECT * FROM payment_type WHERE status = 1";
+            $request = $this->select_all($sql);
+            return $request;
+        }
+
         public function insertOrder(array $data){
             $this->arrData = $data;
             $this->arrProducts = $data['products'];
@@ -220,6 +230,7 @@
             }
             return $request;
         }
+
         public function insertOrderDet(int $id,int $idCustom,array $data,string $customer,string $address){
             $this->intIdUser = $idCustom;
             $this->intId = $id;
@@ -303,6 +314,7 @@
                 }
             }
         }
+
         public function insertIncome(int $id,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus, string $method){
             $request="";
             
@@ -320,7 +332,8 @@
             $request = $this->insert($sql,$arrData);
 	        return $request;
 		}
-        /*************************methods to set quote*******************************/
+
+
         public function insertQuote(array $data){
             $this->arrData = $data;
             $this->arrProducts = $data['products'];
@@ -348,6 +361,7 @@
             }
             return $request;
         }
+
         public function insertQuoteDet(int $id,int $idCustom,array $data){
             $this->intIdUser = $idCustom;
             $this->intId = $id;
@@ -385,12 +399,14 @@
                 $this->insert($sql,$arrData);
             }
         }
-        /*************************Molding methods*******************************/
+
+
         public function selectMoldingCategories(){
             $sql = "SELECT * FROM moldingcategory WHERE status = 1 ORDER BY id ASC";       
             $request = $this->select_all($sql);
             return $request;
         }
+
         public function selectConfig(int $id){
             $this->intId = $id;
             $sql = "SELECT 
@@ -424,6 +440,7 @@
             }
             return $request;
         }
+
         public function selectConfigFrame(int $id){
             $this->intId = $id;
             $sql = "SELECT 
@@ -481,6 +498,7 @@
             }
             return $request;
         }
+
         public function selectConfigProps(int $id){
             $this->intId = $id;
             $sql = "SELECT 
@@ -514,10 +532,12 @@
             }
             return $request;
         }
+
         public function selectColors(){
             $sql = "SELECT * FROM moldingcolor WHERE status = 1 ORDER BY order_view";       
             $request = $this->select_all($sql);
             return $request;
         }
+
     }
 ?>

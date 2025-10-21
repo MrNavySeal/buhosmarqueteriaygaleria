@@ -1,9 +1,5 @@
 <?php
-    $pago="";
     $status="";
-    for ($i=0; $i < count(PAGO) ; $i++) { 
-        $pago .='<option value="'.PAGO[$i].'">'.PAGO[$i].'</option>';
-    }
     for ($i=0; $i < count(STATUS) ; $i++) { 
         if(STATUS[$i]!="anulado"){
             $status .='<option value="'.$i.'">'.STATUS[$i].'</option>';
@@ -39,9 +35,7 @@
                         <div class="col-md-4">
                             <div class="mt-3 mb-3">
                                 <label for="" class="form-label">Tipo de pago <span class="text-danger">*</span></label>
-                                <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required>
-                                    <?=$pago?>
-                                </select>
+                                <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required></select>
                             </div>
                         </div>
                         <div class="col-md-4">

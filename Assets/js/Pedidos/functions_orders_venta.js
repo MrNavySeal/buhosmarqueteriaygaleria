@@ -15,10 +15,13 @@ const tablePurchase = document.querySelector("#tablePurchase");
 const searchHtml = document.querySelector("#txtSearch");
 const perPage = document.querySelector("#perPage");
 const tableProducts = document.querySelector("#tableProducts");
+const paymentList = document.querySelector("#paymentList");
+
 let orderType = 1;
 let arrDataMolding = [];
 let arrProducts = [];
 let arrCustomers = [];
+let arrPaymentTypes=[];
 let product;
 let arrData = [];
 
@@ -49,7 +52,6 @@ let tableMolding = new DataTable("#tableMolding",{
 });
 
 window.addEventListener("load",function(){
-    getCustomers();
     getProducts();
     document.querySelector("#txtDate").value = new Date().toISOString().split("T")[0];
 });
@@ -74,7 +76,7 @@ async function getProducts(page = 1){
 
 /*************************Events*******************************/
 btnPurchase.addEventListener("click",function(){
-    getCustomers();
+    getInitialData();
     modalPurchase.show();
     orderType = 1;
     document.querySelector("#modalPurchase .modal-title").innerHTML="Información de pago";
@@ -170,9 +172,17 @@ function delItem(element){
     document.querySelector("#id").value = 0;
     element.remove();
 }
-function getCustomers(){
-    request(base_url+"/Pedidos/PedidosPos/getCustomers","","get").then(function(res){
-        arrCustomers = res;
+function getInitialData(){
+    request(base_url+"/Pedidos/PedidosPos/getInitialData","","get").then(function(objData){
+        arrCustomers = objData.customers;
+        arrPaymentTypes = objData.payment_types;
+        let html="";
+
+        arrPaymentTypes.forEach(e => {
+            html+=`<option value="${e.name}">${e.name}</option>`;
+        });
+
+        paymentList.innerHTML = html;
     });
 }
 /*************************functions to add and update products*******************************/

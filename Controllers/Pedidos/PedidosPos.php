@@ -119,10 +119,13 @@
             ';
             return array("products"=>$html,"pages"=>$htmlPages);
         }
-        public function getCustomers(){
+        public function getInitialData(){
             if($_SESSION['permitsModule']['w']){
-                $request = $this->model->selectCustomers();
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+                $arrData = [
+                    "customers"=>$this->model->selectCustomers(),
+                    "payment_types"=>$this->model->selectPaymentTypes(),
+                ];
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
