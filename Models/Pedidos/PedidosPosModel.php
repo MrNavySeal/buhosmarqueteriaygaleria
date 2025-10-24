@@ -219,19 +219,21 @@
                 $this->arrData['date_beat']
             );
             $request = $this->insert($sql,$arrData);
-            //Insert detail
+
             if($request > 0){
                 $this->insertOrderDet($request,$this->arrCustomer['id'],$this->arrProducts,$this->arrCustomer['name'],$this->arrCustomer['address']);
-                //insert income
                 if($data['type']!="credito"){
                     $this->insertIncome($request,3,1,"Venta de artículos y/o servicios",$data['total']['total'],
                     $data['date'],1,$data['type']);
+                }else if($data['type']=="credito"){
+                    $this->insertAdvance($request,$data['date'],$data['credit_items']);
                 }
             }
+
             return $request;
         }
 
-        public function insertOrderDet(int $id,int $idCustom,array $data,string $customer,string $address){
+        private function insertOrderDet(int $id,int $idCustom,array $data,string $customer,string $address){
             $this->intIdUser = $idCustom;
             $this->intId = $id;
             $this->arrData = $data;
@@ -315,7 +317,18 @@
             }
         }
 
-        public function insertIncome(int $id,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus, string $method){
+        private function insertAdvance($id,$date,$data){
+            $this->intId = $id;
+            foreach ($data as $d) {
+                $sql = "INSERT INTO order_advance(order_id,type,advance,date,user)
+                VALUES(?,?,?,?,?)";
+                $arrData = array($this->intId,$d['type'],$d['value'],$date,$_SESSION['idUser']);
+                $this->insert($sql,$arrData);
+                $this->insertIncome($this->intId,3,3,"Abono a factura de venta",$d['value'],$date,1,$d['type']);
+            }
+        }
+
+        private function insertIncome(int $id,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus, string $method){
             $request="";
             
             $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,date,status,method) VALUES(?,?,?,?,?,?,?,?)";      
@@ -332,7 +345,6 @@
             $request = $this->insert($sql,$arrData);
 	        return $request;
 		}
-
 
         public function insertQuote(array $data){
             $this->arrData = $data;
@@ -399,7 +411,6 @@
                 $this->insert($sql,$arrData);
             }
         }
-
 
         public function selectMoldingCategories(){
             $sql = "SELECT * FROM moldingcategory WHERE status = 1 ORDER BY id ASC";       
@@ -538,6 +549,6 @@
             $request = $this->select_all($sql);
             return $request;
         }
-
+        
     }
 ?>

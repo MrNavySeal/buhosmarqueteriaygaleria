@@ -138,6 +138,7 @@
                         $strDate = $_POST['strDate'] == "" ? date("Y-m-d") : strClean($_POST['strDate']);
                         $strDateQuote = $_POST['strDate'] == "" ? date("Y-m-d") : strClean($_POST['strDateQuote']);
                         $arrProducts = json_decode($_POST['products'],true);
+                        $arrCreditItems = json_decode($_POST['credit_items'],true);
                         $intOrderType = intval($_POST["order_type"]);
                         $arrTotal = json_decode($_POST['total'],true);
                         $id = intval($_POST['id']);
@@ -164,7 +165,8 @@
                                     "note_quote"=>strClean($_POST['strNoteQuote']),
                                     "status_order"=>intval($_POST['statusOrder']),
                                     "products"=>$arrProducts,
-                                    "total"=>$arrTotal
+                                    "total"=>$arrTotal,
+                                    "credit_items"=>$arrCreditItems,
                                 );
                                 if($intOrderType == 1){
                                     $request = $this->model->insertOrder($data);

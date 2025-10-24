@@ -25,32 +25,37 @@
                 <div id="selectedItem"></div>
                 <form id="formSetOrder">
                     <input type="hidden" name="id" id="id" value ="">
-                    <div class="row" id="contentPurchase">
-                        <div class="col-md-4">
-                            <div class="mt-3 mb-3">
-                                <label for="" class="form-label">Fecha de venta</label>
-                                <input type="date" name="strDate" id="txtDate" class="form-control">
+                    <div id="contentPurchase">
+                        <div class="row" >
+                            <div class="col-md-4">
+                                <div class="mt-3 mb-3">
+                                    <label for="" class="form-label">Fecha de venta</label>
+                                    <input type="date" name="strDate" id="txtDate" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mt-3 mb-3">
+                                    <label for="" class="form-label">Tipo de pago <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required></select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mt-3 mb-3">
+                                    <label for="typeList" class="form-label">Estado de pedido <span class="text-danger">*</span></label>
+                                    <select class="form-control" aria-label="Default select example" id="statusOrder" name="statusOrder" required>
+                                        <?=$status?>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mt-3 mb-3">
-                                <label for="" class="form-label">Tipo de pago <span class="text-danger">*</span></label>
-                                <select class="form-control" aria-label="Default select example" id="paymentList" name="paymentList" required></select>
-                            </div>
+                        <div class="d-none creditContainer">
+                            <p class="fw-bold m-0">Agregue el anticipo</p>
+                            <hr>
+                            <div class="row creditMethod"></div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mt-3 mb-3">
-                                <label for="typeList" class="form-label">Estado de pedido <span class="text-danger">*</span></label>
-                                <select class="form-control" aria-label="Default select example" id="statusOrder" name="statusOrder" required>
-                                    <?=$status?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="mt-3 mb-3">
-                                <label for="" class="form-label">Notas</label>
-                                <textarea rows="3" name="strNote" id="txtNote" class="form-control"></textarea>
-                            </div>
+                        <div class="mt-3 mb-3">
+                            <label for="" class="form-label">Notas</label>
+                            <textarea rows="3" name="strNote" id="txtNote" class="form-control"></textarea>
                         </div>
                     </div>
                     <div id="contentQuote" class="d-none">

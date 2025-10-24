@@ -59,7 +59,7 @@ window.addEventListener("load",function(){
 searchHtml.addEventListener("input",function(){getProducts();});
 perPage.addEventListener("change",function(){getProducts();});
 
-/*************************functions to get products*******************************/
+
 async function getProducts(page = 1){
     const formData = new FormData();
     formData.append("page",page);
@@ -74,7 +74,6 @@ async function getProducts(page = 1){
     document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
 }
 
-/*************************Events*******************************/
 btnPurchase.addEventListener("click",function(){
     getInitialData();
     modalPurchase.show();
@@ -82,7 +81,9 @@ btnPurchase.addEventListener("click",function(){
     document.querySelector("#modalPurchase .modal-title").innerHTML="Información de pago";
     document.querySelector("#contentPurchase").classList.remove("d-none");
     document.querySelector("#contentQuote").classList.add("d-none");
+    document.querySelector(".creditContainer").classList.add("d-none");
 });
+
 btnQuote.addEventListener("click",function(){
     modalPurchase.show();
     orderType = 2;
@@ -90,6 +91,7 @@ btnQuote.addEventListener("click",function(){
     document.querySelector("#contentPurchase").classList.add("d-none");
     document.querySelector("#contentQuote").classList.remove("d-none");
 });
+
 btnClean.addEventListener("click",function(){
     arrProducts = [];
     tablePurchase.innerHTML ="";
@@ -97,6 +99,7 @@ btnClean.addEventListener("click",function(){
     document.querySelector("#discountProducts").innerHTML = "$0";
     document.querySelector("#totalProducts").innerHTML = "$0";
 });
+
 searchItems.addEventListener('input',function() {
     items.innerHTML ="";
     let search = searchItems.value.toLowerCase();
@@ -119,26 +122,45 @@ searchItems.addEventListener('input',function() {
         items.appendChild(btn);
     });
 });
+
 formSetOrder.addEventListener("submit",function(e){
     e.preventDefault();
+
     if(document.querySelector("#id").value == ""){
         Swal.fire("Error","Debe seleccionar el cliente","error");
         return false;
     }
+
     if(arrProducts.length == 0){
         Swal.fire("Error","Debe agregar al menos un artículo","error");
         return false;
     }
+
     let url = base_url+"/Pedidos/PedidosPos/setOrder";
     let formData = new FormData(formSetOrder);
+    let arrCreditItems = [];
+    let arrTotal = currentTotal();
+
+    if(paymentList.value == "credito"){
+        arrCreditItems = getCreditItems();
+        if(!validCreditTotal(arrCreditItems,arrTotal.total)){
+            Swal.fire("Error","El total del anticipo no puede ser igual o mayor al total a pagar.","error");
+            return false;
+        }
+    }
+
     formData.append("products",JSON.stringify(arrProducts));
+    formData.append("credit_items",JSON.stringify(arrCreditItems));
     formData.append("order_type",orderType);
-    formData.append("total",JSON.stringify(currentTotal()));
+    formData.append("total",JSON.stringify(arrTotal));
     btnSetPurchase.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnSetPurchase.setAttribute("disabled","");
+
     request(url,formData,"post").then(function(objData){
+
         btnSetPurchase.innerHTML=`<i class="fas fa-save"></i> Guardar`;
         btnSetPurchase.removeAttribute("disabled");
+
         if(objData.status){
             Swal.fire("Guardado",objData.msg,"success");
             formSetOrder.reset();
@@ -158,7 +180,30 @@ formSetOrder.addEventListener("submit",function(e){
         }
     });
 })
-/*************************functions to select item from search customers*******************************/
+
+paymentList.addEventListener("change",function(){
+    const creditContainer =document.querySelector(".creditContainer");
+    const creditMethod =document.querySelector(".creditMethod");
+    creditContainer.classList.add("d-none");
+    if(paymentList.value=="credito"){
+        let html="";
+        arrPaymentTypes.forEach(e => {
+            if(e.name!='mercadopago' && e.name!='credito'){
+                html+=`
+                <div class="col-md-4">
+                    <div class="mt-3 mb-3">
+                        <label for="${e.name}" class="form-label">${e.name}</label>
+                        <input type="number" value="0" id="${e.name}" class="form-control creditItem">
+                    </div>
+                </div>
+                `;
+            }
+        });
+        creditMethod.innerHTML=html;
+        creditContainer.classList.remove("d-none");
+    }
+});
+
 function addItem(element){
     element.setAttribute("onclick","delItem(this)");
     element.classList.add("border","border-primary");
@@ -167,11 +212,13 @@ function addItem(element){
     document.querySelector("#id").value = element.getAttribute("data-id");
     searchItems.parentElement.classList.add("d-none");
 }
+
 function delItem(element){
     searchItems.parentElement.classList.remove("d-none");
     document.querySelector("#id").value = 0;
     element.remove();
 }
+
 function getInitialData(){
     request(base_url+"/Pedidos/PedidosPos/getInitialData","","get").then(function(objData){
         arrCustomers = objData.customers;
@@ -185,7 +232,7 @@ function getInitialData(){
         paymentList.innerHTML = html;
     });
 }
-/*************************functions to add and update products*******************************/
+
 function addProduct(product={},topic=2,id="",variantName="",productType=""){
     let obj = {
         "id":"",
@@ -301,6 +348,7 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
     }
     showProducts();
 }
+
 function updateProduct(element,type,data){
     let obj = JSON.parse(data);
     let subtotal = 0;
@@ -406,6 +454,7 @@ function updateProduct(element,type,data){
     }
     currentProducts();
 }
+
 function deleteProduct(element,data){
     let obj = JSON.parse(data);
     let parent = element.parentElement.parentElement;
@@ -450,6 +499,7 @@ function deleteProduct(element,data){
     parent.remove();
     currentProducts();
 }
+
 function showProducts(){
     tablePurchase.innerHTML ="";
     arrProducts.forEach(pro=>{
@@ -486,6 +536,7 @@ function showProducts(){
     });
     currentTotal();
 }
+
 function currentTotal(){
     let subtotal = 0;
     let discount = 0;
@@ -502,6 +553,7 @@ function currentTotal(){
     document.querySelector("#totalPurchase").innerHTML = "$"+formatNum(total,".");
     return {"subtotal":subtotal,"total":total,"discount":discount}
 }
+
 function currentProducts(){
     let rows = document.querySelectorAll(".productToBuy");
     for (let i = 0; i < arrProducts.length; i++) {
@@ -515,13 +567,32 @@ function currentProducts(){
     }
     showProducts();
 }
+
 function openModal(){
     modalVariant.show();
 }
+
 function statusPOS(){
     if(document.querySelector("#posProducts").children.length > 0){
         document.querySelector("#btnPos").classList.remove("d-none");
     }else{
         document.querySelector("#btnPos").classList.add("d-none");
     }
+}
+
+function getCreditItems(){
+    const arrCreditItems =[];
+    const arrItems = Array.from(document.querySelectorAll(".creditItem"));
+    arrItems.forEach(e => { 
+        if(e.value > 0){
+            arrCreditItems.push( {type:e.id,value:e.value} ) 
+        }
+    });
+    return arrCreditItems;
+}
+
+function validCreditTotal(items,total){
+    let totalItem = 0;
+    items.forEach(e => { totalItem+= parseFloat(e.value); });
+    return totalItem < total
 }
