@@ -20,8 +20,12 @@
         <div class="col-md-6">
             <div class="mb-3">
                 <label for="txtSearch" class="form-label">Buscar</label>
-                <input type="text" class="form-control" id="txtSearch" name="txtSearch">
+                <div class="d-flex">
+                    <input type="text" class="form-control" id="txtSearch" name="txtSearch">
+                    <button class="btn btn-primary" onclick="getKardex()" id="btnGenerate">Generar</button>
+                </div>
             </div>
+            
         </div>
     </div>
     <div class="table-responsive" style="max-height:60vh">

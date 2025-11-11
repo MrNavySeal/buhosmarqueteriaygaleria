@@ -9,6 +9,7 @@
             parent::__construct();
             
         }
+
         public function inventario(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -27,6 +28,7 @@
                 die();
             }
         }
+
         public function kardex(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -44,6 +46,7 @@
                 die();
             }
         }
+
         public function getProducts(){
             if($_SESSION['permitsModule']['r']){
                 $strSearch = strClean($_POST['search']);
@@ -64,6 +67,7 @@
             }
             die();
         }
+
         public function getInventoryHtml(array $data,int $pages,$page){
             $maxButtons = 4;
             $totalPages = $pages;
@@ -118,6 +122,7 @@
             ';
             return array("products"=>$html,"pages"=>$htmlPages);
         }
+
         public function getKardex(){
             if($_SESSION['permitsModule']['r']){
                 $strInitialDate = strClean($_POST['initial_date']);
@@ -125,10 +130,18 @@
                 $strSearch = clear_cadena(strClean($_POST['search']));
                 $arrPurchase = $this->model->selectPurchaseDet($strInitialDate,$strFinalDate,$strSearch);
                 $arrOrder = $this->model->selectOrderDet($strInitialDate,$strFinalDate,$strSearch);
-                $arrAdjustment = $this->model->selectAdjustmentDet($strInitialDate,$strFinalDate,$strSearch);
+                $arrAdjustmentInputs = $this->model->selectAdjustmentDet($strInitialDate,$strFinalDate,$strSearch,1);
+                $arrAdjustmentOutputs = $this->model->selectAdjustmentDet($strInitialDate,$strFinalDate,$strSearch,2);
+                
                 $arrData = [];
                 $arrResponse = [];
-                $html ="";
+
+                $html='
+                    <tr>
+                        <td colspan="16" class="text-center">No hay datos</td>
+                    </tr>
+                ';
+
                 if(!empty($arrPurchase)){
                     foreach ($arrPurchase as $e) {
                         $e['type_move'] = 1;
@@ -138,31 +151,39 @@
                         $e['output_total'] = 0;
                         $e['balance'] = 0;
                         $e['move'] ="Entrada por compra";
+                        $e['move_code'] = 101;
                         array_push($arrData,$e);
                     }
                 }
-                if(!empty($arrAdjustment)){
-                    foreach ($arrAdjustment as $e) {
-                        if($e['type'] == 1){
-                            $e['type_move'] = 1;
-                            $e['input'] = $e['qty'];
-                            $e['input_total'] = 0;
-                            $e['output'] = 0;
-                            $e['output_total'] = 0;
-                            $e['balance'] = 0;
-                            $e['move'] ="Entrada por ajuste";
-                        }else{
-                            $e['type_move'] = 2;
-                            $e['output'] = $e['qty'];
-                            $e['output_total'] = 0;
-                            $e['input'] = 0;
-                            $e['input_total'] = 0;
-                            $e['balance'] = 0;
-                            $e['move'] ="Salida por ajuste";
-                        }
+
+                if(!empty($arrAdjustmentInputs)){
+                    foreach ($arrAdjustmentInputs as $e) {
+                        $e['type_move'] = 1;
+                        $e['input'] = $e['qty'];
+                        $e['input_total'] = 0;
+                        $e['output'] = 0;
+                        $e['output_total'] = 0;
+                        $e['balance'] = 0;
+                        $e['move'] ="Entrada por ajuste";
+                        $e['move_code'] = 102;
                         array_push($arrData,$e);
                     }
                 }
+
+                if(!empty($arrAdjustmentOutputs)){
+                    foreach ($arrAdjustmentOutputs as $e) {
+                        $e['type_move'] = 2;
+                        $e['output'] = $e['qty'];
+                        $e['output_total'] = 0;
+                        $e['input'] = 0;
+                        $e['input_total'] = 0;
+                        $e['balance'] = 0;
+                        $e['move'] ="Salida por ajuste";
+                        $e['move_code'] = 202;
+                        array_push($arrData,$e);
+                    }
+                }
+
                 if(!empty($arrOrder)){
                     foreach ($arrOrder as $e) {
                         $e['type_move'] = 2;
@@ -172,16 +193,20 @@
                         $e['input_total'] = 0;
                         $e['balance'] = 0;
                         $e['move'] ="Salida por venta";
+                        $e['move_code'] = 201;
                         array_push($arrData,$e);
                     }
                 }
+
                 if(!empty($arrData)){
                     $arrTemp = $arrData;
                     $arrProductId = array_unique(array_values(array_column($arrTemp,"id")));
-                    $arrProductName = array_unique(array_values(array_column($arrTemp,"name")));
+                    //$arrProductName = array_unique(array_values(array_column($arrTemp,"name")));
+                    $arrProductName = array_unique( array_map( function($name){return trim($name);}, array_column($arrTemp, "name") ) );
                     $arrData = [];
+                    //dep($arrProductName);exit;
                     foreach ($arrProductName as $e) {
-                        $arrProduct = array_values(array_filter($arrTemp,function($p)use($e,$arrProductId){return $e == $p['name'] && in_array($p['id'],$arrProductId);}));
+                        $arrProduct = array_values(array_filter($arrTemp,function($p)use($e,$arrProductId){return $e == trim($p['name']) && in_array($p['id'],$arrProductId);}));
                         usort($arrProduct,function($a,$b){
                             $date1 = strtotime($a['date']);
                             $date2 = strtotime($b['date']);
@@ -192,6 +217,7 @@
                     $arrData = $this->orderData($arrData);
                     $html = $this->getKardexHtml($arrData);
                 }
+
                 $arrResponse = array("html"=>$html,"data"=>$arrData);
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
@@ -262,6 +288,7 @@
             }
             return $html;
         }
+
         public function orderData(array $data){
             $arrData = [];
             $total = count($data);
@@ -269,19 +296,50 @@
                 $total = count($e);
                 $arrProduct = [];
                 $totalCostBalance = 0;
+
+
+                $arrOutputSale = $this->getInitialBalance(201,$e);
+                $arrOutputAjust = $this->getInitialBalance(202,$e);
+
+                $arrIntputPurchase = $this->getInitialBalance(101,$e);
+                $arrIntputAjust = $this->getInitialBalance(102,$e);
+
+                $arrInitial = [
+                    'document'=>"N/A",
+                    "measure"=>"N/A",
+                    'type_move' => 0,
+                    "price"=>0,
+                    "last_price"=>0,
+                    'output' => $arrOutputSale['previous_qty']+$arrOutputAjust['previous_qty'],
+                    'output_total' => $arrOutputSale['previous_price']+$arrOutputAjust['previous_price'],
+                    'input' => $arrIntputPurchase['previous_qty']+$arrIntputAjust['previous_qty'],
+                    'input_total' => $arrIntputPurchase['previous_price']+$arrIntputAjust['previous_price'],
+                    'move' => "Saldo anterior"
+                ];
+                
+                $intInitialStock = $arrInitial['input'] - $arrInitial['output'];
+                $intInitialStock = $intInitialStock > 0? $intInitialStock : 1;
+                $intInititalPrice = $arrInitial['input_total'] - $arrInitial['output_total'];
+                $intFinalPrice = $intInititalPrice/$intInitialStock;
+
+                $arrInitial['balance'] = $arrInitial['input'] - $arrInitial['output'];
+                $arrInitial['balance_total'] = $intFinalPrice;
+                array_push($arrProduct,$arrInitial);
+
                 for ($i=0; $i < $total ; $i++) { 
                     $price = $e[$i]['price'];
                     $e[$i]['last_price'] = $e[$i]['price'];
                     if($i == 0){
-                        $e[$i]['balance'] = $e[$i]['input'] - $e[$i]['output'];
-                        $e[$i]['balance_total'] = $e[$i]['balance']*$price;
-                        $e[$i]['output_total'] = $e[$i]['output'] * $price;
+                        $e[$i]['balance'] = $arrInitial['balance']+($e[$i]['input'] - $e[$i]['output']);
+                        $e[$i]['balance_total'] = $arrInitial['balance_total']+($e[$i]['balance']*$price);
+                        $e[$i]['output_total'] = $arrInitial['output_total']+($e[$i]['output'] * $price);
                     }else{
                         $lastRow = $e[$i-1];
                         $lastBalance = $lastRow['balance'];
                         $totalBalance = $lastBalance+$e[$i]['input']-$e[$i]['output'];
                         $totalCostBalance = $lastRow['balance_total'];
                         $e[$i]['balance'] = $totalBalance;
+
                         if($e[$i]['type_move'] == 1){
                             $totalCostBalance+=$e[$i]['input'] * $e[$i]['last_price'];
                             $lastPrice = $totalBalance > 0 ? $totalCostBalance/$totalBalance : 0;
@@ -296,15 +354,20 @@
                     $e[$i]['input_total'] = $e[$i]['input'] * $price;
                     array_push($arrProduct,$e[$i]);
                 }
+
                 $lastData = $arrProduct[count($arrProduct)-1];
                 array_push($arrData,array(
-                    "name"=>$arrProduct[0]['name'],
+                    "name"=>$arrProduct[1]['name'],
                     "detail"=>$arrProduct,
                     "stock"=>$lastData['balance'],
                     "total"=>$lastData['balance']*$lastData['price'],
                 ));
             }
             return $arrData;
+        }
+        
+        private function getInitialBalance($code,$data){
+            return array_values(array_filter($data,function($e) use($code){return $e['move_code'] == $code;}))[0];
         }
     }
 

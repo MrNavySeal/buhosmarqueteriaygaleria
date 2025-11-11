@@ -4,6 +4,7 @@
         public function __construct(){
             parent::__construct();
         }
+
         public function selectTotalInventory(string $strSearch){
             $arrProducts = [];
             $sql = "SELECT 
@@ -61,6 +62,7 @@
             }
             return array("total"=>$total,"products"=>$arrProducts);
         }
+
         public function selectProducts(string $strSearch,int $intPerPage,int $intPageNow){
             $start = ($intPageNow-1)*$intPerPage;
             $arrProducts = [];
@@ -129,6 +131,7 @@
             }
             return array("products"=>$arrProducts,"pages"=>$totalPages);
         }
+
         public function selectPurchaseDet(string $strInitialDate,string $strFinalDate,string $strSearch){
             $sql = "SELECT 
             cab.idpurchase as document,
@@ -152,8 +155,24 @@
                 $total = count($request);
                 for ($i=0; $i < $total ; $i++) { 
                     $e = $request[$i];
+                    $id = $e['id'];
+
+                    $sqlBalance = "SELECT 
+                    COALESCE(SUM(det.qty),0) as qty,
+                    COALESCE(SUM(det.qty * det.price_purchase),0) as total
+                    FROM purchase_det det 
+                    INNER JOIN purchase cab ON cab.idpurchase = det.purchase_id
+                    INNER JOIN product p ON p.idproduct = det.product_id
+                    WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
+                    AND cab.date < '$strInitialDate'  AND p.idproduct = $id";
+                    
+                    $arrBalance = $this->select($sqlBalance);
+                    
+                    $e['previous_price'] = $arrBalance['total'];
+                    $e['previous_qty'] = $arrBalance['qty'];
+
                     if($e['variant_name'] != ""){
-                        $sql = "SELECT sku as reference FROM product_variations_options WHERE product_id ='$e[id]' AND name = '$e[variant_name]'";
+                        $sql = "SELECT sku as reference FROM product_variations_options WHERE product_id ='$id' AND name = '$e[variant_name]'";
                         $arrData = $this->select($sql);
                         $strReference = !empty($arrData) ? $arrData['reference'] : "";
                         $strName = strtoupper($strReference)." ".$e['name'];
@@ -165,7 +184,8 @@
             }
             return $request;
         }
-        public function selectAdjustmentDet(string $strInitialDate,string $strFinalDate,string $strSearch){
+
+        public function selectAdjustmentDet(string $strInitialDate,string $strFinalDate,string $strSearch,int $type){
             $sql = "SELECT 
             cab.id as document,
             cab.date,
@@ -183,14 +203,31 @@
             INNER JOIN product p ON p.idproduct = det.product_id
             LEFT JOIN measures m ON m.id_measure = p.measure
             WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
-            BETWEEN '$strInitialDate' AND '$strFinalDate' AND p.name like '$strSearch%'";
+            BETWEEN '$strInitialDate' AND '$strFinalDate' AND p.name like '$strSearch%' AND det.type = $type";
             $request = $this->select_all($sql);
+
             if(!empty($request)){
                 $total = count($request);
                 for ($i=0; $i < $total ; $i++) { 
                     $e = $request[$i];
+                    $id = $e['id'];
+
+                    $sqlBalance = "SELECT 
+                    COALESCE(SUM(det.adjustment),0) as qty,
+                    COALESCE(SUM(det.adjustment * det.price),0) as total
+                    FROM adjustment_det det 
+                    INNER JOIN adjustment_cab cab ON cab.id = det.adjustment_id
+                    INNER JOIN product p ON p.idproduct = det.product_id
+                    WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
+                    AND cab.date < '$strInitialDate' AND det.type = $type AND p.idproduct = $id";
+                    
+                    $arrBalance = $this->select($sqlBalance);
+                    
+                    $e['previous_price'] = $arrBalance['total'];
+                    $e['previous_qty'] = $arrBalance['qty'];
+
                     if($e['variant_name'] != ""){
-                        $sql = "SELECT sku as reference FROM product_variations_options WHERE product_id ='$e[id]' AND name = '$e[variant_name]'";
+                        $sql = "SELECT sku as reference FROM product_variations_options WHERE product_id ='$id' AND name = '$e[variant_name]'";
                         $arrData = $this->select($sql);
                         $strReference = !empty($arrData) ? $arrData['reference'] : "";
                         $strName = strtoupper($strReference)." ".$e['name'];
@@ -200,8 +237,10 @@
                 }
                 
             }
+
             return $request;
         }
+
         public function selectOrderDet(string $strInitialDate,string $strFinalDate,string $strSearch){
             $sql = "SELECT 
             cab.idorder as document,
@@ -225,11 +264,26 @@
                 $total = count($request);
                 for ($i=0; $i < $total ; $i++) { 
                     $e = $request[$i];
+                    $id = $e['id'];
+
+                    $sqlBalance = "SELECT 
+                    COALESCE(SUM(det.quantity),0) as qty,
+                    COALESCE(SUM(det.quantity * p.price),0) as total
+                    FROM orderdetail det 
+                    INNER JOIN orderdata cab ON cab.idorder = det.orderid
+                    INNER JOIN product p ON p.idproduct = det.productid
+                    WHERE cab.status != 'canceled' AND det.topic = 2 AND p.is_stock = 1 
+                    AND cab.date < '$strInitialDate' AND p.idproduct = $id";
+                    
+                    $arrBalance = $this->select($sqlBalance);
+
+                    $e['previous_price'] = $arrBalance['total'];
+                    $e['previous_qty'] = $arrBalance['qty'];
+
                     $description = json_decode($e['description'],true);
                     if(is_array($description)){
                         $arrDet = $description['detail'];
                         $variantName = implode("-",array_values(array_column($arrDet,"option")));
-                        $id = $request[$i]['id'];
                         $sql = "SELECT sku as reference FROM product_variations_options WHERE product_id ='$id' AND name = '$variantName'";
                         $arrData = $this->select($sql);
                         $strReference = !empty($arrData) ? $arrData['reference'] : "";
@@ -240,5 +294,6 @@
             }
             return $request;
         }
+        
     }
 ?>
