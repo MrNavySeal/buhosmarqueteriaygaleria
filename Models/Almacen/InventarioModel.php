@@ -276,8 +276,10 @@
                 $condition = "AND det.variant_name = '$name'";
             }else{
                 $arrDescription = json_decode($description,true);
-                $name = implode("-",array_column($arrDescription['detail'],"option"));
-                $condition = "AND det.variant_name = '$name'";
+                if(isset($arrDescription['detail'])){
+                    $name = implode("-",array_column($arrDescription['detail'],"option"));
+                    $condition = "AND det.variant_name = '$name'";
+                }
                 $description = $product['hex_value'];
             }
 
