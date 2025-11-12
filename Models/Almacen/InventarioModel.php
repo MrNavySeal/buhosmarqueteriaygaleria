@@ -157,20 +157,6 @@
                     $e = $request[$i];
                     $id = $e['id'];
 
-                    $sqlBalance = "SELECT 
-                    COALESCE(SUM(det.qty),0) as qty,
-                    COALESCE(SUM(det.qty * det.price_purchase),0) as total
-                    FROM purchase_det det 
-                    INNER JOIN purchase cab ON cab.idpurchase = det.purchase_id
-                    INNER JOIN product p ON p.idproduct = det.product_id
-                    WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
-                    AND cab.date < '$strInitialDate'  AND p.idproduct = $id";
-                    
-                    $arrBalance = $this->select($sqlBalance);
-                    
-                    $e['previous_price'] = $arrBalance['total'];
-                    $e['previous_qty'] = $arrBalance['qty'];
-
                     if($e['variant_name'] != ""){
                         $sql = "SELECT sku as reference FROM product_variations_options WHERE product_id ='$id' AND name = '$e[variant_name]'";
                         $arrData = $this->select($sql);
@@ -211,21 +197,6 @@
                 for ($i=0; $i < $total ; $i++) { 
                     $e = $request[$i];
                     $id = $e['id'];
-
-                    $sqlBalance = "SELECT 
-                    COALESCE(SUM(det.adjustment),0) as qty,
-                    COALESCE(SUM(det.adjustment * det.price),0) as total
-                    FROM adjustment_det det 
-                    INNER JOIN adjustment_cab cab ON cab.id = det.adjustment_id
-                    INNER JOIN product p ON p.idproduct = det.product_id
-                    WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
-                    AND cab.date < '$strInitialDate' AND det.type = $type AND p.idproduct = $id";
-                    
-                    $arrBalance = $this->select($sqlBalance);
-                    
-                    $e['previous_price'] = $arrBalance['total'];
-                    $e['previous_qty'] = $arrBalance['qty'];
-
                     if($e['variant_name'] != ""){
                         $sql = "SELECT sku as reference FROM product_variations_options WHERE product_id ='$id' AND name = '$e[variant_name]'";
                         $arrData = $this->select($sql);
@@ -252,7 +223,8 @@
             COALESCE(p.price,0) AS price,
             p.idproduct as id,
             m.initials as measure,
-            det.description
+            det.description,
+            HEX(det.description) AS hex_value
             FROM orderdetail det 
             INNER JOIN orderdata cab ON cab.idorder = det.orderid
             INNER JOIN product p ON p.idproduct = det.productid
@@ -293,6 +265,86 @@
                 }
             }
             return $request;
+        }
+
+        public function selectBalance($product,$strInitialDate){
+            $id = $product['id'];
+            $condition ="";
+            $description =$product['description'];
+            if(isset($product['variant_name']) && $product['variant_name'] != ""){
+                $name = $product['variant_name'];
+                $condition = "AND det.variant_name = '$name'";
+            }else{
+                $arrDescription = json_decode($description,true);
+                $name = implode("-",array_column($arrDescription['detail'],"option"));
+                $condition = "AND det.variant_name = '$name'";
+                $description = $product['hex_value'];
+            }
+
+            $sql = "SELECT 
+            COALESCE(SUM(det.qty),0) as qty,
+            COALESCE(SUM(det.qty * det.price_purchase),0) as total
+            FROM purchase_det det 
+            INNER JOIN purchase cab ON cab.idpurchase = det.purchase_id
+            INNER JOIN product p ON p.idproduct = det.product_id
+            WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
+            AND cab.date < '$strInitialDate'  AND p.idproduct = $id $condition";
+            $arrIntputPurchase = $this->select($sql);
+
+            $sql = "SELECT 
+            COALESCE(SUM(det.adjustment),0) as qty,
+            COALESCE(SUM(det.adjustment * det.price),0) as total
+            FROM adjustment_det det 
+            INNER JOIN adjustment_cab cab ON cab.id = det.adjustment_id
+            INNER JOIN product p ON p.idproduct = det.product_id
+            WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
+            AND cab.date < '$strInitialDate' AND det.type = 1 AND p.idproduct = $id $condition";
+            $arrIntputAjust = $this->select($sql);
+
+            $sql = "SELECT 
+            COALESCE(SUM(det.adjustment),0) as qty,
+            COALESCE(SUM(det.adjustment * det.price),0) as total
+            FROM adjustment_det det 
+            INNER JOIN adjustment_cab cab ON cab.id = det.adjustment_id
+            INNER JOIN product p ON p.idproduct = det.product_id
+            WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
+            AND cab.date < '$strInitialDate' AND det.type = 1 AND p.idproduct = $id $condition";
+            $arrOutputAjust = $this->select($sql);
+
+            $sql = "SELECT 
+            COALESCE(SUM(det.quantity),0) as qty,
+            COALESCE(SUM(det.quantity * p.price),0) as total
+            FROM orderdetail det 
+            INNER JOIN orderdata cab ON cab.idorder = det.orderid
+            INNER JOIN product p ON p.idproduct = det.productid
+            WHERE cab.status != 'canceled' AND det.topic = 2 AND p.is_stock = 1 
+            AND cab.date < '$strInitialDate' AND p.idproduct = $id AND HEX(det.description) = '$description'";
+            $arrOutputSale = $this->select($sql);
+
+            /* dep($arrIntputPurchase);
+            dep($arrIntputAjust);
+            dep($arrOutputSale);
+            dep($arrOutputAjust); */
+
+            $totalQty = ($arrIntputAjust['qty']+$arrIntputPurchase['qty'])-($arrOutputSale['qty']+$arrOutputAjust['qty']);
+            $totalPrice = ($arrIntputAjust['total']+$arrIntputPurchase['total'])-($arrOutputSale['total']+$arrOutputAjust['total']);
+            $price = $totalQty > 0 ? $totalPrice/$totalQty : 0;
+
+            $arrInitial = [
+                'document'=>"N/A",
+                "measure"=>"N/A",
+                'type_move' => 0,
+                "price"=>0,
+                "last_price"=>0,
+                'output' => 0,
+                'output_total' => 0,
+                'input' => 0,
+                'input_total' => 0,
+                'move' => "Saldo anterior",
+                "balance"=>$totalQty,
+                "balance_total"=>$price
+            ];
+            return $arrInitial;
         }
         
     }

@@ -66,24 +66,23 @@
                 );
                 $this->insert($sql,$arrData);
                 //Update products
-                if($this->arrData[$i]['is_stock']){
-                    $sqlProduct ="UPDATE product SET stock=?, price=?, price_purchase=? 
-                    WHERE idproduct = {$this->arrData[$i]['id']}";
-                    if($this->arrData[$i]['product_type']){
-                        $sqlProduct = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
-                        WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
-                    } 
-                    $price_purchase = getLastPrice($this->arrData[$i]['id'],$this->arrData[$i]['variant_name']);
-                    if($price_purchase == 0){
-                        $price_purchase = $this->arrData[$i]['price_purchase'];
-                    }
-                    $arrData = array(
-                        $this->arrData[$i]['is_stock'] ? $this->arrData[$i]['qty']+$this->arrData[$i]['stock'] : 0,
-                        $this->arrData[$i]['price_sell'],
-                        $price_purchase
-                    );
-                    $this->update($sqlProduct,$arrData);
+
+                $sqlProduct ="UPDATE product SET stock=?, price=?, price_purchase=? 
+                WHERE idproduct = {$this->arrData[$i]['id']}";
+                if($this->arrData[$i]['product_type']){
+                    $sqlProduct = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
+                    WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
+                } 
+                $price_purchase = getLastPrice($this->arrData[$i]['id'],$this->arrData[$i]['variant_name']);
+                if($price_purchase == 0){
+                    $price_purchase = $this->arrData[$i]['price_purchase'];
                 }
+                $arrData = array(
+                    $this->arrData[$i]['qty']+$this->arrData[$i]['stock'],
+                    $this->arrData[$i]['price_sell'],
+                    $price_purchase
+                );
+                $this->update($sqlProduct,$arrData);
             }
         }
         public function deletePurchase($id){
@@ -113,34 +112,33 @@
                     $sqlProduct = "SELECT stock,is_stock,product_type FROM product WHERE idproduct = $data[product_id]";
                     $requestProduct = $this->select($sqlProduct);
                 }
-                if($requestProduct['is_stock']){
-                    $stock = $requestProduct['stock']-$data['qty'];
-                    $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
-                    $arrValues = [
-                        $request,
-                        $data['product_id'],
-                        $requestProduct['stock'],
-                        $data['qty'],
-                        $data['price_purchase'],
-                        2,
-                        $stock,
-                        $variantName,
-                        $data['qty']*$data['price_purchase']
-                    ];
-                    $this->insert($sql,$arrValues);
-                    //Update products
-                    $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
-                    WHERE idproduct = $data[product_id]";
-                    if($requestProduct['product_type']){
-                        $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
-                        WHERE product_id = $data[product_id] AND name = '$variantName'";
-                    } 
-                    $price_purchase = getLastPrice($data['product_id'],$variantName);
-                    if($price_purchase == 0){
-                        $price_purchase = $data['price_purchase'];
-                    }
-                    $this->update($sqlProduct,[$stock,$price_purchase]);
+
+                $stock = $requestProduct['stock']-$data['qty'];
+                $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
+                $arrValues = [
+                    $request,
+                    $data['product_id'],
+                    $requestProduct['stock'],
+                    $data['qty'],
+                    $data['price_purchase'],
+                    2,
+                    $stock,
+                    $variantName,
+                    $data['qty']*$data['price_purchase']
+                ];
+                $this->insert($sql,$arrValues);
+                //Update products
+                $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
+                WHERE idproduct = $data[product_id]";
+                if($requestProduct['product_type']){
+                    $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
+                    WHERE product_id = $data[product_id] AND name = '$variantName'";
+                } 
+                $price_purchase = getLastPrice($data['product_id'],$variantName);
+                if($price_purchase == 0){
+                    $price_purchase = $data['price_purchase'];
                 }
+                $this->update($sqlProduct,[$stock,$price_purchase]);
             }
         }
         public function selectTotalPurchases(string $strSearch,$strInitialDate,$strFinalDate){

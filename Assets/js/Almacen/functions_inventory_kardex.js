@@ -18,14 +18,14 @@ async function getKardex(){
     formData.append("final_date",finallDateHtml.value);
     formData.append("search",searchHtml.value);
 
-    btnGenerate.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    btnGenerate.setAttribute("disabled","");
+    /* btnGenerate.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnGenerate.setAttribute("disabled",""); */
 
     const response = await fetch(base_url+"/Almacen/inventario/getKardex",{method:"POST",body:formData});
     const objData = await response.json();
 
-    btnGenerate.innerHTML=`Generar`;
-    btnGenerate.removeAttribute("disabled");
+    /* btnGenerate.innerHTML=`Generar`;
+    btnGenerate.removeAttribute("disabled"); */
 
     arrData = objData.data;
     document.querySelector("#tableData").innerHTML =objData.html;

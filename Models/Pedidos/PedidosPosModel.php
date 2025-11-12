@@ -239,7 +239,7 @@
             $this->arrData = $data;
             $strAddress = explode("/",$address)[1];
             $total = count($this->arrData);
-            for ($i=0; $i < $total ; $i++) { 
+            for ($i=0; $i < $total ; $i++) {
                 $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
                 if($this->arrData[$i]['topic'] == 1){
                     
@@ -292,7 +292,7 @@
                 );
                 $this->insert($sql,$arrData);
                 //Update products
-                if($this->arrData[$i]['topic'] == 2 && $this->arrData[$i]['is_stock']){
+                if($this->arrData[$i]['topic'] == 2){
                     $sqlStock = "SELECT stock FROM product WHERE idproduct = {$this->arrData[$i]['id']}";
                     //$sqlPurchase = "SELECT AVG(price) as price_purchase FROM orderdetail WHERE product_id = {$this->arrData[$i]['id']}";
                     $sqlProduct ="UPDATE product SET stock=? 
@@ -311,7 +311,7 @@
                     $stock = $this->select($sqlStock)['stock'];
                     $stock = $stock -$this->arrData[$i]['qty'];
                     //$price_purchase = $this->select($sqlPurchase)['price_purchase'];
-                    $arrData = array($this->arrData[$i]['is_stock'] ? $stock : 0);
+                    $arrData = array($stock);
                     $this->update($sqlProduct,$arrData);
                 }
             }
