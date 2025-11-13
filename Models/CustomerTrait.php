@@ -247,10 +247,8 @@
                         }
                         $description = json_encode(array("name"=>$pro['name'],"detail"=>$arrComb));
                     }
-                    if($pro['is_stock']){
-                        $stock = $stock-$pro['qty'];
-                        $this->updateStock($this->intIdProduct,$stock,$pro['variant']['name']);
-                    }
+                    $stock = $stock-$pro['qty'];
+                    $this->updateStock($this->intIdProduct,$stock,$pro['variant']['name']);
                 }
                 $query = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference)
                         VALUE(?,?,?,?,?,?,?,?)";
