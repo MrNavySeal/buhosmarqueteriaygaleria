@@ -11,6 +11,7 @@ window.addEventListener("load",function(e){
     const finalDateFormat = finalDate.toISOString().split("T")[0];
     initialDateHtml.value = initialDateFormat;  // Get the current date
     finallDateHtml.value = finalDateFormat;   // Get the current date
+    getKardex();
 })
 async function getKardex(){
     const formData = new FormData();
