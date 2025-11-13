@@ -16,7 +16,17 @@
         </app-select>
     </div>
     <div class="col-md-8">
-        <app-input label="Buscar" @input="subcategory.modalType='';category.modalType='';search();" v-model="common.strSearch"></app-input>
+        <app-button-input 
+            title="Buscar"
+            btn="primary"
+            v-model="common.strSearch"
+            required="false"
+            @input="subcategory.modalType='';category.modalType=''"
+            >
+            <template #right>
+                <button class="btn btn-primary" @click="search()" id="btnGenerate">Generar</button>
+            </template>
+        </app-button-input>
     </div>
 </div>
 <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">

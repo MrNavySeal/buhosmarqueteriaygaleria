@@ -115,9 +115,12 @@
         public function getProduct(){
             if($_SESSION['permitsModule']['r']){
                 $id = intval($_POST['id']);
-                $arrProduct = $this->model->selectProduct($id);
-                if(!empty($arrProduct)){
-                    $arrResponse = array("status"=>true,"data"=>$arrProduct);
+                $request = $this->model->selectProduct($id);
+                if(!empty($request)){
+                    $request['info_specs'] = $this->model->selectSpecs();
+                    $request['info_measures'] = $this->model->selectMeasures();
+                    $request['info_variants'] = $this->model->selectVariants();
+                    $arrResponse = array("status"=>true,"data"=>$request);
                 }else{
                     $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                 }

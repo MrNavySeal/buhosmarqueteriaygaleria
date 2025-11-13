@@ -212,7 +212,6 @@ const App = {
             }
         },
         edit:async function(data,type="edit"){
-            this.getData();
             const formData = new FormData();
             formData.append("id",data.idproduct);
             const response = await fetch(base_url+"/Productos/Productos/getProduct",{method:"POST",body:formData});
@@ -255,6 +254,9 @@ const App = {
                 this.intMeasure=data.measure;
                 this.arrSpecsAdded = data.specs;
                 this.strReference=data.reference;
+                this.arrSpecs = data.info_specs;
+                this.arrMeasures = data.info_measures;
+                this.arrVariants = data.info_variants;
                 if(this.intCheckVariant){
                     const arrVariants = this.arrVariants;
                     const arrVariations = data.variation.variation;
@@ -380,10 +382,7 @@ const App = {
         view:async function(data){
             window.open(base_url+"/tienda/producto/"+data.route,"_blank");
         },
-        /**
-         * This function mix all variants I have selected and mixing all their options to
-         * mix it on purpose to show the combination when I'm selecting or changing my variants and options.
-         */
+
         changeVariant:function(){
             const arrComb= [];
             this.arrCombination = [];
@@ -399,12 +398,6 @@ const App = {
             }
             let result = [];
             if(this.arrVariantsToMix.length>0){  
-                /**
-                 * 
-                 * @param {*} oldOptionsMixed Old options mixed
-                 * @param {*} newOptions new options to mix
-                 * @returns the new options mixed
-                 */
                 function addOption( oldOptionsMixed, newOptions){
                     let newMix = [];
                     oldOptionsMixed.forEach(ol=>{

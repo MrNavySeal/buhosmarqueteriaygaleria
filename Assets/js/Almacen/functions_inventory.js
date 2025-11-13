@@ -1,20 +1,27 @@
 const searchHtml = document.querySelector("#txtSearch");
 const perPage = document.querySelector("#perPage");
+const btnGenerate = document.querySelector("#btnGenerate");
 let arrData = [];
 let floatTotal ="";
 window.addEventListener("load",function(e){
     getData()
 })
-searchHtml.addEventListener("input",function(){getData();});
-perPage.addEventListener("change",function(){getData();});
 
 async function getData(page = 1){
     const formData = new FormData();
     formData.append("page",page);
     formData.append("perpage",perPage.value);
     formData.append("search",searchHtml.value);
+
+    btnGenerate.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    btnGenerate.setAttribute("disabled","");
+
     const response = await fetch(base_url+"/Almacen/Inventario/getProducts",{method:"POST",body:formData});
     const objData = await response.json();
+
+    btnGenerate.innerHTML=`Buscar`;
+    btnGenerate.removeAttribute("disabled");
+
     const arrHtml = objData.html;
     arrData = objData.data;
     floatTotal = objData.total;
