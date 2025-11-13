@@ -393,7 +393,9 @@ const App = {
         changeVariant:function(){
             const existingCombos = {};
             this.arrCombination.forEach(combo => {
-                existingCombos[combo.name] = { ...combo };
+                let key = combo.name.split("-");
+                key = key.sort().join("|");
+                existingCombos[key] = { ...combo };
             });
 
             const arrComb= [];
@@ -429,10 +431,10 @@ const App = {
                 const name = e.join("-");
                 let existing = {};
                 for (const key in existingCombos) {
-                    const parts = key.split("-");
+                    const parts = key.split("|");
                     if (parts.every(p => e.includes(p))) {
-                    existing = existingCombos[key];
-                    break;
+                        existing = existingCombos[key];
+                        break;
                     }
                 }
                 arrComb.push({
