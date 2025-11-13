@@ -24,7 +24,7 @@
             @input="subcategory.modalType='';category.modalType=''"
             >
             <template #right>
-                <button class="btn btn-primary" @click="search()" id="btnGenerate">Generar</button>
+                <button class="btn btn-primary" @click="search()" ref="btnGenerate">Buscar</button>
             </template>
         </app-button-input>
     </div>

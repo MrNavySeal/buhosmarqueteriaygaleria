@@ -47,7 +47,8 @@
                     title="Categorías"
                     :errors="category.errors.category"
                     btn="primary" icon="new" 
-                    :value="objCategory.name" 
+                    v-model="objCategory.name" 
+                    disabled
                     >
                     <template #left>
                         <app-button icon="new" btn="primary" @click="changeCategory()"></app-button>
@@ -62,7 +63,8 @@
                     title="Subcategorias"
                     :errors="subcategory.errors.category"
                     btn="primary" icon="new" 
-                    :value="objSubcategory.name" 
+                    v-model="objSubcategory.name" 
+                    disabled
                     >
                         <template #left>
                             <app-button icon="new" btn="primary" @click="changeCategory('subcategory')"></app-button>

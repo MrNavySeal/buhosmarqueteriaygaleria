@@ -201,8 +201,16 @@ const App = {
                 formData.append("page",this.common.intPage);
                 formData.append("per_page",this.common.intPerPage);
                 formData.append("search",this.common.strSearch);
+
+                this.$refs.btnGenerate.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+                this.$refs.btnGenerate.setAttribute("disabled","");
+
                 const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData});
                 const objData = await response.json();
+
+                this.$refs.btnGenerate.innerHTML=`Buscar`;
+                this.$refs.btnGenerate.removeAttribute("disabled");
+
                 this.common.arrData = objData.data;
                 this.common.intStartPage  = objData.start_page;
                 this.common.intTotalButtons = objData.limit_page;

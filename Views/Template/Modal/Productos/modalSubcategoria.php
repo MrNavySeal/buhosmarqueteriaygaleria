@@ -8,7 +8,8 @@
             <div class="col-md-12">
                 <app-button-input title="Categoría" :errors="common.errors.category"
                 btn="primary" icon="new" 
-                :value="objCategory.name" 
+                v-model="objCategory.name" 
+                disabled
                 >
                     <template #left>
                         <app-button icon="new" btn="primary" @click="category.modalType='category';category.showModalPaginationCategory=true;search();"></app-button>

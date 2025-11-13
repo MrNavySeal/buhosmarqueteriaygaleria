@@ -64,9 +64,10 @@
                                 <app-button-input 
                                     title="Categorías"
                                     btn="primary" icon="new" 
-                                    :value="objCategory.name" 
+                                    v-model="objCategory.name" 
                                     required="true"
                                     :errors="errors.category"
+                                    disabled
                                     >
                                     <template #left>
                                         <app-button icon="new" btn="primary" @click="changeCategory('category')"></app-button>
@@ -80,9 +81,10 @@
                                 <app-button-input 
                                     title="Subcategorias"
                                     btn="primary" icon="new" 
-                                    :value="objSubcategory.name" 
+                                    v-model="objSubcategory.name" 
                                     required="true"
                                     :errors="errors.subcategory"
+                                    disabled
                                     >
                                         <template #left>
                                             <app-button icon="new" btn="primary" @click="changeCategory('subcategory')"></app-button>
