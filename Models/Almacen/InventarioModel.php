@@ -291,6 +291,7 @@
             INNER JOIN product p ON p.idproduct = det.product_id
             WHERE cab.status = 1 AND p.is_stock = 1 AND cab.date 
             AND cab.date < '$strInitialDate'  AND p.idproduct = $id $condition";
+
             $arrIntputPurchase = $this->select($sql);
 
             $sql = "SELECT 
@@ -320,7 +321,7 @@
             INNER JOIN orderdata cab ON cab.idorder = det.orderid
             INNER JOIN product p ON p.idproduct = det.productid
             WHERE cab.status != 'canceled' AND det.topic = 2 AND p.is_stock = 1 
-            AND cab.date < '$strInitialDate' AND p.idproduct = $id AND HEX(det.description) = '$description'";
+            AND cab.date < '$strInitialDate' AND p.idproduct = $id AND HEX(det.description) LIKE '$description%'";
             $arrOutputSale = $this->select($sql);
 
             /* dep($arrIntputPurchase);
