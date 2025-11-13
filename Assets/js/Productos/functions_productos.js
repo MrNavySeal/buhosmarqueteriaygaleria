@@ -390,8 +390,12 @@ const App = {
         view:async function(data){
             window.open(base_url+"/tienda/producto/"+data.route,"_blank");
         },
-
         changeVariant:function(){
+            const existingCombos = {};
+            this.arrCombination.forEach(combo => {
+                existingCombos[combo.name] = { ...combo };
+            });
+
             const arrComb= [];
             this.arrCombination = [];
             this.arrVariantsToMix = [];
@@ -422,15 +426,24 @@ const App = {
             }
             this.arrVariantsMixed = result;
             this.arrVariantsMixed.forEach(function(e){
+                const name = e.join("-");
+                let existing = {};
+                for (const key in existingCombos) {
+                    const parts = key.split("-");
+                    if (parts.every(p => e.includes(p))) {
+                    existing = existingCombos[key];
+                    break;
+                    }
+                }
                 arrComb.push({
-                    name:e.join("-"),
-                    price_purchase:0,
-                    price_sell:0,
-                    price_offer:0,
-                    stock:0,
-                    min_stock:0,
-                    sku:"",
-                    status:false,
+                    name,
+                    price_purchase: existing.status != undefined ? existing.price_purchase : 0,
+                    price_sell: existing.status != undefined ? existing.price_sell : 0,
+                    price_offer: existing.status != undefined ? existing.price_offer : 0,
+                    stock: existing.status != undefined ? existing.stock : 0,
+                    min_stock: existing.status != undefined ? existing.min_stock : 0,
+                    sku: existing.status != undefined ? existing.sku : "",
+                    status: existing.status != undefined ? existing.status : false,
                 });
             });
             this.arrCombination = arrComb;
