@@ -5,6 +5,9 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">General</button>
             </li>
+            <li class="nav-item" role="presentation" v-if="intCheckRecipe" @click="subcategory.modalType='';category.modalType='';common.modalType='';ingredients.modalType='ingredients';">
+                <button class="nav-link" id="ingredients-tab" data-bs-toggle="tab" data-bs-target="#ingredients" type="button" role="tab" aria-controls="ingredients" aria-selected="false">Insumos</button>
+            </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="specifications-tab" data-bs-toggle="tab" data-bs-target="#specifications" type="button" role="tab" aria-controls="specifications" aria-selected="false">Características</button>
             </li>
@@ -164,6 +167,65 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="tab-pane fade" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <app-select label="Por página"  @change="search()" v-model="ingredients.intPerPage">
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="1000">1000</option>
+                                </app-select>
+                            </div>
+                            <div class="col-md-8">
+                                <app-button-input 
+                                    title="Buscar"
+                                    btn="primary"
+                                    v-model="ingredients.strSearch"
+                                    required="false"
+                                    >
+                                    <template #right>
+                                        <button class="btn btn-primary" @click="search()" ref="btnGenerate">Buscar</button>
+                                    </template>
+                                </app-button-input>
+                            </div>
+                        </div>
+                        <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
+                            <table class="table align-middle table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Portada</th>
+                                        <th>Stock</th>
+                                        <th>Referencia</th>
+                                        <th>Nombre</th>
+                                        <th class="text-nowrap">Precio de compra</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(data,index) in ingredients.arrData" :key="index">
+                                        <td data-title="Portada">
+                                            <img :src="data.url" :alt="data.name" class="img-thumbnail" style="width: 50px; height: 50px;">
+                                        </td>
+                                        <td data-title="Stock" class="text-center">{{data.is_stock ? data.stock : "N/A"}}</td>
+                                        <td data-title="Referencia">{{data.reference}}</td>
+                                        <td data-title="Nombre">{{data.name}}</td>
+                                        <td data-title="Precio compra" class="text-center">{{data.price_purchase_format}}</td>
+                                        <td data-title="Opciones">
+                                            
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6"></div>
+                </div>
+                <app-pagination :common="ingredients" @search="search"></app-pagination>
             </div>
             <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
                 <p class="text-secondary">Agrega características que quieres resaltar de tu artículo como el material, marca modelo, etc.</p>

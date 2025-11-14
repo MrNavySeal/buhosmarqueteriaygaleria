@@ -23,6 +23,7 @@ const App = {
             common:createCommon(),
             category:createCommon(),
             subcategory:createCommon(),
+            ingredients:createCommon(),
             objCategory:{name:"",id:""},
             objSubcategory:{name:"",id:"",categoryid:""},
             errors:[],
@@ -31,6 +32,7 @@ const App = {
             arrVariants:[],
             arrImages:[],
             arrSpecsAdded:[],
+            arrIngredients:[],
             arrVariantsAdded:[],
             arrVariantsToMix:[],
             arrVariantsMixed:[],
@@ -70,7 +72,16 @@ const App = {
             this.arrMeasures = objData.measures;
             this.arrVariants = objData.variants;
             this.intMeasure = objData.measures[0].id;
+            const ingredients = objData.ingredients;
+            this.ingredients.modalType = "ingredients";
+            this.ingredients.arrData = ingredients.data;
+            this.ingredients.intStartPage  = ingredients.start_page;
+            this.ingredients.intTotalButtons = ingredients.limit_page;
+            this.ingredients.intTotalPages = ingredients.total_pages;
+            this.ingredients.intTotalResults = ingredients.total_records;
+            this.ingredients.arrButtons = ingredients.buttons;
         },
+
         openModal:function(){
             this.getData();
             document.querySelector("#txtDescription").value ="";
@@ -111,6 +122,7 @@ const App = {
             this.common.productTitle = "Nuevo producto";
 
         },
+
         save:async function(){
             tinymce.triggerSave();
             const strDescription = document.querySelector("#txtDescription").value;
@@ -167,6 +179,7 @@ const App = {
                 Swal.fire("Error",objData.msg,"error");
             }
         },
+
         search:async function(page=1){
             const formData = new FormData();
             if(this.subcategory.modalType=='subcategory'){
@@ -196,12 +209,27 @@ const App = {
                 this.category.intTotalPages = objData.total_pages;
                 this.category.intTotalResults = objData.total_records;
                 this.category.arrButtons = objData.buttons;
+            }else if(this.ingredients.modalType == "ingredients"){
+                this.ingredients.intPage = page;
+                formData.append("page",this.ingredients.intPage);
+                formData.append("per_page",this.ingredients.intPerPage);
+                formData.append("search",this.ingredients.strSearch);
+                formData.append("type","ingredients");
+                formData.append("id",this.common.intId);
+                const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData});
+                const objData = await response.json();
+                this.ingredients.arrData = objData.data;
+                this.ingredients.intStartPage  = objData.start_page;
+                this.ingredients.intTotalButtons = objData.limit_page;
+                this.ingredients.intTotalPages = objData.total_pages;
+                this.ingredients.intTotalResults = objData.total_records;
+                this.ingredients.arrButtons = objData.buttons;
             }else{
                 this.common.intPage = page;
                 formData.append("page",this.common.intPage);
                 formData.append("per_page",this.common.intPerPage);
                 formData.append("search",this.common.strSearch);
-
+                formData.append("type","products");
                 this.$refs.btnGenerate.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
                 this.$refs.btnGenerate.setAttribute("disabled","");
 
@@ -219,6 +247,7 @@ const App = {
                 this.common.arrButtons = objData.buttons;
             }
         },
+
         edit:async function(data,type="edit"){
             const formData = new FormData();
             formData.append("id",data.idproduct);
@@ -265,6 +294,14 @@ const App = {
                 this.arrSpecs = data.info_specs;
                 this.arrMeasures = data.info_measures;
                 this.arrVariants = data.info_variants;
+
+                this.ingredients.arrData = data.info_ingredients.data;
+                this.ingredients.intStartPage  = data.info_ingredients.start_page;
+                this.ingredients.intTotalButtons = data.info_ingredients.limit_page;
+                this.ingredients.intTotalPages = data.info_ingredients.total_pages;
+                this.ingredients.intTotalResults = data.info_ingredients.total_records;
+                this.ingredients.arrButtons = data.info_ingredients.buttons;
+
                 if(this.intCheckVariant){
                     const arrVariants = this.arrVariants;
                     const arrVariations = data.variation.variation;
@@ -273,6 +310,7 @@ const App = {
                         const arrVariant = arrVariants.filter(function(variant){
                             return variant.id == e.id; 
                         });
+
                         if(arrVariant.length > 0){
                             const variant = arrVariant[0];
                             variant.options.forEach(op => {
@@ -294,6 +332,7 @@ const App = {
                 Swal.fire("Error",objData.msg,"error");
             } 
         },
+
         del:async function(data){
             const objVue = this;
             Swal.fire({
@@ -323,6 +362,7 @@ const App = {
             });
             
         },
+
         delItem:function(type="",data=""){
             if(type=="subcategory"){
                 this.objSubcategory = {name:"",id:"",categoryid:""};
@@ -341,6 +381,7 @@ const App = {
                 this.changeVariant();
             }
         },
+
         addItem:function(type="",data=""){
             if(type=="spec"){
                 let id = this.intSpec;
@@ -375,6 +416,7 @@ const App = {
                 this.intVariant="";
             }
         },
+
         selectItem:function(data,type=""){
             if(type=="subcategory"){
                 this.objSubcategory=data;
@@ -387,9 +429,11 @@ const App = {
                 this.category.showModalPaginationCategory=false
             }
         },
+
         view:async function(data){
             window.open(base_url+"/tienda/producto/"+data.route,"_blank");
         },
+
         changeVariant:function(){
             const existingCombos = {};
             this.arrCombination.forEach(combo => {
@@ -450,6 +494,7 @@ const App = {
             });
             this.arrCombination = arrComb;
         },
+
         changeCategory:function (type){
             if(type == "subcategory"){
                 this.subcategory.modalType=type;
@@ -461,6 +506,7 @@ const App = {
             }
             this.search();
         },
+
         uploadMultipleImage:function(e){
             const files = e.target.files;
             for (let i = 0; i < files.length; i++) {
@@ -476,6 +522,7 @@ const App = {
                 }   
             }
         },
+
         uploadImagen:function(e){
             this.strImage = e.target.files[0];
             let type = this.strImage.type;

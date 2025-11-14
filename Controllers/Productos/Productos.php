@@ -8,6 +8,7 @@
             }
             parent::__construct();
         }
+
         public function productos(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -25,6 +26,7 @@
                 die();
             }
         }
+
         public function producto($params){
             if($_SESSION['permitsModule']['w']){
                 $data['page_tag'] = "Crear Producto | Productos";
@@ -53,65 +55,25 @@
                 die();
             }
         }
-        public function insumo($params){
-            if($_SESSION['permitsModule']['w']){
-                $data['page_tag'] = "Insumos | Productos";
-                $data['page_title'] = "Insumos | Productos";
-                $data['page_name'] = "insumos";
-                $data['panelapp'] = "functions_productos_insumos.js";
-                $data['id'] = intval(strClean($params));
-                $data['data'] = $this->model->selectProduct($data['id']);
-                $this->views->getView($this,"insumo",$data);
-            }else{
-                header("location: ".base_url());
-                die();
-            }
-        }
+
         /*************************Product methods*******************************/
-        public function getInsumo(){
-            if($_SESSION['permitsModule']['w']){
-                if($_POST['id']){
-                    $id = intval($_POST['id']);
-                    $request = $this->model->selectInsumo($id);
-                    if(!empty($request)){
-                        $arrResponse = array("status"=>true,"data"=>$request);
-                    }else{
-                        $arrResponse = array("status"=>false,"msg"=>"El artículo no existe");
-                    }
-                }else{
-                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
-        public function getInsumos(){
-            if($_SESSION['permitsModule']['u']){
-                $request = $this->model->selectInsumos();
-                if(count($request)>0){
-                    for ($i=0; $i < count($request); $i++) { 
-                        $price = formatNum($request[$i]['price']);
-                        $btn = '<button type="button" class="btn btn-primary" onclick="getProduct(this,'.$request[$i]['idproduct'].')"><i class="fas fa-plus"></i></button>';
-                        $request[$i]['stock'] = !$request[$i]['is_stock'] ? "N/A" : $request[$i]['stock'];
-                        $variant = $request[$i]['product_type'] == 1 ? "Desde " : "";
-                        $request[$i]['format_price'] = $variant.$price;
-                        $request[$i]['options'] = $btn;
-                    }
-                }
-                echo json_encode($request,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
         public function getProductos(){
             if($_SESSION['permitsModule']['r']){
                 $intPage = intval($_POST['page']);
                 $intPerPage = intval($_POST['per_page']);
                 $strSearch = strClean($_POST['search']);
-                $request = $this->model->selectProductos($intPage,$intPerPage,$strSearch);
+                $strType = strClean($_POST['type']);
+                $id = intval($_POST['id']);
+                if($strType=="products"){
+                    $request = $this->model->selectProductos($intPage,$intPerPage,$strSearch);
+                }else{
+                    $request = $this->model->selectInsumos($intPage,$intPerPage,$strSearch,$id);
+                }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
+
         public function getProduct(){
             if($_SESSION['permitsModule']['r']){
                 $id = intval($_POST['id']);
@@ -120,6 +82,7 @@
                     $request['info_specs'] = $this->model->selectSpecs();
                     $request['info_measures'] = $this->model->selectMeasures();
                     $request['info_variants'] = $this->model->selectVariants();
+                    $request['info_ingredients']=$this->model->selectInsumos(1,10,"",$id);
                     $arrResponse = array("status"=>true,"data"=>$request);
                 }else{
                     $arrResponse = array("status"=>false,"msg"=>"Error de datos");
@@ -128,6 +91,7 @@
             }
             die();
         }
+
         public function setProduct(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
@@ -250,6 +214,7 @@
             }
 			die();
 		}
+
         public function delProduct(){
             if($_SESSION['permitsModule']['d']){
                 if($_POST){
@@ -312,11 +277,15 @@
             dep($request);
             die();
         }
+
         public function getData(){
-            $request['specs'] = $this->model->selectSpecs();
-            $request['measures'] = $this->model->selectMeasures();
-            $request['variants'] = $this->model->selectVariants();
-            echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            if($_SESSION['permitsModule']['r']){
+                $request['specs'] = $this->model->selectSpecs();
+                $request['measures'] = $this->model->selectMeasures();
+                $request['variants'] = $this->model->selectVariants();
+                $request['ingredients']=$this->model->selectInsumos(1,10,"");
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
             die();
         }
     }

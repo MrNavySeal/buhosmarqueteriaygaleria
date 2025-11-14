@@ -21,10 +21,9 @@
             btn="primary"
             v-model="common.strSearch"
             required="false"
-            @input="subcategory.modalType='';category.modalType=''"
             >
             <template #right>
-                <button class="btn btn-primary" @click="search()" ref="btnGenerate">Buscar</button>
+                <button class="btn btn-primary" @click="search();subcategory.modalType='';category.modalType='';common.modalType='products';ingredients.modalType='';" ref="btnGenerate">Buscar</button>
             </template>
         </app-button-input>
     </div>
@@ -81,7 +80,6 @@
                         <app-button  icon="watch" btn="info" @click="edit(data,'view')"></app-button>
                         <?php } ?>
                         <?php if($_SESSION['permitsModule']['u']){ ?>
-                        <app-button  icon="list" btn="warning"></app-button>
                         <app-button  icon="edit" btn="success" @click="edit(data,'edit')"></app-button>
                         <?php } ?>
                         <?php if($_SESSION['permitsModule']['d']){ ?>
@@ -93,5 +91,5 @@
         </tbody>
     </table>
 </div>
-<app-pagination :common="common" @search="search"></app-pagination>
+<app-pagination :common="common" @search="search" @click="subcategory.modalType='';category.modalType='';common.modalType='products';ingredients.modalType='';"></app-pagination>
 <?php footerAdmin($data)?>  
