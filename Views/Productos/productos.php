@@ -23,7 +23,7 @@
             required="false"
             >
             <template #right>
-                <button class="btn btn-primary" @click="search();subcategory.modalType='';category.modalType='';common.modalType='products';ingredients.modalType='';" ref="btnGenerate">Buscar</button>
+                <button class="btn btn-primary" @click="subcategory.modalType='';category.modalType='';common.modalType='products';ingredients.modalType='';search();" ref="btnGenerate">Buscar</button>
             </template>
         </app-button-input>
     </div>

@@ -37,6 +37,7 @@ const App = {
             arrVariantsToMix:[],
             arrVariantsMixed:[],
             arrCombination:[],
+            arrIngredientsAdded:[],
             intStatus:1,
             strName:"",
             strReference:"",
@@ -117,6 +118,7 @@ const App = {
             this.arrCombination = [];
             this.arrVariantsToMix = [];
             this.arrVariantsAdded = [];
+            this.arrIngredientsAdded = [];
             this.errors = [];
             this.intCheckStock = false;
             this.common.productTitle = "Nuevo producto";
@@ -154,7 +156,8 @@ const App = {
                 "reference":this.strReference,
                 "combinations": this.arrCombination,
                 "variants":this.arrVariantsToMix,
-                "is_stock":this.intCheckStock
+                "is_stock":this.intCheckStock,
+                "ingredients":this.arrIngredientsAdded
             }
             formData.append("data",JSON.stringify(arrData));
             formData.append("images[]",[]);
@@ -172,6 +175,10 @@ const App = {
                 this.common.strName ="";
                 this.common.intId =0;
                 this.common.showModalProduct = false;
+                this.subcategory.modalType='';
+                this.category.modalType='';
+                this.ingredients.modalType='';
+                this.common.modalType='products';
                 this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
             }else{
@@ -335,6 +342,10 @@ const App = {
 
         del:async function(data){
             const objVue = this;
+            this.subcategory.modalType='';
+            this.category.modalType='';
+            this.ingredients.modalType='';
+            this.common.modalType='products';
             Swal.fire({
                 title:"¿Esta seguro de eliminar?",
                 text:"Se eliminará para siempre...",
@@ -379,6 +390,15 @@ const App = {
                 const index =this.arrVariantsAdded.findIndex(function(e){return e.id==data.id});
                 this.arrVariantsAdded.splice(index,1);
                 this.changeVariant();
+            }else if(type=="ingredient"){
+                const index =this.arrIngredientsAdded.findIndex(function(e){
+                    if(e.variant_name!=""){
+                        return e.variant_name==data.variant_name && e.id == data.id;
+                    }else{
+                        return e.id==data.id;
+                    }
+                });
+                this.arrIngredientsAdded.splice(index,1);
             }
         },
 
@@ -414,6 +434,26 @@ const App = {
                 data = arrData.filter(function(e){return e.id == id})[0];
                 this.arrVariantsAdded.push(data);
                 this.intVariant="";
+            }else if(type=="ingredient"){
+                let flag = false;
+                for (let i = 0; i < this.arrIngredientsAdded.length; i++) {
+                    const e = this.arrIngredientsAdded[i];
+                    if(data.variant_name != "" && data.variant_name == e.variant_name && data.id == e.id){
+                        flag = true;
+                        break;
+                    }else if(data.variant_name == "" && data.id == e.id){
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag){
+                    data.qty = 0;
+                    data.subtotal = 0;
+                    this.arrIngredientsAdded.push(data);
+                }else{
+                    Swal.fire("Atención!","Este insumo ya fue agregado, intente con otro","warning");
+                }
             }
         },
 
@@ -534,7 +574,47 @@ const App = {
                 this.strImgUrl = route;
             }
         },
+
+        updateIngredient:function(data){
+            let qty = parseFloat(data.qty);
+            let price = parseFloat(data.price_purchase);
+            let subtotal = qty*price;
+            data.subtotal = subtotal;
+
+            const index =this.arrIngredientsAdded.findIndex(function(e){
+                if(e.variant_name!=""){
+                    return e.variant_name==data.variant_name && e.id == data.id;
+                }else{
+                    return e.id==data.id;
+                }
+            });
+            this.arrIngredientsAdded[index]=data;
+        },
+
+        formatNum:function(num,mil="."){
+            let numero = num;
+            let format = mil;
+
+            const noTruncarDecimales = {maximumFractionDigits: 20};
+            
+
+            if(format == ","){
+                format = numero.toLocaleString('en-US', noTruncarDecimales);
+            }else if(mil == "."){
+                format  = numero.toLocaleString('es', noTruncarDecimales);
+            }
+            return format;   
+        }
     },
+    computed:{
+        totalIngredients:function(){
+            let total = 0;
+            this.arrIngredientsAdded.forEach(e => {
+                total+=e.subtotal;
+            });
+            return total;
+        }
+    }
 };
 const app = Vue.createApp(App);
 app.mount("#app");

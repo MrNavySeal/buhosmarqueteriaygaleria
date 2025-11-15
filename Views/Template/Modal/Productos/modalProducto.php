@@ -1,4 +1,4 @@
-<app-modal :title="common.productTitle" id="modalProduct" v-model="common.showModalProduct" size="xl">
+<app-modal :title="common.productTitle" id="modalProduct" v-model="common.showModalProduct" size="full">
     <template #body>
         <app-input label="" type="hidden"  v-model="common.intId"></app-input>
         <ul class="nav nav-pills mt-5 mb-5" id="product-tab" role="tablist">
@@ -169,6 +169,7 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
+                <p class="text-secondary">Agrega los insumos que componen tu artículo.</p>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="row">
@@ -200,10 +201,10 @@
                                     <tr>
                                         <th>Portada</th>
                                         <th>Stock</th>
-                                        <th>Referencia</th>
-                                        <th>Nombre</th>
+                                        <th>Unidad</th>
+                                        <th>Artículo</th>
                                         <th class="text-nowrap">Precio de compra</th>
-                                        <th>Opciones</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -212,18 +213,49 @@
                                             <img :src="data.url" :alt="data.name" class="img-thumbnail" style="width: 50px; height: 50px;">
                                         </td>
                                         <td data-title="Stock" class="text-center">{{data.is_stock ? data.stock : "N/A"}}</td>
-                                        <td data-title="Referencia">{{data.reference}}</td>
-                                        <td data-title="Nombre">{{data.name}}</td>
+                                        <td data-title="Unidad" class="text-center">{{data.measure}}</td>
+                                        <td data-title="Artículo">{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
                                         <td data-title="Precio compra" class="text-center">{{data.price_purchase_format}}</td>
-                                        <td data-title="Opciones">
-                                            
-                                        </td>
+                                        <td><app-button  icon="new" btn="primary" @click="addItem('ingredient',data)"></app-button></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <div class="col-md-6"></div>
+                    <div class="col-md-6">
+                        <h3 class="bg-primary p-1 mb-0 text-center text-white">Insumos agregados</h3>
+                        <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th class="text-nowrap">Artículo</th>
+                                        <th class="text-nowrap">Cantidad</th>
+                                        <th class="text-nowrap">Unidad</th>
+                                        <th class="text-nowrap">Valor</th>
+                                        <th class="text-nowrap">Subtotal</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(data,index) in arrIngredientsAdded" :key="index">
+                                        <td>{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
+                                        <td><input type="number" class="form-control text-center" @input="updateIngredient(data)" v-model="data.qty"></td>
+                                        <td class="text-center">{{data.measure}}</td>
+                                        <td class="text-end">{{data.price_purchase_format}}</td>
+                                        <td class="text-end">${{formatNum(data.subtotal)}}</td>
+                                        <td><app-button  icon="delete" btn="danger" @click="delItem('ingredient',data)"></app-button></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-end fw-bold">Total:</td>
+                                        <td class="text-end">${{formatNum(totalIngredients)}}</td>
+                                    </tr>
+                                </tfoot>
+                                </table>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <app-pagination :common="ingredients" @search="search"></app-pagination>
             </div>

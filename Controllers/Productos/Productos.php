@@ -138,6 +138,7 @@
                                 "variations"=>$arrData['variants'],
                                 "is_stock"=>$arrData['is_stock']
                             ),
+                            "ingredients"=>$arrData['ingredients']
                         );
                         $arrValidate = [
                             "name"=>"required|string",

@@ -25,7 +25,7 @@
             parent::__construct();
         }
         /*************************Productos methods*******************************/
-        public function insertProduct(array $data,array $images){
+        public function insertProduct(array $data,$images){
             $this->arrData = $data;
             $name = $this->arrData['name'];
 			$return = 0;
@@ -69,9 +69,11 @@
                     $this->arrData['is_stock'],
         		);
 	        	$request = $this->insert($sql,$arrData);
+                $this->intIdProduct = $request;
                 $this->insertImages($request,$images);
                 $this->insertSpecs($request,$this->arrData['specs']);
                 $this->insertVariants($request,$this->arrData['variants']);
+                $this->insertIngredients();
 	        	$return = intval($request);
 			}else{
 				$return = "exist";
@@ -329,7 +331,19 @@
             return $request;
         }
 
-        public function insertVariants($id,$data){
+        private function insertIngredients(){
+            $data = $this->arrData['ingredients'];
+            foreach ($data as $det) {
+                $sql = "INSERT INTO product_ingredients (product_id,variant_name,qty) VALUES(?,?,?)";
+                $this->insert($sql,[
+                    $this->intIdProduct,
+                    $det['variant_name'] == null ? "" : $det['variant_name'],
+                    $det['qty']
+                ]);
+            }
+        }
+
+        private function insertVariants($id,$data){
             $this->intIdProduct = $id;
             $this->delete("DELETE FROM product_variations WHERE product_id=$this->intIdProduct");
 
@@ -357,7 +371,7 @@
             }
         }
 
-        public function insertImages($id,$photos,$flag=true){
+        private function insertImages($id,$photos,$flag=true){
             if($flag){
                 $total = count($photos['name']);
             }else{
@@ -386,7 +400,7 @@
             }
         }
 
-        public function insertSpecs($id,$specs){
+        private function insertSpecs($id,$specs){
             $this->intIdProduct = $id;
             $this->delete("DELETE FROM product_specs WHERE product_id=$this->intIdProduct");
             if(!empty($specs)){
@@ -423,9 +437,7 @@
                 $limit = " LIMIT $intStartPage,$intPerPage";
             }
 
-            if($id != 0){
-                $id = " AND p.idproduct != $id";
-            }
+            $id = $id != 0 ? " AND p.idproduct != $id" : "";
 
             $arrProducts = [];
             $sql = "SELECT 
