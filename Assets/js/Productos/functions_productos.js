@@ -301,6 +301,7 @@ const App = {
                 this.arrSpecs = data.info_specs;
                 this.arrMeasures = data.info_measures;
                 this.arrVariants = data.info_variants;
+                this.arrIngredientsAdded = data.ingredients;
 
                 this.ingredients.arrData = data.info_ingredients.data;
                 this.ingredients.intStartPage  = data.info_ingredients.start_page;

@@ -148,22 +148,29 @@
                             "price_sell"=>"numeric|min:0",
                             "price_offer"=>"numeric|min:0",
                         ];
+
                         if($arrData['is_stock']){
                             $arrValidate["stock"]="numeric|min:0";
                             $arrValidate["min_stock"]="numeric|min:0";
                         }
+
                         if($arrData['product_type']){
                             $arrData['combinations'] = $arrData['variants']['combinations']; 
                             $arrValidate["combinations"]="required|array|min:1";
                         }
+
                         $errors = validator()->validate($arrValidate,$arrData)->getErrors();
                         if(!$arrData['is_product'] && !$arrData['is_combo'] && !$arrData['is_ingredient']){
                             $errors['product_type'] = ["Debe seleccionar el tipo de artículo"];
                         }
+ 
                         if(empty($errors)){
                             if($id == 0){
+
                                 if($_SESSION['permitsModule']['w']){
+
                                     if($arrData['framing_mode']==1){
+
                                         if($arrData['framing_mode']==1 && $_FILES['image']['name'] != ""){
                                             $imgFraming = $_FILES['image'];
                                             $photoFraming = 'framing_'.bin2hex(random_bytes(6)).'.png';
@@ -177,6 +184,7 @@
                                 if($_SESSION['permitsModule']['u']){
                                     $request = $this->model->selectProduct($id);
                                     if($request['framing_mode']==1){
+                                        
                                         if($_FILES['image']['name'] == ""){
                                             $photoFraming = $request['framing_img'];
                                         }else{

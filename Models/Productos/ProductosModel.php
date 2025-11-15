@@ -135,6 +135,7 @@
                 }
                 $this->insertSpecs($this->intIdProduct,$this->arrData['specs']);
                 $this->insertVariants($this->intIdProduct,$this->arrData['variants']);
+                $this->insertIngredients();
                 $return = intval($request);
 			}else{
 				$return = "exist";
@@ -300,28 +301,73 @@
                 s.idsubcategory,
                 s.categoryid,
                 s.name as subcategory,
-                DATE_FORMAT(p.date, '%d/%m/%Y') as date
+                DATE_FORMAT(p.date, '%d/%m/%Y') as date,
+                m.initials
             FROM product p
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
+            INNER JOIN category c ON c.idcategory = p.categoryid
+            INNER JOIN subcategory s ON c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
+            INNER JOIN measures m ON m.id_measure = p.measure
             AND p.idproduct = $this->intIdProduct";
+
             $request = $this->select($sql);
             $request['framing_url'] = media()."/images/uploads/".$request['framing_img'];
             if(!empty($request)){
                 $sqlImg = "SELECT * FROM productimage WHERE productid = $this->intIdProduct";
                 $requestImg = $this->select_all($sqlImg);
                 $request['image'] = [];
+
                 if(count($requestImg)){
                     for ($i=0; $i < count($requestImg); $i++) { 
                         $request['image'][$i] = array("route"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name'],"rename"=>$requestImg[$i]['name']);
                     }
                 }
+
+                $sqlIngredient = "SELECT * FROM product_ingredients WHERE product_id = $this->intIdProduct";
+                $arrIngredients = $this->select_all($sqlIngredient);
+                $arrFullIngredients = [];
+
+                foreach ($arrIngredients as $data) {
+                    $sql = "";
+                    if($data['variant_name'] != ""){
+                        $sql = "SELECT * FROM product_variations_options 
+                        WHERE name = '{$data['variant_name']}' AND product_id = {$data['product']}";
+                        $info = $this->select($sql);
+                        $ingredient = [
+                            "id"=>$data['product'],
+                            "name"=> $data['name']." ".$info['name'],
+                            "qty"=>$data['qty'],
+                            "price_purchase"=>$info['price_purchase'],
+                            "measure"=>$request['initials'],
+                            "subtotal"=>$info['price_purchase']*$data['qty'],
+                            "variant_name"=> $info['name'],
+                            "reference"=>$info['sku']
+                        ];
+                    }else{
+                        $sql = "SELECT reference,name,price_purchase FROM product WHERE idproduct = {$data['product']}";
+                        $info = $this->select($sql);
+                        $ingredient = [
+                            "id"=>$data['product'],
+                            "name"=> $info['name'],
+                            "qty"=>$data['qty'],
+                            "price_purchase"=>$info['price_purchase'],
+                            "measure"=>$request['initials'],
+                            "subtotal"=>$info['price_purchase']*$data['qty'],
+                            "variant_name"=> null,
+                            "reference"=>$info['reference']
+                        ];
+                    }
+                    array_push($arrFullIngredients,$ingredient);
+                }
+
+                $request['ingredients']= $arrFullIngredients;
+
                 $sqlSpecs = "SELECT p.specification_id as id,p.value,s.name
                 FROM product_specs p
                 INNER JOIN specifications s
                 ON p.specification_id = s.id_specification
                 WHERE p.product_id = $this->intIdProduct";
                 $request['specs'] = $this->select_all($sqlSpecs);
+                
                 if($request['product_type'] == 1){
                     $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intIdProduct");
                     $request['variation']['variation'] = json_decode($request['variation']['variation']);
@@ -332,11 +378,13 @@
         }
 
         private function insertIngredients(){
+            $this->delete("DELETE FROM product_ingredients WHERE product_id = $this->intIdProduct");
             $data = $this->arrData['ingredients'];
             foreach ($data as $det) {
-                $sql = "INSERT INTO product_ingredients (product_id,variant_name,qty) VALUES(?,?,?)";
+                $sql = "INSERT INTO product_ingredients (product_id,product,variant_name,qty) VALUES(?,?,?,?)";
                 $this->insert($sql,[
                     $this->intIdProduct,
+                    $det['id'],
                     $det['variant_name'] == null ? "" : $det['variant_name'],
                     $det['qty']
                 ]);

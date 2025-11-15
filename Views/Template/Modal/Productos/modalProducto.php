@@ -241,7 +241,7 @@
                                         <td>{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
                                         <td><input type="number" class="form-control text-center" @input="updateIngredient(data)" v-model="data.qty"></td>
                                         <td class="text-center">{{data.measure}}</td>
-                                        <td class="text-end">{{data.price_purchase_format}}</td>
+                                        <td class="text-end">${{formatNum(data.price_purchase)}}</td>
                                         <td class="text-end">${{formatNum(data.subtotal)}}</td>
                                         <td><app-button  icon="delete" btn="danger" @click="delItem('ingredient',data)"></app-button></td>
                                     </tr>
