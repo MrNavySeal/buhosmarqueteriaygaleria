@@ -272,7 +272,7 @@
         public function selectPermisos($intRolId,$intId){
             $this->intRolId = $intRolId;
             $this->intId = $intId;
-            $sql = "SELECT idmodule as id,name FROM module";
+            $sql = "SELECT idmodule as id,name FROM module WHERE status = 1";
             $arrModules = $this->select_all($sql);
             foreach ($arrModules as &$module) {
                 $module['label'] = ucwords(strtolower(str_replace(" ","",$module['name']))).$module['id']; 
@@ -293,7 +293,7 @@
                     $module["u"] = false;
                     $module["d"] = false;
                 }
-                $sql = "SELECT * FROM module_sections WHERE module_id = $module[id]";
+                $sql = "SELECT * FROM module_sections WHERE module_id = $module[id] AND status = 1";
                 $arrSections = $this->select_all($sql);
                 foreach ($arrSections as &$section) {
                     $section['label'] = ucwords(strtolower(str_replace(" ","",$section['name']))).$module['label'].$section['id']; 
@@ -314,7 +314,7 @@
                         $section["u"] = false;
                         $section["d"] = false;
                     }
-                    $sql = "SELECT * FROM module_options WHERE section_id = $section[id]";
+                    $sql = "SELECT * FROM module_options WHERE section_id = $section[id] AND status = 1";
                     $arrOptionsSection = $this->select_all($sql);
                     foreach ($arrOptionsSection as &$optionSection) {
                         $optionSection['label'] = ucwords(strtolower(str_replace(" ","",$optionSection['name']))).$section['label'].$optionSection['id'];
@@ -338,7 +338,7 @@
                     }
                     $section['options'] = $arrOptionsSection;
                 }
-                $sql = "SELECT * FROM module_options WHERE module_id = $module[id] AND section_id = 0";
+                $sql = "SELECT * FROM module_options WHERE module_id = $module[id] AND section_id = 0 AND status = 1";
                 $arrOptions = $this->select_all($sql);
                 foreach ($arrOptions as &$option) {
                     $option['label'] = ucwords(strtolower(str_replace(" ","",$option['name']))).$module['label'].$option['id'];
