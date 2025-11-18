@@ -4,7 +4,7 @@
     $reviews = $comments['total'];
 ?>
 <!-- Sidebar Start -->
-<div class="sidebar pe-4 pb-3">
+<div class="sidebar pe-1 pb-1">
     <nav class="navbar bg-light navbar-light">
         <a href="#" class="navbar-brand mx-4 mb-3">
             <div class="d-flex flex-column text-center align-items-center">
@@ -28,7 +28,7 @@
         <div class="navbar-nav w-100">
             <?php if($_SESSION['idUser'] == 1){ ?>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-compass"></i>Módulos</a>
+                <a href="#" class="ps-1 nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-compass"></i>Módulos</a>
                 <div class="dropdown-menu bg-transparent border-0">
                     <a href="<?=base_url()?>/modulos/" class="dropdown-item">Módulos</a>
                     <a href="<?=base_url()?>/modulos/secciones/" class="dropdown-item">Secciones</a>
@@ -41,17 +41,17 @@
                     $html="";
                     if($_SESSION['idUser'] == 1 || $modulo['r']){
                         $html .='<div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside">'.$modulo['icon']." ".$modulo['name'].'</a>
+                        <a href="#" class="ps-1 nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside">'.$modulo['icon']." ".$modulo['name'].'</a>
                         <div class="dropdown-menu bg-transparent border-0">';
                         foreach ($modulo['sections'] as $section) {
                             if($_SESSION['idUser'] == 1 || $section['r']){
                                 $html.='<div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-caret-right"></i>'.$section['name'].'</a>
-                                <div class="dropdown-menu bg-transparent border-0">';
+                                <a href="#" class="ps-2 nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-caret-right"></i>'.$section['name'].'</a>
+                                <div class="dropdown-menu bg-transparent border-0 ps-3">';
                                 foreach ($section['options'] as $option) {
                                     if($_SESSION['idUser'] == 1 || $option['r']){
                                         $route = base_url()."/".$option['route'];
-                                        $html.='<a href="'.$route.'" class="dropdown-item ps-7">'.$option['name'].'</a>';
+                                        $html.='<a href="'.$route.'" class="dropdown-item">'.$option['name'].'</a>';
                                     }
                                 }
                                 $html.='</div></div>';

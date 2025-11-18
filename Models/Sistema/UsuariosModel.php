@@ -275,6 +275,7 @@
             $sql = "SELECT idmodule as id,name FROM module";
             $arrModules = $this->select_all($sql);
             foreach ($arrModules as &$module) {
+                $module['label'] = ucwords(strtolower(str_replace(" ","",$module['name']))).$module['id']; 
                 $sql = "SELECT r,w,u,d FROM module_permissions WHERE module_id = $module[id] AND role_id = $this->intRolId AND user_id = $this->intId";
                 $request = $this->select($sql);
                 if(empty($request)){
@@ -295,6 +296,7 @@
                 $sql = "SELECT * FROM module_sections WHERE module_id = $module[id]";
                 $arrSections = $this->select_all($sql);
                 foreach ($arrSections as &$section) {
+                    $section['label'] = ucwords(strtolower(str_replace(" ","",$section['name']))).$module['label'].$section['id']; 
                     $sql = "SELECT r,w,u,d FROM module_sections_permissions WHERE section_id = $section[id] AND role_id = $this->intRolId AND user_id = $this->intId";
                     $request = $this->select($sql);
                     if(empty($request)){
@@ -315,7 +317,7 @@
                     $sql = "SELECT * FROM module_options WHERE section_id = $section[id]";
                     $arrOptionsSection = $this->select_all($sql);
                     foreach ($arrOptionsSection as &$optionSection) {
-                        
+                        $optionSection['label'] = ucwords(strtolower(str_replace(" ","",$optionSection['name']))).$section['label'].$optionSection['id'];
                         $sql = "SELECT r,w,u,d FROM module_options_permissions WHERE option_id = $optionSection[id] AND role_id = $this->intRolId AND user_id = $this->intId";
                         $request = $this->select($sql);
                         if(empty($request)){
@@ -339,6 +341,7 @@
                 $sql = "SELECT * FROM module_options WHERE module_id = $module[id] AND section_id = 0";
                 $arrOptions = $this->select_all($sql);
                 foreach ($arrOptions as &$option) {
+                    $option['label'] = ucwords(strtolower(str_replace(" ","",$option['name']))).$module['label'].$option['id'];
                     $sql = "SELECT r,w,u,d FROM module_options_permissions WHERE option_id = $option[id] AND role_id = $this->intRolId AND user_id = $this->intId";
                     $request = $this->select($sql);
                     if(empty($request)){
