@@ -240,79 +240,72 @@
             $strAddress = explode("/",$address)[1];
             $total = count($this->arrData);
             for ($i=0; $i < $total ; $i++) {
-                $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
-                if($this->arrData[$i]['topic'] == 1){
-                    
-                    if($this->arrData[$i]['img'] != ""){
-                        $imgData = $this->arrData[$i]['img'];
-                        list($type,$imgData) = explode(";",$imgData);
-                        list(,$imgData)=explode(",",$imgData);
-                        $img = base64_decode($imgData);
-                        $name = "frame_print_".bin2hex(random_bytes(6))."_".$this->intId.'.png';
-                        $route = "Assets/images/uploads/".$name;
-                        $this->strImg = $name;
-                        file_put_contents($route, $img);
-                    }
-                    $this->strDescription = json_encode(
-                        array("name"=>$this->arrData[$i]['name'],"detail"=>$this->arrData[$i]['data'],"img"=>$this->strImg),
-                        JSON_UNESCAPED_UNICODE
-                    );
-                    $arrFrame =  $this->arrData[$i]['config'];
-                    $sql_config = "INSERT INTO molding_examples(config,frame,margin,height,width,orientation,color_frame,color_margin,color_border,
-                    props,name,total,type_frame,specs,address) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                    $arrDataConfig = array(
-                        $arrFrame['config'],
-                        $arrFrame['frame'],
-                        $arrFrame['margin'],
-                        $arrFrame['height'],
-                        $arrFrame['width'],
-                        $arrFrame['orientation'],
-                        $arrFrame['color_frame'],
-                        $arrFrame['color_margin'],
-                        $arrFrame['color_border'],
-                        json_encode($arrFrame['props'],JSON_UNESCAPED_UNICODE),
-                        $customer,
-                        $this->arrData[$i]['price_sell'],
-                        $arrFrame['type_frame'],
-                        $this->strDescription,
-                        $strAddress
-                    );
-                    $this->insert($sql_config,$arrDataConfig);
-                }
-                $sql = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference) VALUE(?,?,?,?,?,?,?,?)";
-                $arrData = array(
-                    $id,
-                    $this->intIdUser,
-                    $this->arrData[$i]['id'],
-                    $this->arrData[$i]['topic'],
-                    $this->strDescription,
-                    $this->arrData[$i]['qty'],
-                    $this->arrData[$i]['price_sell'],
-                    $this->arrData[$i]['reference']
-                );
-                $this->insert($sql,$arrData);
-                //Update products
-                if($this->arrData[$i]['topic'] == 2){
-                    $sqlStock = "SELECT stock FROM product WHERE idproduct = {$this->arrData[$i]['id']}";
-                    //$sqlPurchase = "SELECT AVG(price) as price_purchase FROM orderdetail WHERE product_id = {$this->arrData[$i]['id']}";
-                    $sqlProduct ="UPDATE product SET stock=? 
-                    WHERE idproduct = {$this->arrData[$i]['id']}";
-
-                    if($this->arrData[$i]['product_type']){
-                        $sqlStock = "SELECT stock FROM product_variations_options WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
+                if($this->arrData[$i]['id']!=""){
+                    $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
+    
+                    if($this->arrData[$i]['topic'] == 1){
                         
-                        $sqlProduct = "UPDATE product_variations_options SET stock=?
-                        WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
-                        /*$sqlPurchase = "SELECT AVG(price) as price_purchase
-                        FROM purchase_det 
-                        WHERE product_id = {$this->arrData[$i]['id']} 
-                        AND variant_name = '{$this->arrData[$i]['variant_name']}' ";*/
-                    } 
-                    $stock = $this->select($sqlStock)['stock'];
-                    $stock = $stock -$this->arrData[$i]['qty'];
-                    //$price_purchase = $this->select($sqlPurchase)['price_purchase'];
-                    $arrData = array($stock);
-                    $this->update($sqlProduct,$arrData);
+                        if($this->arrData[$i]['img'] != ""){
+                            $imgData = $this->arrData[$i]['img'];
+                            list($type,$imgData) = explode(";",$imgData);
+                            list(,$imgData)=explode(",",$imgData);
+                            $img = base64_decode($imgData);
+                            $name = "frame_print_".bin2hex(random_bytes(6))."_".$this->intId.'.png';
+                            $route = "Assets/images/uploads/".$name;
+                            $this->strImg = $name;
+                            file_put_contents($route, $img);
+                        }
+                        $this->strDescription = json_encode(
+                            array("name"=>$this->arrData[$i]['name'],"detail"=>$this->arrData[$i]['data'],"img"=>$this->strImg),
+                            JSON_UNESCAPED_UNICODE
+                        );
+                        $arrFrame =  $this->arrData[$i]['config'];
+                        $sql_config = "INSERT INTO molding_examples(config,frame,margin,height,width,orientation,color_frame,color_margin,color_border,
+                        props,name,total,type_frame,specs,address) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                        $arrDataConfig = array(
+                            $arrFrame['config'],
+                            $arrFrame['frame'],
+                            $arrFrame['margin'],
+                            $arrFrame['height'],
+                            $arrFrame['width'],
+                            $arrFrame['orientation'],
+                            $arrFrame['color_frame'],
+                            $arrFrame['color_margin'],
+                            $arrFrame['color_border'],
+                            json_encode($arrFrame['props'],JSON_UNESCAPED_UNICODE),
+                            $customer,
+                            $this->arrData[$i]['price_sell'],
+                            $arrFrame['type_frame'],
+                            $this->strDescription,
+                            $strAddress
+                        );
+                        $this->insert($sql_config,$arrDataConfig);
+                    }
+    
+                    $sql = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference) VALUE(?,?,?,?,?,?,?,?)";
+                    $arrData = array(
+                        $this->intId,
+                        $this->intIdUser,
+                        $this->arrData[$i]['id'],
+                        $this->arrData[$i]['topic'],
+                        $this->strDescription,
+                        $this->arrData[$i]['qty'],
+                        $this->arrData[$i]['price_sell'],
+                        $this->arrData[$i]['reference']
+                    );
+                    $this->insert($sql,$arrData);
+                    //Update products
+                    if($this->arrData[$i]['topic'] == 2){
+                        updateStock($this->arrData[$i]);
+                        $arrIngredients = getIngredientsAdjustment($this->arrData[$i]['id'],$this->arrData[$i]['qty']);
+                        if(!empty($arrIngredients['ingredients'])){
+                            setAdjustment(
+                                "Salida de insumos por venta de producto de la factura de venta No. $this->intId",
+                                $arrIngredients['total'],
+                                $arrIngredients['ingredients']
+                            );
+                        }
+                    }
                 }
             }
         }

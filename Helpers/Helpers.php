@@ -829,5 +829,91 @@
     function validator(){
         return new Validator();
     }
+    function updateStock($data,$type = 2){
+        $con = new Mysql();
+        $sqlStock = "SELECT stock FROM product WHERE idproduct = {$data['id']}";
+        //$sqlPurchase = "SELECT AVG(price) as price_purchase FROM orderdetail WHERE product_id = {$this->arrData[$i]['id']}";
+        $sqlProduct ="UPDATE product SET stock=? WHERE idproduct = {$data['id']}";
+
+        if($data['product_type']){
+            $sqlStock = "SELECT stock FROM product_variations_options 
+            WHERE product_id = {$data['id']} AND name = '{$data['variant_name']}'";
+            
+            $sqlProduct = "UPDATE product_variations_options SET stock=?
+            WHERE product_id = {$data['id']} AND name = '{$data['variant_name']}'";
+            /*$sqlPurchase = "SELECT AVG(price) as price_purchase
+            FROM purchase_det 
+            WHERE product_id = {$this->arrData[$i]['id']} 
+            AND variant_name = '{$this->arrData[$i]['variant_name']}' ";*/
+        } 
+
+        $stock = $con->select($sqlStock)['stock'];
+
+        if($type == 1){
+            $stock = $stock +$data['qty'];
+        }else{
+            $stock = $stock -$data['qty'];
+        }
+
+        //$price_purchase = $this->select($sqlPurchase)['price_purchase'];
+        $arrData = array($stock);
+        $con->update($sqlProduct,$arrData);
+    }
+
+    function setAdjustment($concept,$total,$data,$type = 2){
+        $con = new Mysql();
+        $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
+        $request = $con->insert($sql,[$concept,$total,$_SESSION['userData']['idperson']]);
+
+        foreach ($data as $det) { 
+            updateStock($det,$type);
+            $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
+            $arrValues = [
+                $request,
+                $det['id'],
+                $det['current_stock'],
+                $det['qty'],
+                $det['price'],
+                $type,
+                $det['result_stock'],
+                $det['variant_name'],
+                $det['subtotal']
+            ];
+            $con->insert($sql,$arrValues);
+        }
+    }
+
+    function getIngredientsAdjustment($id,$qty,$type=2){
+        $con = new Mysql();
+        $sql = "SELECT product as id,qty,variant_name,product_id FROM product_ingredients WHERE product_id = $id";
+        $arrIngredients = $con->select_all($sql);
+        $total = 0;
+        foreach ($arrIngredients as &$ingr) {
+            $variantName ="";
+            if($ingr['variant_name'] != ""){
+                $variantName = $ingr['variant_name'];
+                $sql = "SELECT price_purchase,stock FROM product_variations_options 
+                WHERE name = '{$ingr['variant_name']}' AND product_id = {$ingr['id']}";
+            }else{
+                $sql = "SELECT price_purchase,stock FROM product WHERE idproduct = {$ingr['id']}";
+            }
+            $arrProduct = $con->select($sql);
+            $ingr['qty'] = $qty*$ingr['qty'];
+            $ingr['name'] = $ingr['name']." ".$variantName;
+            $ingr['current_stock'] = $arrProduct['stock'];
+
+            if($type == 1){
+                $ingr['result_stock'] = $ingr['current_stock']+$ingr['qty'];
+            }else{
+                $ingr['result_stock'] = $ingr['current_stock']-$ingr['qty'];
+            }
+            
+            $ingr['price'] = $arrProduct['price_purchase'];
+            $ingr['subtotal'] = $ingr['qty']*$ingr['price'];
+            $total += $ingr['subtotal'];
+        }
+        unset($ingr);
+        return ["total"=>$total,"ingredients"=>$arrIngredients];
+    }
 
 ?>

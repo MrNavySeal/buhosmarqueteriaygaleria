@@ -249,6 +249,15 @@
                     }
                     $stock = $stock-$pro['qty'];
                     $this->updateStock($this->intIdProduct,$stock,$pro['variant']['name']);
+
+                    $arrIngredients = getIngredientsAdjustment($this->intIdProduct,$pro['qty']);
+                    if(!empty($arrIngredients['ingredients'])){
+                        setAdjustment(
+                            "Salida de insumos por venta del producto ".$pro['name']." ".$pro['variant']['name'],
+                            $arrIngredients['total'],
+                            $arrIngredients['ingredients']
+                        );
+                    }
                 }
                 $query = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference)
                         VALUE(?,?,?,?,?,?,?,?)";
@@ -324,33 +333,42 @@
                     $sqlProduct = "SELECT stock,is_stock,product_type FROM product WHERE idproduct = $data[productid]";
                     $requestProduct = $this->con->select($sqlProduct);
                 }
-                if($requestProduct['is_stock']){
-                    $stock = $requestProduct['stock']+$data['quantity'];
-                    $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
-                    $arrValues = [
-                        $request,
-                        $data['productid'],
-                        $requestProduct['stock'],
-                        $data['quantity'],
-                        $data['price'],
-                        1,
-                        $stock,
-                        $variantName,
-                        $data['quantity']*$data['price']
-                    ];
-                    $this->con->insert($sql,$arrValues);
-                    //Update products
-                    $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
-                    WHERE idproduct = $data[productid]";
-                    if($requestProduct['product_type']){
-                        $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
-                        WHERE product_id = $data[productid] AND name = '$variantName'";
-                    } 
-                    $price_purchase = getLastPrice($data['productid'],$variantName);
-                    if($price_purchase == 0){
-                        $price_purchase = $data['price_purchase'];
-                    }
-                    $this->con->update($sqlProduct,[$stock,$price_purchase]);
+
+                $stock = $requestProduct['stock']+$data['quantity'];
+                $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
+                $arrValues = [
+                    $request,
+                    $data['productid'],
+                    $requestProduct['stock'],
+                    $data['quantity'],
+                    $data['price'],
+                    1,
+                    $stock,
+                    $variantName,
+                    $data['quantity']*$data['price']
+                ];
+                $this->con->insert($sql,$arrValues);
+                //Update products
+                $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
+                WHERE idproduct = $data[productid]";
+                if($requestProduct['product_type']){
+                    $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
+                    WHERE product_id = $data[productid] AND name = '$variantName'";
+                } 
+                $price_purchase = getLastPrice($data['productid'],$variantName);
+                if($price_purchase == 0){
+                    $price_purchase = $data['price_purchase'];
+                }
+                $this->con->update($sqlProduct,[$stock,$price_purchase]);
+
+                $arrIngredients = getIngredientsAdjustment($data['productid'],$data['quantity'],1);
+                if(!empty($arrIngredients['ingredients'])){
+                    setAdjustment(
+                        "Entrada de insumos por anulación de venta de producto de la factura de venta No. $this->intIdOrder",
+                        $arrIngredients['total'],
+                        $arrIngredients['ingredients'],
+                        1
+                    );
                 }
             }
         }
