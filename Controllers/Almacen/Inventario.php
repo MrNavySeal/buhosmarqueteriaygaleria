@@ -277,7 +277,7 @@
                 }
                 $html.='
                     <tr>
-                        <td colspan="11" class="'.$bg.'fw-bold text-end">Total:</td>
+                        <td colspan="11" class="'.$bg.'fw-bold text-end">Saldo final:</td>
                         <td class="'.$bg.'text-center">'.$lastStock.'</td>
                         <td class="'.$bg.'text-end">'.formatNum($lastTotal).'</td>
                     </tr>

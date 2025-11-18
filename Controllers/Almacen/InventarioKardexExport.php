@@ -173,7 +173,7 @@
                                 $row++;
                             }
                             $sheetReport->mergeCells("A$row:K$row");
-                            $sheetReport->setCellValue("A$row","Total");
+                            $sheetReport->setCellValue("A$row","Saldo final");
                             $sheetReport->setCellValue("L$row",$lastStock);
                             $sheetReport->setCellValue("M$row",$lastTotal);
                             $sheetReport->getStyle("M$row")->applyFromArray($arrMoneyFormat);
@@ -322,7 +322,7 @@
                                 $pdf->SetFillColor(255,193,7);
                             }
                             $pdf->SetFont('helvetica', 'B', 8);
-                            $pdf->MultiCell(225, 5,"Total", "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M"); 
+                            $pdf->MultiCell(225, 5,"Saldo final", "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M"); 
                             $pdf->SetFont('helvetica', '', 8);
                             $pdf->MultiCell(20, 5,$lastStock, "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M"); 
                             $pdf->MultiCell(20, 5,formatNum($lastTotal), "LBRT", 'R', 1, 0, '', "", true,0,0,1,5,"M"); 
