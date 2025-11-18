@@ -78,7 +78,7 @@
                     $price_purchase = $this->arrData[$i]['price_purchase'];
                 }
                 $arrData = array(
-                    $this->arrData[$i]['qty']+$this->arrData[$i]['stock'],
+                    $this->arrData[$i]['qty']+getStock($this->arrData[$i]['id'],$this->arrData[$i]['variant_name']),
                     $this->arrData[$i]['price_sell'],
                     $price_purchase
                 );

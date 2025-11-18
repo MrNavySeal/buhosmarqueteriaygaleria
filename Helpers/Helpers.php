@@ -916,4 +916,17 @@
         return ["total"=>$total,"ingredients"=>$arrIngredients];
     }
 
+    function getStock($id,$variant=null){
+        $con = new Mysql();
+        $sql = "SELECT stock,product_type FROM product WHERE idproduct = $id";
+        $request = $con->select($sql);
+        $stock = $request['stock'];
+        if($request['product_type'] == 1){
+            $name = $variant['name'];
+            $sqlV = "SELECT stock FROM product_variations_options WHERE name = '$name'";
+            $stock = $con->select($sqlV)['stock'];
+        }
+        return $stock;
+    }
+
 ?>
