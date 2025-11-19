@@ -102,13 +102,13 @@
                         <div class="mb-3">
                             <h5>Tipo de artículo</h5>
                             <app-input label="checkProduct" :errors="errors.product_type" @click="intCheckRecipe=false" title="Seleccione si el artículo es un producto" type="switch" v-model="intCheckProduct"></app-input>
-                            <app-input label="checkIngredient" :errors="errors.product_type" @click="intCheckRecipe=false" title="Seleccione si el artículo es un insumo" type="switch" v-model="intCheckIngredient"></app-input>
-                            <app-input label="checkRecipe" :errors="errors.product_type" @click="intCheckIngredient=false;intCheckProduct=false;" title="Seleccione si el artículo es una fórmula/servicio/combo" type="switch" v-model="intCheckRecipe"></app-input>
+                            <app-input label="checkIngredient" :errors="errors.product_type" title="Seleccione si el artículo es un insumo" type="switch" v-model="intCheckIngredient"></app-input>
+                            <app-input label="checkRecipe" :errors="errors.product_type" @click="intCheckProduct=false;" title="Seleccione si el artículo es una fórmula/servicio/combo" type="switch" v-model="intCheckRecipe"></app-input>
                         </div>
                         <app-select label="unidadMedida" title="Unidad de medida" v-model="intMeasure">
                             <option v-for="(data,index) in arrMeasures" :key="index" :value="data.id">{{data.name}}</option>
                         </app-select>
-                        <div class="mb-3" v-if="!intCheckRecipe">
+                        <div class="mb-3">
                             <h5>Inventario</h5>
                             <app-input label="checkInventory" title="Seleccione si el artículo maneja inventario" type="switch" v-model="intCheckStock"></app-input>
                             <div class="row" v-if="intCheckStock">
@@ -130,13 +130,14 @@
                         <div>
                             <h5>Precio de artículo</h5>
                             <div class="row">
-                                <div class="col-md-4" v-if="!intCheckRecipe">
-                                    <app-input label="purchasePrice" type="number" :errors="errors.price_purchase" title="Precio de compra" required="true" v-model="intPurchasePrice"></app-input>
+                                <div class="col-md-4">
+                                    <app-input v-if="arrIngredientsAdded.length > 0 && intCheckRecipe" label="purchasePrice" type="number" :errors="errors.price_purchase" title="Precio de compra" disabled required="true" v-model="totalIngredients"></app-input>
+                                    <app-input v-else label="purchasePrice" type="number" :errors="errors.price_purchase" title="Precio de compra" required="true" v-model="intPurchasePrice"></app-input>
                                 </div>
-                                <div :class="intCheckRecipe ? 'col-md-6' : 'col-md-4'">
+                                <div class="col-md-4">
                                     <app-input label="sellPrice" type="number" :errors="errors.price_sell" title="Precio de venta" required="true" v-model="intSellPrice"></app-input>
                                 </div>
-                                <div :class="intCheckRecipe ? 'col-md-6' : 'col-md-4'">
+                                <div class="col-md-4">
                                     <app-input label="offerPrice" type="number" :errors="errors.price_offer" title="Precio de oferta" required="true" v-model="intOfferPrice"></app-input>
                                 </div>
                             </div>

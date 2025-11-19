@@ -614,7 +614,7 @@ const App = {
                 total+=e.subtotal;
             });
             return total;
-        }
+        },
     }
 };
 const app = Vue.createApp(App);
