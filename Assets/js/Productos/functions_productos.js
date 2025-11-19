@@ -121,7 +121,7 @@ const App = {
             this.arrIngredientsAdded = [];
             this.errors = [];
             this.intCheckStock = false;
-            this.common.productTitle = "Nuevo producto";
+            this.common.productTitle = "Nuevo artículo";
 
         },
 
@@ -264,7 +264,7 @@ const App = {
                 const data = objData.data;
                 if(type=="edit"){
                     this.common.showModalProduct = true;
-                    this.common.productTitle = "Editar producto";
+                    this.common.productTitle = "Editar artículo";
                     setTinymce("#txtDescription",400);
                     document.querySelector("#txtDescription").value = data.description;
                 }else{

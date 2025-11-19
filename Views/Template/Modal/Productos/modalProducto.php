@@ -172,7 +172,7 @@
             <div class="tab-pane fade" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
                 <p class="text-secondary">Agrega los insumos que componen tu artículo.</p>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-2">
                         <div class="row">
                             <div class="col-md-4">
                                 <app-select label="Por página"  @change="search()" v-model="ingredients.intPerPage">
@@ -217,13 +217,18 @@
                                         <td data-title="Unidad" class="text-center">{{data.measure}}</td>
                                         <td data-title="Artículo">{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
                                         <td data-title="Precio compra" class="text-center">{{data.price_purchase_format}}</td>
-                                        <td><app-button  icon="new" btn="primary" @click="addItem('ingredient',data)"></app-button></td>
+                                        <td>
+                                            <div class="d-flex gap-2 justify-content-center">
+                                                <app-button  icon="new" btn="primary" @click="addItem('ingredient',data)"></app-button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
+                        <app-pagination :common="ingredients" @search="search"></app-pagination>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-2">
                         <h3 class="bg-primary p-1 mb-0 text-center text-white">Insumos agregados</h3>
                         <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
                             <table class="table align-middle">
@@ -239,12 +244,16 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="(data,index) in arrIngredientsAdded" :key="index">
-                                        <td>{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
-                                        <td><input type="number" class="form-control text-center" @input="updateIngredient(data)" v-model="data.qty"></td>
-                                        <td class="text-center">{{data.measure}}</td>
-                                        <td class="text-end">${{formatNum(data.price_purchase)}}</td>
-                                        <td class="text-end">${{formatNum(data.subtotal)}}</td>
-                                        <td><app-button  icon="delete" btn="danger" @click="delItem('ingredient',data)"></app-button></td>
+                                        <td data-title="Nombre">{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
+                                        <td data-title="Cantidad"><input type="number" class="form-control text-center" @input="updateIngredient(data)" v-model="data.qty"></td>
+                                        <td data-title="Unidad" class="text-center">{{data.measure}}</td>
+                                        <td data-title="Valor" class="text-end">${{formatNum(data.price_purchase)}}</td>
+                                        <td data-title="Subtotal" class="text-end">${{formatNum(data.subtotal)}}</td>
+                                        <td>
+                                            <div class="d-flex gap-2 justify-content-center">
+                                                <app-button  icon="delete" btn="danger" @click="delItem('ingredient',data)"></app-button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
@@ -258,7 +267,7 @@
                         </div>
                     </div>
                 </div>
-                <app-pagination :common="ingredients" @search="search"></app-pagination>
+                
             </div>
             <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
                 <p class="text-secondary">Agrega características que quieres resaltar de tu artículo como el material, marca modelo, etc.</p>
