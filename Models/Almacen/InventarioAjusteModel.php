@@ -204,6 +204,13 @@
                     $price_purchase = $data['price_purchase'];
                 }
                 $this->update($sqlProduct,[$data['qty_result'],$price_purchase]);
+                if($data['type'] == 1){
+                    $msg = "Entrada de insumos por ajuste No. $this->intId";
+                    setAdjustment( $data['type'], $msg, [], ["id"=>$data['id'],"qty"=>$data['qty'],"variant_name"=>$data['variant_name']],true);
+                }else{
+                    $msg = "Salida de insumos por ajuste No. $this->intId";
+                    setAdjustment($data['type'], $msg, [], ["id"=>$data['id'],"qty"=>$data['qty'],"variant_name"=>$data['variant_name']],true);
+                }
             }
             return $request;
         }

@@ -126,6 +126,9 @@ const App = {
         },
 
         save:async function(){
+            const pricePurchase = this.intCheckRecipe && this.arrIngredientsAdded.length > 0 ? this.totalIngredients : this.intPurchasePrice;
+            console.log(pricePurchase);
+            
             tinymce.triggerSave();
             const strDescription = document.querySelector("#txtDescription").value;
             const formData = new FormData();
@@ -143,7 +146,7 @@ const App = {
                 "is_ingredient":this.intCheckIngredient,
                 "is_combo":this.intCheckRecipe,
                 "is_stock":this.intCheckStock,
-                "price_purchase":this.intPurchasePrice,
+                "price_purchase":pricePurchase,
                 "price_sell":this.intSellPrice,
                 "price_offer":this.intOfferPrice,
                 "product_type":this.intCheckVariant,

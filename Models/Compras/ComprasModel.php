@@ -12,6 +12,7 @@
         private $intTotal;
         private $arrData;
         private $arrProducts;
+
         public function __construct(){
             parent::__construct();
         }
@@ -47,6 +48,7 @@
             }
             return $request;
         }
+
         public function insertPurchaseDet(int $id,array $data){
             $this->intId = $id;
             $this->arrData = $data;
@@ -77,14 +79,19 @@
                 if($price_purchase == 0){
                     $price_purchase = $this->arrData[$i]['price_purchase'];
                 }
+
                 $arrData = array(
                     $this->arrData[$i]['qty']+getStock($this->arrData[$i]['id'],$this->arrData[$i]['variant_name']),
                     $this->arrData[$i]['price_sell'],
                     $price_purchase
                 );
+
                 $this->update($sqlProduct,$arrData);
+                $msg = "Entrada de insumos por compra de producto de la factura No. $this->intId";
+                setAdjustment( 1, $msg, [], ["id"=>$this->arrData[$i]['id'],"qty"=>$this->arrData[$i]['qty'],"variant_name"=>$this->arrData[$i]['variant_name']],true);
             }
         }
+
         public function deletePurchase($id){
             $this->intId = $id;
             $sql = "SELECT * FROM purchase_det WHERE purchase_id = $this->intId";
@@ -95,6 +102,7 @@
             if(!empty($request)){$this->insertAdjustment($id,$request);}
             return $return;
         }
+
         public function insertAdjustment($id,$arrData){
             $this->intId = $id;
             $total = $this->select("SELECT total FROM purchase WHERE idpurchase = $this->intId")['total'];
@@ -139,8 +147,12 @@
                     $price_purchase = $data['price_purchase'];
                 }
                 $this->update($sqlProduct,[$stock,$price_purchase]);
+
+                $msg = "Salida de insumos por anulación de compra de producto de la factura No. $this->intId";
+                setAdjustment( 2, $msg, [], ["id"=>$data['product_id'],"qty"=>$data['qty'],"variant_name"=>$variantName],true);
             }
         }
+
         public function selectTotalPurchases(string $strSearch,$strInitialDate,$strFinalDate){
             $sql = "SELECT COALESCE(COUNT(*),0) as total
             FROM purchase p
@@ -151,6 +163,7 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+
         public function selectTotalCreditPurchases(string $strSearch,$strInitialDate,$strFinalDate){
             $sql = "SELECT COALESCE(COUNT(*),0) as total
             FROM purchase p
@@ -161,6 +174,7 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+
         public function selectTotalDetailPurchases(string $strSearch,$strInitialDate,$strFinalDate){
             $sql = "SELECT COALESCE(COUNT(*),0) as total
             FROM purchase_det det
@@ -174,6 +188,7 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+
         public function selectPurchases(string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
             $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT 
@@ -244,6 +259,7 @@
             }
             return  array("data"=>$request,"pages"=>$totalPages);
         }
+
         public function selectCreditPurchases(string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
             $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT 
@@ -314,6 +330,7 @@
             }
             return  array("data"=>$request,"pages"=>$totalPages);
         }
+
         public function selectDetailPurchases(string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
             $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT 
@@ -354,6 +371,7 @@
             $request = $this->select_all($sql);
             return  array("data"=>$request,"pages"=>$totalPages);
         }
+
         public function selectPurchase($id){
             $this->intId = $id;
             $sql = "SELECT 
@@ -376,6 +394,7 @@
             $request = $this->select($sql);
             return $request;
         }
+
         public function insertEgress(int $idPurchase,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus, string $method){
             $request="";
             
@@ -406,6 +425,7 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+
         public function selectProducts(string $strSearch,int $intPerPage,int $intPageNow){
             $start = ($intPageNow-1)*$intPerPage;
             $arrProducts = [];
@@ -436,7 +456,7 @@
             LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
             LEFT JOIN measures m ON m.id_measure = p.measure
             LEFT JOIN product_variations va ON va.id = v.product_variation_id
-            WHERE p.status = 1 AND c.status = 1 AND s.status = 1 AND  p.is_combo!=1
+            WHERE p.status = 1 AND c.status = 1 AND s.status = 1 
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
             OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch') 
             ORDER BY p.idproduct DESC LIMIT $start,$intPerPage";
@@ -447,7 +467,7 @@
             INNER JOIN category c ON c.idcategory = p.categoryid
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             LEFT JOIN product_variations_options v ON v.product_id = p.idproduct
-            WHERE p.status = 1 AND c.status = 1 AND s.status = 1 AND p.is_combo!=1
+            WHERE p.status = 1 AND c.status = 1 AND s.status = 1
             AND (c.name like '$strSearch%' OR s.name like '$strSearch%' OR p.name like '$strSearch%'  OR c.name like '$strSearch'
             OR v.name like '$strSearch%' OR v.sku like '$strSearch%' OR p.reference like '$strSearch%' OR s.name like '$strSearch')";
 
@@ -511,6 +531,7 @@
             }
             return array("products"=>$arrProducts,"pages"=>$totalPages);
         }
+
         public function selectProduct($id){
             $this->intId = $id;
             $sql = "SELECT 
@@ -542,12 +563,14 @@
             }
             return $request;
         }
+
         /*************************Suppliers methods*******************************/
         public function selectSuppliers(){
             $sql = "SELECT id_supplier,name,nit,phone,email FROM supplier WHERE status = 1 ORDER BY id_supplier";
             $request = $this->select_all($sql);
             return $request;
         }
+
         /*************************Advance methods*******************************/
         public function insertAdvance(int $id,array $data,bool $isSuccess){
             $this->intId = $id;

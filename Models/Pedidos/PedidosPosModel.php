@@ -297,14 +297,8 @@
                     //Update products
                     if($this->arrData[$i]['topic'] == 2){
                         updateStock($this->arrData[$i]);
-                        $arrIngredients = getIngredientsAdjustment($this->arrData[$i]['id'],$this->arrData[$i]['qty']);
-                        if(!empty($arrIngredients['ingredients'])){
-                            setAdjustment(
-                                "Salida de insumos por venta de producto de la factura de venta No. $this->intId",
-                                $arrIngredients['total'],
-                                $arrIngredients['ingredients']
-                            );
-                        }
+                        $msg = "Salida de insumos por venta de producto de la factura de venta No. $this->intId";
+                        setAdjustment( 2, $msg, [], ["id"=>$this->arrData[$i]['id'],"qty"=>$this->arrData[$i]['qty'],"variant_name"=>$this->arrData[$i]['variant_name']],true);
                     }
                 }
             }

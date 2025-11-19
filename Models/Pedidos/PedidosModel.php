@@ -391,7 +391,19 @@
         }
         public function insertAdjustment($id,$arrData){
             $this->intIdOrder = $id;
-            $total = $this->select("SELECT amount FROM orderdata WHERE idorder = $this->intIdOrder")['amount'];
+            $total = 0;
+
+            foreach ($arrData as $data) {
+                $description = json_decode($data['description'],true);
+                $variantName ="";
+                if(is_array($description)){
+                    $arrDet = $description['detail'];
+                    $variantName = implode("-",array_values(array_column($arrDet,"option")));
+                }
+                $price_purchase = getLastPrice($data['productid'],$variantName);
+                $total+=$price_purchase;
+            }
+
             $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
             $request = $this->insert($sql,["Factura de venta No. ".$id." Anulada",$total,$_SESSION['userData']['idperson']]);
 
@@ -411,7 +423,10 @@
                     $sqlProduct = "SELECT stock,is_stock,product_type,name FROM product WHERE idproduct = $data[productid]";
                     $requestProduct = $this->select($sqlProduct);
                 }
-
+                $price_purchase = getLastPrice($data['productid'],$variantName);
+                if($price_purchase == 0){
+                    $price_purchase = $data['price_purchase'];
+                }
                 $stock = $requestProduct['stock']+$data['quantity'];
                 $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
                 $arrValues = [
@@ -419,11 +434,11 @@
                     $data['productid'],
                     $requestProduct['stock'],
                     $data['quantity'],
-                    $data['price'],
+                    $price_purchase,
                     1,
                     $stock,
                     $variantName,
-                    $data['quantity']*$data['price']
+                    $data['quantity']*$price_purchase
                 ];
                 $this->insert($sql,$arrValues);
 
@@ -434,21 +449,11 @@
                     $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
                     WHERE product_id = $data[productid] AND name = '$variantName'";
                 } 
-                $price_purchase = getLastPrice($data['productid'],$variantName);
-                if($price_purchase == 0){
-                    $price_purchase = $data['price_purchase'];
-                }
+                
                 $this->update($sqlProduct,[$stock,$price_purchase]);
 
-                $arrIngredients = getIngredientsAdjustment($data['productid'],$data['quantity'],1);
-                if(!empty($arrIngredients['ingredients'])){
-                    setAdjustment(
-                        "Entrada de insumos por anulación de venta de producto de la factura de venta No. $this->intIdOrder",
-                        $arrIngredients['total'],
-                        $arrIngredients['ingredients'],
-                        1
-                    );
-                }
+                $msg = "Entrada de insumos por anulación de venta de producto de la factura de venta No. $this->intIdOrder";
+                setAdjustment( 1, $msg, [], ["id"=>$data['productid'],"qty"=>$data['quantity'],"variant_name"=>$variantName],true);
             }
         }
         public function updateOrder(int $id,string $statusOrder,string $strSendBy,string $strGuide){

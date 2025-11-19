@@ -860,11 +860,18 @@
         $con->update($sqlProduct,$arrData);
     }
 
-    function setAdjustment($concept,$total,$data,$type = 2){
+    function setAdjustment($type = 2,$concept,$data=[],$ingredient=[],$isRoot=false){
+        $total = 0;
+        if(empty($data)){
+            $data = getIngredientsAdjustment($ingredient['id'],$ingredient['qty'],1,$ingredient['variant_name'],$isRoot);
+            $data = array_filter($data,function($e){ return $e['key'] !== "";});
+        }
+        foreach ($data as $det ) { $total += $det['subtotal']; }
+
         $con = new Mysql();
         $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
         $request = $con->insert($sql,[$concept,$total,$_SESSION['userData']['idperson']]);
-
+        
         foreach ($data as $det) { 
             updateStock($det,$type);
             $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
@@ -883,12 +890,40 @@
         }
     }
 
-    function getIngredientsAdjustment($id,$qty,$type=2){
+    function getIngredientsAdjustment($id,$qty,$type=2,$variantProductName,$isRoot,&$visited = []){
+        if (in_array($id, $visited)) {
+            throw new Exception("Circular reference detected for item $id");
+        }
+
         $con = new Mysql();
         $sql = "SELECT product as id,qty,variant_name,product_id FROM product_ingredients WHERE product_id = $id";
         $arrIngredients = $con->select_all($sql);
-        $total = 0;
-        foreach ($arrIngredients as &$ingr) {
+
+        if(!$isRoot){
+            if($variantProductName != ""){
+                $sql = "SELECT op.price_purchase,op.stock,p.name
+                FROM product_variations_options op
+                INNER JOIN product p ON op.product_id = p.idproduct
+                WHERE op.name = '$variantProductName' AND op.product_id = $id";
+            }else{
+                $sql = "SELECT price_purchase,stock,name FROM product WHERE idproduct = $id";
+            }
+            $arrProduct = $con->select($sql);
+            $visited[] = $id;
+            $resolved[] = [
+                'id' => $id,
+                'name' => $arrProduct['name']." ".$variantProductName,
+                "key"=>str_replace(" ","",$arrProduct['name']." ".$variantProductName),
+                "variant_name"=>$variantProductName,
+                'qty' => $qty,
+                'current_stock' => $arrProduct['stock'],
+                'result_stock' => ($type == 1) ? $arrProduct['stock'] + $qty : $arrProduct['stock'] - $qty,
+                'price' => $arrProduct['price_purchase'],
+                'subtotal' => $qty * $arrProduct['price_purchase']
+            ];
+        }
+
+        foreach ($arrIngredients as $ingr) {
             $variantName ="";
             if($ingr['variant_name'] != ""){
                 $variantName = $ingr['variant_name'];
@@ -899,21 +934,20 @@
             }
             $arrProduct = $con->select($sql);
             $ingr['qty'] = $qty*$ingr['qty'];
-            $ingr['name'] = $ingr['name']." ".$variantName;
-            $ingr['current_stock'] = $arrProduct['stock'];
 
-            if($type == 1){
-                $ingr['result_stock'] = $ingr['current_stock']+$ingr['qty'];
-            }else{
-                $ingr['result_stock'] = $ingr['current_stock']-$ingr['qty'];
-            }
+            $ingr['name'] = $ingr['name']." ".$variantName;
+            $ingr['key'] = str_replace(" ","",$ingr['name']);
+            $ingr['current_stock'] = $arrProduct['stock'];
+            $ingr['result_stock'] = ($type == 1) ? $ingr['current_stock']+$ingr['qty'] : $ingr['current_stock']-$ingr['qty'];
             
             $ingr['price'] = $arrProduct['price_purchase'];
             $ingr['subtotal'] = $ingr['qty']*$ingr['price'];
-            $total += $ingr['subtotal'];
+            $resolved[] = $ingr;
+
+            $subIngredients = getIngredientsAdjustment($ingr['id'], $ingr['qty'], $type,$variantName, false,$visited);
+            $resolved = array_merge($resolved, $subIngredients);
         }
-        unset($ingr);
-        return ["total"=>$total,"ingredients"=>$arrIngredients];
+        return $resolved;
     }
 
     function getStock($id,$variant=null){
