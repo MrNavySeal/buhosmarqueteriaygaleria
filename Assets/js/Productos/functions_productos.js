@@ -38,6 +38,10 @@ const App = {
             arrVariantsMixed:[],
             arrCombination:[],
             arrIngredientsAdded:[],
+            arrWholesalePrices:[],
+            intWholeSalePercent:"",
+            intWholeSaleMaxQty:"",
+            intWholeSaleMinQty:"",
             intStatus:1,
             strName:"",
             strReference:"",
@@ -403,6 +407,8 @@ const App = {
                     }
                 });
                 this.arrIngredientsAdded.splice(index,1);
+            }else if(type=="price"){
+                this.arrWholesalePrices.splice(data,1);
             }
         },
 
@@ -458,6 +464,44 @@ const App = {
                 }else{
                     Swal.fire("Atención!","Este insumo ya fue agregado, intente con otro","warning");
                 }
+            }else if(type=="price"){
+
+                if( this.intWholeSaleMinQty == "" || this.intWholeSaleMaxQty=="" || this.intWholeSalePercent==""){
+                    Swal.fire("Atención!","Los campos no pueden estar vacíos.","warning");
+                    return false;
+                }
+
+                this.intWholeSaleMinQty = parseFloat(this.intWholeSaleMinQty);
+                this.intWholeSaleMaxQty = parseFloat(this.intWholeSaleMaxQty);
+                this.intWholeSalePercent = parseFloat(this.intWholeSalePercent);
+
+                if(this.intWholeSalePercent > 100 || this.intWholeSalePercent < 0){
+                    Swal.fire("Atención!","El porcentaje no puede ser menor a 0 ni mayor a 10.","warning");
+                    return false;
+                }else if(this.intWholeSaleMinQty < 0){
+                    Swal.fire("Atención!","La cantidad mínima no puede ser menor a 0.","warning");
+                    return false;
+                }else if(this.intWholeSaleMaxQty < 0){
+                    Swal.fire("Atención!","La cantidad máximna no puede ser menor a 0.","warning");
+                    return false;
+                }
+
+                let obj = {
+                    min:this.intWholeSaleMinQty,
+                    max:this.intWholeSaleMaxQty,
+                    percent:this.intWholeSalePercent
+                }
+                
+                this.intWholeSaleMaxQty ="";
+                this.intWholeSalePercent = "";
+                this.arrWholesalePrices.push(obj);
+
+                const total = this.arrWholesalePrices.length;
+                this.intWholeSaleMinQty ="";
+                if(total > 0){
+                    this.intWholeSaleMinQty = parseFloat(this.arrWholesalePrices[total-1].max) + 1;
+                }
+                this.changeWholeSaleMaxQty();
             }
         },
 
@@ -549,6 +593,36 @@ const App = {
                 this.category.showModalPaginationCategory=true;
             }
             this.search();
+        },
+
+        changeWholeSaleMaxQty:function(){
+            const root = this.arrWholesalePrices[0];
+            const rootMin = parseFloat(root.min);
+            const rootMax = parseFloat(root.max);
+            root.max = rootMin >= rootMax ? rootMin+1 : rootMax;
+            this.arrWholesalePrices[0] = root;
+
+            for (let i = 1; i < this.arrWholesalePrices.length; i++) {
+                const before = this.arrWholesalePrices[i-1];
+                const current = this.arrWholesalePrices[i];
+                const currentMax = parseFloat(current.max);
+                const newMin =  parseFloat(before.max) + 1;
+                current.min = newMin;
+                current.max = newMin >= currentMax ? newMin+1 : currentMax;
+                this.arrWholesalePrices[i] = current;
+            }
+            this.intWholeSaleMinQty = parseFloat(this.arrWholesalePrices[this.arrWholesalePrices.length-1].max) + 1;
+        },
+
+        changeWholeSalePercent:function(index){
+            const root = this.arrWholesalePrices[index];
+            const percent = parseFloat(root.percent);
+            if(percent > 100){
+                root.percent = 100;
+            }else if(percent < 0){
+                root.percent = 0;
+            }
+            this.arrWholesalePrices[index] = root;
         },
 
         uploadMultipleImage:function(e){

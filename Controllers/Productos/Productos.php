@@ -178,7 +178,7 @@
                                     }
                                     $option = 1;
                                     $arrData['photo_framing'] = $photoFraming;
-                                    $request= $this->model->insertProduct($arrData,$_FILES['images']);
+                                    $request= $this->model->insertProduct($arrData,$_FILES['images'] ? $_FILES['images'] : []);
                                 }
                             }else{
                                 if($_SESSION['permitsModule']['u']){

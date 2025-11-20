@@ -191,7 +191,7 @@
                                     required="false"
                                     >
                                     <template #right>
-                                        <button class="btn btn-primary" @click="search()" ref="btnGenerate">Buscar</button>
+                                        <button class="btn btn-primary" @click="search()">Buscar</button>
                                     </template>
                                 </app-button-input>
                             </div>
@@ -391,7 +391,38 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="prices" role="tabpanel" aria-labelledby="prices-tab"></div>
+            <div class="tab-pane fade" id="prices" role="tabpanel" aria-labelledby="prices-tab">
+                <div class="row" v-for="(data,index) in arrWholesalePrices" :key="index">
+                    <div class="col-md-4">
+                        <app-input  title="Desde" type="number" v-model="data.min" @change="changeWholeSaleMaxQty()" :disabled = "index > 0"></app-input>
+                    </div>
+                    <div class="col-md-4">
+                        <app-input  title="Hasta" type="number" v-model="data.max" @change="changeWholeSaleMaxQty()"></app-input>
+                    </div>
+                    <div class="col-md-4">
+                        <app-button-input  label="intWholeSalePercent" title="Descuento al por mayor" btn="primary" @change="changeWholeSalePercent(index)" v-model="data.percent" required="false">
+                            <template #right>
+                                <app-button icon="delete" btn="danger" @click="delItem('price',index)"></app-button>
+                            </template>
+                        </app-button-input>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <app-input  label="intWholeSaleMinQty" title="Cantidad mínima" :disabled="arrWholesalePrices.length > 0" type="number" v-model="intWholeSaleMinQty"></app-input>
+                    </div>
+                    <div class="col-md-4">
+                        <app-input  label="intWholeSaleMaxQty" title="Cantidad máxima" type="number" v-model="intWholeSaleMaxQty"></app-input>
+                    </div>
+                    <div class="col-md-4">
+                        <app-button-input  label="intWholeSalePercent" title="Porcentaje" btn="primary" v-model="intWholeSalePercent" required="false">
+                            <template #right>
+                                <app-button icon="new" btn="primary" title="Agregar" @click="addItem('price')"></app-button>
+                            </template>
+                        </app-button-input>
+                    </div>
+                </div>
+            </div>
         </div>
     </template>
     <template #footer>

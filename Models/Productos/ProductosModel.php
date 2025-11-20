@@ -244,7 +244,7 @@
                     if(!empty($arrImages)){
                         $request[$i]['image'] = media()."/images/uploads/".$arrImages['name'];
                     }else{
-                        $request[$i]['image'] = media()."/images/uploads/image.png";
+                        $request[$i]['image'] = media()."/images/default/product.png";
                     }
                     if($request[$i]['product_type'] == 1){
                         $arrPrices = array_values(array_filter($requestPrices,function($e) use($idProduct){return $e['product_id'] == $idProduct;}))[0];
@@ -420,30 +420,32 @@
         }
 
         private function insertImages($id,$photos,$flag=true){
-            if($flag){
-                $total = count($photos['name']);
-            }else{
-                $total = count($photos);
-                $this->deleteImages($id);
-            }
-            for ($i=0; $i < $total ; $i++) { 
+            if(!empty($photos)){
                 if($flag){
-                    $strRoute = "product_".$id."_".bin2hex(random_bytes(6)).'.png';
-                    uploadImage([
-                        "name"=>$photos['name'][$i],
-                        "full_path"=>$photos['full_path'][$i],
-                        "type"=>$photos['type'][$i],
-                        "tmp_name"=>$photos['tmp_name'][$i],
-                        "error"=>$photos['error'][$i],
-                        "size"=>$photos['size'][$i]
-                    ],$strRoute);
-                    $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
-                    $arrImg = array($id,$strRoute);
-                    $this->insert($sqlImg,$arrImg);
+                    $total = count($photos['name']);
                 }else{
-                    $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
-                    $arrImg = array($id,$photos[$i]['name']);
-                    $this->insert($sqlImg,$arrImg);
+                    $total = count($photos);
+                    $this->deleteImages($id);
+                }
+                for ($i=0; $i < $total ; $i++) { 
+                    if($flag){
+                        $strRoute = "product_".$id."_".bin2hex(random_bytes(6)).'.png';
+                        uploadImage([
+                            "name"=>$photos['name'][$i],
+                            "full_path"=>$photos['full_path'][$i],
+                            "type"=>$photos['type'][$i],
+                            "tmp_name"=>$photos['tmp_name'][$i],
+                            "error"=>$photos['error'][$i],
+                            "size"=>$photos['size'][$i]
+                        ],$strRoute);
+                        $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
+                        $arrImg = array($id,$strRoute);
+                        $this->insert($sqlImg,$arrImg);
+                    }else{
+                        $sqlImg = "INSERT INTO productimage(productid,name) VALUES(?,?)";
+                        $arrImg = array($id,$photos[$i]['name']);
+                        $this->insert($sqlImg,$arrImg);
+                    }
                 }
             }
         }
@@ -549,7 +551,7 @@
                     $idProduct = $pro['idproduct'];
                     $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
                     $requestImg = $this->select_all($sqlImg);
-                    $url = media()."/images/uploads/image.png";
+                    $url = media()."/images/default/product.png";
                     if(count($requestImg)>0){
                         $url = media()."/images/uploads/".$requestImg[0]['name'];
                     }

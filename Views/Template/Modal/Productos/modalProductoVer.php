@@ -6,7 +6,7 @@
                 <button class="nav-link active" id="generalView-tab" data-bs-toggle="tab" data-bs-target="#generalView" type="button" role="tab" aria-controls="generalView" aria-selected="true">General</button>
             </li>
             <li class="nav-item" role="presentation" v-if="intCheckRecipe" @click="subcategory.modalType='';category.modalType='';common.modalType='';ingredients.modalType='ingredients';">
-                <button class="nav-link" id="ingredients-tab" data-bs-toggle="tab" data-bs-target="#ingredients" type="button" role="tab" aria-controls="ingredients" aria-selected="false">Insumos</button>
+                <button class="nav-link" id="ingredientsView-tab" data-bs-toggle="tab" data-bs-target="#ingredientsView" type="button" role="tab" aria-controls="ingredientsView" aria-selected="false">Insumos</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="specificationsView-tab" data-bs-toggle="tab" data-bs-target="#specificationsView" type="button" role="tab" aria-controls="specificationsView" aria-selected="false">Características</button>
@@ -144,103 +144,36 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
-                <p class="text-secondary">Agrega los insumos que componen tu artículo.</p>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <app-select label="Por página"  @change="search()" v-model="ingredients.intPerPage">
-                                    <option value="10" selected>10</option>
-                                    <option value="25">25</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                    <option value="1000">1000</option>
-                                </app-select>
-                            </div>
-                            <div class="col-md-8">
-                                <app-button-input 
-                                    title="Buscar"
-                                    btn="primary"
-                                    v-model="ingredients.strSearch"
-                                    required="false"
-                                    >
-                                    <template #right>
-                                        <button class="btn btn-primary" @click="search()" ref="btnGenerate">Buscar</button>
-                                    </template>
-                                </app-button-input>
-                            </div>
-                        </div>
-                        <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
-                            <table class="table align-middle table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Portada</th>
-                                        <th>Stock</th>
-                                        <th>Unidad</th>
-                                        <th>Artículo</th>
-                                        <th class="text-nowrap">Precio de compra</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(data,index) in ingredients.arrData" :key="index">
-                                        <td data-title="Portada">
-                                            <img :src="data.url" :alt="data.name" class="img-thumbnail" style="width: 50px; height: 50px;">
-                                        </td>
-                                        <td data-title="Stock" class="text-center">{{data.is_stock ? data.stock : "N/A"}}</td>
-                                        <td data-title="Unidad" class="text-center">{{data.measure}}</td>
-                                        <td data-title="Artículo">{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
-                                        <td data-title="Precio compra" class="text-center">{{data.price_purchase_format}}</td>
-                                        <td>
-                                            <div class="d-flex gap-2 justify-content-center">
-                                                <app-button  icon="new" btn="primary" @click="addItem('ingredient',data)"></app-button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <app-pagination :common="ingredients" @search="search"></app-pagination>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <h3 class="bg-primary p-1 mb-0 text-center text-white">Insumos agregados</h3>
-                        <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
-                            <table class="table align-middle">
-                                <thead>
-                                    <tr>
-                                        <th class="text-nowrap">Artículo</th>
-                                        <th class="text-nowrap">Cantidad</th>
-                                        <th class="text-nowrap">Unidad</th>
-                                        <th class="text-nowrap">Valor</th>
-                                        <th class="text-nowrap">Subtotal</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(data,index) in arrIngredientsAdded" :key="index">
-                                        <td data-title="Nombre">{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
-                                        <td data-title="Cantidad"><input type="number" class="form-control text-center" @input="updateIngredient(data)" v-model="data.qty"></td>
-                                        <td data-title="Unidad" class="text-center">{{data.measure}}</td>
-                                        <td data-title="Valor" class="text-end">${{formatNum(data.price_purchase)}}</td>
-                                        <td data-title="Subtotal" class="text-end">${{formatNum(data.subtotal)}}</td>
-                                        <td>
-                                            <div class="d-flex gap-2 justify-content-center">
-                                                <app-button  icon="delete" btn="danger" @click="delItem('ingredient',data)"></app-button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="4" class="text-end fw-bold">Total:</td>
-                                        <td class="text-end">${{formatNum(totalIngredients)}}</td>
-                                    </tr>
-                                </tfoot>
-                                </table>
-                            </table>
-                        </div>
-                    </div>
+            <div class="tab-pane fade" id="ingredientsView" role="tabpanel" aria-labelledby="ingredientsView-tab">
+                <h3 class="bg-primary p-1 mb-0 text-center text-white">Insumos agregados</h3>
+                <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr class="text-center">
+                                <th class="text-nowrap">Artículo</th>
+                                <th class="text-nowrap">Cantidad</th>
+                                <th class="text-nowrap">Unidad</th>
+                                <th class="text-nowrap">Valor</th>
+                                <th class="text-nowrap">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(data,index) in arrIngredientsAdded" :key="index">
+                                <td data-title="Nombre">{{data.reference!="" ? data.reference+"-"+data.name :data.name}}</td>
+                                <td data-title="Cantidad" class="text-center">{{data.qty}}</td>
+                                <td data-title="Unidad" class="text-center">{{data.measure}}</td>
+                                <td data-title="Valor" class="text-end">${{formatNum(data.price_purchase)}}</td>
+                                <td data-title="Subtotal" class="text-end">${{formatNum(data.subtotal)}}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">Total:</td>
+                                <td class="text-end">${{formatNum(totalIngredients)}}</td>
+                            </tr>
+                        </tfoot>
+                        </table>
+                    </table>
                 </div>
             </div>
             <div class="tab-pane fade" id="specificationsView" role="tabpanel" aria-labelledby="specificationsView-tab">
