@@ -15,7 +15,7 @@
                 <button class="nav-link" id="variants-tab" data-bs-toggle="tab" data-bs-target="#variants" type="button" role="tab" aria-controls="variants" aria-selected="false">Variantes</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="prices-tab" data-bs-toggle="tab" data-bs-target="#prices" type="button" role="tab" aria-controls="prices" aria-selected="true">Precios al por mayor</button>
+                <button class="nav-link" id="prices-tab" data-bs-toggle="tab" data-bs-target="#prices" type="button" role="tab" aria-controls="prices" aria-selected="true">Descuentos al por mayor</button>
             </li>
         </ul>
         <div class="tab-content mb-3" id="myTabContent">

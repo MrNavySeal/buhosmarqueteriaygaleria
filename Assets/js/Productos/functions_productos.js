@@ -123,6 +123,10 @@ const App = {
             this.arrVariantsToMix = [];
             this.arrVariantsAdded = [];
             this.arrIngredientsAdded = [];
+            this.arrWholesalePrices = [];
+            this.intWholeSaleMinQty="";
+            this.intWholeSaleMaxQty="";
+            this.intWholeSalePercent ="";;
             this.errors = [];
             this.intCheckStock = false;
             this.common.productTitle = "Nuevo artículo";
@@ -131,7 +135,6 @@ const App = {
 
         save:async function(){
             const pricePurchase = this.intCheckRecipe && this.arrIngredientsAdded.length > 0 ? this.totalIngredients : this.intPurchasePrice;
-            console.log(pricePurchase);
             
             tinymce.triggerSave();
             const strDescription = document.querySelector("#txtDescription").value;
@@ -164,7 +167,8 @@ const App = {
                 "combinations": this.arrCombination,
                 "variants":this.arrVariantsToMix,
                 "is_stock":this.intCheckStock,
-                "ingredients":this.arrIngredientsAdded
+                "ingredients":this.arrIngredientsAdded,
+                "wholesale_discount":this.arrWholesalePrices,
             }
             formData.append("data",JSON.stringify(arrData));
             formData.append("images[]",[]);
@@ -304,6 +308,7 @@ const App = {
                 this.strImgUrl=data.framing_url;
                 this.intMeasure=data.measure;
                 this.arrSpecsAdded = data.specs;
+                this.arrWholesalePrices = data.wholesale_discount;
                 this.strReference=data.reference;
                 this.arrSpecs = data.info_specs;
                 this.arrMeasures = data.info_measures;

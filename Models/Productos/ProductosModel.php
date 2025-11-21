@@ -1,25 +1,9 @@
 <?php 
-    /*ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);*/
     class ProductosModel extends Mysql{
         private $intIdCategory;
-        private $intIdSubCategory;
         private $intIdProduct;
         private $strReference;
 		private $strName;
-        private $strDescription;
-        private $strShortDescription;
-        private $intPrice;
-        private $intDiscount;
-        private $intStock;
-		private $intStatus;
-        private $strRoute;
-        private $strFramingImg;
-        private $intFramingMode;
-        private $intProductType;
-        private $strSpecifications;
-        private $intIdMeasure;
         private $arrData;
         public function __construct(){
             parent::__construct();
@@ -74,6 +58,7 @@
                 $this->insertSpecs($request,$this->arrData['specs']);
                 $this->insertVariants($request,$this->arrData['variants']);
                 $this->insertIngredients();
+                $this->insertWholesalePrice();
 	        	$return = intval($request);
 			}else{
 				$return = "exist";
@@ -136,6 +121,7 @@
                 $this->insertSpecs($this->intIdProduct,$this->arrData['specs']);
                 $this->insertVariants($this->intIdProduct,$this->arrData['variants']);
                 $this->insertIngredients();
+                $this->insertWholesalePrice();
                 $return = intval($request);
 			}else{
 				$return = "exist";
@@ -367,6 +353,8 @@
                 ON p.specification_id = s.id_specification
                 WHERE p.product_id = $this->intIdProduct";
                 $request['specs'] = $this->select_all($sqlSpecs);
+
+                $request['wholesale_discount'] = $this->select_all("SELECT min,max,percent FROM product_wholesale_discount WHERE product_id = $this->intIdProduct");
                 
                 if($request['product_type'] == 1){
                     $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intIdProduct");
@@ -375,6 +363,15 @@
                 }
             }
             return $request;
+        }
+
+        private function insertWholesalePrice(){
+            $this->delete("DELETE FROM product_wholesale_discount WHERE product_id = $this->intIdProduct");
+            $data = $this->arrData['wholesale_discount'];
+            foreach ($data as $det) {
+                $sql = "INSERT INTO product_wholesale_discount (product_id,min,max,percent) VALUES(?,?,?,?)";
+                $this->insert($sql,[  $this->intIdProduct, $det['min'], $det['max'], $det['percent'] ]);
+            }
         }
 
         private function insertIngredients(){
