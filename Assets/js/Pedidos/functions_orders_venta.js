@@ -570,7 +570,7 @@ function showProducts(){
             <td data-title="Artículo"> ${strDescription}</td>
             <td data-title="Cantidad" ><input class="form-control text-center w-100" onchange="updateProduct(this,'qty','${objString}')" value="${pro.qty}" type="number"></td>
             <td data-title="Precio"><input class="form-control" value="${pro.price_sell}" onchange="updateProduct(this,'price_sell','${objString}')" type="number"></td>
-            <td data-title="Oferta"><input class="form-control" value="${pro.price_offer}" onchange="updateProduct(this,'discount','${objString}')" value="" type="number"></td>
+            <td data-title="Oferta">$${formatNum(pro.price_offer,".")}</td>
             <td data-title="Subtotal" class="text-end">$${formatNum(pro.subtotal,".")}</td>
             <td data-title="Opciones" >
                 <div class="d-flex justify-content-center">
