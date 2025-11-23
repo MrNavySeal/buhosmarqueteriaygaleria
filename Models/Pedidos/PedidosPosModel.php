@@ -82,7 +82,7 @@
                     if(count($requestImg)>0){
                         $url = media()."/images/uploads/".$requestImg[0]['name'];
                     }
-                    $variation ="";
+                    
                     if($pro['product_type']){
                         $arrVariantName = explode("-",$pro['variant_name']);
                         $arrVariants = json_decode($pro['variation'],true);
@@ -106,6 +106,8 @@
                             "detail"=>$arrVariantDetail
                         );
                     }
+
+                    $arrWholesale = $this->select_all("SELECT min,max,percent FROM product_wholesale_discount WHERE product_id = $idProduct");
                     array_push($arrProducts,array(
                         "url"=>$url,
                         "id"=>$pro['idproduct'],
@@ -123,43 +125,12 @@
                         "variation"=>$arrCombination,
                         "variant_name"=>$pro['variant_name'],
                         "product_type"=>$pro['product_type'],
-                        "is_stock"=>$pro['is_stock']
+                        "is_stock"=>$pro['is_stock'],
+                        "wholesale"=>$arrWholesale
                     ));
                 }
             }
             return array("products"=>$arrProducts,"pages"=>$totalPages);
-        }
-
-        public function selectProduct($id){
-            $this->intId = $id;
-            $sql = "SELECT 
-                p.idproduct,
-                p.name,
-                p.reference,
-                p.price_purchase,
-                p.price,
-                p.product_type,
-                p.is_stock,
-                p.stock,
-                p.import
-            FROM product p
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory
-            AND p.status = 1 AND p.idproduct = $this->intId";
-            $request = $this->select($sql);
-            if(!empty($request)){
-                if($request['product_type'] == 1){
-                    $request['variation'] = $this->select("SELECT * FROM product_variations WHERE product_id = $this->intId");
-                    $request['variation']['variation'] = json_decode($request['variation']['variation']);
-                    $options = $this->select_all("SELECT * FROM product_variations_options WHERE product_id = $this->intId");
-                    $totalOptions = count($options);
-                    for ($i=0; $i < $totalOptions ; $i++) { 
-                        $options[$i]['format_purchase'] = "$".number_format($options[$i]['price_purchase'],0,",",".");
-                    }
-                    $request['options'] = $options;
-                }
-            }
-            return $request;
         }
 
         public function selectCustomers(){

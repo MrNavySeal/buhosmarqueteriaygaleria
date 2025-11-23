@@ -864,7 +864,11 @@
         $total = 0;
         if(empty($data)){
             $data = getIngredientsAdjustment($ingredient['id'],$ingredient['qty'],1,$ingredient['variant_name'],$isRoot);
-            $data = array_filter($data,function($e){ return $e['key'] !== "";});
+            if(!empty($data)){
+                $data = array_filter($data,function($e){ return $e['key'] !== "";});
+            }else{
+                $data = [];
+            }
         }
         foreach ($data as $det ) { $total += $det['subtotal']; }
 

@@ -35,7 +35,7 @@ if($_SESSION['permitsModule']['w']){
             </li>
         </ul>
         <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-5 mb-3">
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="navEnmarcar">
                         <div class="mt-3">
@@ -142,14 +142,12 @@ if($_SESSION['permitsModule']['w']){
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-7">
                 <h3 class="bg-primary p-1 mb-0 text-center text-white">Atendiendo</h3>
                 <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th class="text-nowrap">Stock</th>
-                                <th class="text-nowrap">Referencia</th>
                                 <th class="text-nowrap">Artículo</th>
                                 <th class="text-nowrap">Cantidad</th>
                                 <th class="text-nowrap">Precio</th>
@@ -159,24 +157,23 @@ if($_SESSION['permitsModule']['w']){
                             </tr>
                         </thead>
                         <tbody id="tablePurchase"></tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="6" class="text-end fw-bold">Subtotal:</td>
-                                <td class="text-end" id="subtotalProducts">$0</td>
-                            </tr>
-                            <tr>
-                                <td colspan="6" class="text-end fw-bold">Descuento:</td>
-                                <td class="text-end" id="discountProducts">$0</td>
-                            </tr>
-                            <tr>
-                                <td colspan="6" class="text-end fw-bold">Total:</td>
-                                <td class="text-end" id="totalProducts">$0</td>
-                            </tr>
-                        </tfoot>
-                        </table>
                     </table>
                 </div>
-                <div class="d-flex mt-2">
+                <hr>
+                <div class="d-flex justify-content-between w-100">
+                    <p class="m-0 fw-bold text-secondary">Subtotal:</p>
+                    <p class="m-0 fw-bold" id="subtotalProducts">$0</p>
+                </div>
+                <div class="d-flex justify-content-between w-100">
+                    <p class="m-0 fw-bold text-secondary">Descuento:</p>
+                    <p class="m-0 fw-bold" id="discountProducts">$0</p>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between w-100">
+                    <p class="m-0 fw-bold fs-5">Total:</p>
+                    <p class="m-0 fs-5 fw-bold" id="totalProducts">$0</p>
+                </div>
+                <div class="d-flex gap-3 mt-2">
                     <button type="button" class="btn btn-primary w-100" id="btnPurchase">Pagar</button>
                     <button type="button" class="btn btn-success w-100" id="btnQuote">Cotizar</button>
                     <button type="button" class="btn btn-danger w-100" id="btnClean">Limpiar</button>

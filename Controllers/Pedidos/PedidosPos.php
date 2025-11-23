@@ -28,23 +28,6 @@
             }
         }
         /*************************POS methods*******************************/
-        public function getProduct(){
-            if($_SESSION['permitsModule']['w']){
-                if($_POST['id']){
-                    $id = intval($_POST['id']);
-                    $request = $this->model->selectProduct($id);
-                    if(!empty($request)){
-                        $arrResponse = array("status"=>true,"data"=>$request);
-                    }else{
-                        $arrResponse = array("status"=>false,"msg"=>"El artículo no existe");
-                    }
-                }else{
-                    $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-            }
-            die();
-        }
         public function getProducts(){
             if($_SESSION['permitsModule']['r']){
                 $strSearch = strClean($_POST['search']);

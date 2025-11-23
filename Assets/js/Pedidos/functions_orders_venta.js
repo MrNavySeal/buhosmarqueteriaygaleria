@@ -249,8 +249,10 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
         "subtotal":0,
         "variant_name":"",
         "topic":topic,
-        "variant_detail":{}
+        "variant_detail":{},
+        "wholesale":[]
     };
+
     if(topic == 2){
         const product = arrData.filter((e)=>{
             if(productType){
@@ -270,7 +272,12 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
             obj.variant_name=variantName;
             obj.product_type =product.product_type;
             obj.variant_detail = product.variation;
+            obj.wholesale = product.wholesale;
+            obj.img = product.url;
+            obj.discount = product.price_offer > 0 ? parseFloat(product.price_sell)-parseFloat(product.price_offer) : 0;
+
     }else if(topic==3){
+
         let name = document.querySelector("#txtService").value;
         let qty = document.querySelector("#intQty").value;
         let price = document.querySelector("#intPrice").value;
@@ -282,6 +289,7 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
         obj.name = document.querySelector("#txtService").value;
         obj.qty = parseFloat(qty);
         obj.price_sell = parseInt(price);
+
     }else if(topic== 1){
         const isPrint = document.querySelector("#isPrint").getAttribute("data-print");
         if(isPrint== 1){
@@ -296,6 +304,7 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
         obj.name = nameTopic;
         obj.img = imageUrl;
     }
+
     if(arrProducts.length > 0){
         let flag = false;
         for (let i = 0; i < arrProducts.length; i++) {
@@ -306,22 +315,27 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
                      ){
                         arrProducts[i].qty +=obj.qty 
                         flag = false;
+                        arrProducts[i] = calcWholsale(arrProducts[i]);
                         break;
                      }
                 }else if(arrProducts[i].id == obj.id && arrProducts[i].reference == obj.reference && arrProducts[i].name == obj.name){
-                        arrProducts[i].qty +=obj.qty
-                        flag = false;
-                        break;
+                    arrProducts[i].qty +=obj.qty
+                    flag = false;
+                    arrProducts[i] = calcWholsale(arrProducts[i]);
+                    break;
                 }
+
             }else if(arrProducts[i].topic == 3 && arrProducts[i].name == obj.name){
                 arrProducts[i].qty +=obj.qty;
                 arrProducts[i].price_sell = obj.price_sell;
                 flag = false;
                 break;
+
             }else if(arrProducts[i].topic == 1 && arrProducts[i].name == obj.name && arrProducts[i].img == obj.img){
                 let arrProductData = arrProducts[i].data;
                 let arrObjData = obj.data;
                 let flagFrame = false;
+                
                 if(arrProductData.length == arrObjData.length){
                     for (let j = 0; j < arrProductData.length; j++) {
                         if(arrProductData[j].value == arrObjData[j].value){
@@ -338,6 +352,7 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
                     }
                 }
             }
+
             flag = true;
         }
         if(flag){
@@ -371,16 +386,19 @@ function updateProduct(element,type,data){
                         arrProducts[i].price_offer = value;
                         price = value > 0 ? arrProducts[i].price_offer : arrProducts[i].price_sell ;
                     }
-                    let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
+                    arrProducts[i] = calcWholsale(arrProducts[i]);
+
+                    /* let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
                     let subtotalOffer = arrProducts[i].qty * arrProducts[i].price_offer;
                     totalDiscount = subtotalNormal - subtotalOffer;
                     subtotal = arrProducts[i].qty * price;
                     
                     arrProducts[i].discount = arrProducts[i].price_offer > 0 ? totalDiscount : 0;
-                    arrProducts[i].subtotal = subtotal;
+                    arrProducts[i].subtotal = subtotal; */
                     break;
                  }
             }else if(arrProducts[i].id == obj.id && arrProducts[i].reference == obj.reference && arrProducts[i].name == obj.name){
+                
                 if(type =="qty"){
                     arrProducts[i].qty = value;
                 }else if(type=="price_sell"){
@@ -390,13 +408,15 @@ function updateProduct(element,type,data){
                     arrProducts[i].price_offer = value;
                     price = value > 0 ? arrProducts[i].price_offer : arrProducts[i].price_sell ;
                 }
-                let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
+                arrProducts[i] = calcWholsale(arrProducts[i]);
+                
+                /* let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
                 let subtotalOffer = arrProducts[i].qty * arrProducts[i].price_offer;
                 totalDiscount = subtotalNormal - subtotalOffer;
                 subtotal = arrProducts[i].qty * price;
                 
                 arrProducts[i].discount = arrProducts[i].price_offer > 0 ? totalDiscount : 0;
-                arrProducts[i].subtotal = subtotal;
+                arrProducts[i].subtotal = subtotal; */
                 break;
             }
         }else if(arrProducts[i].topic == 3 && arrProducts[i].name == obj.name){
@@ -500,6 +520,30 @@ function deleteProduct(element,data){
     currentProducts();
 }
 
+function calcWholsale(element){
+    const arrWholesale = element.wholesale;
+    const productQty = element.qty;
+    const priceSell = element.price_sell;
+    let priceOffer = element.price_offer;
+    let discount = priceOffer > 0 ? priceSell-priceOffer : 0;
+
+    if(arrWholesale.length > 0){
+        let arrDiscount = arrWholesale.filter(function(e){return productQty >= e.min;});
+        if(arrDiscount.length > 0){
+            discount = arrDiscount[arrDiscount.length-1].percent;
+            discount = discount/100;
+            discount = discount*priceSell;
+            priceOffer = priceSell-discount;
+        }else{
+            discount = 0;
+            priceOffer = 0;
+        }
+    }
+    element.discount = discount;
+    element.price_offer = priceOffer;
+    return element;
+}
+
 function showProducts(){
     tablePurchase.innerHTML ="";
     arrProducts.forEach(pro=>{
@@ -523,14 +567,16 @@ function showProducts(){
         tr.classList.add("productToBuy");
         let objString = JSON.stringify(pro).replace(/"/g, '&quot;');
         tr.innerHTML = `
-            <td data-title="Stock">${pro.is_stock ? pro.stock : "N/A"}</td>
-            <td data-title="Referencia">${pro.reference}</td>
             <td data-title="Artículo"> ${strDescription}</td>
-            <td data-title="Cantidad"><input class="form-control text-center" onchange="updateProduct(this,'qty','${objString}')" value="${pro.qty}" type="number"></td>
+            <td data-title="Cantidad" ><input class="form-control text-center w-100" onchange="updateProduct(this,'qty','${objString}')" value="${pro.qty}" type="number"></td>
             <td data-title="Precio"><input class="form-control" value="${pro.price_sell}" onchange="updateProduct(this,'price_sell','${objString}')" type="number"></td>
             <td data-title="Oferta"><input class="form-control" value="${pro.price_offer}" onchange="updateProduct(this,'discount','${objString}')" value="" type="number"></td>
             <td data-title="Subtotal" class="text-end">$${formatNum(pro.subtotal,".")}</td>
-            <td data-title="Opciones" ><button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${objString}')"type="button"><i class="fas fa-trash-alt"></i></button></td>
+            <td data-title="Opciones" >
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-danger m-1 text-white" onclick="deleteProduct(this,'${objString}')"type="button"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            </td>
         `;
         tablePurchase.appendChild(tr);
     });
@@ -541,11 +587,12 @@ function currentTotal(){
     let subtotal = 0;
     let discount = 0;
     let total = 0;
-
+    console.log(arrProducts);
     arrProducts.forEach(p=>{
         subtotal+=p.qty * p.price_sell;
-        discount+=p.discount;
+        discount+=p.discount > 0 ? (p.discount*p.qty) : 0;
     });
+
     total = subtotal-discount;
     document.querySelector("#subtotalProducts").innerHTML = "$"+formatNum(subtotal,".");
     document.querySelector("#discountProducts").innerHTML = "$"+formatNum(discount,".");
@@ -560,10 +607,10 @@ function currentProducts(){
         let price = arrProducts[i].price_offer > 0 ? arrProducts[i].price_offer :arrProducts[i].price_sell; 
         let subtotal = price * arrProducts[i].qty;
         let children = rows[i].children;
-        children[3].children[0].value = arrProducts[i].qty; //Cantidad
-        children[4].children[0].value = arrProducts[i].price_sell; //Precio de venta
-        children[5].children[0].value = arrProducts[i].price_offer; //Precio de oferta
-        children[6].innerHTML = "$"+formatNum(subtotal,".");//Subtotal
+        children[1].children[0].value = arrProducts[i].qty; //Cantidad
+        children[2].children[0].value = arrProducts[i].price_sell; //Precio de venta
+        children[3].children[0].value = arrProducts[i].price_offer; //Precio de oferta
+        children[4].innerHTML = "$"+formatNum(subtotal,".");//Subtotal
     }
     showProducts();
 }
