@@ -144,7 +144,7 @@ if($_SESSION['permitsModule']['w']){
             </div>
             <div class="col-md-7">
                 <h3 class="bg-primary p-1 mb-0 text-center text-white">Atendiendo</h3>
-                <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
+                <div class="table-responsive overflow-y no-more-tables" style="max-height:40vh">
                     <table class="table align-middle">
                         <thead>
                             <tr>
