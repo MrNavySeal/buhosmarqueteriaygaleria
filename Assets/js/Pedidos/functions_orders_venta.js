@@ -477,7 +477,7 @@ function updateProduct(element,type,data){
 
 function deleteProduct(element,data){
     let obj = JSON.parse(data);
-    let parent = element.parentElement.parentElement;
+    let parent = element.parentElement.parentElement.parentElement;
     let index = 0;
     for (let i = 0; i < arrProducts.length; i++) {
         if(arrProducts[i].topic == 2){
@@ -587,7 +587,6 @@ function currentTotal(){
     let subtotal = 0;
     let discount = 0;
     let total = 0;
-    console.log(arrProducts);
     arrProducts.forEach(p=>{
         subtotal+=p.qty * p.price_sell;
         discount+=p.discount > 0 ? (p.discount*p.qty) : 0;
@@ -607,10 +606,11 @@ function currentProducts(){
         let price = arrProducts[i].price_offer > 0 ? arrProducts[i].price_offer :arrProducts[i].price_sell; 
         let subtotal = price * arrProducts[i].qty;
         let children = rows[i].children;
+
         children[1].children[0].value = arrProducts[i].qty; //Cantidad
         children[2].children[0].value = arrProducts[i].price_sell; //Precio de venta
-        children[3].children[0].value = arrProducts[i].price_offer; //Precio de oferta
-        children[4].innerHTML = "$"+formatNum(subtotal,".");//Subtotal
+        children[3].innerHTML = "$"+formatNum(arrProducts[i].price_offer,"."); //Precio de oferta
+        children[4].innerHTML = "$"+formatNum(subtotal,"."); //Subtotal
     }
     showProducts();
 }
