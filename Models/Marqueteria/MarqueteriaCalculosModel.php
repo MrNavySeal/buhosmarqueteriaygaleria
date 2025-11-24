@@ -54,7 +54,9 @@
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             WHERE p.idproduct = $this->intId";
             $request = $this->select($sql);
+            $request['wholesale'] = $this->select_all("SELECT min,max,percent FROM product_wholesale_discount WHERE product_id = $this->intId");
             $request['name'] = strtolower($request['name']);
+
             $sqlWaste = "SELECT 
             p.value as waste 
             FROM product_specs p

@@ -145,7 +145,8 @@
                                 "color_margin"=>$intIdColorMargin,
                                 "color_border"=>$intIdColorBorder,
                                 "props"=>$arrData,
-                                "type_frame"=>$intIdTypeFrame
+                                "type_frame"=>$intIdTypeFrame,
+                                "wholesale"=>$frame['wholesale']
                             )
                         );
                     }

@@ -261,20 +261,21 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
                 return e.id == id;
             }
         })[0];
-            obj.id = id;
-            obj.stock = product.stock;
-            obj.is_stock = product.is_stock;
-            obj.qty = 1;
-            obj.price_sell = product.price_sell;
-            obj.price_offer = product.price_offer;
-            obj.reference=product.reference;
-            obj.name=product.product_name;
-            obj.variant_name=variantName;
-            obj.product_type =product.product_type;
-            obj.variant_detail = product.variation;
-            obj.wholesale = product.wholesale;
-            obj.img = product.url;
-            obj.discount = product.price_offer > 0 ? parseFloat(product.price_sell)-parseFloat(product.price_offer) : 0;
+
+        obj.id = id;
+        obj.stock = product.stock;
+        obj.is_stock = product.is_stock;
+        obj.qty = 1;
+        obj.price_sell = product.price_sell;
+        obj.price_offer = product.price_offer;
+        obj.reference=product.reference;
+        obj.name=product.product_name;
+        obj.variant_name=variantName;
+        obj.product_type =product.product_type;
+        obj.variant_detail = product.variation;
+        obj.wholesale = product.wholesale;
+        obj.img = product.url;
+        obj.discount = product.price_offer > 0 ? parseFloat(product.price_sell)-parseFloat(product.price_offer) : 0;
 
     }else if(topic==3){
 
@@ -285,10 +286,12 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
             Swal.fire("Error","Los campos no pueden quedar vacios","error");
             return false;
         }
+
         obj.id = 0;
         obj.name = document.querySelector("#txtService").value;
         obj.qty = parseFloat(qty);
         obj.price_sell = parseInt(price);
+        obj.price_offer = 0;
 
     }else if(topic== 1){
         const isPrint = document.querySelector("#isPrint").getAttribute("data-print");
@@ -298,11 +301,15 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
                 return false;
             }
         }
+
         obj.price_sell =totalFrame;
         obj.config = arrConfigFrame;
         obj.data = product;
         obj.name = nameTopic;
         obj.img = imageUrl;
+        obj.price_offer = 0;
+        obj.discount = 0;
+        obj.wholesale = arrConfigFrame.wholesale;
     }
 
     if(arrProducts.length > 0){
@@ -387,14 +394,6 @@ function updateProduct(element,type,data){
                         price = value > 0 ? arrProducts[i].price_offer : arrProducts[i].price_sell ;
                     }
                     arrProducts[i] = calcWholsale(arrProducts[i]);
-
-                    /* let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
-                    let subtotalOffer = arrProducts[i].qty * arrProducts[i].price_offer;
-                    totalDiscount = subtotalNormal - subtotalOffer;
-                    subtotal = arrProducts[i].qty * price;
-                    
-                    arrProducts[i].discount = arrProducts[i].price_offer > 0 ? totalDiscount : 0;
-                    arrProducts[i].subtotal = subtotal; */
                     break;
                  }
             }else if(arrProducts[i].id == obj.id && arrProducts[i].reference == obj.reference && arrProducts[i].name == obj.name){
@@ -409,14 +408,6 @@ function updateProduct(element,type,data){
                     price = value > 0 ? arrProducts[i].price_offer : arrProducts[i].price_sell ;
                 }
                 arrProducts[i] = calcWholsale(arrProducts[i]);
-                
-                /* let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
-                let subtotalOffer = arrProducts[i].qty * arrProducts[i].price_offer;
-                totalDiscount = subtotalNormal - subtotalOffer;
-                subtotal = arrProducts[i].qty * price;
-                
-                arrProducts[i].discount = arrProducts[i].price_offer > 0 ? totalDiscount : 0;
-                arrProducts[i].subtotal = subtotal; */
                 break;
             }
         }else if(arrProducts[i].topic == 3 && arrProducts[i].name == obj.name){
@@ -429,13 +420,6 @@ function updateProduct(element,type,data){
                 arrProducts[i].price_offer = value;
                 price = value > 0 ? arrProducts[i].price_offer : arrProducts[i].price_sell ;
             }
-            let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
-            let subtotalOffer = arrProducts[i].qty * arrProducts[i].price_offer;
-            totalDiscount = subtotalNormal - subtotalOffer;
-            subtotal = arrProducts[i].qty * price;
-            
-            arrProducts[i].discount = arrProducts[i].price_offer > 0 ? totalDiscount : 0;
-            arrProducts[i].subtotal = subtotal;
             break;
         }else if(arrProducts[i].topic == 1 && arrProducts[i].name == obj.name && arrProducts[i].img == obj.img){
             let arrProductData = arrProducts[i].data;
@@ -460,13 +444,7 @@ function updateProduct(element,type,data){
                         arrProducts[i].price_offer = value;
                         price = value > 0 ? arrProducts[i].price_offer : arrProducts[i].price_sell ;
                     }
-                    let subtotalNormal = arrProducts[i].qty * arrProducts[i].price_sell;
-                    let subtotalOffer = arrProducts[i].qty * arrProducts[i].price_offer;
-                    totalDiscount = subtotalNormal - subtotalOffer;
-                    subtotal = arrProducts[i].qty * price;
-                    
-                    arrProducts[i].discount = arrProducts[i].price_offer > 0 ? totalDiscount : 0;
-                    arrProducts[i].subtotal = subtotal;
+                    arrProducts[i] = calcWholsale(arrProducts[i]);
                     break;
                 }
             }
