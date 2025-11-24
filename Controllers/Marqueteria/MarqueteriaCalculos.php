@@ -131,7 +131,7 @@
                             }
                         }
 
-                        $htmlWholesaleData = "<tr><td colspan='4'>No hay descuentos</td></tr>";
+                        $htmlWholesaleData = "<tr><td colspan='4' class='text-center'>No hay descuentos</td></tr>";
                         $arrWholesale = $frame['wholesale'];
                         if(!empty($arrWholesale)){
                             $htmlWholesaleData ="";
