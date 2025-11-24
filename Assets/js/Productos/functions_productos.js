@@ -481,7 +481,7 @@ const App = {
                 this.intWholeSalePercent = parseFloat(this.intWholeSalePercent);
 
                 if(this.intWholeSalePercent > 100 || this.intWholeSalePercent < 0){
-                    Swal.fire("Atención!","El porcentaje no puede ser menor a 0 ni mayor a 10.","warning");
+                    Swal.fire("Atención!","El porcentaje no puede ser menor a 0 ni mayor a 100.","warning");
                     return false;
                 }else if(this.intWholeSaleMinQty < 0){
                     Swal.fire("Atención!","La cantidad mínima no puede ser menor a 0.","warning");

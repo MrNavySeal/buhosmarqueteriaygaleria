@@ -211,6 +211,7 @@
             $strAddress = explode("/",$address)[1];
             $total = count($this->arrData);
             for ($i=0; $i < $total ; $i++) {
+                $this->arrData[$i]['id'] = intval($this->arrData[$i]['id']);
                 if($this->arrData[$i]['id']!=""){
                     $this->strDescription = $this->arrData[$i]['product_type'] == 1 ? json_encode($this->arrData[$i]['variant_detail']) : $this->arrData[$i]['name'];
     
