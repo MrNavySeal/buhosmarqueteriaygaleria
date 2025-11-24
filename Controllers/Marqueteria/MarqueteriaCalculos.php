@@ -64,12 +64,16 @@
                         $htmlCostData = "";
                         $htmlSpecs ="";
                         $price = ceil((UTILIDAD*$totalCostFrame)/1000)*1000;
+
+
                         $htmlCostData ='<tr>
                             <td>Marco '.$frame['reference'].'</td>
                             <td class="text-end">'.formatNum($totalCostFrame).'</td>
                             <td class="text-end">'.formatNum(ceil((UTILIDAD*$totalCostFrame)/1000)*1000).'</td>
                         </tr>';
+
                         array_push($arrCostData,array("name"=>"Referencia","value"=>$frame['reference']));
+                        
                         array_push($arrSpecs,
                             array("name"=>"Referencia","value"=>$frame['reference']),
                             array("name"=>"Material","value"=>ucfirst($frame['name'])),
@@ -77,6 +81,7 @@
                             array("name"=>"Medida imagen","value"=>$intWidth." x ".$intHeight." cm"),
                             array("name"=>"Medida marco","value"=>$intWidthM." x ".$intHeightM." cm")
                         );
+
                         $htmlSpecs.='<tr><td>Referencia</td><td>'.$frame['reference'].'</td></tr>';
                         $htmlSpecs.='<tr><td>Material</td><td>'.ucfirst($frame['name']).'</td></tr>';
                         $htmlSpecs.='<tr><td>Orientación</td><td>'.$strOrientation.'</td></tr>';
@@ -87,6 +92,9 @@
                             array_push($arrSpecs,array("name"=>"Color del marco","value"=>$strColorFrame));
                             $htmlSpecs.='<tr><td>Color del marco</td><td>'.$strColorFrame.'</td></tr>';
                         }
+
+
+
                         foreach ($data as $e ) {
                             $prop = $e['prop'];
                             $option = $e['option'];
@@ -122,6 +130,33 @@
                                 }
                             }
                         }
+
+                        $htmlWholesaleData = "<tr><td colspan='4'>No hay descuentos</td></tr>";
+                        $arrWholesale = $frame['wholesale'];
+                        if(!empty($arrWholesale)){
+                            $htmlWholesaleData ="";
+                            $totalWholeSale = count($arrWholesale);
+                            for ($i=0; $i < $totalWholeSale ; $i++) { 
+                                $e = $arrWholesale[$i];
+                                $max = $i == $totalWholeSale-1 ? "En adelante" : $e['max'];
+                                $discount = $price - ($price*($e['percent']/100));
+        
+                                $htmlWholesaleData.='
+                                <tr>
+                                    <td class="text-center">'.$e['min'].'</td>
+                                    <td class="text-center">'.$max.'</td>
+                                    <td class="text-center">'.$e['percent'].'%</td>
+                                    <td class="text-end">'.formatNum($discount).'</td>
+                                </tr>';
+                            }
+
+                            $htmlWholesaleData.='
+                            <tr>
+                                <td colspan="3" class="fw-bold text-end">Precio normal:</td>
+                                <td class="text-end fw-bold">'.formatNum($price).'</td>
+                            </tr>';
+                        }
+
                         $totalCost = $totalCostMaterial+$totalCostFrame;
                         $arrResponse = array(
                             "status"=>true,
@@ -131,6 +166,7 @@
                             "cost"=>$arrCostData,
                             "html_cost"=>$htmlCostData,
                             "html_specs"=>$htmlSpecs,
+                            "html_wholesale"=>$htmlWholesaleData,
                             "total_cost_clean"=>$totalCost,
                             "total_clean"=>$price,
                             "name"=>$request_config['name'],
@@ -146,7 +182,7 @@
                                 "color_border"=>$intIdColorBorder,
                                 "props"=>$arrData,
                                 "type_frame"=>$intIdTypeFrame,
-                                "wholesale"=>$frame['wholesale']
+                                "wholesale"=>$arrWholesale
                             )
                         );
                     }

@@ -540,9 +540,11 @@ async function calcularMarco(id=null){
         nameTopic = objData.name;
         document.querySelector("#tableCostMaterial").innerHTML = objData.html_cost;
         document.querySelector("#tableSpecs").innerHTML = objData.html_specs;
+        document.querySelector("#tableFrameDiscounts").innerHTML = objData.html_wholesale;
         document.querySelector("#totalCustomCost").innerHTML = `<span class="text-danger fw-bold">Total: ${objData.total_cost}</span>`;
         document.querySelector("#totalCustomPrice").innerHTML = `<span class="text-success fw-bold">Total: ${objData.total}</span>`;
         document.querySelector(".totalFrame").innerHTML = objData.total;
+        document.querySelector("#frameNormalPrice").innerHTML = objData.total;
     }
 }
 function calcDimension(picture){
@@ -735,6 +737,7 @@ function showProps(data){
     }
     document.querySelector("#contentProps").innerHTML = html;
 }
+
 function showMolding(data,color){
     let html = "";
     let contentFrames ="";
@@ -789,6 +792,7 @@ function showMolding(data,color){
     });
     
 }
+
 async function showDefaultFraming(id){
     const colorFrame = document.querySelectorAll(".color--frame");
     const layoutMargin = document.querySelector(".layout--margin");

@@ -14,6 +14,9 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="pills-cost-tab" data-bs-toggle="pill" data-bs-target="#pills-cost" type="button" role="tab" aria-controls="pills-cost" aria-selected="true">Costos de material</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-discount-tab" data-bs-toggle="pill" data-bs-target="#pills-discount" type="button" role="tab" aria-controls="pills-discount" aria-selected="true">Descuentos al por mayor</button>
+                    </li>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="pills-frame" role="tabpanel" aria-labelledby="pills-frame-tab" tabindex="0">
@@ -173,6 +176,21 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-discount" role="tabpanel" aria-labelledby="pills-discount-tab" tabindex="0">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Pedido mínimo</th>
+                                    <th class="text-center">Hasta</th>
+                                    <th class="text-center">Descuento (%)</th>
+                                    <th class="text-center">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableFrameDiscounts">
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
