@@ -262,7 +262,27 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="pricesView" role="tabpanel" aria-labelledby="pricesView-tab"></div>
+            <div class="tab-pane fade" id="pricesView" role="tabpanel" aria-labelledby="pricesView-tab">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Cantidad mínima</th>
+                            <th class="text-center">Cantidad máxima</th>
+                            <th class="text-center">Descuento (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-if="arrWholesalePrices.length > 0" v-for="(data,index) in arrWholesalePrices" :key="index">
+                            <td class="text-center">{{data.min}}</td>
+                            <td class="text-center">{{data.max}}</td>
+                            <td class="text-center">{{data.percent}}%</td>
+                        </tr>
+                        <tr v-else>
+                            <td colspan="3" class="text-center">No hay descuentos</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </template>
 </app-modal>

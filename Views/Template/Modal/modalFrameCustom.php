@@ -181,8 +181,8 @@
                         <table class="table align-middle">
                             <thead>
                                 <tr>
-                                    <th class="text-center">Pedido mínimo</th>
-                                    <th class="text-center">Hasta</th>
+                                    <th class="text-center">Cantidad mínima</th>
+                                    <th class="text-center">Cantidad máxima</th>
                                     <th class="text-center">Descuento (%)</th>
                                     <th class="text-center">Valor</th>
                                 </tr>

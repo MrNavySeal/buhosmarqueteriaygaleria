@@ -315,6 +315,10 @@ const App = {
                 this.arrVariants = data.info_variants;
                 this.arrIngredientsAdded = data.ingredients;
 
+                if(this.arrWholesalePrices.length > 0){
+                    this.intWholeSaleMinQty = parseFloat(this.arrWholesalePrices[this.arrWholesalePrices.length-1].max)+1;
+                }
+
                 this.ingredients.arrData = data.info_ingredients.data;
                 this.ingredients.intStartPage  = data.info_ingredients.start_page;
                 this.ingredients.intTotalButtons = data.info_ingredients.limit_page;

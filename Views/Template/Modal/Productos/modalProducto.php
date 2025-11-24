@@ -394,13 +394,13 @@
             <div class="tab-pane fade" id="prices" role="tabpanel" aria-labelledby="prices-tab">
                 <div class="row" v-for="(data,index) in arrWholesalePrices" :key="index">
                     <div class="col-md-4">
-                        <app-input  title="Desde" type="number" v-model="data.min" @change="changeWholeSaleMaxQty()" :disabled = "index > 0"></app-input>
+                        <app-input  title="Cantidad mínima" type="number" v-model="data.min" @change="changeWholeSaleMaxQty()" :disabled = "index > 0"></app-input>
                     </div>
                     <div class="col-md-4">
-                        <app-input  title="Hasta" type="number" v-model="data.max" @change="changeWholeSaleMaxQty()"></app-input>
+                        <app-input  title="Cantidad máxima" type="number" v-model="data.max" @change="changeWholeSaleMaxQty()"></app-input>
                     </div>
                     <div class="col-md-4">
-                        <app-button-input  label="intWholeSalePercent" title="Descuento al por mayor" btn="primary" @change="changeWholeSalePercent(index)" v-model="data.percent" required="false">
+                        <app-button-input  label="intWholeSalePercent" title="Descuento (%)" btn="primary" @change="changeWholeSalePercent(index)" v-model="data.percent" required="false">
                             <template #right>
                                 <app-button icon="delete" btn="danger" @click="delItem('price',index)"></app-button>
                             </template>
