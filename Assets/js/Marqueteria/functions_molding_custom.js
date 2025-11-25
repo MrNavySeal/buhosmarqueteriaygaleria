@@ -16,8 +16,6 @@ const sliderLeft = document.querySelector(".slider--control-left");
 const sliderRight = document.querySelector(".slider--control-right");
 const sliderInner = document.querySelector(".slider--inner");
 const selectStyle = document.querySelectorAll(".selectProp");
-const btnBack = document.querySelector("#btnBack");
-const btnNext = document.querySelector("#btnNext");
 const pages = document.querySelectorAll(".page");
 const containerFrames = document.querySelector(".select--frames");
 const searchFrame = document.querySelector("#searchFrame");
@@ -25,14 +23,11 @@ const sortFrame = document.querySelector("#sortFrame");
 const uploadPicture = document.querySelector("#txtPicture");
 const uploadFramingImg = document.querySelector("#txtImgShow");
 const toastLiveExample = document.getElementById('liveToast');
-const closeImage = document.querySelector("#closeImg");
+
 const framePhotos = document.querySelector("#framePhotos");
-const changeImgL = document.querySelectorAll(".change__img")[0];
-const changeImgR = document.querySelectorAll(".change__img")[1];
 const addFrame = document.querySelector("#addFrame");
 let innerP = document.querySelector(".product-image-inner");
-let btnPrevP = document.querySelector(".slider-btn-left");
-let btnNextP = document.querySelector(".slider-btn-right");
+
 let indexImg = 0;
 let page = 0;
 let PPI = 100;
@@ -48,71 +43,6 @@ window.addEventListener("load",function(){
     resizeFrame(intWidth.value, intHeight.value);
 })
 
-closeImage.addEventListener("click",function(){
-    framePhotos.classList.add("d-none");
-});
-btnPrevP.addEventListener("click",function(){
-    innerP.scrollBy(-100,0);
-})
-btnNextP.addEventListener("click",function(){
-    innerP.scrollBy(100,0);
-});
-btnNext.addEventListener("click",function(){
-    for (let i = 0; i < pages.length; i++) {
-        pages[i].classList.add("d-none");
-    }
-    page++;
-    if(page == pages.length-1){
-        btnNext.classList.add("d-none");
-        btnBack.classList.remove("d-none");
-    }else{
-        btnBack.classList.add("d-none");
-        btnNext.classList.remove("d-none");
-    }
-    if(page>0){
-        btnBack.classList.remove("d-none");
-    }
-    pages[page].classList.remove("d-none");
-});
-btnBack.addEventListener("click",function(){
-    for (let i = 0; i < pages.length; i++) {
-        pages[i].classList.add("d-none");
-    }
-    page--;
-    if(page == pages.length-1){
-        btnNext.classList.add("d-none");
-        btnBack.classList.remove("d-none");
-    }else{
-        btnBack.classList.add("d-none");
-        btnNext.classList.remove("d-none");
-    }
-    if(page>0){
-        btnBack.classList.remove("d-none");
-    }
-    pages[page].classList.remove("d-none");
-});
-changeImgL.addEventListener("click",function(){
-    let divImg = document.querySelector(".frame__img__container img");
-    let images = document.querySelectorAll(".product-image-item");
-    
-    --indexImg;
-    if(indexImg < 0){
-        indexImg = images.length-1;
-    }
-    let url = images[indexImg].children[0].getAttribute("src");
-    divImg.setAttribute("src",url);
-});
-changeImgR.addEventListener("click",function(){
-    let divImg = document.querySelector(".frame__img__container img");
-    let images = document.querySelectorAll(".product-image-item");
-    
-    ++indexImg;
-    if(indexImg >= images.length){
-        indexImg = 0;
-    }
-    let url = images[indexImg].children[0].getAttribute("src");
-    divImg.setAttribute("src",url);
-});
 intHeight.addEventListener("change",function(){
     
     let height = intHeight.value;
@@ -343,7 +273,6 @@ function selectOrientation(element){
     element.classList.add("element--active");
     document.querySelectorAll(".measures--input")[0].removeAttribute("disabled");
     document.querySelectorAll(".measures--input")[1].removeAttribute("disabled");
-    btnNext.classList.remove("d-none");
     resizeFrame(intWidth.value, intHeight.value);
 }
 function selectActive(element =null,elements=null){
@@ -544,7 +473,7 @@ async function calcularMarco(id=null){
         document.querySelector("#totalCustomCost").innerHTML = `<span class="text-danger fw-bold">Total: ${objData.total_cost}</span>`;
         document.querySelector("#totalCustomPrice").innerHTML = `<span class="text-success fw-bold">Total: ${objData.total}</span>`;
         document.querySelector(".totalFrame").innerHTML = objData.total;
-        document.querySelector("#frameNormalPrice").innerHTML = objData.total;
+        //document.querySelector("#frameNormalPrice").innerHTML = objData.total;
     }
 }
 function calcDimension(picture){
@@ -691,7 +620,7 @@ function showProps(data){
             });
             html+= `
                 <div class="mb-3 selectPropContent" ${propAttributes}>
-                    <span class="fw-bold">${d.name}</span>
+                    <span>${d.name}</span>
                     <select class="form-select mt-3 mb-3 selectProp"  onchange="updateFramingConfig(this)" data-ismargin="${defaultOption.is_margin}" data-id="${d.prop}"
                     data-margin="0" data-max="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}"
                     data-isbocel="${defaultOption.is_bocel}" data-tag="${defaultOption.tag}" data-tagframe="${defaultOption.tag_frame}">${selectOptions}</select>
@@ -701,7 +630,7 @@ function showProps(data){
                 html+=`<div class="option--custom  mb-3">
                         <div class="d-none" id="isMargin" data-name="${defaultOption.is_margin}">
                             <div class="mb-3" >
-                                <span class="fw-bold">Medida del <span id="marginTitle">${defaultOption.tag}</span></span>
+                                <span>Medida del <span id="marginTitle">${defaultOption.tag}</span></span>
                                 <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="${defaultOption.margin}" value="1" id="marginRange" 
                                 oninput="selectMargin(this.value)">
                                 <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
