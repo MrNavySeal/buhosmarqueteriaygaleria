@@ -70,7 +70,7 @@
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
                                             <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-dimensions" aria-expanded="false" aria-controls="flush-dimensions">
-                                                Dimensiones y orientación
+                                                1. Dimensiones y orientación
                                             </button>
                                         </h2>
                                         <div id="flush-dimensions" class="accordion-collapse collapse show" data-bs-parent="#accordionFlushExample">
@@ -103,7 +103,7 @@
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
                                             <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-frame" aria-expanded="false" aria-controls="flush-frame">
-                                                Moldura
+                                                2. Moldura
                                             </button>
                                         </h2>
                                         <div id="flush-frame" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
@@ -132,7 +132,7 @@
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
                                             <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-options" aria-expanded="false" aria-controls="flush-options">
-                                                Opciones de presentación
+                                                3. Opciones de presentación
                                             </button>
                                         </h2>
                                         <div id="flush-options" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
