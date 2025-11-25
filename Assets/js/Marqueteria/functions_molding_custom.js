@@ -544,6 +544,7 @@ async function calcularMarco(id=null){
         document.querySelector("#totalCustomCost").innerHTML = `<span class="text-danger fw-bold">Total: ${objData.total_cost}</span>`;
         document.querySelector("#totalCustomPrice").innerHTML = `<span class="text-success fw-bold">Total: ${objData.total}</span>`;
         document.querySelector(".totalFrame").innerHTML = objData.total;
+        document.querySelector("#frameNormalPrice").innerHTML = objData.total;
     }
 }
 function calcDimension(picture){
