@@ -205,7 +205,7 @@ function selectColor(element=null,option=null){
             layoutImg.style.borderRadius="0";
         }
     }
-    //calcularMarco();
+    calcularMarco();
 }
 function selectOrientation(element,type=""){
     let items = document.querySelectorAll(".orientation");
