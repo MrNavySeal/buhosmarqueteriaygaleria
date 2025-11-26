@@ -47,9 +47,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pills-cost-tab" data-bs-toggle="pill" data-bs-target="#pills-cost" type="button" role="tab" aria-controls="pills-cost" aria-selected="true">Ejemplos</button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <!-- <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pills-discount-tab" data-bs-toggle="pill" data-bs-target="#pills-discount" type="button" role="tab" aria-controls="pills-discount" aria-selected="true">Al por mayor</button>
-                </li>
+                </li> -->
             </ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-frame" role="tabpanel" aria-labelledby="pills-frame-tab" tabindex="0">
