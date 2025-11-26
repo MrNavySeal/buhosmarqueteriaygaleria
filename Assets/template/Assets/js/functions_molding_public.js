@@ -301,7 +301,7 @@ function selectColorFrame(element){
     let bg = getComputedStyle(element.children[0]).backgroundColor;
     layoutBorder.style.outlineColor=bg;
     document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
-    //calcularMarco();
+    calcularMarco();
 }
 function setDefaultConfig(flag = true){
     colorMargin = document.querySelectorAll(".color--margin")[0];
@@ -414,7 +414,7 @@ async function calcularMarco(id=null){
     formData.append("color_margin_id",colorMarginId);
     formData.append("color_border_id",colorBorderId);
     formData.append("type_frame",sortFrame.getAttribute("data-id"));
-    document.querySelector(".totalFrame").innerHTML="Calculando...";
+    document.querySelector(".totalFrame").innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     const response = await fetch(base_url+"/Enmarcar/calcularMarcoTotal",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){

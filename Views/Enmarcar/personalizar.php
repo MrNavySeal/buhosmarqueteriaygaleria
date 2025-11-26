@@ -4,7 +4,6 @@
 ?>
 <div id="modalPoup"></div>
 <main class="m-3">
-    <h1 class="section--title" id="enmarcarTipo"><?=$data['name']?></h1>
     <div class="row">
         <div class="col-md-7" id="isFrame">
             <div class="frame">
@@ -37,6 +36,8 @@
             </div>
         </div>
         <div class="col-md-5">
+            <h1 class="fw-bold fs-4" id="enmarcarTipo"><?=$data['name']?></h1>
+            <p>Ajusta cada detalle y ve los cambios en tiempo real</p>
             <ul class="nav nav-pills mb-3" id="product-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="pills-frame-tab" data-bs-toggle="pill" data-bs-target="#pills-frame" type="button" role="tab" aria-controls="pills-frame" aria-selected="true">Personalizar</button>
@@ -212,10 +213,10 @@
                     </table>
                 </div>
             </div>
-            <div class="text-center d-flex justify-content-center gap-3 align-items-bottom mt-4 border rounded p-2">
+            <div class="text-center d-flex justify-content-center gap-3 mt-4 border rounded p-2">
                 <div class="d-flex gap-2 align-items-center justify-content-end">
                     <span class="text-start fw-bold">Precio:</span>
-                    <div class="fw-bold fs-2 t-color-1 totalFrame">$ 0.00</div>
+                    <div class="fw-bold fs-2 t-color-1 totalFrame d-flex align-items-center">$ 0.00</div>
                 </div>
                     <button type="button" class="btn btn-bg-1 mt-2" id="addFrame" onclick="addProduct()"><i class="fas fa-shopping-cart"></i> Agregar</button>
             </div>
