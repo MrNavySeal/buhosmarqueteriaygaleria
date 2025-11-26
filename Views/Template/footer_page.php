@@ -19,9 +19,7 @@ for ($i=0; $i < count($social) ; $i++) {
 <footer>
     <div class="row m-0 mt-3">
         <div class="col-lg-4 p-5">
-            <div class="logo">
-                <img src="<?=media()."/images/uploads/".$company['logo']?>" alt="<?=$company['name']?>">
-            </div>
+            <h5 class="fw-bold mb-3"><?=$company['name']?></h5>
             <p><?=$company['description']?></p>
             <p class="fw-bold fs-4">Síguenos</p>
             <ul class="social social--dark">
@@ -31,6 +29,12 @@ for ($i=0; $i < count($social) ; $i++) {
         <div class="col-lg-8 p-0">
             <div class="footer--info">
                 <div class="row mb-5">
+                    <div class="col-md-4">
+                        <div class="footer--contact">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p><?=$company['addressfull']?></p>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="footer--contact">
                             <i class="fas fa-map-marker-alt"></i>
