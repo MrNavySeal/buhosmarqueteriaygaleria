@@ -53,7 +53,7 @@
             </ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-frame" role="tabpanel" aria-labelledby="pills-frame-tab" tabindex="0">
-                    <div class="mb-3" id="isPrint">
+                    <div class="mb-3 d-none" id="isPrint">
                         <span class="fw-bold">Sube una foto</span>
                         <p class="t-color-3">La calidad de la imagen debe ser de al menos 100ppi, asegurate que abajo de tu imagen siempre diga: 
                         <span class="fw-bold text-success">buena calidad</span></p>
