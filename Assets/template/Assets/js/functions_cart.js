@@ -7,48 +7,9 @@ let inputs;
 window.addEventListener("load",function(){
     document.querySelector("#btnCart").classList.add("d-none");
     if(document.querySelectorAll(".table-cart .btn-del")){
-        
         //updateCart();
         delCart(document.querySelectorAll(".btn-del-cart"))
-        /*let btns = document.querySelectorAll(".table-cart .btn-del");
-        for (let i = 0; i < btns.length; i++) {
-            let btn = btns[i];
-            btn.addEventListener("click",function(){
-                let idProduct = inputs[i].getAttribute("data-id");
-                let formData = new FormData();
-                formData.append("idProduct",idProduct);
-                request(base_url+"/carrito/delCart",formData,"post").then(function(objData){
-                    if(objData.status){
-                        window.location.reload();
-                    }
-                });
-                
-            })
-        }*/
     }
-    let urlSearch = window.location.search;
-    let params = new URLSearchParams(urlSearch);
-    let boolCheck = document.querySelector("#boolCheck");
-    let cupon = "";
-    let url="";
-    if(params.get("cupon")){
-        cupon = "cupon="+params.get("cupon");
-    }
-    if(params.get("situ")){
-        let situ = params.get("situ");
-        if(situ == "true"){
-            boolCheck.setAttribute("checked","");
-        }else{
-            boolCheck.removeAttribute("checked");
-        }
-    }
-    boolCheck.addEventListener("input",function(){
-        if(cupon!=""){
-            window.location.href=base_url+"/carrito?"+cupon+"&situ="+boolCheck.checked;
-        }else{
-            window.location.href=base_url+"/carrito?situ="+boolCheck.checked;
-        }
-    })
 });
 
 if(document.querySelector("#selectCity")){
@@ -67,7 +28,6 @@ if(document.querySelector("#selectCity")){
             return false;
         }
         request(base_url+"/carrito/calculateShippingCity",formData,"post").then(function(objData){
-            document.querySelector("#subtotal").innerHTML = objData.subtotal;
             document.querySelector("#totalProducts").innerHTML = objData.total;
             if(document.querySelector("#cuponTotal")){
                 document.querySelector("#cuponTotal").innerHTML = objData.cupon;
@@ -139,10 +99,8 @@ function cartIncrement(element){
     }
     parent.children[4].innerHTML =`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     document.querySelector("#totalProducts").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    document.querySelector("#subtotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     request(base_url+"/carrito/updateCart",formData,"post").then(function(objData){
         if(objData.status){
-            document.querySelector("#subtotal").innerHTML = objData.subtotal;
             document.querySelector("#totalProducts").innerHTML = objData.total;
             parent.children[4].innerHTML = objData.totalPrice;
             input.value = objData.qty;
@@ -187,10 +145,8 @@ function cartDecrement(element){
     }
     parent.children[4].innerHTML =`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     document.querySelector("#totalProducts").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    document.querySelector("#subtotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     request(base_url+"/carrito/updateCart",formData,"post").then(function(objData){
         if(objData.status){
-            document.querySelector("#subtotal").innerHTML = objData.subtotal;
             document.querySelector("#totalProducts").innerHTML = objData.total;
             parent.children[4].innerHTML = objData.totalPrice;
             input.value = objData.qty;
@@ -233,10 +189,8 @@ function cartInput(input){
     }
     parent.children[4].innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     document.querySelector("#totalProducts").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    document.querySelector("#subtotal").innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     request(base_url+"/carrito/updateCart",formData,"post").then(function(objData){
         if(objData.status){
-            document.querySelector("#subtotal").innerHTML = objData.subtotal;
             document.querySelector("#totalProducts").innerHTML = objData.total;
             parent.children[4].innerHTML = objData.totalPrice;
             input.value = objData.qty;
@@ -279,7 +233,6 @@ function delCart(elements){
                 element.removeAttribute("disabled");
                 if(objData.status){
                     
-                    document.querySelector("#subtotal").innerHTML = objData.subtotal;
                     document.querySelector("#totalProducts").innerHTML = objData.total;
                     data.remove();
                     if(params.get("cupon")){
