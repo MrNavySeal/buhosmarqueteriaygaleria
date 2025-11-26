@@ -213,12 +213,12 @@
                     </table>
                 </div>
             </div>
-            <div class="text-center d-flex justify-content-center gap-3 mt-4 border rounded p-2">
+            <div class="text-center d-flex justify-content-center gap-3 mt-4 align-items-center border rounded p-2">
                 <div class="d-flex gap-2 align-items-center justify-content-end">
                     <span class="text-start fw-bold">Precio:</span>
                     <div class="fw-bold fs-2 t-color-1 totalFrame d-flex align-items-center">$ 0.00</div>
                 </div>
-                    <button type="button" class="btn btn-bg-1 mt-2" id="addFrame" onclick="addProduct()"><i class="fas fa-shopping-cart"></i> Agregar</button>
+                <button type="button" class="btn btn-bg-1" id="addFrame" onclick="addProduct()"><i class="fas fa-shopping-cart"></i> Agregar</button>
             </div>
         </div>
     </div>
