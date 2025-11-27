@@ -12,12 +12,8 @@ const intWidth = document.querySelector("#intWidth");
 const layoutImg = document.querySelector(".layout--img");
 const layoutMargin = document.querySelector(".layout--margin");
 const layoutBorder = document.querySelector(".layout--border");
-const sliderLeft = document.querySelector(".slider--control-left");
-const sliderRight = document.querySelector(".slider--control-right");
-const sliderInner = document.querySelector(".slider--inner");
 const selectStyle = document.querySelectorAll(".selectProp");
-const btnBack = document.querySelector("#btnBack");
-const btnNext = document.querySelector("#btnNext");
+
 const pages = document.querySelectorAll(".page");
 const containerFrames = document.querySelector(".select--frames");
 const searchFrame = document.querySelector("#searchFrame");
@@ -28,8 +24,6 @@ const toastLiveExample = document.getElementById('liveToast');
 const framePhotos = document.querySelector("#framePhotos");
 const addFrame = document.querySelector("#addFrame");
 let innerP = document.querySelector(".product-image-inner");
-let btnPrevP = document.querySelector(".slider-btn-left");
-let btnNextP = document.querySelector(".slider-btn-right");
 let indexImg = 0;
 let page = 0;
 let PPI = 100;
@@ -47,46 +41,6 @@ window.addEventListener("load",function(){
     resizeFrame(intWidth.value, intHeight.value);
 })
 
-btnPrevP.addEventListener("click",function(){
-    innerP.scrollBy(-100,0);
-})
-btnNextP.addEventListener("click",function(){
-    innerP.scrollBy(100,0);
-});
-btnNext.addEventListener("click",function(){
-    for (let i = 0; i < pages.length; i++) {
-        pages[i].classList.add("d-none");
-    }
-    page++;
-    if(page == pages.length-1){
-        btnNext.classList.add("d-none");
-        btnBack.classList.remove("d-none");
-    }else{
-        btnBack.classList.add("d-none");
-        btnNext.classList.remove("d-none");
-    }
-    if(page>0){
-        btnBack.classList.remove("d-none");
-    }
-    pages[page].classList.remove("d-none");
-});
-btnBack.addEventListener("click",function(){
-    for (let i = 0; i < pages.length; i++) {
-        pages[i].classList.add("d-none");
-    }
-    page--;
-    if(page == pages.length-1){
-        btnNext.classList.add("d-none");
-        btnBack.classList.remove("d-none");
-    }else{
-        btnBack.classList.add("d-none");
-        btnNext.classList.remove("d-none");
-    }
-    if(page>0){
-        btnBack.classList.remove("d-none");
-    }
-    pages[page].classList.remove("d-none");
-});
 intHeight.addEventListener("change",function(){
     
     let height = intHeight.value;
@@ -157,19 +111,11 @@ uploadPicture.addEventListener("change",function(){
                 imageUrl=reader.result;
             };
             uploadImg(uploadPicture,".layout--img img");
-            if(intHeight.value !="" && intWidth.value!=""){
-                btnNext.classList.remove("d-none");
-            }
-            if(document.querySelector(".orientation.element--active")){
-                btnNext.classList.remove("d-none");
-            }
         }else{
             Swal.fire("Error","La imagen supera los 30MB, optimiza o cambia de imagen","error");
             uploadPicture.value ="";
             return false;
         }
-    }else{
-        btnNext.classList.add("d-none");
     }
     setTimeout(function() {
         calcDimension(document.querySelector(".layout--img img"));
@@ -259,9 +205,9 @@ function selectColor(element=null,option=null){
             layoutImg.style.borderRadius="0";
         }
     }
-    //calcularMarco();
+    calcularMarco();
 }
-function selectOrientation(element){
+function selectOrientation(element,type=""){
     let items = document.querySelectorAll(".orientation");
     for (let i = 0; i < items.length; i++) {
         items[i].classList.remove("element--active");
@@ -269,8 +215,19 @@ function selectOrientation(element){
     element.classList.add("element--active");
     document.querySelectorAll(".measures--input")[0].removeAttribute("disabled");
     document.querySelectorAll(".measures--input")[1].removeAttribute("disabled");
-    btnNext.classList.remove("d-none");
-    //resizeFrame(intWidth.value, intHeight.value);
+
+    let height = intHeight.value;
+    let width = intWidth.value;
+
+    if(type=="horizontal"){
+        intHeight.value = height;
+        intWidth.value = width;
+        
+    }else{
+        intHeight.value = width;
+        intWidth.value = height;
+    }
+    resizeFrame(intWidth.value, intHeight.value);
 }
 function selectActive(element =null,elements=null){
     let items = document.querySelectorAll(`${elements}`);
@@ -344,7 +301,7 @@ function selectColorFrame(element){
     let bg = getComputedStyle(element.children[0]).backgroundColor;
     layoutBorder.style.outlineColor=bg;
     document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
-    //calcularMarco();
+    calcularMarco();
 }
 function setDefaultConfig(flag = true){
     colorMargin = document.querySelectorAll(".color--margin")[0];
@@ -457,7 +414,7 @@ async function calcularMarco(id=null){
     formData.append("color_margin_id",colorMarginId);
     formData.append("color_border_id",colorBorderId);
     formData.append("type_frame",sortFrame.getAttribute("data-id"));
-    document.querySelector(".totalFrame").innerHTML="Calculando...";
+    document.querySelector(".totalFrame").innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     const response = await fetch(base_url+"/Enmarcar/calcularMarcoTotal",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
@@ -589,13 +546,6 @@ function copyStyle(data,flag){
     selectColor(selectedColorMargin,"margin");
     selectColor(selectedColorBorder,"border");
     calcularMarco(frame);
-    if(!btnNext.classList.contains("d-none")){
-        btnNext.classList.add("d-none");
-        btnBack.classList.remove("d-none");
-        page++;
-        pages[0].classList.add("d-none");
-        pages[page].classList.remove("d-none");
-    }
     
 }
 function showSpecs(){
@@ -812,7 +762,7 @@ function showProps(data){
             });
             html+= `
                 <div class="mb-3 selectPropContent" ${propAttributes}>
-                    <span class="fw-bold">${d.name}</span>
+                    <span >${d.name}</span>
                     <select class="form-select mt-3 mb-3 selectProp"  onchange="updateFramingConfig(this)" data-ismargin="${defaultOption.is_margin}" data-id="${d.prop}"
                     data-margin="0" data-max="${defaultOption.margin}" data-iscolor="${defaultOption.is_color}" data-isframe="${defaultOption.is_frame}"
                     data-isbocel="${defaultOption.is_bocel}" data-tag="${defaultOption.tag}" data-tagframe="${defaultOption.tag_frame}">${selectOptions}</select>
@@ -822,7 +772,7 @@ function showProps(data){
                 html+=`<div class="option--custom  mb-3">
                         <div class="d-none" id="isMargin" data-name="${defaultOption.is_margin}">
                             <div class="mb-3" >
-                                <span class="fw-bold">Medida del <span id="marginTitle">${defaultOption.tag}</span></span>
+                                <span >Medida del <span id="marginTitle">${defaultOption.tag}</span></span>
                                 <input type="range" class="form-range custom--range pe-4 ps-4 mt-2" min="1" max="${defaultOption.margin}" value="1" id="marginRange" 
                                 oninput="selectMargin(this.value)">
                                 <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
@@ -999,3 +949,23 @@ async function showDefaultFraming(id,params){
         calcularMarco();
     }
 }
+
+$(".slider-examples").owlCarousel({
+    autoplay:true,
+    autoplayTimeout:5000,
+    autoplayHoverPause:true,
+    loop:true,
+    margin:10,
+    nav:true,
+    responsive:{
+        0:{
+            items:1
+        },
+        600:{
+            items:2
+        },
+        1000:{
+            items:3
+        }
+    }
+});

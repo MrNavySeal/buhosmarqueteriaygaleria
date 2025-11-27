@@ -1410,10 +1410,6 @@ nav a {
 }
 
 .orientation {
-  width: 200px;
-  height: 250px;
-  margin-bottom: 1rem;
-  margin-right: 10px;
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
@@ -1421,7 +1417,6 @@ nav a {
 .orientation span {
   text-align: center;
   font-weight: bold;
-  font-size: 1.2rem;
   display: block;
 }
 .orientation img {
@@ -1432,14 +1427,10 @@ nav a {
 }
 
 .measures--dimension {
-  margin: 10px 10px;
+  width: 100%;
 }
 .measures--dimension label {
-  font-size: 1.2rem;
-  text-align: center;
   display: block;
-  font-weight: bold;
-  margin-bottom: 15px;
 }
 .measures--dimension div {
   display: flex;
@@ -1449,6 +1440,7 @@ nav a {
   border-radius: 10px;
   height: 40px;
   text-align: center;
+  width: 100%;
 }
 
 .frame {
@@ -2337,13 +2329,6 @@ footer .logo img {
   .about--cta {
     padding: 2rem 2rem;
     text-align: center;
-  }
-  .orientation {
-    width: 150px;
-    height: 150px;
-  }
-  .orientation img {
-    height: 100px;
   }
   .card--enmarcar {
     height: 320px;
