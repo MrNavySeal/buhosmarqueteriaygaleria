@@ -960,8 +960,8 @@
         $request = $con->select($sql);
         $stock = $request['stock'];
         if($request['product_type'] == 1){
-            $name = $variant['name'];
-            $sqlV = "SELECT stock FROM product_variations_options WHERE name = '$name'";
+            $name = isset($variant['name']) ? $variant['name'] : $variant ;
+            $sqlV = "SELECT stock FROM product_variations_options WHERE product_id = $id AND name = '$name'";
             $stock = $con->select($sqlV)['stock'];
         }
         return $stock;
