@@ -145,14 +145,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div></div>
         <span>Cargando...</span>
     </div>
-    <header class="container">
-        <div class="logo">
-            <img src="<?=media()."/images/uploads/".$company['logo']?>" alt="<?=$company['name']?>">
-        </div>
+    <header class="px-3">
         <nav class="nav--bar">
-            <div class="icon-mobile">
-                <a href="<?=base_url()?>">
-                    <img src="<?=media()."/images/uploads/".$company['logo']?>" alt="<?=$company['name']?>">
+            <div class="logo">
+                <a href="<?=base_url()?>" class="d-flex gap-3 align-items-center">
+                    <img src="<?=media()."/images/uploads/".$company['logo']?>" alt="<?=$company['name']?>" class="icon-mobile">
+                    <span class="fw-bold logo-name t-color-2 fs-5"><?=$company['name']?></span>
                 </a>
             </div>
             <ul class="nav--links">
