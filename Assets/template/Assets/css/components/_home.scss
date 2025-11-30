@@ -285,6 +285,7 @@
     height: 100%;
     width: 100%;
     display: flex;
+    justify-content: center;
     overflow: hidden;
     position: absolute;
     scroll-behavior: smooth;
@@ -310,7 +311,8 @@
     }
 
 }.product-image-item.active{
-    border: 3px solid $color1;
+    border: 1px solid $color1;
+    border-radius: .25rem;
 }
 .product-data{
     #description{

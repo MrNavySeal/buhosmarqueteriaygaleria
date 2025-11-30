@@ -187,8 +187,8 @@
                                     </div>
                                     <div class="card--product-btns">
                                         <div class="d-flex flex-column">
-                                            <a href="#isFrame" class="btn btn-sm btn-bg-2 mb-2" onclick='copyStyle(<?=$objConfig?>,false)'>Copiar estilos</a>
-                                            <a href="#isFrame" class="btn btn-sm btn-bg-2" onclick='copyStyle(<?=$objConfig?>,true)'>Copiar con medidas</a>
+                                            <a href="#isFrame" class="btn btn-sm border btn-hover-2 mb-2" onclick='copyStyle(<?=$objConfig?>,false)'>Copiar estilos</a>
+                                            <a href="#isFrame" class="btn btn-sm border btn-hover-2" onclick='copyStyle(<?=$objConfig?>,true)'>Copiar con medidas</a>
                                         </div>
                                     </div>
                                 </div>

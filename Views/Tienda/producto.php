@@ -55,18 +55,18 @@
 ?>
     <?=$data['modal']?>
     <div id="modalItem"></div>
+    <nav class="m-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>">Inicio</a></li>
+          <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>/tienda">Tienda</a></li>
+          <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()."/tienda/categoria/".$product['routec']?>"><?=$product['category']?></a></li>
+          <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()."/tienda/categoria/".$product['routec']."/".$product['routes']?>"><?=$product['subcategory']?></a></li>
+          <li class="breadcrumb-item active" aria-current="page"><?=$product['name']?></li>
+        </ol>
+    </nav>
     <div class="container mb-5">
         <main id="product">
             <div class=" mt-4 mb-4">
-                <nav class="mt-2 mb-2" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                      <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>">Inicio</a></li>
-                      <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>/tienda">Tienda</a></li>
-                      <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()."/tienda/categoria/".$product['routec']?>"><?=$product['category']?></a></li>
-                      <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()."/tienda/categoria/".$product['routec']."/".$product['routes']?>"><?=$product['subcategory']?></a></li>
-                      <li class="breadcrumb-item active" aria-current="page"><?=$product['name']?></li>
-                    </ol>
-                </nav>
                 <div class="row ps-2 pe-2 pb-4">
                     <div class="col-md-7 mb-3">
                         <div class="product-image">
@@ -75,7 +75,7 @@
                         </div>
                         <div class="product-image-slider">
                             <div class="slider-btn-left"><i class="fas fa-angle-left" aria-hidden="true"></i></div>
-                            <div class="product-image-inner">
+                            <div class="product-image-inner gap-2">
                                 <?php
                                     for ($i=0; $i < count($product['image']) ; $i++) { 
                                         $active="";
@@ -116,7 +116,7 @@
                                     $active= $selected == $options[$j] ? "active" : "";
                                 ?>
                                 <button onclick ="selVariant(this)" data-idp="<?=$id?>" data-name="<?= $options[$j]?>" 
-                                type="button" class="<?=$active?> btn btnv btn-bg-2 m-1">
+                                type="button" class="<?=$active?> btn btnv border m-1">
                                     <?= $options[$j]?>
                                 </button>
                                 <?php  } ?>

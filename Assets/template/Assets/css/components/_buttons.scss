@@ -1,10 +1,16 @@
+.btn-hover-2{
+    &:hover{
+        background-color: $color2;
+        color:$color4
+    }
+}
 .btn-bg-1{
     background-color: $color1;
     color:$color4;
     text-decoration: none;
-    border-radius: 10px;
     &:hover{
-        color:$color4
+        color:$color4;
+        background-color:$color-hover-1;
     }
     a{
         text-decoration: none;
@@ -15,7 +21,6 @@
     background-color: $color2;
     color:$color4;
     text-decoration: none;
-    border-radius: 10px;
     &:hover{
         color:$color4
     }
@@ -28,7 +33,6 @@
     background-color: $color4;
     color:$color2;
     text-decoration: none;
-    border-radius: 10px;
     &:hover{
         color:$color2
     }
@@ -42,7 +46,6 @@
     color:$color4;
     text-decoration: none;
     border: 1px solid $color4;
-    border-radius: 10px;
     &:hover{
         color:$color4
     }
@@ -128,10 +131,9 @@
     border-radius: 50%;
 }
 .btnv.active{
-    background-color: $color1;
+    background-color: $color2;
     color:$color4;
     text-decoration: none;
-    border-radius: 10px;
     &:hover{
         color:$color4
     }
