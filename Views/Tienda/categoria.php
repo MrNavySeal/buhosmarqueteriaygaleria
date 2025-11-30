@@ -13,7 +13,7 @@
     <input type="hidden" name="" id="routeSubcategory" value="<?= $subcategoryRoute ?>">
     <input type="hidden" name="" id="productSearch" value="">
     <main class="addFilter">
-        <div class="container mt-5 mb-3">
+        <div class="m-3">
             <nav class="mt-2 mb-2" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item"><a class="text-decoration-none" href="<?=base_url()?>">Inicio</a></li>
