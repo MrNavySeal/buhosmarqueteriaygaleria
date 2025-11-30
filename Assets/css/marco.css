@@ -1,3 +1,13 @@
+.accordion-button:not(.collapsed) {
+  background-color: #fff !important;
+  color: #03071E !important;
+}
+
+.accordion-button:focus {
+  border: transparent;
+  box-shadow: none;
+}
+
 .section--title {
   font-size: 2.5rem;
   font-weight: bold;
@@ -136,10 +146,6 @@
 }
 
 .orientation {
-  width: 200px;
-  height: 250px;
-  margin-bottom: 1rem;
-  margin-right: 10px;
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
@@ -147,7 +153,6 @@
 .orientation span {
   text-align: center;
   font-weight: bold;
-  font-size: 1.2rem;
   display: block;
 }
 .orientation img {
@@ -158,14 +163,10 @@
 }
 
 .measures--dimension {
-  margin: 10px 10px;
+  width: 100%;
 }
 .measures--dimension label {
-  font-size: 1.2rem;
-  text-align: center;
   display: block;
-  font-weight: bold;
-  margin-bottom: 15px;
 }
 .measures--dimension div {
   display: flex;
@@ -175,6 +176,7 @@
   border-radius: 10px;
   height: 40px;
   text-align: center;
+  width: 100%;
 }
 
 .frame {
@@ -578,14 +580,5 @@
   .no-more-tables td::before {
     content: attr(data-title);
     font-weight: bold;
-  }
-}
-@media screen and (max-width: 576px) {
-  .orientation {
-    width: 150px;
-    height: 150px;
-  }
-  .orientation img {
-    height: 100px;
   }
 }/*# sourceMappingURL=marco.css.map */

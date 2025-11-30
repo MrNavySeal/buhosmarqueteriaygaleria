@@ -531,37 +531,44 @@
         }
         return $pago;
     }
-    function getPagination($page,$startPage,$totalPages,$limitPages){
-        $htmlPages = '
-            <li class="page-item">
-                <button type="button" class="page-link text-secondary" href="#" onclick="getData(1)" aria-label="First">
-                    <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
-                </button>
-            </li>
-            <li class="page-item">
-                <button type="button" class="page-link text-secondary" href="#" onclick="getData('.max(1, $page-1).')" aria-label="Previous">
-                    <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
-                </button>
-            </li>
-        ';
-        for ($i = $startPage; $i < $limitPages; $i++) {
-            $htmlPages .= '<li class="page-item">
-                <button type="button" class="page-link  '.($i == $page ? ' bg-primary text-white' : 'text-secondary').'" href="#" onclick="getData('.$i.')">'.$i.'</button>
-            </li>';
+    function getPagination($page,$startPage,$totalPages,$limitPages,$template="admin"){
+        $data = [
+            "page"=>$page,
+            "start_page"=>$startPage,
+            "total_pages"=>$totalPages,
+            "limit_pages"=>$limitPages
+        ];
+        ob_start();
+        if($template == "admin"){
+            getComponent("paginationAdmin",$data);
+        }else{
+            getComponent("paginationPage",$data);
         }
-        $htmlPages .= '
-            <li class="page-item">
-                <button type="button" class="page-link text-secondary" href="#" onclick="getData('.min($totalPages, $page+1).')" aria-label="Next">
-                    <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
-                </button>
-            </li>
-            <li class="page-item">
-                <button type="button" class="page-link text-secondary" href="#" onclick="getData('.($totalPages).')" aria-label="Last">
-                    <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
-                </button>
-            </li>
-        ';
-        return $htmlPages;
+        $html = ob_get_clean();
+        return $html;
+    }
+    function getCalcPages($totalRecords,$pageNow,$perPage){
+        $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$perPage) : 0);
+        $totalPages = $totalPages == 0 ? 1 : $totalPages;
+        $startPage = max(1, $pageNow - floor(BUTTONS / 2));
+
+        if ($startPage + BUTTONS - 1 > $totalPages) {
+            $startPage = max(1, $totalPages - BUTTONS + 1);
+        }
+
+        $limitPages = min($startPage + BUTTONS, $totalPages+1);
+        $arrButtons = [];
+        for ($i=$startPage; $i < $limitPages; $i++) { 
+            array_push($arrButtons,$i);
+        }
+
+        return [
+            "start_page"=>$startPage,
+            "limit_page"=>$limitPages,
+            "total_pages"=>$totalPages,
+            "total_records"=>$totalRecords,
+            "buttons"=>$arrButtons
+        ];
     }
     function getError($code){
         $company = getCompanyInfo();

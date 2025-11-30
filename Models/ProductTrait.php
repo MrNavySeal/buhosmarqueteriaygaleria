@@ -76,6 +76,7 @@
             }
             return $request;
         }
+
         public function getProductsT($cant=""){
             $this->con=new Mysql();
             if($cant !=""){
@@ -148,6 +149,7 @@
             }
             return $request;
         }
+        
         public function selectProductVariant($id,$variant){
             $this->con=new Mysql();
             $this->intIdProduct = $id;
@@ -156,9 +158,21 @@
             $request['is_stock'] = $this->con->select("SELECT is_stock FROM product WHERE idproduct = $this->intIdProduct")['is_stock'];
             return $request;
         }
-        public function getProductsPageT(int $pageNow, int $sort){
+
+        public function getProductsPageT(int $perPage,int $pageNow, int $sort,string $category,string $subcategory,string $search){
             $this->con=new Mysql();
-            $perPage = PERPAGE;
+            $routes ="";
+            $start = ($pageNow-1)*$perPage;
+
+            if($search != ""){
+                $search =" AND (p.name LIKE '%$search%' OR c.name LIKE '%$search%' OR s.name LIKE '%$search%' OR p.reference LIKE '%$search%')";
+            }
+
+            if($category != ""){
+                $routes ="AND c.route = '$category'";
+                if($subcategory !="")$routes="AND (c.route = '$category' AND s.route = '$subcategory')";
+            }
+
             $option ="ORDER BY p.idproduct DESC";
             if($sort == 2){
                 $option = "ORDER BY p.price DESC";
@@ -166,10 +180,6 @@
                 $option = "ORDER BY p.price ASC";
             }
 
-            $totalProducts =$this->con->select("SELECT COUNT(*) AS total FROM product WHERE status = 1")['total'];
-            $totalPages = ceil($totalProducts/$perPage);
-            $start = ($pageNow - 1) * $perPage;
-            $start = $start < 0 ? 0 : $start;
             $sql = "SELECT 
                 p.idproduct,
                 p.categoryid,
@@ -196,101 +206,18 @@
             FROM product p
             INNER JOIN category c, subcategory s
             WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
-            $option LIMIT $start,$perPage
-            ";
+            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1 $routes $search
+            $option LIMIT $start,$perPage";
             $request = $this->con->select_all($sql);
-            if(count($request)> 0){
-                for ($i=0; $i < count($request); $i++) { 
-                    $isStock = $request[$i]['is_stock'];
-                    $idProduct = $request[$i]['idproduct'];
-                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg = $this->con->select_all($sqlImg);
-                    $request[$i]['favorite'] = 0;
-                    if(isset($_SESSION['login'])){
-                        $idUser = $_SESSION['idUser'];
-                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
-                        $requestFavorite = $this->con->select($sqlFavorite);
-                        if(!empty($requestFavorite)){
-                            $request[$i]['favorite'] = $requestFavorite['status'];
-                        }
-                    }
-                    if(count($requestImg)>0){
-                        $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
-                        $request[$i]['image'] = $requestImg[0]['name'];
-                    }else{
-                        $request[$i]['image'] = media()."/images/uploads/image.png";
-                    }
-                    if($request[$i]['product_type'] == 1){
-                        $stockCondition = $isStock ? " AND stock > 0" : "";
-                        $sqlV = "SELECT price_sell,price_offer, name, stock
-                        FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
-                        $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
-                        $request[$i]['price'] = $requestPrices['price_sell'];
-                        $request[$i]['discount'] = $requestPrices['price_offer'];
-                        $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
-                    }
-                }
-            }
-            $array = array("productos"=>$request,"paginas"=>$totalPages);
-            //dep($request);exit;
-            return $array;
 
-        }
-        public function getProductsSearchT(int $pageNow, int $sort, string $search){
-            $this->con=new Mysql();
-            $perPage = PERPAGE;
-            $option ="ORDER BY p.idproduct DESC";
-            if($sort == 2){
-                $option = "ORDER BY p.price DESC";
-            }else if($sort == 3){
-                $option = "ORDER BY p.price ASC";
-            }
-            $sqlTotal = "SELECT COUNT(*) AS total
-                        FROM product p 
-                        INNER JOIN category c, subcategory s
-                        WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
-                        AND p.subcategoryid = s.idsubcategory AND p.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
-                        AND (p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%' || p.reference LIKE '%$search%')";
-                        
-            $totalProducts =$this->con->select($sqlTotal)['total'];
-            $totalPages = ceil($totalProducts/$perPage);
-            $start = ($pageNow - 1) * $perPage;
-            $start = $start < 0 ? 0 : $start;
-            $sql = "SELECT 
-                p.idproduct,
-                p.categoryid,
-                p.subcategoryid,
-                p.reference,
-                p.name,
-                p.description,
-                p.price,
-                p.discount,
-                p.description,
-                p.stock,
-                p.status,
-                p.product_type,
-                p.route,
-                c.idcategory,
-                c.name as category,
-                s.idsubcategory,
-                s.categoryid,
-                s.name as subcategory,
-                c.route as routec,
-                s.route as routes,
-                DATE_FORMAT(p.date, '%d/%m/%Y') as date,
-                p.is_stock
+            $sqlTotal = "SELECT  count(*) as total
             FROM product p
             INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid 
-            AND p.subcategoryid = s.idsubcategory AND p.status = 1 
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
-            AND (p.reference LIKE '%$search%' || p.name LIKE '%$search%' || c.name LIKE '%$search%' || s.name LIKE '%$search%')
-            $option LIMIT $start,$perPage
-            ";
-            $request = $this->con->select_all($sql);
+            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
+            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1 $routes $search $option";
+
+            $totalRecords = $this->con->select($sqlTotal)['total'];
+
             if(count($request)> 0){
                 for ($i=0; $i < count($request); $i++) { 
                     $isStock = $request[$i]['is_stock'];
@@ -325,14 +252,13 @@
                     }
                 }
             }
-            if(empty($request)){
-                $totalPages = 1;
-            }
-            $array = array("productos"=>$request,"paginas"=>$totalPages,"total"=>$totalProducts,"buscar"=>$search);
-            //dep($request);exit;
-            return $array;
+
+            $arrData = getCalcPages($totalRecords,$pageNow,$perPage);
+            $arrData['data'] = $request; 
+            return $arrData;
 
         }
+
         public function getProductsRelT($idProduct,$idCategory,$idSubcategory,$cant){
             $idProduct = $idProduct;
             $idCategory = $idCategory;
@@ -444,97 +370,7 @@
             //dep($request);exit;
             return $request;
         }
-        public function getProductsCategoryT(array $arrParams,int $pageNow,int $sort){
-            $category = $arrParams[0];
-            $subcategory = count($arrParams)>1 ? $arrParams[1] : "";
-            $routes ="AND c.route = '$category'";
-            if($subcategory !="")$routes="AND (c.route = '$category' AND s.route = '$subcategory')";
-            $this->con=new Mysql();
-            $perPage = PERPAGE;
-            $option ="ORDER BY p.idproduct DESC";
-            if($sort == 2){
-                $option = "ORDER BY p.price DESC";
-            }else if($sort == 3){
-                $option = "ORDER BY p.price ASC";
-            }
-            $sqlTotal = "SELECT COUNT(p.idproduct) AS total 
-            FROM product p 
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory 
-            AND (p.is_product = 1 OR p.is_combo = 1) AND p.status = 1 $routes";
-             
-            $totalProducts =$this->con->select($sqlTotal)['total'];
-            $totalPages = ceil($totalProducts/$perPage);
-            $start = ($pageNow - 1) * $perPage;
-            $start = $start < 0 ? 0 : $start;
 
-            $sql = "SELECT 
-                p.idproduct,
-                p.categoryid,
-                p.subcategoryid,
-                p.reference,
-                p.name,
-                p.description,
-                p.price,
-                p.discount,
-                p.description,
-                p.stock,
-                p.status,
-                p.product_type,
-                p.route,
-                c.idcategory,
-                c.name as category,
-                s.idsubcategory,
-                s.categoryid,
-                s.name as subcategory,
-                c.route as routec,
-                s.route as routes,
-                DATE_FORMAT(p.date, '%d/%m/%Y') as date,
-                p.is_stock
-            FROM product p
-            INNER JOIN category c, subcategory s
-            WHERE c.idcategory = p.categoryid AND c.idcategory = s.categoryid AND p.subcategoryid = s.idsubcategory AND p.status = 1
-            AND (p.is_product = 1 OR p.is_combo = 1)  AND c.status = 1 AND s.status = 1 AND c.is_visible = 1
-            $routes $option 
-            LIMIT $start,$perPage";
-            $request = $this->con->select_all($sql);
-            if(count($request)> 0){
-                for ($i=0; $i < count($request); $i++) { 
-                    $isStock = $request[$i]['is_stock'];
-                    $idProduct = $request[$i]['idproduct'];
-                    $sqlImg = "SELECT * FROM productimage WHERE productid = $idProduct";
-                    $requestImg = $this->con->select_all($sqlImg);
-                    $request[$i]['favorite'] = 0;
-                    if(isset($_SESSION['login'])){
-                        $idUser = $_SESSION['idUser'];
-                        $sqlFavorite = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
-                        $requestFavorite = $this->con->select($sqlFavorite);
-                        if(!empty($requestFavorite)){
-                            $request[$i]['favorite'] = $requestFavorite['status'];
-                        }
-                    }
-                    if(count($requestImg)>0){
-                        $request[$i]['url'] = media()."/images/uploads/".$requestImg[0]['name'];
-                        $request[$i]['image'] = $requestImg[0]['name'];
-                    }else{
-                        $request[$i]['image'] = media()."/images/uploads/image.png";
-                    }
-                    if($request[$i]['product_type'] == 1){
-                        $stockCondition = $isStock ? " AND stock > 0" : "";
-                        $sqlV = "SELECT price_sell,price_offer, name, stock
-                        FROM product_variations_options WHERE product_id =$idProduct AND status = 1 
-                        AND price_sell = (select min(price_sell) from product_variations_options WHERE product_id =$idProduct AND status = 1)";
-                        $requestPrices = $this->con->select($sqlV);
-                        $sqlTotal = "SELECT SUM(stock) AS total FROM product_variations_options WHERE product_id =$idProduct AND status = 1 $stockCondition";
-                        $request[$i]['price'] = $requestPrices['price_sell'];
-                        $request[$i]['discount'] = $requestPrices['price_offer'];
-                        $request[$i]['stock'] = $this->con->select($sqlTotal)['total'];
-                    }
-                }
-            }
-            $array = array("productos"=>$request,"paginas"=>$totalPages);
-            return $array;
-        }
         public function getProductsFavorites($id){
             $this->con=new Mysql();
             $sql = "SELECT 
@@ -598,6 +434,7 @@
             }
             return $request;
         }
+
         public function getProductT(int $idProduct,$variant=""){
             $this->con=new Mysql();
             $this->intIdProduct = $idProduct;
@@ -665,6 +502,7 @@
             }
             return $request;
         }
+
         public function getProductPageT(string $route){
             $this->con=new Mysql();
             $sql = "SELECT 
@@ -749,6 +587,7 @@
             }
             return $request;
         }
+
         public function setReviewT($idProduct,$idUser,$strReview,$intRate){
             $this->con = new Mysql();
             $this->intIdProduct = $idProduct;
@@ -768,6 +607,7 @@
             }
             return $return;
         }
+
         public function getRate($id){
             $this->con = new Mysql();
             $sql = "SELECT 
@@ -791,6 +631,7 @@
             }
             return $request;
         }
+
         public function getReviewsT($id){
             $this->con = new Mysql();
             $this->intIdProduct = $id;
@@ -812,6 +653,7 @@
             //dep($request);exit;
             return $request;
         }
+
         public function getReviewsSortT(int $idProduct,int $sort){
             $this->con = new Mysql();
             $this->intIdProduct = $idProduct;
@@ -841,6 +683,7 @@
             //dep($sql);
             return $request;
         }
+
         public function addWishListT($idProduct,$idUser){
             $this->con = new Mysql();
             $sql = "SELECT * FROM wishlist WHERE productid = $idProduct AND personid = $idUser";
@@ -856,13 +699,13 @@
             }
             return $return;
         }
+
         public function delWishListT($idProduct,$idUser){
             $this->con = new Mysql();
             $sql = "DELETE FROM wishlist WHERE productid=$idProduct AND personid = $idUser";
             $request = $this->con->delete($sql);
             return $request;
         }
-        
     }
     
 ?>

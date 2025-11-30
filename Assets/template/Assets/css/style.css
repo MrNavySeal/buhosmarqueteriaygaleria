@@ -1854,10 +1854,15 @@ nav a :hover {
   cursor: pointer;
   padding: 5px 15px;
   border: 1px solid #E05A10;
-  border-radius: 50%;
+  border-radius: 0.25rem;
   color: #000;
 }
 .pagination-btn:hover {
+  background-color: #E05A10;
+  color: #fff;
+}
+
+.pagination-btn.active {
   background-color: #E05A10;
   color: #fff;
 }

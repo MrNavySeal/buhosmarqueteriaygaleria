@@ -17,72 +17,44 @@
         /******************************Views************************************/
         public function tienda(){
             setView(BASE_URL."/tienda");
-            $pageNow = isset($_GET['p']) ? intval(strClean($_GET['p'])) : 1;
-            $sort = isset($_GET['s']) ? intval(strClean($_GET['s'])) : 1;
             $company=getCompanyInfo();
             $data['page_tag'] = $company['name'];
             $data['page_title'] = "Tienda | ".$company['name'];
             $data['page_name'] = "tienda";
+            $data['banners'] = $this->getBanners();
             $data['categories'] = $this->getCategoriesT();
-            $productsPage =  $this->getProductsPageT($pageNow,$sort);
-            $productsPage['productos'] = $this->bubbleSortPrice($productsPage['productos'],$sort);
-            if($pageNow <= $productsPage['paginas']){
-                $data['products'] = $productsPage;
-                $data['app'] = "functions_shop.js";
-                $this->views->getView($this,"tienda",$data);
-            }else{
-                header("location: ".base_url()."/error");
-                die();
-            }
+            $data['app'] = "functions_shop.js";
+            $this->views->getView($this,"tienda",$data);
         }
+
         public function categoria($params){
-            $pageNow = isset($_GET['p']) ? intval(strClean($_GET['p'])) : 1;
-            $sort = isset($_GET['s']) ? intval(strClean($_GET['s'])) : 1;
             $params = strClean($params);
             setView(BASE_URL."/tienda/categoria/".str_replace(",","/",$params));
             $arrParams = explode(",",$params);
             $title = count($arrParams) > 1 ? ucwords(str_replace("-"," ",$arrParams[1])): ucwords(str_replace("-"," ",$arrParams[0]));
-            //dep($title);exit;
             $company=getCompanyInfo();
             $data['page_tag'] = $company['name'];
             $data['page_name'] = "categoria";
             $data['categories'] = $this->getCategoriesT();
-            $data['ruta'] = count($arrParams) > 1 ? $arrParams[0]."/".$arrParams[1] : $arrParams[0];
-            $productsPage =  $this->getProductsCategoryT($arrParams,$pageNow,$sort);
-            $productsPage['productos'] = $this->bubbleSortPrice($productsPage['productos'],$sort);
-            if($pageNow <= $productsPage['paginas']){
-                $data['products'] = $productsPage;
-                $data['page_title'] = $title." | ".$company['name'];
-                $data['app'] = "functions_shop_category.js";
-                $this->views->getView($this,"categoria",$data);
-            }else{
-                header("location: ".base_url()."/error");
-                die();
-            }
-
+            $data['category_route'] = $arrParams[0];
+            $data['subcategory_route'] = count($arrParams) > 1 ? $arrParams[1] : "";
+            $data['page_title'] = $title." | ".$company['name'];
+            $data['app'] = "functions_shop.js";
+            $this->views->getView($this,"categoria",$data);
         }
+
         public function buscar(){
-            $pageNow = isset($_GET['p']) ? intval(strClean($_GET['p'])) : 1;
-            $sort = isset($_GET['s']) ? intval(strClean($_GET['s'])) : 1;
             $search = isset($_GET['b']) ? strClean($_GET['b']) : "";
             $company=getCompanyInfo();
             $data['page_tag'] = $company['name'];
             $data['page_title'] = "Tienda | ".$company['name'];
             $data['page_name'] = "tienda";
             $data['categories'] = $this->getCategoriesT();
-            $productsPage =  $this->getProductsSearchT($pageNow,$sort,$search);
-            $productsPage['paginas'] = $productsPage['paginas'] == 0 ? 1 : $productsPage['paginas'];
-            $productsPage['total'] = $productsPage['total'] == 0 ? 1 : $productsPage['total'];
-            $productsPage['productos'] = $this->bubbleSortPrice($productsPage['productos'],$sort);
-            if($pageNow <= $productsPage['paginas']){
-                $data['products'] = $productsPage;
-                $data['app'] = "functions_shop_search.js";
-                $this->views->getView($this,"buscar",$data);
-            }else{
-                header("location: ".base_url()."/error");
-                die();
-            }
+            $data['search'] = $search;
+            $data['app'] = "functions_shop.js";
+            $this->views->getView($this,"buscar",$data);
         }
+
         public function producto($params){
             if($params!= ""){
                 $params = strClean($params);
@@ -140,6 +112,7 @@
             }
             die();
         }
+
         public function getReviews($idProduct,$sort=null){
             $reviews="";
             if($sort != null){
@@ -190,6 +163,7 @@
             }
             return $html;
         }
+
         public function sortReviews(){
             if($_POST){
                 $sort = intval($_POST['sort']);
@@ -229,6 +203,7 @@
 			}
 			die();
         }
+
 		public function setCustomer(){
 			if($_POST){
 				if(empty($_POST['txtSignName']) || empty($_POST['txtSignEmail']) || 
@@ -275,6 +250,7 @@
 			}
 			die();
 		}
+
         public function setSuscriber(){
             if($_POST){
                 if(empty($_POST['txtEmailSuscribe'])){
@@ -303,6 +279,7 @@
             }
             die();
         }
+
         public function statusCouponSuscriber(){
             $request = $this->statusCouponSuscriberT();
             if(!empty($request)){
@@ -313,7 +290,32 @@
             echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
+
         /******************************Product methods************************************/
+        public function getProducts(){
+            if($_POST){
+                $intPerPage = intval($_POST['per_page']);
+                $intPageNow = intval($_POST['page']);
+                $intSort = intval($_POST['sort']);
+                $strCategory = strClean($_POST['category']);
+                $strSubcategory = strClean($_POST['subcategory']);
+                $strSearch = strClean($_POST['search']);
+                $request = $this->getProductsPageT($intPerPage,$intPageNow,$intSort,$strCategory,$strSubcategory,$strSearch);
+
+                $htmlTotal ="de {$request['total_records']} resultados";
+                ob_start();
+                getComponent("cardProducts",$request['data']);
+                $html =ob_get_clean();
+
+                $arrData['html'] = $html;
+                $arrData['html_total'] = $htmlTotal;
+                $arrData['html_pages'] = getPagination($intPageNow,$request['start_page'],$request['total_pages'],$request['limit_page'],"page");
+
+                echo json_encode($arrData,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+
         public function getProductVariant(){
             if($_POST){
                 if(empty($_POST['id']) || empty($_POST['variant'])){
@@ -371,6 +373,7 @@
             die();
             
         }
+
         function bubbleSortPrice($arr,$sort) {
             $n = count($arr);
             if($sort == 2){
@@ -421,6 +424,7 @@
             }
             die();
         }
+
         public function delWishList(){
             if($_POST){
                 if(isset($_SESSION['login'])){

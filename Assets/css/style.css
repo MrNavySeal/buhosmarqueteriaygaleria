@@ -21,15 +21,6 @@
     font-weight: bold;
   }
 }
-@media screen and (max-width: 576px) {
-  .orientation {
-    width: 150px;
-    height: 150px;
-  }
-  .orientation img {
-    height: 100px;
-  }
-}
 .scroll-y {
   overflow-y: scroll;
   max-height: 60vh;
