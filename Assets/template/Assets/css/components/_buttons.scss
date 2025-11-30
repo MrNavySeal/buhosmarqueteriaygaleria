@@ -109,6 +109,7 @@
         background-color: $color1;
         color:$color4;
         &:hover{
+            background-color: $color-hover-1;
             color:$color4;
         }
     }
