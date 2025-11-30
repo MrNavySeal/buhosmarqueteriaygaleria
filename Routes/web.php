@@ -71,6 +71,8 @@
     $router->setRoute("marketing/descuentos/","Marketing/Descuentos/descuentos",false);
     $router->setRoute("marketing/suscriptores/","Configuracion/Administracion/suscriptores",false);
     $router->setRoute("marketing/correo/","Configuracion/Administracion/correo",false);
+    $router->setRoute("marketing/faq/","Marketing/Faq/faq",false);
+    
 
     //Comentarios
     $router->setRoute("comentarios/","Comentarios/Comentarios/comentarios",false);
