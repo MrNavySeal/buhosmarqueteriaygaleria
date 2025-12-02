@@ -30,9 +30,10 @@
                         [$ruleName,$params] = explode(":",$ruleSet);
                         $params = explode(";",$params)[0];
                     }else{
-                        $ruleName = explode(";",$ruleSet)[0];
+                        $ruleName = $ruleSet;
                     }
                     $method = "validate".ucFirst(strtolower($ruleName));
+                    $method = explode(";",$method)[0];
                     if(method_exists($this,$method)){
                         $result = $this->$method($content,$params);
                         if(!$result){
@@ -48,6 +49,14 @@
          */
         public function getErrors(){
             return $this->errors;
+        }
+        private function validateEmail($content){
+            if(filter_var($content, FILTER_VALIDATE_EMAIL)){
+                $flag = true;
+            }else{
+                $flag = false;
+            }
+            return $flag;
         }
         private function validateString($content){
             return is_string($content);
@@ -66,6 +75,21 @@
         }
         private function validateRequired($content){
             return !empty($content);
+        }
+        private function validateGreater($content,$params){
+            $content = doubleval($content);
+            $params = doubleval($params);
+            return $content > $params;
+        }
+        private function validateLess($content,$params){
+            $content = doubleval($content);
+            $params = doubleval($params);
+            return $content < $params;
+        }
+        private function validateEqual($content,$params){
+            $content = doubleval($content);
+            $params = doubleval($params);
+            return $content == $params;
         }
         private function validateMin($content,$params){
             $type = gettype($content);
@@ -87,23 +111,15 @@
                 return count($content) <= intval($params);
             }
         }
-        private function validateEmail($content){
-            if(filter_var($content, FILTER_VALIDATE_EMAIL)){
-                $flag = true;
-            }else{
-                $flag = false;
-            }
-            return $flag;
-        }
         private function getMessage($field,$rule,$params,$content){
+            $rule = explode(";",$rule)[0];
             $messages = [
-                "email"=>"El campo $field debe ser un correo válido",
                 "required" => "El campo $field es obligatorio",
                 "string"=>"El campo $field debe ser texto",
                 "numeric"=>"El campo $field debe ser numérico",
-                "array"=>"El campo $field debe ser una lista",
-                "integer"=>"El campo $field debe ser un número entero",
-                "double"=>"El campo $field debe ser un número con decimales",
+                "array"=>"El campo debe ser una lista",
+                "integer"=>"El campo debe ser un número entero",
+                "double"=>"El campo debe ser un número con decimales",
                 "greater"=>"El campo $field debe ser mayor que $params",
                 "less"=>"El campo $field debe ser menor que $params",
                 "equal"=>"El campo $field debe ser igual a $params",
