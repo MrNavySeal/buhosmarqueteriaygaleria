@@ -42,7 +42,7 @@
                     <td data-title="Pregunta">{{data.question}}</td>
                     <td data-title="Respuesta">{{data.answer}}</td>
                     <td data-title="Sección">{{data.section}}</td>
-                    <td data-title="Estado">
+                    <td data-title="Estado" class="text-center">
                         <span :class="data.status == '1' ? 'bg-success' : 'bg-danger'" class="badge text-white">
                             {{ data.status == '1' ? "Activo" : "Inactivo" }}
                         </span>
