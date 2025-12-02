@@ -55,7 +55,6 @@
                         "pregunta"=>"required",
                         "seccion"=>"required"
                     ])->getErrors();
-
                     if(empty($errores)){
                         $intId = intval($_POST['id']);
                         $strRespuesta = ucfirst(strClean($_POST['respuesta']));

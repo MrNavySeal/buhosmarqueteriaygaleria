@@ -93,6 +93,7 @@
             $this->strPregunta = $strPregunta;
 			$this->strRespuesta = $strRespuesta;
             $this->intEstado = $intEstado;
+            $this->intSeccion = $intSeccion;
             $sql = "UPDATE faq SET question=?,answer=?,status=?,section_id=? WHERE id = $this->intId";
             $arrData = array($this->strPregunta,$this->strRespuesta,$this->intEstado,$this->intSeccion);
             $request = $this->update($sql,$arrData);
