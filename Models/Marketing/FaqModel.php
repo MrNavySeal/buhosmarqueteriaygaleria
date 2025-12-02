@@ -120,6 +120,7 @@
 
         public function deleteSeccion($id){
             $this->intId = $id;
+            $this->delete("DELETE FROM faq WHERE id = $this->intId");
             $sql = "DELETE FROM faq_section WHERE id = $this->intId";
             $request = $this->delete($sql);
             return $request;
