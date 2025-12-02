@@ -210,6 +210,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>-->
                 <li class="nav-link"><a href="<?=base_url()?>/contacto">Contacto</a></li>
                 <li class="nav-link"><a href="<?=base_url()?>/blog">Blog</a></li>
+                <li class="nav-link"><a href="<?=base_url()?>/paginas/faqs/">FAQs</a></li>
             </ul>
             <ul class="nav--links">
                 <li class="nav--icon" id="btnSearch"><i class="fas fa-search"></i></li>
@@ -355,6 +356,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 </div>
                 <li class="navmobile-link"><a href="<?=base_url()?>/blog"><strong class="fs-5">Blog</strong></a></li>
+                <li class="navmobile-link"><a href="<?=base_url()?>/paginas/faqs/"><strong class="fs-5">FAQs</strong></a></li>
             </ul>
         </div>
     </div>

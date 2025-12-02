@@ -23,18 +23,34 @@
             }
             return $request;
         }
+
         public function getCategoriesShowT(string $categories){
             $this->con=new Mysql();
             $sql = "SELECT * FROM category WHERE idcategory IN ($categories) AND is_visible = 1";       
             $request = $this->con->select_all($sql);
             return $request;
         }
+
         public function getBanners(){
             $this->con=new Mysql();
             $sql = "SELECT * FROM banners WHERE status = 1 ORDER BY id_banner DESC";       
             $request = $this->con->select_all($sql);
             return $request;
         }
+
+        public function getFaqs(){
+            $this->con = new Mysql();
+            $sql = "SELECT id, name FROM faq_section WHERE status = 1 ORDER BY name";
+            $request = $this->con->select_all($sql);
+
+            foreach ($request as &$section) {
+                $sql = "SELECT id,question,answer FROM faq WHERE status = 1 AND section_id = {$section['id']}";
+                $section['faqs'] = $this->con->select_all($sql);
+            }
+            unset($section);
+            return $request;
+        }
+
     }
     
 ?>

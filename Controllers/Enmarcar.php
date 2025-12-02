@@ -1,8 +1,9 @@
 <?php
     
     require_once("Models/EnmarcarTrait.php");
+    require_once("Models/CategoryTrait.php");
     class Enmarcar extends Controllers{
-        use EnmarcarTrait;
+        use EnmarcarTrait,CategoryTrait;
         public function __construct(){
             session_start();
             parent::__construct();
@@ -31,6 +32,7 @@
                 $data['page_name'] = "personalizar";
                 $data['examples'] = $this->selectExamples($request['id']);
                 $data['name'] = $request['name'];
+                $data['faqs'] = $this->getFaqs();
                 $data['app'] = "functions_molding_public.js";
                 $this->views->getView($this,"personalizar",$data);
             }else{

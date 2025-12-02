@@ -67,6 +67,7 @@
                     $data['products'] = $this->getProductsRelT($data['product']['idproduct'],$data['product']['categoryid'],$data['product']['subcategoryid'],20);
                     $data['page_title'] =$data['product']['name']." | ".$company['name'];
                     $data['app'] = "functions_product.js";
+                    $data['faqs'] = $this->getFaqs();
                     $data['reviews'] = $this->getReviews($data['product']['idproduct']);
                     $data['review'] = $this->getRate($data['product']['idproduct']);
                     $data['modal'] = getFile("Template/Modal/modalReview",$data['product']['idproduct']);

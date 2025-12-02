@@ -81,4 +81,7 @@
     //Blog
     $router->setRoute("noticias/","Noticias/Articulos/articulos",false);
     $router->setRoute("noticias/articulo/","Noticias/Articulos/articulo");
+
+    //Tienda
+    $router->setRoute("paginas/faqs/","Paginas/Paginas/faqs");
 ?>

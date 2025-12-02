@@ -222,6 +222,8 @@
             </div>
         </div>
     </div>
+    <h2 class="mt-4 mb-4">Preguntas frecuentes - FAQs</h2>
+    <?php getComponent("faqsComponent",$data['faqs']); ?>
 </main>
 <?php
     footerPage($data);
