@@ -72,7 +72,7 @@
     $router->setRoute("marketing/suscriptores/","Configuracion/Administracion/suscriptores",false);
     $router->setRoute("marketing/correo/","Configuracion/Administracion/correo",false);
     $router->setRoute("marketing/faq/","Marketing/Faq/faq",false);
-    
+    $router->setRoute("marketing/faq-secciones/","Marketing/Faq/secciones",false);
 
     //Comentarios
     $router->setRoute("comentarios/","Comentarios/Comentarios/comentarios",false);

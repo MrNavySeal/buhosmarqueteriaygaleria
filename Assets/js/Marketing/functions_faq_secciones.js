@@ -22,42 +22,30 @@ const App = {
 
             //Variables
             intId:0,
-            strPregunta:"",
+            strName:"",
             strRespuesta:"",
             intStatus:"",
-            intSeccion:"",
-            arrSecciones:[],
         };
     },mounted(){
-        this.search(1,"faq");
+        this.search(1,"seccion");
     },methods:{
         openModal:async function(){
-            this.getData();
             this.common.showModalModule = true;
             this.common.intId =0;
-            this.common.modulesTitle = "Nuevo FAQ";
-            this.strPregunta ="";
+            this.common.modulesTitle = "Nueva sección de FAQ";
+            this.strName ="";
             this.strRespuesta= "";
             this.intStatus= 1;
-            this.intSeccion ="";
             this.common.errors = "";
-        },
-
-        getData:async function(){
-            const response = await fetch(base_url+"/Marketing/Faq/getDatosIniciales");
-            const objData = await response.json();
-            this.arrSecciones = objData;
         },
 
         save: async function(){
             const formData = new FormData();
             formData.append("id",this.common.intId);
-            formData.append("pregunta",this.strPregunta);
-            formData.append("respuesta",this.strRespuesta);
+            formData.append("name",this.strName);
             formData.append("estado",this.intStatus);
-            formData.append("seccion",this.intSeccion);
             this.common.processing = true;
-            const response = await fetch(base_url+"/Marketing/Faq/setFaq",{method:"POST",body:formData});
+            const response = await fetch(base_url+"/Marketing/Faq/setSeccion",{method:"POST",body:formData});
             const objData = await response.json();
             this.common.processing = false;
 
@@ -65,14 +53,11 @@ const App = {
                 Swal.fire("Guardado!",objData.msg,"success");
                 if(this.common.intId == 0){
                     this.common.intId =0;
-                    this.common.modulesTitle = "Nuevo FAQ";
-                    this.strPregunta ="";
-                    this.strRespuesta= "";
+                    this.strName ="";
                     this.intStatus= 1;
-                    this.intSeccion="";
                 }
                 this.common.showModalModule = false;
-                this.search(1,"faq");
+                this.search(1,"seccion");
             }else{
               Swal.fire("Error",objData.msg,"error");
               this.common.errors = objData.errores;
@@ -85,6 +70,7 @@ const App = {
             formData.append("page",this.common.intPage);
             formData.append("per_page",this.common.intPerPage);
             formData.append("search",this.common.strSearch);
+            formData.append("tipo_busqueda",strTipo)
             const response = await fetch(base_url+"/Marketing/Faq/getBuscar",{method:"POST",body:formData});
             const objData = await response.json();
             this.common.arrData = objData.data;
@@ -98,18 +84,15 @@ const App = {
         edit:async function(intId,strTipo){
             
             this.common.intId =intId;
-            this.common.modulesTitle = "Editar FAQ";
+            this.common.modulesTitle = "Editar sección de FAQ";
             const formData = new FormData();
             formData.append("id",this.common.intId);
             formData.append("tipo_busqueda",strTipo);
             const response = await fetch(base_url+"/Marketing/Faq/getDatos",{method:"POST",body:formData});
             const objData = await response.json();
             if(objData.status){
-                this.strPregunta= objData.data.question;
-                this.strRespuesta= objData.data.answer;
-                this.intStatus= objData.data.status;
-                this.arrSecciones = objData.secciones;
-                this.intSeccion = objData.data.section_id;
+                this.strName= objData.data.question,
+                this.intStatus= objData.data.status,
                 this.common.showModalModule = true;
             }else{
                 Swal.fire("Error",objData.msg,"error");
@@ -137,12 +120,12 @@ const App = {
                   const objData = await response.json();
                   if(objData.status){
                     Swal.fire("Eliminado!",objData.msg,"success");
-                    objVue.search(1,"faq");
+                    objVue.search(1,"seccion");
                   }else{
                     Swal.fire("Error",objData.msg,"error");
                   }
               }else{
-                objVue.search(1,"faq");
+                objVue.search(1,"seccion");
               }
           });
         },

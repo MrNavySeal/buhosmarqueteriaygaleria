@@ -1,6 +1,6 @@
 <?php 
     headerAdmin($data);
-    getModal("Marketing/modalFaq");
+    getModal("Marketing/modalSeccion");
 ?>
 
 <div class="mt-3">
@@ -8,7 +8,7 @@
         <div class="col-md-2">
             <div class="mb-3">
                 <label for="intPorPagina" class="form-label">Por página</label>
-                <select class="form-control" aria-label="Default select example" id="intPorPagina" v-model="common.intPerPage" @change="search(1,'faq')">
+                <select class="form-control" aria-label="Default select example" id="intPorPagina" v-model="common.intPerPage" @change="search(1,'seccion')">
                     <option value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
@@ -20,7 +20,7 @@
         <div class="col-md-10">
             <div class="mb-3">
                 <label for="strBuscar" class="form-label">Buscar</label>
-                <input type="text" class="form-control" id="strBuscar" v-model="common.strSearch" @keyup="search(1,'faq')">
+                <input type="text" class="form-control" id="strBuscar" v-model="common.strSearch" @keyup="search(1,'seccion')">
             </div>
         </div> 
     </div>
@@ -29,9 +29,7 @@
             <thead>
                 <tr class="text-center">
                     <th>ID</th>
-                    <th>Pregunta</th>
-                    <th>Respuesta</th>
-                    <th>Sección</th>
+                    <th>Nombre</th>
                     <th>Estado</th>
                     <th>Opciones</th>
                 </tr>
@@ -39,9 +37,7 @@
             <tbody>
                 <tr v-for="(data,index) in common.arrData" :key="index">
                     <td data-title="ID" class="text-center">{{data.id}}</td>
-                    <td data-title="Pregunta">{{data.question}}</td>
-                    <td data-title="Respuesta">{{data.answer}}</td>
-                    <td data-title="Sección">{{data.section}}</td>
+                    <td data-title="Nombre">{{data.name}}</td>
                     <td data-title="Estado">
                         <span :class="data.status == '1' ? 'bg-success' : 'bg-danger'" class="badge text-white">
                             {{ data.status == '1' ? "Activo" : "Inactivo" }}
@@ -50,10 +46,10 @@
                     <td data-title="Opciones">
                         <div class="d-flex justify-content-center">
                             <?php if($_SESSION['permitsModule']['u']){ ?>
-                            <button class="btn btn-success m-1" type="button" title="Editar"  @click="edit(data.id,'faq')" ><i class="fas fa-pencil-alt"></i></button>
+                            <button class="btn btn-success m-1" type="button" title="Editar"  @click="edit(data.id,'seccion')" ><i class="fas fa-pencil-alt"></i></button>
                             <?php } ?>
                             <?php if($_SESSION['permitsModule']['d']){ ?>
-                            <button class="btn btn-danger m-1" type="button" title="Eliminar" @click="del(data.id,'faq')" ><i class="fas fa-trash-alt"></i></button>
+                            <button class="btn btn-danger m-1" type="button" title="Eliminar" @click="del(data.id,'seccion')" ><i class="fas fa-trash-alt"></i></button>
                             <?php } ?>
                         </div>
                     </td>
