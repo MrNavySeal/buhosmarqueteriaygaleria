@@ -63,6 +63,7 @@
     $router->setRoute("configuracion/parametros/","Configuracion/Empresa/empresa",false);
     $router->setRoute("configuracion/envios/","Configuracion/Administracion/envios",false);
     $router->setRoute("configuracion/paginas/","Configuracion/Paginas/paginas",false);
+    $router->setRoute("configuracion/pagina/","Configuracion/Paginas/pagina",true);
     $router->setRoute("configuracion/banners/","Configuracion/Banners/banners",false);
     $router->setRoute("configuracion/medios-de-pago/","Configuracion/MedioPagos/medioPagos",false);
 

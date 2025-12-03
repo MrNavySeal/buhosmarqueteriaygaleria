@@ -22,7 +22,7 @@ formPage.addEventListener("submit",function(e){
     let formData = new FormData(formPage);
     btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     btnAdd.setAttribute("disabled","");
-    request(base_url+"/paginas/setPage",formData,"post").then(function(objData){
+    request(base_url+"/Configuracion/Paginas/setPage",formData,"post").then(function(objData){
         btnAdd.innerHTML=`Actualizar`;
         btnAdd.removeAttribute("disabled");
         if(objData.status){

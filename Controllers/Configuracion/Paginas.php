@@ -11,6 +11,10 @@
         }
         public function paginas(){
             if($_SESSION['permitsModule']['r']){
+                $data['botones'] = [
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/configuracion/paginas/"."','','');mypop.focus();"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                ];
                 $data['page_tag'] = "Pagina";
                 $data['page_title'] = "Paginas";
                 $data['page_name'] = "pagina";
@@ -28,6 +32,10 @@
                     $pagina = intval($pagina);
                     $data['page'] = $this->getPage($pagina);
                     if(!empty($data['page'])){
+                         $data['botones'] = [
+                            "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/configuracion/pagina/$pagina"."','','');mypop.focus();"],
+                            "atras" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/configuracion/paginas/'"],
+                        ];
                         $data['page_tag'] = $data['page']['name'];
                         $data['page_title'] = $data['page']['name'];
                         $data['page_name'] = "pagina";

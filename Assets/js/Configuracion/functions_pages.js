@@ -24,13 +24,6 @@ sortPanel.addEventListener("change",function(){
     });
 });
 
-if(document.querySelector("#btnNew")){
-    document.querySelector("#btnNew").classList.remove("d-none");
-    let btnNew = document.querySelector("#btnNew");
-    btnNew.addEventListener("click",function(){
-        addItem();
-    });
-}
 
 element.addEventListener("click",function(e) {
     let element = e.target;
@@ -40,7 +33,7 @@ element.addEventListener("click",function(e) {
     }
 });
     
-function addItem(){
+function openModal(){
     let modalItem = document.querySelector("#modalItem");
     let modal= `
     <div class="modal fade" id="modalElement">
