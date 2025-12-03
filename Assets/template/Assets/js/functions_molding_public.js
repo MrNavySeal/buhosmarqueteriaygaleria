@@ -1,4 +1,5 @@
 
+let currentController = null;
 const DIMENSIONDEFAULT = 4;
 const MAXDIMENSION = 180;
 const BORDERBOCEL = 3;
@@ -358,6 +359,13 @@ function setDefaultConfig(flag = true){
     //calcularMarco();
 }
 async function calcularMarco(id=null){
+    if (currentController) {
+        currentController.abort();
+    }
+
+    currentController = new AbortController();
+    const { signal } = currentController;
+
     if(!document.querySelector(".frame--item.element--active")){
         return false;
     }
@@ -415,7 +423,7 @@ async function calcularMarco(id=null){
     formData.append("color_border_id",colorBorderId);
     formData.append("type_frame",sortFrame.getAttribute("data-id"));
     document.querySelector(".totalFrame").innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    const response = await fetch(base_url+"/Enmarcar/calcularMarcoTotal",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Enmarcar/calcularMarcoTotal",{method:"POST",body:formData,signal});
     const objData = await response.json();
     if(objData.status){
         arrFrame = objData.specs;

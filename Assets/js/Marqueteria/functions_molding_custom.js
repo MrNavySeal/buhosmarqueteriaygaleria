@@ -1,4 +1,5 @@
 
+let currentController = null;
 const DIMENSIONDEFAULT = 4;
 const MAXDIMENSION = 500;
 const BORDERBOCEL = 3;
@@ -403,6 +404,13 @@ function setDefaultConfig(){
     //calcularMarco();
 }
 async function calcularMarco(id=null){
+    if (currentController) {
+        currentController.abort();
+    }
+
+    currentController = new AbortController();
+    const { signal } = currentController;
+    
     if(!document.querySelector(".frame--item.element--active")){
         return false;
     }
@@ -460,7 +468,7 @@ async function calcularMarco(id=null){
     formData.append("color_border_id",colorBorderId);
     formData.append("type_frame",sortFrame.getAttribute("data-id"));
     document.querySelector(".totalFrame").innerHTML="Calculando...";
-    const response = await fetch(base_url+"/Marqueteria/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData});
+    const response = await fetch(base_url+"/Marqueteria/MarqueteriaCalculos/calcularMarcoTotal",{method:"POST",body:formData,signal});
     const objData = await response.json();
     if(objData.status){
         arrFrame = objData.specs;
