@@ -20,6 +20,7 @@ const App = {
     },
     data(){
         return {
+            currentController:null,
             common:createCommon(),
             category:createCommon(),
             subcategory:createCommon(),
@@ -199,6 +200,14 @@ const App = {
         },
 
         search:async function(page=1){
+
+            if (this.currentController) {
+                this.currentController.abort();
+            }
+
+            this.currentController = new AbortController();
+            const { signal } = this.currentController;
+
             const formData = new FormData();
             if(this.subcategory.modalType=='subcategory'){
                 this.subcategory.intPage = page;
@@ -206,7 +215,7 @@ const App = {
                 formData.append("page",this.subcategory.intPage);
                 formData.append("per_page",this.subcategory.intPerPage);
                 formData.append("search",this.subcategory.strSearch);
-                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectSubcategorias",{method:"POST",body:formData});
+                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectSubcategorias",{method:"POST",body:formData, signal});
                 const objData = await response.json();
                 this.subcategory.arrData = objData.data;
                 this.subcategory.intStartPage  = objData.start_page;
@@ -219,7 +228,7 @@ const App = {
                 formData.append("page",this.category.intPage);
                 formData.append("per_page",this.category.intPerPage);
                 formData.append("search",this.category.strSearch);
-                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectCategorias",{method:"POST",body:formData});
+                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectCategorias",{method:"POST",body:formData, signal});
                 const objData = await response.json();
                 this.category.arrData = objData.data;
                 this.category.intStartPage  = objData.start_page;
@@ -234,7 +243,7 @@ const App = {
                 formData.append("search",this.ingredients.strSearch);
                 formData.append("type","ingredients");
                 formData.append("id",this.common.intId);
-                const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData});
+                const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData, signal});
                 const objData = await response.json();
                 this.ingredients.arrData = objData.data;
                 this.ingredients.intStartPage  = objData.start_page;
@@ -248,14 +257,9 @@ const App = {
                 formData.append("per_page",this.common.intPerPage);
                 formData.append("search",this.common.strSearch);
                 formData.append("type","products");
-                this.$refs.btnGenerate.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-                this.$refs.btnGenerate.setAttribute("disabled","");
 
-                const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData});
+                const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData,signal},);
                 const objData = await response.json();
-
-                this.$refs.btnGenerate.innerHTML=`Buscar`;
-                this.$refs.btnGenerate.removeAttribute("disabled");
 
                 this.common.arrData = objData.data;
                 this.common.intStartPage  = objData.start_page;
