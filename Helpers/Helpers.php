@@ -974,4 +974,26 @@
         return $stock;
     }
 
+    function calcWholsale($data,$type=1){
+        $arrWholesale = $type==1 ? $data['config']['wholesale'] : $data['wholesale'];
+        $productQty = $data['qty'];
+        $priceSell = $data['current_price'];
+        $priceOffer = 0;
+        $discount = 0;
+        $percent = 0;
+        if(count($arrWholesale) > 0){
+            $arrDiscount = array_filter($arrWholesale,function($e)use($productQty){return $productQty >= $e['min'];});
+            if(count($arrDiscount)){
+                $discount = $arrDiscount[count($arrDiscount)-1]['percent'];
+                $discount = $discount/100;
+                $discount = $discount*$priceSell;
+                $priceOffer = $priceSell-$discount;
+                $percent =  round((1-($priceOffer/$priceSell))*100);
+            }
+        }
+        $data['discount'] = $percent;
+        $data['price'] = $priceOffer > 0 ? $priceOffer : $priceSell;
+        return $data;
+    }
+
 ?>

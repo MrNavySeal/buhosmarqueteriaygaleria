@@ -21,6 +21,7 @@
             $this->views->getView($this,"enmarcar",$data);
             
         }
+
         public function personalizar($params){
             $company = getCompanyInfo();
             $params = strClean($params);
@@ -39,6 +40,7 @@
                 header("location: ".base_url()."/enmarcar");
             }
         }
+
         public function getConfig($params){
             $params = strClean($params);
             $request = $this->selectConfig($params);
@@ -51,6 +53,7 @@
             }
             die();
         }
+
         public function calcularMarcoTotal($bypass=false,$arrInfo = array()){
             if($_POST || $bypass){
                 if(!$bypass && (empty($_POST['id']) || empty($_POST['data']) || empty($_POST['height']) || empty($_POST['width']) || empty($_POST['id_config']) 
@@ -164,16 +167,40 @@
                                 }
                             }
                         }
-                        $totalCost = $totalCostMaterial+$totalCostFrame;
+
+                        $htmlWholesaleData = "<tr><td colspan='4' class='text-center'>No hay descuentos</td></tr>";
+                        $arrWholesale = $frame['wholesale'];
+                        if(!empty($arrWholesale)){
+                            $htmlWholesaleData ='
+                            <tr>
+                                <td colspan="3" class="fw-bold text-end">Precio normal:</td>
+                                <td class="text-end fw-bold">'.formatNum($price).'</td>
+                            </tr>';
+
+                            $totalWholeSale = count($arrWholesale);
+                            for ($i=0; $i < $totalWholeSale ; $i++) { 
+                                $e = $arrWholesale[$i];
+                                $max = $i == $totalWholeSale-1 ? "En adelante" : $e['max'];
+                                $discount = $price - ($price*($e['percent']/100));
+        
+                                $htmlWholesaleData.='
+                                <tr>
+                                    <td class="text-center">'.$e['min'].'</td>
+                                    <td class="text-center">'.$max.'</td>
+                                    <td class="text-center">'.$e['percent'].'%</td>
+                                    <td class="text-end">'.formatNum($discount).'</td>
+                                </tr>';
+                            }
+
+                            
+                        }
+
                         $arrResponse = array(
                             "status"=>true,
                             "total"=>formatNum($price),
-                            "total_cost"=>formatNum($totalCost),
                             "specs"=>$arrSpecs,
-                            "cost"=>$arrCostData,
-                            "html_cost"=>$htmlCostData,
                             "html_specs"=>$htmlSpecs,
-                            "total_cost_clean"=>$totalCost,
+                            "html_wholesale"=>$htmlWholesaleData,
                             "total_clean"=>$price,
                             "name"=>$request_config['name'],
                             "cat_img"=>$request_config['image'],
@@ -189,7 +216,8 @@
                                 "color_margin"=>$intIdColorMargin,
                                 "color_border"=>$intIdColorBorder,
                                 "props"=>$arrData,
-                                "type_frame"=>$intIdTypeFrame
+                                "type_frame"=>$intIdTypeFrame,
+                                "wholesale"=>$arrWholesale
                             )
                         );
                     }else{
@@ -204,6 +232,7 @@
             }
             die();
         }
+
         public function calcularCostoMaterial($data,float $intHeight, float $intWidth,int $intMargin){
             $total = 0;
             $type = $data['type'];
@@ -244,9 +273,8 @@
             $total = ceil($total/1000)*1000;
             return $total;
         }
+
         public function addCart(){
-            //dep($_POST);exit;
-            //unset($_SESSION['arrCart']);exit;
             if($_POST){
                 $arrData = $this->calcularMarcoTotal(true,$_POST);
                 $arrCart = [];
@@ -255,6 +283,8 @@
                     $arrData['topic'] = 1;
                     $arrData['qty'] = 1;
                     $arrData['price'] = $arrData['total_clean'];
+                    $arrData['current_price'] = $arrData['total_clean'];
+                    $arrData['discount'] = 0;
                     $pop = array(
                         "name"=>$arrData['name'],
                         "image"=>$arrData['img'] !="" ? $arrData['img'] : media()."/images/uploads/".$arrData['cat_img'],
@@ -280,6 +310,7 @@
                                         }
                                         if(!$flagFrame){
                                             $arrCart[$i]['qty'] +=$arrData['qty'];
+                                            $arrCart[$i] = calcWholsale($arrCart[$i]);
                                             $flag = false;
                                             break;
                                         }
@@ -288,11 +319,15 @@
                             }
                         }
                         if($flag){
+                            $arrData = calcWholsale($arrData);
                             array_push($arrCart,$arrData);
                         }
+
                         $_SESSION['arrCart'] = $arrCart;
                     }else{
+                        $arrData = calcWholsale($arrData);
                         array_push($arrCart,$arrData);
+
                         $_SESSION['arrCart'] = $arrCart;
                     }
                     $qtyCart = 0;

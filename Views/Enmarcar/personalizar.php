@@ -5,7 +5,7 @@
 <div id="modalPoup"></div>
 <main class="m-3">
     <div class="row">
-        <div class="col-md-7" id="isFrame">
+        <div class="col-md-6" id="isFrame">
             <div class="frame">
                 <div class="up-image">
                     <label for="txtImgShow"><i class="fas fa-camera"></i></label>
@@ -35,7 +35,7 @@
                 <div class="slider-btn-right"><i class="fas fa-angle-right" aria-hidden="true"></i></div>
             </div>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-6">
             <h1 class="fw-bold fs-4" id="enmarcarTipo"><?=$data['name']?></h1>
             <p>Ajusta cada detalle y ve los cambios en tiempo real</p>
             <ul class="nav nav-pills mb-3" id="product-tab" role="tablist">
@@ -48,9 +48,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pills-cost-tab" data-bs-toggle="pill" data-bs-target="#pills-cost" type="button" role="tab" aria-controls="pills-cost" aria-selected="true">Ejemplos</button>
                 </li>
-                <!-- <li class="nav-item" role="presentation">
+                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pills-discount-tab" data-bs-toggle="pill" data-bs-target="#pills-discount" type="button" role="tab" aria-controls="pills-discount" aria-selected="true">Al por mayor</button>
-                </li> -->
+                </li>
             </ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-frame" role="tabpanel" aria-labelledby="pills-frame-tab" tabindex="0">

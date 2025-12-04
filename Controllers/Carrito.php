@@ -20,42 +20,22 @@
             $data['page_title'] ="Carrito de compras | ".$company['name'];
             $data['page_name'] = "carrito";
             $data['shipping'] = $this->selectShippingMode();
-            if(isset($_GET['cupon'])){
-                $cupon = strtoupper(strClean($_GET['cupon']));
-                $data['cupon'] = $this->selectCouponCode($cupon);
-                if(empty($data['cupon'])){
-                    header("location: ".base_url()."/carrito");
-                    die();
-                }
-            }
-            if(isset($_GET['situ'])){
-                $situ = strtolower(strClean($_GET['situ']));
-                if($situ != "true" && $situ != "false"){
-                    header("location: ".base_url()."/carrito");
-                    die();
-                }
-                //header("location: ".base_url()."/carrito");
-                //die();
-            }
             $data['app'] = "functions_cart.js";
             $this->views->getView($this,"carrito",$data); 
         }
         /******************************Cart methods************************************/
         public function addCart(){
-            //unset($_SESSION['arrCart']);exit;
             if($_POST){ 
                 $id = intval(openssl_decrypt($_POST['idProduct'],METHOD,KEY));
                 $qty = intval($_POST['txtQty']);
-                $topic = intval($_POST['topic']);
                 $productType = intval($_POST['type']);
                 $variant = strClean($_POST['variant']);
                 $qtyCart = 0;
                 $arrCart = array();
-                $valiQty =true;
-                $reference = "";
                 if(is_numeric($id)){
                     $request = $this->getProductT($id,$variant);
                     $price = $request['price'];
+                    $currentPrice = $price;
                     $variant = $productType == 1 ? $request['combination'] : array();
                     $props = $productType == 1 ? $request['variants'] : array();
                     $id = openssl_encrypt($id,METHOD,KEY);
@@ -77,14 +57,16 @@
                             "image"=>$request['image'][0]['url'],
                             "url"=>base_url()."/tienda/producto/".$request['route'],
                             "price" =>$price,
+                            "current_price"=>$currentPrice,
                             "stock"=>$request['stock'],
                             "is_stock"=>$request['is_stock'],
                             "variant"=>$variant,
                             "props"=>$props,
                             "category"=>$request['category'],
                             "category_id"=>$request['categoryid'],
+                            "wholesale"=>$request['wholesale'],
                         );
-                        //dep($arrProduct);exit;
+
                         if(isset($_SESSION['arrCart'])){
                             $arrCart = $_SESSION['arrCart'];
                             $currentQty = 0;
@@ -94,6 +76,7 @@
                                     if($arrCart[$i]['producttype'] == 1){
                                         if($arrCart[$i]['id'] == $arrProduct['id']
                                         && $arrCart[$i]['variant']['name'] == $arrProduct['variant']['name']){
+                                            $arrCart[$i] = calcWholsale($arrCart[$i],2);
                                             $currentQty = $arrCart[$i]['qty'];
                                             $arrCart[$i]['qty']+= $qty;
                                             if($arrCart[$i]['is_stock'] && $arrCart[$i]['qty'] > $arrProduct['stock']){
@@ -113,6 +96,7 @@
                                         }
                                     }else{
                                         if($arrCart[$i]['id'] == $arrProduct['id']){
+                                            $arrCart[$i] = calcWholsale($arrCart[$i],2);
                                             $currentQty = $arrCart[$i]['qty'];
                                             $arrCart[$i]['qty']+= $qty;
                                             if($arrCart[$i]['is_stock'] && $arrCart[$i]['qty'] > $arrProduct['stock']){
@@ -176,8 +160,8 @@
             }
             die();
         }
+
         public function updateCart(){
-            //unset($_SESSION['arrCart']);exit;
             if($_POST){
                 $id = $_POST['id'];
                 $code = strClean($_POST['cupon']);
@@ -199,8 +183,11 @@
                             $qty = $request['stock'];
                         }
                     }
-                    $arrProducts[$index]['qty'] = $qty;
-                    $totalPrice =$qty*$product['price'];
+                    $product['qty'] = $qty;
+                    $product = calcWholsale($product,$product['topic']);
+                    $price = $product['price'];
+                    $totalPrice =$qty*$price;
+                    $arrProducts[$index] = $product;
 
                     $_SESSION['arrCart'] = $arrProducts;
                     $shipping = $this->calcTotalCart($_SESSION['arrCart'],$code,$city,$situ);
@@ -212,6 +199,7 @@
                         "total" =>formatNum($total),
                         "subtotal"=>formatNum($subtotal),
                         "totalPrice"=>formatNum($totalPrice,false),
+                        "price"=>formatNum(($price)),
                         "qty"=>$qty,
                         "cupon"=>formatNum($cupon)
                     );
@@ -222,6 +210,7 @@
             }
             die();
         }
+
         public function delCart(){
             if($_POST){
                 $id = intval($_POST['id']);
@@ -253,11 +242,13 @@
             }
             die();
         }
+
         public function currentCart(){
             if(isset($_SESSION['arrCart']) && !empty($_SESSION['arrCart'])){
                 $arrProducts = $_SESSION['arrCart'];
                 $html="";
                 for ($i=0; $i < count($arrProducts) ; $i++) { 
+                    $arrProducts[$i] = calcWholsale($arrProducts[$i],$arrProducts[$i]['topic']);
                     $arrProducts[$i]['index'] = $i;
                     $arrProducts[$i]['subtotal'] = $arrProducts[$i]['price']*$arrProducts[$i]['qty'];
                     $arrProducts[$i]['subtotal_format'] = formatNum($arrProducts[$i]['subtotal'],false);
@@ -363,6 +354,7 @@
             echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             die();
         }
+
         public function calcTotalCart($arrProducts,$code=null,$city=null,$situ=null){
             $arrShipping = $this->selectShippingMode();
             $total=0;
@@ -397,6 +389,7 @@
             $arrData = array("subtotal"=>$subtotal,"total"=>$total,"cupon"=>$cupon);
             return $arrData;
         }
+
         public function calculateShippingCity(){
             if($_POST){
                 $arrProducts = $_SESSION['arrCart'];

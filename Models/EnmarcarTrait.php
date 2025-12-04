@@ -11,12 +11,14 @@
             $request = $this->con->select_all($sql);
             return $request;
         }
+        
         public function selectTipo($route){
             $this->con = new Mysql();
             $sql = "SELECT * FROM moldingcategory WHERE status = 1 AND route = '$route'";
             $request = $this->con->select($sql);
             return $request;
         }
+
         public function selectExamples(int $intId){
             $this->intId = $intId;
             $this->con = new Mysql();
@@ -24,6 +26,7 @@
             $request = $this->con->select_all($sql);
             return $request;
         }
+
         public function selectConfig(string $strRoute){
             $this->con = new Mysql();
             $this->strRoute = $strRoute;
@@ -62,6 +65,7 @@
             }
             return $request;
         }
+
         public function selectConfigFrame(int $id){
             $this->con = new Mysql();
             $this->intId = $id;
@@ -120,6 +124,7 @@
             }
             return $request;
         }
+
         public function selectConfigProps(int $id){
             $this->con = new Mysql();
             $this->intId = $id;
@@ -159,12 +164,14 @@
             }
             return $request;
         }
+
         public function selectColors(){
             $this->con = new Mysql();
             $sql = "SELECT * FROM moldingcolor WHERE status = 1 AND is_visible = 1 ORDER BY order_view";       
             $request = $this->con->select_all($sql);
             return $request;
         }
+
         public function selectFrameConfig(int $intId, array $arrData){
             $this->con = new Mysql();
             $this->arrData = $arrData;
@@ -208,14 +215,17 @@
             $request = array("data"=>$arrInfo,"frame"=>$this->selectFrame($this->intId));
             return $request;
         }
+
         public function selectFrame(int $intId){
             $this->con = new Mysql();
             $this->intId = $intId;
+
             $sql = "SELECT p.price_purchase,s.name,p.reference
             FROM product p 
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             WHERE p.idproduct = $this->intId";
             $request = $this->con->select($sql);
+
             $request['name'] = strtolower($request['name']);
             $sqlWaste = "SELECT 
             p.value as waste 
@@ -223,8 +233,11 @@
             INNER JOIN specifications s ON p.specification_id = s.id_specification
             WHERE p.product_id = $this->intId";
             $request['waste'] = $this->con->select($sqlWaste)['waste'];
+
+            $request['wholesale'] = $this->con->select_all("SELECT min,max,percent FROM product_wholesale_discount WHERE product_id = $this->intId");
             return $request;
         }
+
         public function selectCategory(int $intId){
             $this->con = new Mysql();
             $this->intId = $intId;

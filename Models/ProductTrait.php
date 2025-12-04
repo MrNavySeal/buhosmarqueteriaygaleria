@@ -476,8 +476,12 @@
                 $sqlRate = "SELECT AVG(rate) as rate, COUNT(rate) as total FROM productrate 
                 WHERE productid = $this->intIdProduct AND status = 1 HAVING rate IS NOT NULL";
                 $requestRate =  $this->con->select($sqlRate);
+
+                $request['current_price'] = $request['price'];
                 $request['price'] = $request['discount'] > 0 ? $request['discount'] : $request['price'];
                 $request['is_stock'] = boolval($request['is_stock']);
+                $request['wholesale'] = $this->con->select_all("SELECT min,max,percent FROM product_wholesale_discount WHERE product_id = $this->intIdProduct");
+
                 if(!empty($requestRate)){
                     $request['rate'] = number_format($requestRate['rate'],1);
                     $request['reviews'] = $requestRate['total'];
@@ -490,12 +494,14 @@
                         $request['image'][$i] = array("url"=>media()."/images/uploads/".$requestImg[$i]['name'],"name"=>$requestImg[$i]['name']);
                     }
                 }
+
                 if($request['product_type'] == 1){
                     $sqlV = "SELECT name,price_sell,price_offer,stock,sku 
                     FROM product_variations_options WHERE name = '$variant' AND product_id = $this->intIdProduct";
                     $sqlVar = "SELECT variation FROM product_variations WHERE product_id = $this->intIdProduct";
                     $request['combination'] = $this->con->select($sqlV);
                     $request['variants'] = json_decode($this->con->select($sqlVar)['variation'],true);
+                    $request['current_price'] = $request['combination']['price_sell'];
                     $request['price'] = $request['combination']['price_offer'] > 0 ? $request['combination']['price_offer'] : $request['combination']['price_sell'];
                     $request['stock'] = $request['combination']['stock'];
                 }

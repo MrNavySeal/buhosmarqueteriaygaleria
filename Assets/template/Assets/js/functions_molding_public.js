@@ -431,6 +431,7 @@ async function calcularMarco(id=null){
         totalFrame = objData.total_clean;
         nameTopic = objData.name;
         document.querySelector(".totalFrame").innerHTML = objData.total;
+        document.querySelector("#tableFrameDiscounts").innerHTML = objData.html_wholesale;
         showSpecs();
     }
 }

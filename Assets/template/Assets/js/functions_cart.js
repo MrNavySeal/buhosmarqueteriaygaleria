@@ -103,6 +103,7 @@ function cartIncrement(element){
         if(objData.status){
             document.querySelector("#totalProducts").innerHTML = objData.total;
             parent.children[4].innerHTML = objData.totalPrice;
+            parent.children[2].innerHTML = objData.price;
             input.value = objData.qty;
             if(document.querySelector("#cuponTotal")){
                 document.querySelector("#cuponTotal").innerHTML = objData.cupon;
@@ -149,6 +150,7 @@ function cartDecrement(element){
         if(objData.status){
             document.querySelector("#totalProducts").innerHTML = objData.total;
             parent.children[4].innerHTML = objData.totalPrice;
+            parent.children[2].innerHTML = objData.price;
             input.value = objData.qty;
             if(document.querySelector("#cuponTotal")){
                 document.querySelector("#cuponTotal").innerHTML = objData.cupon;
@@ -193,6 +195,7 @@ function cartInput(input){
         if(objData.status){
             document.querySelector("#totalProducts").innerHTML = objData.total;
             parent.children[4].innerHTML = objData.totalPrice;
+            parent.children[2].innerHTML = objData.price;
             input.value = objData.qty;
             if(document.querySelector("#cuponTotal")){
                 document.querySelector("#cuponTotal").innerHTML = objData.cupon;
