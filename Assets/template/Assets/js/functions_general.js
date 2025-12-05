@@ -841,3 +841,20 @@ function addWishList(element){
     }
     
 }
+
+function incrementItem(selector){
+    console.log(document.querySelector(selector));
+    let qty = parseInt(document.querySelector(selector).value);
+    qty++; 
+    document.querySelector(selector).value = qty;
+}
+
+function decrementItem(selector){
+    let qty = parseInt(document.querySelector(selector).value);
+    --qty; 
+    if(qty <=0){
+        qty = 1;
+    }
+    document.querySelector(selector).value = qty;
+}
+

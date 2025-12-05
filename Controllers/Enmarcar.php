@@ -281,7 +281,7 @@
                 if($arrData['status']){
                     $arrData['img'] = $_POST['img'];
                     $arrData['topic'] = 1;
-                    $arrData['qty'] = 1;
+                    $arrData['qty'] = $_POST['qty'] <= 0 ? 1 : intval($_POST['qty']);
                     $arrData['price'] = $arrData['total_clean'];
                     $arrData['current_price'] = $arrData['total_clean'];
                     $arrData['discount'] = 0;

@@ -686,11 +686,13 @@ async function addProduct(){
     formData.append("color_border_id",colorBorderId);
     formData.append("type_frame",sortFrame.getAttribute("data-id"));
     formData.append("img",imageUrl);
+    formData.append("qty",document.querySelector("#txtQtyFrame") ? document.querySelector("#txtQtyFrame").value : 1 );
     addFrame.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     addFrame.setAttribute("disabled","");
     const response = await fetch(base_url+"/Enmarcar/addCart",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
+        console.log(objData);
         document.querySelector("#qtyCart").innerHTML=objData.qty;
         document.querySelector("#qtyCartbar").innerHTML=objData.qty;
         const toast = new bootstrap.Toast(toastLiveExample);

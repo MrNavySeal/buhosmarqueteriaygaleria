@@ -177,7 +177,7 @@
                             data-props="'<?=$e['props']?>'">
                                 <div class="card--product">
                                     <div class="card--product-img">
-                                        <a href="">
+                                        <a href="#">
                                             <img src="<?=$url?>" alt="<?=$data['name']?>">
                                         </a>
                                     </div>
@@ -213,10 +213,15 @@
                     </table>
                 </div>
             </div>
-            <div class="text-center d-flex justify-content-center gap-3 mt-4 align-items-center border rounded p-2">
+            <div class="text-center d-flex justify-content-center flex-wrap gap-3 mt-4 align-items-center border rounded p-2">
                 <div class="d-flex gap-2 align-items-center justify-content-end">
                     <span class="text-start fw-bold">Precio:</span>
                     <div class="fw-bold fs-2 t-color-1 totalFrame d-flex align-items-center">$ 0.00</div>
+                </div>
+                <div class="btn-qty-1" id="btnPqty">
+                    <button class="btn" onclick="decrementItem('#txtQtyFrame')"><i class="fas fa-minus"></i></button>
+                    <input type="number" name="txtQtyFrame" id="txtQtyFrame" min="1" value="1">
+                    <button class="btn" onclick="incrementItem('#txtQtyFrame')"><i class="fas fa-plus"></i></button>
                 </div>
                 <button type="button" class="btn btn-bg-1" id="addFrame" onclick="addProduct()"><i class="fas fa-shopping-cart"></i> Agregar</button>
             </div>
