@@ -29,13 +29,13 @@
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
                     "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
-                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"openModal()"],
+                    "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
                 ];
                 $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
                 $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
                 $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
+                $data['script_type'] = "module";
                 $data['panelapp'] = "/Marketing/functions_discount.js";
-                $data['categories'] = $this->getSelectCategories();
                 $this->views->getView($this,"descuentos",$data);
             }else{
                 header("location: ".base_url());

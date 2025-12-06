@@ -1,149 +1,345 @@
-'use strict';
-
-let element = document.querySelector("#listItem");
-let modalView = new bootstrap.Modal(document.querySelector("#modalElement"));
-
-function openModal(){
-    document.querySelector(".modal-title").innerHTML ="Nuevo descuento";
-    document.querySelector("#idDiscount").value = "";
-    document.querySelector("#intDiscount").value = "";
-    modalView.show();
-}
-window.addEventListener("DOMContentLoaded",function() {
-    showItems(element);
-    let categoryList = document.querySelector("#categoryList");
-    let subcategoryList = document.querySelector("#subcategoryList");
-    let typeList = document.querySelector("#typeList");
-
-    categoryList.addEventListener("change",function(){
-        let formData = new FormData();
-        formData.append("idCategory",categoryList.value);
-        request(base_url+"/Marketing/Descuentos/getSelectSubcategories",formData,"post").then(function(objData){
-            document.querySelector("#subcategoryList").innerHTML = objData.data;
-        });
-    });
-    typeList.addEventListener("change",function(){
-        if(typeList.value == 2){
-            document.querySelector(".subcategoryDisplay").classList.remove("d-none");
-        }else{
-            document.querySelector(".subcategoryDisplay").classList.add("d-none");
+import AppButton from "../components/button.js"; 
+import AppModal from "../components/modal.js"; 
+import AppInput from "../components/input.js";
+import AppSelect from "../components/select.js";
+import AppPagination from "../components/pagination.js"
+import AppTextArea from "../components/textarea.js"
+import AppButtonInput from "../components/button_input.js"
+import AppButtonSelect from "../components/button_select.js";
+import {createCommon} from "../components/variables.js";
+const App = {
+    components:{
+        "app-button":AppButton,
+        "app-input":AppInput,
+        "app-button-input":AppButtonInput,
+        "app-button-select":AppButtonSelect,
+        "app-textarea":AppTextArea,
+        "app-select":AppSelect,
+        "app-pagination":AppPagination,
+        "app-modal":AppModal
+    },
+    data(){
+        return {
+            currentController:null,
+            common:createCommon(),
+            category:createCommon(),
+            subcategory:createCommon(),
+            ingredients:createCommon(),
+            objCategory:{name:"",id:""},
+            objSubcategory:{name:"",id:"",categoryid:""},
+            errors:[],
+            
+            arrWholesalePrices:[],
+            intWholeSalePercent:"",
+            intWholeSaleMaxQty:"",
+            intWholeSaleMinQty:"",
+            intStatus:1,
+            strName:"",
+            intType:1,
+            intDiscount:"",
+            intLimit:1,
+            strInitialDate:new Date().toISOString().split("T")[0],
+            strFinalDate:new Date().toISOString().split("T")[0],
         }
-    });
-    let form = document.querySelector("#formItem");
-    form.addEventListener("submit",function(e){
-        e.preventDefault();
+    },
+    mounted(){
+        //this.search();
+    },
+    methods:{
+        openModal:function(){
+            this.common.showModalModule = true;
+            this.common.intId =0;
+            this.objCategory={name:"Todo",id:""};
+            this.objSubcategory={name:"Todo",id:"",categoryid:""};
+            this.intStatus=1,
+            this.strName="";
+            this.arrWholesalePrices = [];
+            this.intWholeSaleMinQty="";
+            this.intWholeSaleMaxQty="";
+            this.intWholeSalePercent ="";
+            this.intDiscount ="";
+            this.errors = [];
+            this.strInitialDate = new Date().toISOString().split("T")[0];
+            this.strFinalDate = new Date().toISOString().split("T")[0];
+            this.common.modulesTitle = "Nuevo descuento";
 
-        let intDiscount = document.querySelector("#intDiscount").value;
-        let intStatus = document.querySelector("#statusList").value;
-        if(intStatus == "" || intDiscount==""){
-            Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
-            return false;
-        }
-        if(intDiscount <=0){
-            Swal.fire("Error","El campo de descuento no puede ser menor o igual a 0%","error");
-            return false;
-        }else if(intDiscount >100){
-            Swal.fire("Error","El campo de descuento no puede ser superior al 100%","error");
-            return false;
-        }
-        if(categoryList.value ==  0){
-            Swal.fire("Error","Por favor, seleccione una categoría","error");
-            return false;
-        }
-        if(typeList.value == 2 && subcategoryList.value == 0){
-            Swal.fire("Error","Por favor, seleccione una subcategoría","error");
-            return false;
-        }
-        let url = base_url+"/Marketing/Descuentos/setDiscount";
-        let formData = new FormData(form);
-        let btnAdd = document.querySelector("#btnAdd");
+        },
 
-        btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-        btnAdd.setAttribute("disabled","");
-
-        request(url,formData,"post").then(function(objData){
-            btnAdd.innerHTML=`Guardar`;
-            btnAdd.removeAttribute("disabled");
+        save:async function(){
+            const pricePurchase = this.intCheckRecipe && this.arrIngredientsAdded.length > 0 ? this.totalIngredients : this.intPurchasePrice;
+            
+            tinymce.triggerSave();
+            const strDescription = document.querySelector("#txtDescription").value;
+            const formData = new FormData();
+            const arrData = {
+                "images":this.arrImages.filter(function(e){return e.rename && e.rename!=""}),
+                "is_visible":this.intVisible,
+                "status":this.intStatus,
+                "id":this.common.intId,
+                "subcategory":this.objSubcategory.id,
+                "category":this.objCategory.id,
+                "framing_mode":this.intFraming,
+                "measure":this.intMeasure,
+                "import":this.intTax,
+                "is_product":this.intCheckProduct,
+                "is_ingredient":this.intCheckIngredient,
+                "is_combo":this.intCheckRecipe,
+                "is_stock":this.intCheckStock,
+                "price_purchase":pricePurchase,
+                "price_sell":this.intSellPrice,
+                "price_offer":this.intOfferPrice,
+                "product_type":this.intCheckVariant,
+                "stock":this.intStock,
+                "min_stock":this.intMinStock,
+                "short_description":this.strShortDescription,
+                "description":strDescription,
+                "name":this.strName,
+                "specs":this.arrSpecsAdded,
+                "reference":this.strReference,
+                "combinations": this.arrCombination,
+                "variants":this.arrVariantsToMix,
+                "is_stock":this.intCheckStock,
+                "ingredients":this.arrIngredientsAdded,
+                "wholesale_discount":this.arrWholesalePrices,
+            }
+            formData.append("data",JSON.stringify(arrData));
+            formData.append("images[]",[]);
+            formData.append("image",this.strImage);
+            if(this.arrImages.length > 0){
+                this.arrImages.forEach(function(e){
+                    formData.append("images[]",e);
+                });
+            }
+            this.common.processing =true;
+            const response = await fetch(base_url+"/Productos/Productos/setProduct",{method:"POST",body:formData});
+            const objData = await response.json();
+            this.common.processing =false;
             if(objData.status){
-                Swal.fire("Guardar",objData.msg,"success");
-                modalView.hide();
-                form.reset();
-                showItems(element);
+                this.common.strName ="";
+                this.common.intId =0;
+                this.common.showModalProduct = false;
+                this.subcategory.modalType='';
+                this.category.modalType='';
+                this.ingredients.modalType='';
+                this.common.modalType='products';
+                this.search(this.common.intPage);
+                Swal.fire("Guardado",objData.msg,"success");
             }else{
+                this.errors = objData.errors;
                 Swal.fire("Error",objData.msg,"error");
             }
-        });
-    })
-})
+        },
 
-element.addEventListener("click",function(e) {
-    let element = e.target;
-    let id = element.getAttribute("data-id");
-    if(element.name == "btnDelete"){
-        deleteItem(id);
-    }else if(element.name == "btnEdit"){
-        editItem(id);
-    }else if(element.name == "btnView"){
-        viewItem(id);
-    }
-});
+        search:async function(page=1){
 
-function showItems(element){
-    let url = base_url+"/Marketing/Descuentos/getDiscounts";
-    request(url,"","get").then(function(objData){
-        if(objData.status){
-            element.innerHTML = objData.data;
-        }else{
-            element.innerHTML = objData.msg;
-        }
-    })
-}
-function editItem(id){
-    let url = base_url+"/Marketing/Descuentos/getDiscount";
-    let formData = new FormData();
-    formData.append("idDiscount",id);
-    request(url,formData,"post").then(function(objData){
-        if(objData.status){
-            document.querySelector("#idDiscount").value = objData.data.id_discount;
-            document.querySelector("#typeList").innerHTML = objData.data.htmlType;
-            document.querySelector("#categoryList").innerHTML = objData.data.htmlc;
-            document.querySelector("#statusList").innerHTML = objData.data.htmlStatus;
-            document.querySelector("#intDiscount").value = objData.data.discount;
-            document.querySelector(".modal-title").innerHTML ="Actualizar descuento";
-            
-            if(objData.data.type == 2){
-                document.querySelector(".subcategoryDisplay").classList.remove("d-none");
-                document.querySelector("#subcategoryList").innerHTML = objData.data.htmls;
-            }else{
-                document.querySelector(".subcategoryDisplay").classList.add("d-none");
+            if (this.currentController) {
+                this.currentController.abort();
             }
-            modalView.show();
-        }
-    });
-}
-function deleteItem(id){
-    Swal.fire({
-        title:"¿Estás seguro de eliminarlo?",
-        text:"Se eliminará para siempre...",
-        icon: 'warning',
-        showCancelButton:true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText:"Sí, eliminar",
-        cancelButtonText:"No, cancelar"
-    }).then(function(result){
-        if(result.isConfirmed){
-            let url = base_url+"/Marketing/Descuentos/delDiscount"
-            let formData = new FormData();
-            formData.append("idDiscount",id);
-            request(url,formData,"post").then(function(objData){
-                if(objData.status){
-                    Swal.fire("Eliminado",objData.msg,"success");
-                    showItems(element);
+
+            this.currentController = new AbortController();
+            const { signal } = this.currentController;
+
+            const formData = new FormData();
+            if(this.subcategory.modalType=='subcategory'){
+                this.subcategory.intPage = page;
+                formData.append("id",this.objCategory.id);
+                formData.append("page",this.subcategory.intPage);
+                formData.append("per_page",this.subcategory.intPerPage);
+                formData.append("search",this.subcategory.strSearch);
+                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectSubcategorias",{method:"POST",body:formData, signal});
+                const objData = await response.json();
+                this.subcategory.arrData = objData.data;
+                this.subcategory.intStartPage  = objData.start_page;
+                this.subcategory.intTotalButtons = objData.limit_page;
+                this.subcategory.intTotalPages = objData.total_pages;
+                this.subcategory.intTotalResults = objData.total_records;
+                this.subcategory.arrButtons = objData.buttons;
+            }else if(this.subcategory.modalType == "category"){
+                this.category.intPage = page;
+                formData.append("page",this.category.intPage);
+                formData.append("per_page",this.category.intPerPage);
+                formData.append("search",this.category.strSearch);
+                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectCategorias",{method:"POST",body:formData, signal});
+                const objData = await response.json();
+                this.category.arrData = objData.data;
+                this.category.intStartPage  = objData.start_page;
+                this.category.intTotalButtons = objData.limit_page;
+                this.category.intTotalPages = objData.total_pages;
+                this.category.intTotalResults = objData.total_records;
+                this.category.arrButtons = objData.buttons;
+            }else{
+                /* this.common.intPage = page;
+                formData.append("page",this.common.intPage);
+                formData.append("per_page",this.common.intPerPage);
+                formData.append("search",this.common.strSearch);
+                formData.append("type","products");
+
+                const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData,signal},);
+                const objData = await response.json();
+
+                this.common.arrData = objData.data;
+                this.common.intStartPage  = objData.start_page;
+                this.common.intTotalButtons = objData.limit_page;
+                this.common.intTotalPages = objData.total_pages;
+                this.common.intTotalResults = objData.total_records;
+                this.common.arrButtons = objData.buttons; */
+            }
+        },
+
+        edit:async function(data,type="edit"){
+            const formData = new FormData();
+            formData.append("id",data.idproduct);
+            const response = await fetch(base_url+"/Marketing/Descuentos/getDatos",{method:"POST",body:formData});
+            const objData = await response.json();
+            if(objData.status){
+                const data = objData.data;
+                this.errors = [];
+                
+            }else{
+                Swal.fire("Error",objData.msg,"error");
+            } 
+        },
+
+        del:async function(data){
+            const objVue = this;
+            this.subcategory.modalType='';
+            this.category.modalType='';
+            this.ingredients.modalType='';
+            this.common.modalType='products';
+            Swal.fire({
+                title:"¿Esta seguro de eliminar?",
+                text:"Se eliminará para siempre...",
+                icon: 'warning',
+                showCancelButton:true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText:"Sí, eliminar",
+                cancelButtonText:"No, cancelar"
+            }).then(async function(result){
+                if(result.isConfirmed){
+                    const formData = new FormData();
+                    formData.append("id",data.idproduct);
+                    const response = await fetch(base_url+"/Marketing/Productos/delProduct",{method:"POST",body:formData});
+                    const objData = await response.json();
+                    if(objData.status){
+                        Swal.fire("Eliminado!",objData.msg,"success");
+                        objVue.search(objVue.common.intPage);
+                    }else{
+                        Swal.fire("Error",objData.msg,"error");
+                    }
                 }else{
-                    Swal.fire("Error",objData.msg,"error");
+                    objVue.search(objVue.common.intPage);
                 }
             });
-        }
-    });
-}
+            
+        },
+
+        delItem:function(type="",data=""){
+            if(type=="subcategory"){
+                this.objSubcategory = {name:"",id:"",categoryid:""};
+            }else if(type=="category"){
+                this.objCategory = {name:"",id:"",};
+                this.objSubcategory = {name:"",id:"",categoryid:""};
+            }else if(type=="price"){
+                this.arrWholesalePrices.splice(data,1);
+            }
+        },
+
+        addItem:function(type="",data=""){
+            if( this.intWholeSaleMinQty == "" || this.intWholeSaleMaxQty=="" || this.intWholeSalePercent==""){
+                Swal.fire("Atención!","Los campos no pueden estar vacíos.","warning");
+                return false;
+            }
+
+            this.intWholeSaleMinQty = parseFloat(this.intWholeSaleMinQty);
+            this.intWholeSaleMaxQty = parseFloat(this.intWholeSaleMaxQty);
+            this.intWholeSalePercent = parseFloat(this.intWholeSalePercent);
+
+            if(this.intWholeSalePercent > 100 || this.intWholeSalePercent < 0){
+                Swal.fire("Atención!","El porcentaje no puede ser menor a 0 ni mayor a 100.","warning");
+                return false;
+            }else if(this.intWholeSaleMinQty < 0){
+                Swal.fire("Atención!","La cantidad mínima no puede ser menor a 0.","warning");
+                return false;
+            }else if(this.intWholeSaleMaxQty < 0){
+                Swal.fire("Atención!","La cantidad máximna no puede ser menor a 0.","warning");
+                return false;
+            }
+
+            let obj = {
+                min:this.intWholeSaleMinQty,
+                max:this.intWholeSaleMaxQty,
+                percent:this.intWholeSalePercent
+            }
+            
+            this.intWholeSaleMaxQty ="";
+            this.intWholeSalePercent = "";
+            this.arrWholesalePrices.push(obj);
+
+            const total = this.arrWholesalePrices.length;
+            this.intWholeSaleMinQty ="";
+            if(total > 0){
+                this.intWholeSaleMinQty = parseFloat(this.arrWholesalePrices[total-1].max) + 1;
+            }
+            this.changeWholeSaleMaxQty();
+            
+        },
+
+        selectItem:function(data,type=""){
+            if(type=="subcategory"){
+                this.objSubcategory=data;
+                this.subcategory.showModalPaginationSubcategory=false
+            }else if(type=="category"){
+                this.objCategory=data; 
+                if(this.objSubcategory.categoryid != this.objCategory.id){
+                    this.objSubcategory = {name:"Todo",id:"",categoryid:""};
+                }
+                this.category.showModalPaginationCategory=false
+            }
+        },
+
+        changeCategory:function (type){
+            if(type == "subcategory"){
+                this.subcategory.modalType=type;
+                this.subcategory.showModalPaginationSubcategory=true;
+            }else{
+                this.subcategory.modalType='category';
+                this.category.modalType=type;
+                this.category.showModalPaginationCategory=true;
+            }
+            this.search();
+        },
+
+        changeWholeSaleMaxQty:function(){
+            const root = this.arrWholesalePrices[0];
+            const rootMin = parseFloat(root.min);
+            const rootMax = parseFloat(root.max);
+            root.max = rootMin >= rootMax ? rootMin+1 : rootMax;
+            this.arrWholesalePrices[0] = root;
+
+            for (let i = 1; i < this.arrWholesalePrices.length; i++) {
+                const before = this.arrWholesalePrices[i-1];
+                const current = this.arrWholesalePrices[i];
+                const currentMax = parseFloat(current.max);
+                const newMin =  parseFloat(before.max) + 1;
+                current.min = newMin;
+                current.max = newMin >= currentMax ? newMin+1 : currentMax;
+                this.arrWholesalePrices[i] = current;
+            }
+            this.intWholeSaleMinQty = parseFloat(this.arrWholesalePrices[this.arrWholesalePrices.length-1].max) + 1;
+        },
+
+        changeWholeSalePercent:function(index){
+            const root = this.arrWholesalePrices[index];
+            const percent = parseFloat(root.percent);
+            if(percent > 100){
+                root.percent = 100;
+            }else if(percent < 0){
+                root.percent = 0;
+            }
+            this.arrWholesalePrices[index] = root;
+        },
+    },
+};
+const app = Vue.createApp(App);
+app.mount("#app");
