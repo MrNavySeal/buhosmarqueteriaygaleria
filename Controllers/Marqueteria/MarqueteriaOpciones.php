@@ -8,6 +8,7 @@
             }
             parent::__construct();
         }
+
         public function opciones(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -37,9 +38,6 @@
                         $status="";
                         
                         if($_SESSION['permitsModule']['u']){
-                            if($request[$i]['is_material']){
-                                $btnOptions='<button type="button" onclick="showMaterial('.$request[$i]['id'].')" class="btn btn-primary m-1 text-white" title="Asignar materiales"><i class="fa fa-list" aria-hidden="true"></i></button>';
-                            }
                             $btnEdit = '<button class="btn btn-success m-1" type="button" title="Editar" onclick="editItem('.$request[$i]['id'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
                         if($_SESSION['permitsModule']['d']){
@@ -58,6 +56,7 @@
             }
             die();
         }
+
         public function getOption(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
@@ -67,7 +66,11 @@
                         $id = intval($_POST['id']);
                         $request = $this->model->selectOption($id);
                         if(!empty($request)){
-                            $arrResponse = array("status"=>true,"data"=>$request);
+                            $arrResponse = array("status"=>true,
+                            "data"=>$request,
+                            "properties" => $this->model->selectProperties(),
+                            "materials"=>$this->model->selectMaterials()
+                        );
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
                         }
@@ -77,10 +80,11 @@
             }
             die();
         }
+
         public function setOption(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
-                    if(empty($_POST['txtName']) || empty($_POST['statusList'])){
+                    if(empty($_POST['txtName'])){
                         $arrResponse = array("status" => false, "msg" => 'Error de datos');
                     }else{ 
                         $id = intval($_POST['id']);
@@ -96,6 +100,8 @@
                         $isBocel = intval($_POST['is_bocel']);
                         $isVisible = intval($_POST['is_visible']);
                         $intOrder = intval($_POST['order']);
+                        $arrMaterials = json_decode($_POST['material'],true);
+                        $strProps = $_POST['props'];
                         if($id == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
@@ -111,7 +117,9 @@
                                     $isVisible,
                                     $intOrder,
                                     $strTag,
-                                    $strTagFrame
+                                    $strTagFrame,
+                                    $arrMaterials,
+                                    $strProps
                                 );
                             }
                         }else{
@@ -130,7 +138,9 @@
                                     $isVisible,
                                     $intOrder,
                                     $strTag,
-                                    $strTagFrame
+                                    $strTagFrame,
+                                    $arrMaterials,
+                                    $strProps
                                 );
                             }
                         }
@@ -151,6 +161,7 @@
             }
 			die();
 		}
+
         public function delOption(){
             if($_SESSION['permitsModule']['d']){
                 if($_POST){
@@ -170,27 +181,7 @@
             }
             die();
         }
-        /*************************Material methods*******************************/
-        public function setMaterial(){
-            if($_SESSION['permitsModule']['u']){
-                if($_POST){
-                    $arrMaterials = json_decode($_POST['material'],true);
-                    if(empty($arrMaterials) || empty($_POST['id'])){
-                        $arrResponse = array("status"=>false,"msg"=>"Error de datos");
-                    }else{
-                        $id = intval($_POST['id']);
-                        $request = $this->model->insertMaterial($id,$arrMaterials);
-                        if($request > 0){
-                            $arrResponse = array("status"=>true,"msg"=>"Datos guardados");
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"Ha ocurrido un error, inténtelo más tarde");
-                        }
-                    }
-                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                }
-            }
-            die();
-        }
+
         /*************************Properties methods*******************************/
         public function getData(){
             if($_SESSION['permitsModule']['r']){

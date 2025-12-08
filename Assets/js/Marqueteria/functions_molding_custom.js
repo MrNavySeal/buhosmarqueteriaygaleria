@@ -60,6 +60,7 @@ intHeight.addEventListener("change",function(){
     setDefaultConfig();
     resizeFrame(intWidth.value, intHeight.value);
 });
+
 intWidth.addEventListener("change",function(){
     const isPrint = document.querySelector("#isPrint").getAttribute("data-print");
     let height = intHeight.value;
@@ -355,6 +356,8 @@ function setDefaultConfig(){
     const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
     const divMargin = document.querySelector("#isMargin");
     const divBorder = document.querySelector("#isBorder");
+    const divColorMargin = document.querySelector("#colorsMargin");
+    const divTagColorMargin = document.querySelector("#marginColor");
     const isMarginStyle = selectFrameStyle.getAttribute("data-ismargin");
     const isColorStyle = selectFrameStyle.getAttribute("data-iscolor");
     const isBocelStyle = selectFrameStyle.getAttribute("data-isbocel");
@@ -365,14 +368,21 @@ function setDefaultConfig(){
     selectMargin(0);
     if(isMarginStyle == 1){
         divMargin.classList.remove("d-none");
-        if(!document.querySelector(".color--margin.element--active")){
-            colorMargin.classList.add("element--active");
-        }else{
-            colorMargin = document.querySelector(".color--margin.element--active");
+        divColorMargin.classList.add("d-none");
+        divTagColorMargin.classList.add("d-none");
+        layoutMargin.style.backgroundColor="transparent";
+        if(isColorStyle == 1){
+            divColorMargin.classList.remove("d-none");
+            divTagColorMargin.classList.remove("d-none");
+            if(!document.querySelector(".color--margin.element--active")){
+                colorMargin.classList.add("element--active");
+            }else{
+                colorMargin = document.querySelector(".color--margin.element--active");
+            }
+            divTagColorMargin.innerHTML = colorMargin.getAttribute("title");
+            let bm = getComputedStyle(colorMargin.children[0]).backgroundColor;
+            layoutMargin.style.backgroundColor=bm;
         }
-        document.querySelector("#marginColor").innerHTML = colorMargin.getAttribute("title");
-        let bm = getComputedStyle(colorMargin.children[0]).backgroundColor;
-        layoutMargin.style.backgroundColor=bm;
         document.querySelector("#marginRange").value=intMarginStyle;
         selectMargin(intMarginStyle);
     }else{
@@ -643,7 +653,7 @@ function showProps(data){
                                 oninput="selectMargin(this.value)">
                                 <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3" >
                                 <div class="fw-bold d-flex justify-content-between">
                                     <span>Elige el color del <span id="colorMarginTitle">${defaultOption.tag}</span></span>
                                     <span id="marginColor"></span>

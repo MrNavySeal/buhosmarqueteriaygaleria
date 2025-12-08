@@ -18,7 +18,7 @@
         }
         /*************************Properties methods*******************************/
         public function insertOption(string $strName, int $intStatus,int $intIdProp, int $isMargin,int $isColor, int $isFrame,
-        int $intMargin, int $isBocel,int $isVisible,int $intOrder,string $strTag,string $strTagFrame){
+        int $intMargin, int $isBocel,int $isVisible,int $intOrder,string $strTag,string $strTagFrame, array $arrMaterials,string $props){
 
 			$this->strName = $strName;
             $this->intStatus = $intStatus;
@@ -39,19 +39,35 @@
 			$request = $this->select_all($sql);
 			if(empty($request))
 			{ 
-				$query_insert  = "INSERT INTO molding_options(name,status,prop_id,is_margin,is_color,is_frame,margin,is_bocel,is_visible,order_view,tag,tag_frame) 
-								  VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
-	        	$arrData = array($this->strName,$this->intStatus,$this->intIdProp,
-                $this->isMargin,$this->isColor,$this->isFrame,$this->intMargin,$this->isBocel,$this->isVisible,$this->intOrder,$this->strTag,$this->strTagFrame);
+				$query_insert  = "INSERT INTO molding_options(name,status,prop_id,is_margin,is_color,is_frame,margin,is_bocel,is_visible,order_view,tag,tag_frame,disabled_props) 
+								  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	        	$arrData = array(
+                    $this->strName,
+                    $this->intStatus,
+                    $this->intIdProp,
+                    $this->isMargin,
+                    $this->isColor,
+                    $this->isFrame,
+                    $this->intMargin,
+                    $this->isBocel,
+                    $this->isVisible,
+                    $this->intOrder,
+                    $this->strTag,
+                    $this->strTagFrame,
+                    $props
+                );
 	        	$request_insert = $this->insert($query_insert,$arrData);
 	        	$return = $request_insert;
+
+                $this->insertMaterial($return,$arrMaterials);
 			}else{
 				$return = "exist";
 			}
 	        return $return;
 		}
+
         public function updateOption(int $intId,string $strName, int $intStatus, int $intIdProp,int $isMargin,int $isColor, 
-        int $isFrame,int $intMargin,int $isBocel,int $isVisible,int $intOrder,string $strTag,string $strTagFrame){
+        int $isFrame,int $intMargin,int $isBocel,int $isVisible,int $intOrder,string $strTag,string $strTagFrame, array $arrMaterials,string $props){
             $this->intId = $intId;
             $this->strName = $strName;
             $this->strTagFrame = $strTagFrame;
@@ -70,23 +86,41 @@
 
 			if(empty($request)){
 
-                $sql = "UPDATE molding_options SET name=?, status=? ,prop_id=?,is_margin=?,is_color=?,is_frame=?,margin=?,is_bocel=?,is_visible=?,order_view=?,tag=?,tag_frame=?
+                $sql = "UPDATE molding_options SET name=?, status=? ,prop_id=?,is_margin=?,is_color=?,
+                is_frame=?,margin=?,is_bocel=?,is_visible=?,order_view=?,tag=?,tag_frame=?,disabled_props=?
                 WHERE id = $this->intId";
-                $arrData = array($this->strName,$this->intStatus,$this->intIdProp,
-                $this->isMargin,$this->isColor,$this->isFrame,$this->intMargin,$this->isBocel,$this->isVisible,$this->intOrder,$this->strTag,$this->strTagFrame);
+                $arrData = array(
+                    $this->strName,
+                    $this->intStatus,
+                    $this->intIdProp,
+                    $this->isMargin,
+                    $this->isColor,
+                    $this->isFrame,
+                    $this->intMargin,
+                    $this->isBocel,
+                    $this->isVisible,
+                    $this->intOrder,
+                    $this->strTag,
+                    $this->strTagFrame,
+                    $props
+                );
 				$request = intval($this->update($sql,$arrData));
+
+                $this->insertMaterial($this->intId,$arrMaterials);
 			}else{
 				$request = "exist";
 			}
 			return $request;
 		
 		}
+
         public function deleteOption($id){
             $this->intId = $id;
             $sql = "DELETE FROM molding_options WHERE id = $this->intId";
             $return = $this->delete($sql);
             return $return;
         }
+
         public function selectOptions(){
             $sql = "SELECT 
             o.id,
@@ -117,14 +151,23 @@
             }
             return $request;
         }
+
         public function selectOption($id){
             $this->intId = $id;
             $sql = "SELECT * FROM molding_options WHERE id = $this->intId";
             $request = $this->select($sql);
+            if(!empty($request)){
+                $sql = "SELECT ma.*, p.name,p.idproduct FROM molding_materials ma 
+                INNER JOIN product p ON ma.product_id = p.idproduct 
+                WHERE option_id = $this->intId";
+
+                $request['materials'] = $this->select_all($sql);
+                $request['disabled_props'] = $request['disabled_props'] != "" ? json_decode($request['disabled_props'],true) : [];
+            }
             return $request;
         }
         /*************************Material methods*******************************/
-        public function insertMaterial(int $id,array $data){
+        private function insertMaterial(int $id,array $data){
             $this->intId = $id;
             $this->delete("DELETE FROM molding_materials WHERE option_id = $this->intId");
             $total = count($data);
@@ -136,6 +179,7 @@
             }
             return $request;
         }
+
         public function selectMaterials(){
             $sql = "SELECT 
                 p.idproduct,

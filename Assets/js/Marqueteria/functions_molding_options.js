@@ -1,11 +1,15 @@
 'use strict';
 const selectMaterial = document.querySelector("#selectMaterial");
+const selectDisableProps = document.querySelector("#selectDisableProp");
 let arrSelectedMaterial = [];
+let arrSelectedProps = [];
 let arrMaterials = [];
+let arrProperties = [];
 let arrOptions = [];
 const modal = document.querySelector("#modalElement") ? new bootstrap.Modal(document.querySelector("#modalElement")) :"";
 const modalMaterial = document.querySelector("#modalMaterial") ? new bootstrap.Modal(document.querySelector("#modalMaterial")) :"";
 const tableMaterial = document.querySelector("#tableMaterial");
+const tableProps = document.querySelector("#tableProps");
 const table = new DataTable("#tableData",{
     "dom": 'lfBrtip',
     "language": {
@@ -39,6 +43,7 @@ const table = new DataTable("#tableData",{
     "aServerSide":true,
     "iDisplayLength": 10,
 });
+
 function openModal(){
     const divMargin = document.querySelector("#divMargin");
     const checkMargin = document.querySelector("#isMargin");
@@ -61,68 +66,89 @@ function openModal(){
     document.querySelector("#isBocel").checked = false;
     document.querySelector("#isVisible").checked = false;
     document.querySelector("#txtMargin").value = 5;
+    tableMaterial.innerHTML ="";
+    tableProps.innerHTML ="";
+    arrSelectedMaterial =[];
+    arrSelectedProps =[];
+
     modal.show();
     getData();
 }
-if(document.querySelector("#formItem")){
-    let form = document.querySelector("#formItem");
-    form.addEventListener("submit",function(e){
-        e.preventDefault();
 
-        let strName = document.querySelector("#txtName").value;
-        let intStatus = document.querySelector("#statusList").value;
-        let intProp = document.querySelector("#propList").value;
-        let intMargin = document.querySelector("#txtMargin").value;
-        let isMargin = document.querySelector("#isMargin").checked;
-        let isColor = document.querySelector("#isColor").checked;
-        let isDblFrame = document.querySelector("#isDblFrame").checked;
-        let isBocel = document.querySelector("#isBocel").checked;
-        let isVisible = document.querySelector("#isVisible").checked;
-        let intOrderList = document.querySelector("#orderList").value;
-        if(strName == "" || intStatus =="" || intProp ==""){
-            Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
-            return false;
-        }
-        
-        let url = base_url+"/Marqueteria/MarqueteriaOpciones/setOption";
-        let formData = new FormData(form);
-        formData.append("is_margin",isMargin ? 1 : 0);
-        formData.append("is_color",isColor ? 1 : 0);
-        formData.append("is_frame",isDblFrame ? 1 : 0);
-        formData.append("is_bocel",isBocel ? 1 : 0);
-        formData.append("is_visible",isVisible ? 1 : 0);
-        formData.append("margin",intMargin);
-        formData.append("order",intOrderList);
-        let btnAdd = document.querySelector("#btnAdd");
-        btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-            
-        btnAdd.setAttribute("disabled","");
-        request(url,formData,"post").then(function(objData){
-            btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
-            btnAdd.removeAttribute("disabled");
-            if(objData.status){
-                Swal.fire("Guardado",objData.msg,"success");
-                table.ajax.reload();
-                form.reset();
-                modal.hide();
-            }else{
-                Swal.fire("Error",objData.msg,"error");
-            }
-        });
-    })
+async function save(element){
+    let strName = document.querySelector("#txtName").value;
+    let intStatus = document.querySelector("#statusList").value;
+    let intProp = document.querySelector("#propList").value;
+    let intMargin = document.querySelector("#txtMargin").value;
+    let isMargin = document.querySelector("#isMargin").checked;
+    let isColor = document.querySelector("#isColor").checked;
+    let isDblFrame = document.querySelector("#isDblFrame").checked;
+    let isBocel = document.querySelector("#isBocel").checked;
+    let isVisible = document.querySelector("#isVisible").checked;
+    let intOrderList = document.querySelector("#orderList").value;
+    let strTag = document.querySelector("#txtTag").value;
+    let strTagFrame = document.querySelector("#txtTagFrame").value;
+    let intId = document.querySelector("#id").value;
+
+    if(strName == "" || intStatus =="" || intProp ==""){
+        Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
+        return false;
+    }
+
+    const formData = new FormData();
+    formData.append("id",intId);
+    formData.append("is_margin",isMargin ? 1 : 0);
+    formData.append("is_color",isColor ? 1 : 0);
+    formData.append("is_frame",isDblFrame ? 1 : 0);
+    formData.append("is_bocel",isBocel ? 1 : 0);
+    formData.append("is_visible",isVisible ? 1 : 0);
+    formData.append("margin",intMargin);
+    formData.append("order",intOrderList);
+    formData.append("txtTag",strTag);
+    formData.append("txtTagFrame",strTagFrame);
+    formData.append("material",JSON.stringify(arrSelectedMaterial));
+    formData.append("props",JSON.stringify(arrSelectedProps));
+    formData.append("statusList",intStatus);
+    formData.append("txtName",strName);
+    formData.append("propList",intProp);
+
+    element.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+    element.setAttribute("disabled","");
+
+    const response = await fetch(base_url+"/Marqueteria/MarqueteriaOpciones/setOption",{method:"POST",body:formData});
+    const objData = await response.json();
+
+    element.innerHTML=`<i class="fas fa-save"></i> Guardar`;
+    element.removeAttribute("disabled");
+
+    if(objData.status){
+        Swal.fire("Guardado",objData.msg,"success");
+        table.ajax.reload();
+        modal.hide();
+    }else{
+        Swal.fire("Error",objData.msg,"error");
+    }
 }
+
 async function getData(){
     const response = await fetch(base_url+"/Marqueteria/MarqueteriaOpciones/getData");
     const objData = await response.json();
-    const arrProperties = objData.properties;
+    arrProperties = objData.properties;
     arrMaterials = objData.materials;
     const selectProperties = document.querySelector("#propList");
+    const selectDisableProps = document.querySelector("#selectDisableProp");
     for (let i = 0; i < arrProperties.length; i++) {
         const e = arrProperties[i];
         const option = document.createElement("option");
+        const optionProp = document.createElement("option");
         option.setAttribute("value",e.id);
         option.innerHTML = e.name;
+
+        optionProp.setAttribute("value",e.id);
+        optionProp.innerHTML = e.name;
+        
         selectProperties.appendChild(option);
+        selectDisableProps.appendChild(optionProp);
     }
     for (let i = 0; i < arrMaterials.length; i++) {
         const e = arrMaterials[i];
@@ -132,78 +158,131 @@ async function getData(){
         selectMaterial.appendChild(option);
     }
 }  
-async function saveMaterial(){
-    const btnAdd = document.querySelector("#btnMaterial");
-    const formData = new FormData();
-    if(arrSelectedMaterial.length == 0){
-        Swal.fire("Error","Debe asignar materiales","error");
-        return false;
-    }
-    formData.append("id",document.querySelector("#idMaterial").value);
-    formData.append("material",JSON.stringify(arrSelectedMaterial));
-    btnAdd.innerHTML=`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
-    btnAdd.setAttribute("disabled","");
-    const response = await fetch(base_url+"/Marqueteria/MarqueteriaOpciones/setMaterial",{method:"POST",body:formData});
-    const objData = await response.json();
-    if(objData.status){
-        Swal.fire("Guardado",objData.msg,"success");
-        table.ajax.reload();
-        modalMaterial.hide();
-    }else{
-        Swal.fire("Error",objData.msg,"error");
-    }
-    btnAdd.innerHTML=`<i class="fas fa-save"></i> Guardar`;
-    btnAdd.removeAttribute("disabled");
-}
-function showMaterial(id){
-    document.querySelector("#idMaterial").value = id;
-    let arrOptions = table.rows().data().toArray();
-    let option = arrOptions.filter(e=>e.id == id)[0];
+
+function showItems(type="",data=[]){
     let html ="";
-    if(option.materials){
-        arrSelectedMaterial = option.materials;
-        arrSelectedMaterial.forEach(e => {
-           html+= `
-           <tr class="data-item w-100">
-                <td>${e.name}</td>
-                <td>${e.type}</td>
-                <td>${e.method}</td>
-                <td>${e.factor}</td>
-                <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteMaterial(this,'${e.idproduct}')"><i class="fas fa-trash-alt"></i></button></td>
-           </tr>`;
-        });
+    if(data.length > 0){
+        if(type=="material"){
+            arrSelectedMaterial = data;
+            arrSelectedMaterial.forEach(e => {
+                html+= `
+                <tr class="data-item w-100">
+                    <td>${e.name}</td>
+                    <td>${e.type}</td>
+                    <td>${e.method}</td>
+                    <td>${e.factor}</td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="delItem(this,'${e.idproduct}','material')"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            tableMaterial.innerHTML = html;
+        }else{
+            arrSelectedProps = data;
+            arrSelectedProps.forEach(e => {
+                html+= `
+                <tr class="data-item w-100">
+                    <td>${e.name}</td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="delItem(this,'${e.id}','props')"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            tableProps.innerHTML = html;
+        }
     }
-    tableMaterial.innerHTML = html;
-    modalMaterial.show();
 } 
-function addMaterial(){
-    const idMaterial = selectMaterial.value;
-    const material = arrMaterials.filter(e=>e.idproduct == idMaterial)[0];
-    material.type = document.querySelector("#selectCalc").value;
-    material.method = document.querySelector("#selectType").value;
-    material.factor = document.querySelector("#txtNumber").value;
-    arrSelectedMaterial.push(material);
-    const html = `
-        <td>${material.name}</td>
-        <td>${material.type}</td>
-        <td>${material.method}</td>
-        <td>${material.factor}</td>
-        <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="deleteMaterial(this,'${idMaterial}')"><i class="fas fa-trash-alt"></i></button></td>
-    `;
-    let el = document.createElement("tr");
-    el.classList.add("data-item","w-100");
-    el.innerHTML = html;
-    tableMaterial.appendChild(el);
+
+function addItem(type=""){
+    if(type=="material"){
+        const idMaterial = selectMaterial.value;
+        const material = arrMaterials.filter(e=>e.idproduct == idMaterial)[0];
+        material.type = document.querySelector("#selectCalc").value;
+        material.method = document.querySelector("#selectType").value;
+        material.factor = document.querySelector("#txtNumber").value;
+        arrSelectedMaterial.push(material);
+        const html = `
+            <td>${material.name}</td>
+            <td>${material.type}</td>
+            <td>${material.method}</td>
+            <td>${material.factor}</td>
+            <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="delItem(this,'${idMaterial}','material')"><i class="fas fa-trash-alt"></i></button></td>
+        `;
+        let el = document.createElement("tr");
+        el.classList.add("data-item","w-100");
+        el.innerHTML = html;
+        tableMaterial.appendChild(el);
+    }else{
+        const id = selectDisableProps.value;
+        if(arrSelectedProps.filter(e=>e.id == id).length > 0){
+            Swal.fire("Atención!","esta propiedad ya fue agregada, intente con otra.","warning");
+            return false;
+        }
+        const arrData = arrProperties.filter(e=>e.id == id)[0];
+        arrSelectedProps.push(arrData);
+
+        const html = `
+            <td>${arrData.name}</td>
+            <td>
+                <div class="d-flex justify-content-center"><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="delItem(this,'${id}','prop')"><i class="fas fa-trash-alt"></i></button></div>
+            </td>
+        `;
+        let el = document.createElement("tr");
+        el.classList.add("data-item","w-100");
+        el.innerHTML = html;
+        tableProps.appendChild(el);
+    }
 }
-function deleteMaterial(item,id){
-    item.parentElement.parentElement.remove();
-    const index = arrSelectedMaterial.findIndex(e=>e.idproduct == id);
-    arrSelectedMaterial.splice(index,1);
+
+function delItem(item,id,type=""){
+    if(type=="material"){
+        item.parentElement.parentElement.remove();
+        const index = arrSelectedMaterial.findIndex(e=>e.idproduct == id);
+        arrSelectedMaterial.splice(index,1);
+    }else{
+        item.parentElement.parentElement.parentElement.remove();
+        const index = arrSelectedProps.findIndex(e=>e.id == id);
+        arrSelectedProps.splice(index,1);
+    }
 }
+
 function editItem(id){
     let formData = new FormData();
     formData.append("id",id);
     request(base_url+"/Marqueteria/MarqueteriaOpciones/getOption",formData,"post").then(function(objData){
+        const selectProperties = document.querySelector("#propList");
+        const selectDisableProps = document.querySelector("#selectDisableProp");
+        arrProperties = objData.properties;
+        arrMaterials = objData.materials;
+        for (let i = 0; i < arrProperties.length; i++) {
+            const e = arrProperties[i];
+            const option = document.createElement("option");
+            const optionProp = document.createElement("option");
+            option.setAttribute("value",e.id);
+            option.innerHTML = e.name;
+
+            optionProp.setAttribute("value",e.id);
+            optionProp.innerHTML = e.name;
+            
+            selectProperties.appendChild(option);
+            selectDisableProps.appendChild(optionProp);
+        }
+
+        for (let i = 0; i < arrMaterials.length; i++) {
+            const e = arrMaterials[i];
+            const option = document.createElement("option");
+            option.setAttribute("value",e.idproduct);
+            option.innerHTML = e.name;
+            selectMaterial.appendChild(option);
+        }
+
+        showItems('material',objData.data.materials);
+        showItems('props',objData.data.disabled_props);
+
         document.querySelector("#id").value = objData.data.id;
         document.querySelector("#txtName").value = objData.data.name;
         document.querySelector("#txtTag").value = objData.data.tag;
@@ -226,6 +305,7 @@ function editItem(id){
         modal.show();
     });
 }
+
 function deleteItem(id){
     Swal.fire({
         title:"¿Estás seguro de eliminarlo?",
