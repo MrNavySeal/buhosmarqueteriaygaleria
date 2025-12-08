@@ -1,7 +1,6 @@
 <?php 
     headerAdmin($data);
     getModal("modalFrameOption");
-    getModal("modalFrameMaterial");
 ?>
 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
     <table class="table align-middle" id="tableData">
