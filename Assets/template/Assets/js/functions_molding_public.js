@@ -162,6 +162,7 @@ function selectFrame(id,flag=true){
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
     if(flag)calcularMarco(id);
 }
+
 function updateFramingConfig(select,flag=true){ 
     const element = select.options[select.selectedIndex];
     const isMargin = element.getAttribute("data-ismargin");
@@ -186,6 +187,7 @@ function updateFramingConfig(select,flag=true){
     if(flag)calcularMarco();
     
 }
+
 function selectColor(element=null,option=null){
     const select = document.querySelectorAll(".selectProp")[0];
     const isBocel = select.getAttribute("data-isbocel");
@@ -208,6 +210,7 @@ function selectColor(element=null,option=null){
     }
     calcularMarco();
 }
+
 function selectOrientation(element,type=""){
     let items = document.querySelectorAll(".orientation");
     for (let i = 0; i < items.length; i++) {
@@ -230,6 +233,7 @@ function selectOrientation(element,type=""){
     }
     resizeFrame(intWidth.value, intHeight.value);
 }
+
 function selectActive(element =null,elements=null){
     let items = document.querySelectorAll(`${elements}`);
     for (let i = 0; i < items.length; i++) {
@@ -237,6 +241,7 @@ function selectActive(element =null,elements=null){
     }
     element.classList.add("element--active");
 }
+
 function selectMargin(value,flag=true){
     const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
     selectFrameStyle.setAttribute("data-margin",value);
@@ -254,6 +259,7 @@ function selectMargin(value,flag=true){
     document.querySelector("#marginData").innerHTML= margin+" cm";
     if(flag)calcularMarco();
 }
+
 function resizeFrame(width,height,flag=true){
     let margin = 0;
     if(document.querySelector(".selectProp")){
@@ -286,6 +292,7 @@ function resizeFrame(width,height,flag=true){
     layoutBorder.style.width = `${widthM}px`;
     if(flag)calcularMarco();
 }
+
 function selectColorFrame(element){
     const colorFrame = document.querySelectorAll(".color--frame");
     for (let i = 0; i < colorFrame.length; i++) {
@@ -304,12 +311,15 @@ function selectColorFrame(element){
     document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
     calcularMarco();
 }
-function setDefaultConfig(flag = true){
+
+function setDefaultConfig(){
     colorMargin = document.querySelectorAll(".color--margin")[0];
     colorBorder = document.querySelectorAll(".color--border")[0];
     const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
     const divMargin = document.querySelector("#isMargin");
     const divBorder = document.querySelector("#isBorder");
+    const containterColorMargin = document.querySelector("#containterColorMargin");
+    const divTagColorMargin = document.querySelector("#marginColor");
     const isMarginStyle = selectFrameStyle.getAttribute("data-ismargin");
     const isColorStyle = selectFrameStyle.getAttribute("data-iscolor");
     const isBocelStyle = selectFrameStyle.getAttribute("data-isbocel");
@@ -317,19 +327,29 @@ function setDefaultConfig(flag = true){
     const intMarginStyle = selectFrameStyle.getAttribute("data-margin");
     const strTagStyle = selectFrameStyle.getAttribute("data-tag");
     const strTagFrameStyle = selectFrameStyle.getAttribute("data-tagframe");
-    if(flag)selectMargin(0);
+
+    disabledProps(selectFrameStyle);
+    selectMargin(0);
+
     if(isMarginStyle == 1){
         divMargin.classList.remove("d-none");
-        if(!document.querySelector(".color--margin.element--active")){
-            colorMargin.classList.add("element--active");
-        }else{
-            colorMargin = document.querySelector(".color--margin.element--active");
+        containterColorMargin.classList.add("d-none");
+        divTagColorMargin.classList.add("d-none");
+        layoutMargin.style.backgroundColor="transparent";
+        if(isColorStyle == 1){
+            containterColorMargin.classList.remove("d-none");
+            divTagColorMargin.classList.remove("d-none");
+            if(!document.querySelector(".color--margin.element--active")){
+                colorMargin.classList.add("element--active");
+            }else{
+                colorMargin = document.querySelector(".color--margin.element--active");
+            }
+            divTagColorMargin.innerHTML = colorMargin.getAttribute("title");
+            let bm = getComputedStyle(colorMargin.children[0]).backgroundColor;
+            layoutMargin.style.backgroundColor=bm;
         }
-        document.querySelector("#marginColor").innerHTML = colorMargin.getAttribute("title");
-        let bm = getComputedStyle(colorMargin.children[0]).backgroundColor;
-        layoutMargin.style.backgroundColor=bm;
         document.querySelector("#marginRange").value=intMarginStyle;
-        if(flag)selectMargin(intMarginStyle);
+        selectMargin(intMarginStyle);
     }else{
         divMargin.classList.add("d-none");
     }
@@ -358,6 +378,29 @@ function setDefaultConfig(flag = true){
     }
     //calcularMarco();
 }
+
+function disabledProps(prop){
+    const arrProps = Array.from(document.querySelectorAll(".selectProp"));
+    const selectedOption = prop.options[prop.selectedIndex];
+    const selectDisabledProps = selectedOption.getAttribute("data-disabled");
+    let arrDisabledProps = [];
+
+    if(selectDisabledProps != ""){
+        arrDisabledProps = JSON.parse(JSON.parse(selectDisabledProps));
+    }
+    arrProps.forEach(element => {
+        let idProp = element.getAttribute("data-id");
+        if(arrDisabledProps.length > 0){
+            arrDisabledProps.filter(function(e){return e.id == idProp});
+            if(arrDisabledProps.filter(function(e){return e.id == idProp}).length > 0){
+                element.parentElement.classList.add("d-none");
+            }else{
+                element.parentElement.classList.remove("d-none");
+            }
+        }
+    });
+}
+
 async function calcularMarco(id=null){
     if (currentController) {
         currentController.abort();
@@ -763,8 +806,9 @@ function showProps(data){
             const defaultOption = optionsProps[0];
             if(optionsProps.length>0){
                 optionsProps.forEach(o=>{
+                    let objDisabledProps = o.disabled_props != "" ? JSON.stringify(o.disabled_props).replace(/"/g, '&quot;') : "";
                     selectOptions+=`<option value="${o.id}" data-margin="1" data-iscolor="${o.is_color}" 
-                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-id="${d.prop}" data-max="${o.margin}" data-isbocel="${o.is_bocel}"
+                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-disabled='${objDisabledProps}' data-id="${d.prop}" data-max="${o.margin}" data-isbocel="${o.is_bocel}"
                     data-tag="${o.tag}" data-tagframe="${o.tag_frame}">${o.name}</option>`
                 });
             }
@@ -788,7 +832,7 @@ function showProps(data){
                                 oninput="selectMargin(this.value)">
                                 <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3" id="containterColorMargin">
                                 <div class="fw-bold d-flex justify-content-between">
                                     <span>Elige el color del <span id="colorMarginTitle">${defaultOption.tag}</span></span>
                                     <span id="marginColor"></span>

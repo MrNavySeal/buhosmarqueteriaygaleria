@@ -138,9 +138,12 @@
                             $arrMaterial = $e['material'];
                             if($option['is_margin']){
                                 array_push($arrSpecs,array("name"=>"Medida del ".$option['tag'],"value"=>$intMargin." cm"));
-                                array_push($arrSpecs,array("name"=>"Color del ".$option['tag'],"value"=>$strColorMargin));
                                 $htmlSpecs.='<tr><td>'."Medida del ".$option['tag'].'</td><td>'.$intMargin.'</td></tr>';
-                                $htmlSpecs.='<tr><td>'."Color del ".$option['tag'].'</td><td>'.$strColorMargin.'</td></tr>';
+
+                                if($option['is_color']){
+                                    array_push($arrSpecs,array("name"=>"Color del ".$option['tag'],"value"=>$strColorMargin));
+                                    $htmlSpecs.='<tr><td>'."Color del ".$option['tag'].'</td><td>'.$strColorMargin.'</td></tr>';
+                                }
                             }
                             if($option['is_bocel'] || $option['is_frame']){
                                 array_push($arrSpecs,array("name"=>"Color del ".$option['tag_frame'],"value"=>$strColorBorder));
