@@ -7,10 +7,8 @@
                 die();
             }
             parent::__construct();
-            sessionCookie();
-            getPermits(6);
-            
         }
+        
         public function calcularMarcoTotal(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
@@ -34,8 +32,10 @@
                         $intIdColorMargin = intval($_POST['color_margin_id']);
                         $intIdColorBorder = intval($_POST['color_border_id']);
                         $intIdTypeFrame = intval($_POST['type_frame']);
+
                         $request = $this->model->selectFrameConfig($intId,$arrData);
                         $request_config=$this->model->selectCategory($intIdConfig);
+
                         $isPrint = $request_config['is_print'];
                         /************Frame variables************* */
                         $frameLength = 290;
@@ -99,12 +99,17 @@
                             $prop = $e['prop'];
                             $option = $e['option'];
                             $arrMaterial = $e['material'];
+
                             if($option['is_margin']){
                                 array_push($arrSpecs,array("name"=>"Medida del ".$option['tag'],"value"=>$intMargin." cm"));
-                                array_push($arrSpecs,array("name"=>"Color del ".$option['tag'],"value"=>$strColorMargin));
-                                $htmlSpecs.='<tr><td>'."Medida del ".$option['tag'].'</td><td>'.$intMargin.'</td></tr>';
-                                $htmlSpecs.='<tr><td>'."Color del ".$option['tag'].'</td><td>'.$strColorMargin.'</td></tr>';
+                                $htmlSpecs.='<tr><td>'."Medida del ".$option['tag'].'</td><td>'.$intMargin.'cm</td></tr>';
+
+                                if($option['is_color']){
+                                    array_push($arrSpecs,array("name"=>"Color del ".$option['tag'],"value"=>$strColorMargin));
+                                    $htmlSpecs.='<tr><td>'."Color del ".$option['tag'].'</td><td>'.$strColorMargin.'</td></tr>';
+                                }
                             }
+
                             if($option['is_bocel'] || $option['is_frame']){
                                 array_push($arrSpecs,array("name"=>"Color del ".$option['tag_frame'],"value"=>$strColorBorder));
                                 $htmlSpecs.='<tr><td>'."Color del ".$option['tag_frame'].'</td><td>'.$strColorBorder.'</td></tr>';
@@ -117,14 +122,17 @@
                                     $arrMaterial = array_filter($arrMaterial,function($e){return $e['name'] != "Impresion";});
                                 }
                                 foreach ($arrMaterial as $d ) {
-                                    $totalMaterial = $this->calcularCostoMaterial($d,$intHeight,$intWidth,$intMargin);
+                                    $arrTotalMaterial = $this->calcularCostoMaterial($d,$intHeight,$intWidth,$intMargin);
+                                    $totalMaterial = $arrTotalMaterial['total'];
+                                    $realTotalMaterial = $arrTotalMaterial['real_total'];
                                     $totalCostMaterial+= $totalMaterial;
+                                    $realTotalCostMaterial += $realTotalMaterial;
                                     $price+=ceil((UTILIDAD*$totalMaterial)/1000)*1000;
                                     array_push($arrCostData,array("name"=>$d['name'], "total"=>$totalMaterial ));
                                     $htmlCostData.='
                                     <tr>
                                         <td>'.$d['name'].'</td>
-                                        <td class="text-end">'.formatNum($totalMaterial).'</td>
+                                        <td class="text-end">'.formatNum($realTotalMaterial).'</td>
                                         <td class="text-end">'.formatNum(ceil((UTILIDAD*$totalMaterial)/1000)*1000).'</td>
                                     </tr>';
                                 }
@@ -158,10 +166,11 @@
                         }
 
                         $totalCost = $totalCostMaterial+$totalCostFrame;
+                        $realTotalCost = $realTotalCostMaterial+$totalCostFrame; 
                         $arrResponse = array(
                             "status"=>true,
                             "total"=>formatNum($price),
-                            "total_cost"=>formatNum($totalCost),
+                            "total_cost"=>formatNum($realTotalCost),
                             "specs"=>$arrSpecs,
                             "cost"=>$arrCostData,
                             "html_cost"=>$htmlCostData,
@@ -191,6 +200,7 @@
             }
             die();
         }
+
         public function calcularCostoMaterial($data,float $intHeight, float $intWidth,int $intMargin){
             $total = 0;
             $type = $data['type'];
@@ -204,6 +214,8 @@
             $lengthMaterial = 0;
             $areaMaterial = 0;
             $costMaterial = 0;
+            $realCostMaterial = 0;
+            $realTotalMaterial = 0;
             $heigth = $method == "completo" ?  ($intHeight+$intMargin) : $intHeight;
             $width = $method == "completo" ?  ($intWidth+$intMargin) : $intWidth;
             foreach ($arrVariables as $v ) {
@@ -220,16 +232,21 @@
             if($type == "area"){
                 $areaMaterial = $widthMaterial * $heightMaterial;
                 $areaMaterial = $areaMaterial > 0 ? $areaMaterial : 1;
-                $costMaterial = ceil(($priceMaterial/$areaMaterial)*$factor); 
+                $realCostMaterial = $priceMaterial/$areaMaterial; 
+                $costMaterial = ceil($realCostMaterial*$factor); 
                 $total+=$costMaterial*($heigth*$width); 
+                $realTotalMaterial+=$realCostMaterial*($heigth*$width); 
             }else{
                 $lengthMaterial = $lengthMaterial > 0 ? $lengthMaterial : 1;
-                $costMaterial = ceil(($priceMaterial/$lengthMaterial)*$factor); 
+                $realCostMaterial = $priceMaterial/$areaMaterial; 
+                $costMaterial = ceil($realCostMaterial*$factor); 
                 $perimetro = (($heigth + $width)*2)+$wasteMaterial;
                 $total+=$costMaterial*($perimetro); 
+                $realTotalMaterial+=$realCostMaterial*($perimetro); 
             }
+            $realTotalMaterial = ceil($realTotalMaterial/1000)*1000;
             $total = ceil($total/1000)*1000;
-            return $total;
+            return ["total"=>$total,"real_total"=>$realTotalMaterial];
         }
     }
 

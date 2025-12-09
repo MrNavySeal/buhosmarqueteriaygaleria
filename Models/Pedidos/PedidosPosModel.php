@@ -411,7 +411,7 @@
             return $request;
         }
 
-        public function selectConfigFrame(int $id){
+        private function selectConfigFrame(int $id){
             $this->intId = $id;
             $sql = "SELECT 
             f.topic, 
@@ -469,7 +469,7 @@
             return $request;
         }
 
-        public function selectConfigProps(int $id){
+        private function selectConfigProps(int $id){
             $this->intId = $id;
             $sql = "SELECT 
             f.topic, 
@@ -493,6 +493,7 @@
                     WHERE f.prop_id = {$request[$i]['prop']} AND is_check = 1";
 
                     $request[$i]['options'] = $this->select_all($sql);
+                    
                     $arrPropsConfig = $this->select_all($sql_framing);
                     for ($j=0; $j < count($arrPropsConfig) ; $j++) { 
                         $arrPropsConfig[$j]['attribute'] = 'data-'.$j.'="'.$arrPropsConfig[$j]['name'].'"';

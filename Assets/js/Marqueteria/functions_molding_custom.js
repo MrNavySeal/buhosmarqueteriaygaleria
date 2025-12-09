@@ -216,6 +216,7 @@ containerFrames.addEventListener("click",function(e){
     layoutBorder.style.outlineWidth = (waste/1.6)+"px";
     calcularMarco(id);
 });
+
 addFrame.addEventListener("click",function(){
     addProduct(arrFrame,1);
     modalFrame.hide();
@@ -245,6 +246,7 @@ function updateFramingConfig(select){
     }
     calcularMarco();
 }
+
 function selectColor(element=null,option=null){
     const select = document.querySelectorAll(".selectProp")[0];
     const isBocel = select.getAttribute("data-isbocel");
@@ -267,6 +269,7 @@ function selectColor(element=null,option=null){
     }
     calcularMarco();
 }
+
 function selectOrientation(element){
     let items = document.querySelectorAll(".orientation");
     for (let i = 0; i < items.length; i++) {
@@ -277,6 +280,7 @@ function selectOrientation(element){
     document.querySelectorAll(".measures--input")[1].removeAttribute("disabled");
     resizeFrame(intWidth.value, intHeight.value);
 }
+
 function selectActive(element =null,elements=null){
     let items = document.querySelectorAll(`${elements}`);
     for (let i = 0; i < items.length; i++) {
@@ -284,6 +288,7 @@ function selectActive(element =null,elements=null){
     }
     element.classList.add("element--active");
 }
+
 function selectMargin(value){
     const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
     selectFrameStyle.setAttribute("data-margin",value);
@@ -300,6 +305,7 @@ function selectMargin(value){
     document.querySelector("#marginData").innerHTML= margin+" cm";
     calcularMarco();
 }
+
 function resizeFrame(width,height){
     let margin = 0;
     if(document.querySelector(".selectProp")){
@@ -332,6 +338,7 @@ function resizeFrame(width,height){
     layoutBorder.style.width = `${widthM}px`;
     calcularMarco();
 }
+
 function selectColorFrame(element){
     const colorFrame = document.querySelectorAll(".color--frame");
     for (let i = 0; i < colorFrame.length; i++) {
@@ -350,13 +357,14 @@ function selectColorFrame(element){
     document.querySelector("#frameColor").innerHTML = document.querySelector(".color--frame.element--active").getAttribute("title");
     calcularMarco();
 }
+
 function setDefaultConfig(){
     colorMargin = document.querySelectorAll(".color--margin")[0];
     colorBorder = document.querySelectorAll(".color--border")[0];
     const selectFrameStyle = document.querySelectorAll(".selectProp")[0];
     const divMargin = document.querySelector("#isMargin");
     const divBorder = document.querySelector("#isBorder");
-    const divColorMargin = document.querySelector("#colorsMargin");
+    const containterColorMargin = document.querySelector("#containterColorMargin");
     const divTagColorMargin = document.querySelector("#marginColor");
     const isMarginStyle = selectFrameStyle.getAttribute("data-ismargin");
     const isColorStyle = selectFrameStyle.getAttribute("data-iscolor");
@@ -365,14 +373,17 @@ function setDefaultConfig(){
     const intMarginStyle = selectFrameStyle.getAttribute("data-margin");
     const strTagStyle = selectFrameStyle.getAttribute("data-tag");
     const strTagFrameStyle = selectFrameStyle.getAttribute("data-tagframe");
+
+    disabledProps(selectFrameStyle);
     selectMargin(0);
+
     if(isMarginStyle == 1){
         divMargin.classList.remove("d-none");
-        divColorMargin.classList.add("d-none");
+        containterColorMargin.classList.add("d-none");
         divTagColorMargin.classList.add("d-none");
         layoutMargin.style.backgroundColor="transparent";
         if(isColorStyle == 1){
-            divColorMargin.classList.remove("d-none");
+            containterColorMargin.classList.remove("d-none");
             divTagColorMargin.classList.remove("d-none");
             if(!document.querySelector(".color--margin.element--active")){
                 colorMargin.classList.add("element--active");
@@ -413,6 +424,29 @@ function setDefaultConfig(){
     }
     //calcularMarco();
 }
+
+function disabledProps(prop){
+    const arrProps = Array.from(document.querySelectorAll(".selectProp"));
+    const selectedOption = prop.options[prop.selectedIndex];
+    const selectDisabledProps = selectedOption.getAttribute("data-disabled");
+    let arrDisabledProps = [];
+
+    if(selectDisabledProps != ""){
+        arrDisabledProps = JSON.parse(JSON.parse(selectDisabledProps));
+    }
+    arrProps.forEach(element => {
+        let idProp = element.getAttribute("data-id");
+        if(arrDisabledProps.length > 0){
+            arrDisabledProps.filter(function(e){return e.id == idProp});
+            if(arrDisabledProps.filter(function(e){return e.id == idProp}).length > 0){
+                element.parentElement.classList.add("d-none");
+            }else{
+                element.parentElement.classList.remove("d-none");
+            }
+        }
+    });
+}
+
 async function calcularMarco(id=null){
     if (currentController) {
         currentController.abort();
@@ -494,6 +528,7 @@ async function calcularMarco(id=null){
         //document.querySelector("#frameNormalPrice").innerHTML = objData.total;
     }
 }
+
 function calcDimension(picture){
     if(uploadPicture.value !=""){
         let realHeight = picture.naturalHeight;
@@ -515,6 +550,7 @@ function calcDimension(picture){
         resizeFrame(intWidth.value,intHeight.value);
     }
 }
+
 function calcPpi(height,width,picture){
     
     let realHeight = picture.naturalHeight;
@@ -531,6 +567,7 @@ function calcPpi(height,width,picture){
     }
 
 }
+
 function uploadImg(img,location){
     let imgUpload = img.value;
     let fileUpload = img.files;
@@ -544,6 +581,7 @@ function uploadImg(img,location){
         document.querySelector(location).setAttribute("src",route);
     }
 }
+
 function showImages(images){
     let html="";
     for (let i = 0; i < images.length; i++) {
@@ -551,6 +589,7 @@ function showImages(images){
     }
     return html;
 }
+
 function clickShowImages(){
     let images = document.querySelectorAll(".product-image-item");
     let divImg = document.querySelector(".frame__img__container img");
@@ -566,6 +605,7 @@ function clickShowImages(){
     }
 }
 /*************************Molding functions*******************************/
+
 async function getConfig(element,id){
     
     const formData = new FormData();
@@ -628,8 +668,9 @@ function showProps(data){
             const defaultOption = optionsProps[0];
             if(optionsProps.length>0){
                 optionsProps.forEach(o=>{
+                    let objDisabledProps = o.disabled_props != "" ? JSON.stringify(o.disabled_props).replace(/"/g, '&quot;') : "";
                     selectOptions+=`<option value="${o.id}" data-margin="1" data-iscolor="${o.is_color}" 
-                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-id="${d.prop}" data-max="${o.margin}" data-isbocel="${o.is_bocel}"
+                    data-isframe="${o.is_frame}" data-ismargin="${o.is_margin}" data-disabled='${objDisabledProps}' data-id="${d.prop}" data-max="${o.margin}" data-isbocel="${o.is_bocel}"
                     data-tag="${o.tag}" data-tagframe="${o.tag_frame}">${o.name}</option>`
                 });
             }
@@ -653,7 +694,7 @@ function showProps(data){
                                 oninput="selectMargin(this.value)">
                                 <div class="fw-bold text-end pe-4 ps-4" id="marginData">1 cm</div>
                             </div>
-                            <div class="mb-3" >
+                            <div class="mb-3" id="containterColorMargin">
                                 <div class="fw-bold d-flex justify-content-between">
                                     <span>Elige el color del <span id="colorMarginTitle">${defaultOption.tag}</span></span>
                                     <span id="marginColor"></span>

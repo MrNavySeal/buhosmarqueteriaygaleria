@@ -210,7 +210,11 @@ function addItem(type=""){
             <td>${material.type}</td>
             <td>${material.method}</td>
             <td>${material.factor}</td>
-            <td><button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="delItem(this,'${idMaterial}','material')"><i class="fas fa-trash-alt"></i></button></td>
+            <td>
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-danger m-1" type="button" title="Eliminar" onclick="delItem(this,'${idMaterial}','material')"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            </td>
         `;
         let el = document.createElement("tr");
         el.classList.add("data-item","w-100");
@@ -240,7 +244,7 @@ function addItem(type=""){
 
 function delItem(item,id,type=""){
     if(type=="material"){
-        item.parentElement.parentElement.remove();
+        item.parentElement.parentElement.parentElement.remove();
         const index = arrSelectedMaterial.findIndex(e=>e.idproduct == id);
         arrSelectedMaterial.splice(index,1);
     }else{

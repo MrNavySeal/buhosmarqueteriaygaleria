@@ -10,39 +10,52 @@
             $this->intId = $intId;
             $request = array();
             $arrInfo = [];
+            $arrDisabledProps = [];
             $total = count($this->arrData);
             for ($i=0; $i < $total ; $i++) { 
                 $data = $this->arrData[$i];
-                $sql_prop = "SELECT is_material,name FROM molding_props WHERE id = {$data['prop']}";
-                $prop = $this->select($sql_prop);
+
                 $sql_option ="SELECT * FROM molding_options WHERE prop_id = {$data['prop']} AND id = {$data['option_prop']}";
                 $option = $this->select($sql_option);
-                $material = [];
-                 if($prop['is_material']){
-                    $sql = "SELECT
-                    m.type,
-                    m.method,
-                    m.factor,
-                    m.product_id,
-                    p.price_purchase,
-                    p.name
-                    FROM molding_materials m
-                    INNER JOIN product p ON m.product_id = p.idproduct
-                    WHERE m.option_id = {$option['id']}";
-                    $material = $this->select_all($sql);
-                    $totalMaterial = count($material);
-                    for ($j=0; $j < $totalMaterial; $j++) { 
+
+                $disabledProps = $option['disabled_props'] != "" ? json_decode($option['disabled_props'],true) : [];
+
+                if(!empty($disabledProps)){
+                    foreach ($disabledProps as $disabled) { array_push($arrDisabledProps,$disabled['id']);}
+                }
+
+                if(!in_array($data['prop'],$arrDisabledProps)){
+                    $sql_prop = "SELECT is_material,name FROM molding_props WHERE id = {$data['prop']}";
+                    $prop = $this->select($sql_prop);
+    
+                    $material = [];
+                    if($prop['is_material']){
                         $sql = "SELECT
-                        s.name,
-                        p.value
-                        FROM product_specs p
-                        INNER JOIN specifications s ON p.specification_id = s.id_specification
-                        WHERE p.product_id = {$material[$j]['product_id']}";
-                        $material[$j]['variables'] = $this->select_all($sql);
+                        m.type,
+                        m.method,
+                        m.factor,
+                        m.product_id,
+                        p.price_purchase,
+                        p.name
+                        FROM molding_materials m
+                        INNER JOIN product p ON m.product_id = p.idproduct
+                        WHERE m.option_id = {$option['id']}";
+                        $material = $this->select_all($sql);
+                        $totalMaterial = count($material);
+                        for ($j=0; $j < $totalMaterial; $j++) { 
+                            $sql = "SELECT
+                            s.name,
+                            p.value
+                            FROM product_specs p
+                            INNER JOIN specifications s ON p.specification_id = s.id_specification
+                            WHERE p.product_id = {$material[$j]['product_id']}";
+                            $material[$j]['variables'] = $this->select_all($sql);
+                        }
+                        array_push($arrInfo,array("prop"=>$prop,"option"=>$option,"material"=>$material));
                     }
                 }
+
                  
-                array_push($arrInfo,array("prop"=>$prop,"option"=>$option,"material"=>$material));
             }
             $request = array("data"=>$arrInfo,"frame"=>$this->selectFrame($this->intId));
             return $request;
