@@ -8,10 +8,6 @@
     <div class="row">
         <div class="col-md-6" id="isFrame">
             <div class="frame">
-                <div class="up-image">
-                    <label for="txtImgShow"><i class="fas fa-camera"></i></label>
-                    <input type="file" name="txtImgShow" id="txtImgShow" accept="image/*">
-                </div>
                 <div class="zoom">
                     <i class="fas fa-search-minus" id="zoomMinus"></i>
                     <input type="range" class="form-range custom--range" min="10" max="200" value="100" step="10" id="zoomRange">
@@ -26,13 +22,19 @@
                 </div>
             </div>
             <p class="mt-3 text-center fw-bold fs-5" id="imgQuality"></p>
+            <div class="d-flex justify-content-center">
+                <div class="up-image d-none position-relative">
+                    <label for="txtImgShow"><i class="fas fa-upload"></i></label>
+                    <input type="file" name="txtImgShow" id="txtImgShow" accept="image/*">
+                </div>
+            </div>
             <div class="d-flex justify-content-center gap-2 mt-2">
                 <div class="img-thumbnail c-p img-frame-bg" onclick="setBackground(this)" style="width: 50px; height: 50px;"></div>
                 <?php foreach ($arrBackgrounds as $bg) { ?>
                 <img src="<?= media()."/images/uploads/{$bg['image']}" ?>" class="img-thumbnail c-p img-frame-bg" onclick="setBackground(this)" style="width: 50px; height: 50px;">
                 <?php } ?>
                 <div class="position-relative img-thumbnail img-frame-bg d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
-                    <label for="frameBgImg" class="c-p position-absolute top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center"><i class="fas fa-camera"></i></label>
+                    <label for="frameBgImg" class="c-p position-absolute top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center"><i class="fas fa-image"></i></label>
                     <input type="file" id="frameBgImg" class="d-none" accept="image/*" onchange="uploadBackground()">
                 </div>
             </div>
