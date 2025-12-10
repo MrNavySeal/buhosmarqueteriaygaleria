@@ -32,6 +32,7 @@
                 $data['page_title'] = 'Enmarcar '.$request['name'].' | '.$company['name'];
                 $data['page_name'] = "personalizar";
                 $data['examples'] = $this->selectExamples($request['id']);
+                $data['backgrounds'] = $this->selectBackgrounds();
                 $data['name'] = $request['name'];
                 $data['faqs'] = $this->getFaqs();
                 $data['app'] = "functions_molding_public.js";

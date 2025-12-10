@@ -259,6 +259,13 @@
             $request = $this->con->select($sql);
             return $request;
         }
+
+        public function selectBackgrounds(){
+            $this->con = new Mysql();
+            $sql = "SELECT * FROM molding_background WHERE status = 1";
+            $request = $this->con->select_all($sql);
+            return $request;
+        }
     }
     
 ?>

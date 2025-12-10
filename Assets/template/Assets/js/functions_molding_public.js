@@ -163,6 +163,40 @@ function selectFrame(id,flag=true){
     if(flag)calcularMarco(id);
 }
 
+function setBackground(element){
+    const layout = document.querySelector(".layout");
+    const elements = Array.from(document.querySelectorAll(".img-frame-bg"));
+    elements.forEach(e => {
+        e.style.border = "1px solid #dee2e6";
+    });
+
+    element.style.border = "1px solid #E05A10";
+
+    if(element.getAttribute("src")){
+        layout.style.backgroundImage = "url("+element.getAttribute("src")+")";
+        layout.style.backgroundSize = "cover";
+    }else{
+        layout.style.backgroundImage = "none";
+    }
+}
+
+function uploadBackground(){
+    const layout = document.querySelector(".layout");
+    const img = document.querySelector("#frameBgImg");
+    let imgUpload = img.value;
+    let fileUpload = img.files;
+    let type = fileUpload[0].type;
+    if(type != "image/png" && type != "image/jpg" && type != "image/jpeg" && type != "image/gif"){
+        imgUpload ="";
+        Swal.fire("Error","Solo se permite imágenes.","error");
+    }else{
+        let objectUrl = window.URL || window.webkitURL;
+        let route = objectUrl.createObjectURL(fileUpload[0]);
+        layout.style.backgroundImage = "url("+route+")";
+        layout.style.backgroundSize = "cover";
+    }
+}
+
 function updateFramingConfig(select,flag=true){ 
     const element = select.options[select.selectedIndex];
     const isMargin = element.getAttribute("data-ismargin");
@@ -478,6 +512,7 @@ async function calcularMarco(id=null){
         showSpecs();
     }
 }
+
 function selectTypeFrame(flag = true){
     if(intWidth.value !="" && intHeight.value!=""){
         const element = sortFrame.options[sortFrame.selectedIndex];
@@ -535,6 +570,7 @@ function selectTypeFrame(flag = true){
         if(flag)calcularMarco();
     }
 }
+
 function copyStyle(data,flag){
     const frame = data.frame;
     const typeFrame = data.type_frame;
@@ -600,6 +636,7 @@ function copyStyle(data,flag){
     calcularMarco(frame);
     
 }
+
 function showSpecs(){
     let html="";
     arrFrame.forEach(function(e){
@@ -612,6 +649,7 @@ function showSpecs(){
     });
     document.querySelector("#tableSpecs").innerHTML = html;
 }
+
 function calcDimension(picture){
     if(uploadPicture.value !=""){
         let realHeight = picture.naturalHeight;
@@ -633,6 +671,7 @@ function calcDimension(picture){
         resizeFrame(intWidth.value,intHeight.value);
     }
 }
+
 function calcPpi(height,width,picture){
     
     let realHeight = picture.naturalHeight;
@@ -649,6 +688,7 @@ function calcPpi(height,width,picture){
     }
 
 }
+
 function uploadImg(img,location){
     let imgUpload = img.value;
     let fileUpload = img.files;
@@ -662,6 +702,7 @@ function uploadImg(img,location){
         document.querySelector(location).setAttribute("src",route);
     }
 }
+
 async function addProduct(){
     if(intHeight.value =="" || intWidth.value==""){
         Swal.fire("Error","Por favor, ingresa las medidas","error");
@@ -863,6 +904,7 @@ function showProps(data){
     }
     document.querySelector("#contentProps").innerHTML = html;
 }
+
 function showMolding(data,color){
     let html = "";
     let contentFrames ="";
@@ -917,6 +959,7 @@ function showMolding(data,color){
     });
     
 }
+
 async function showDefaultFraming(id,params){
     const colorFrame = document.querySelectorAll(".color--frame");
     const layoutMargin = document.querySelector(".layout--margin");
