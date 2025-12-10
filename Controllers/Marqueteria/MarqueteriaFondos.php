@@ -85,39 +85,45 @@
         }
 
         public function getFondos(){
-            $intPage = intval($_POST['page']);
-            $intPerPage = intval($_POST['per_page']);
-            $request = $this->model->selectFondos($intPage,$intPerPage);
-            echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            if($_SESSION['permitsModule']['r']){
+                $intPage = intval($_POST['page']);
+                $intPerPage = intval($_POST['per_page']);
+                $request = $this->model->selectFondos($intPage,$intPerPage);
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
             die();
         }
 
         public function getFondo(){
-            if($_POST){
-                $intId = intval($_POST['id']);
-                $request = $this->model->selectFondo($intId);
-                if(!empty($request)){
-                    $request['url'] = media()."/images/uploads/".$request['image'];
-                    $arrResponse = array("status"=>true,"data"=>$request);
-                }else{
-                    $arrResponse = array("status"=>false,"msg"=>"Datos no encontratos.");
+            if($_SESSION['permitsModule']['r']){
+                if($_POST){
+                    $intId = intval($_POST['id']);
+                    $request = $this->model->selectFondo($intId);
+                    if(!empty($request)){
+                        $request['url'] = media()."/images/uploads/".$request['image'];
+                        $arrResponse = array("status"=>true,"data"=>$request);
+                    }else{
+                        $arrResponse = array("status"=>false,"msg"=>"Datos no encontratos.");
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                die();
             }
+            die();
         }
 
         public function delFondo(){
-            if($_POST){
-                $intId = intval($_POST['id']);
-                $request = $this->model->deleteFondo($intId);
-                if($request =="ok"){
-                    $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado correctamente");
-                }else{
-                    $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar.");
+            if($_SESSION['permitsModule']['d']){
+                if($_POST){
+                    $intId = intval($_POST['id']);
+                    $request = $this->model->deleteFondo($intId);
+                    if($request =="ok"){
+                        $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado correctamente");
+                    }else{
+                        $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar.");
+                    }
+                    echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                    die();
                 }
-                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
-                die();
             }
         }
     }
