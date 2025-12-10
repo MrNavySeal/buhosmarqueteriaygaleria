@@ -30,6 +30,7 @@
     $router->setRoute("marqueteria/opciones-propiedades/","Marqueteria/MarqueteriaOpciones/opciones",false);
     $router->setRoute("marqueteria/configuracion/","Marqueteria/MarqueteriaConfiguracion/configuracion",false);
     $router->setRoute("marqueteria/ejemplos/","Marqueteria/MarqueteriaEjemplos/ejemplos",false);
+    $router->setRoute("marqueteria/fondos/","Marqueteria/MarqueteriaFondos/fondos",false);
 
     //Almacén
     $router->setRoute("almacen/inventario/","Almacen/Inventario/inventario",false);
