@@ -25,7 +25,7 @@
             <div class="d-flex justify-content-center">
                 <div class="up-image d-none position-relative">
                     <label for="txtImgShow"><i class="fas fa-upload"></i></label>
-                    <input type="file" name="txtImgShow" id="txtImgShow" accept="image/*">
+                    <input type="file" name="txtImgShow" id="txtImgShow" accept="image/*" capture="environment">
                 </div>
             </div>
             <div class="d-flex justify-content-center gap-2 mt-2">
@@ -35,7 +35,7 @@
                 <?php } ?>
                 <div class="position-relative img-thumbnail img-frame-bg d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
                     <label for="frameBgImg" class="c-p position-absolute top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center"><i class="fas fa-image"></i></label>
-                    <input type="file" id="frameBgImg" class="d-none" accept="image/*" onchange="uploadBackground()">
+                    <input type="file" id="frameBgImg" class="d-none" accept="image/*" onchange="uploadBackground()" capture="environment">
                 </div>
             </div>
             <div class="product-image-slider d-none">
