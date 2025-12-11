@@ -238,7 +238,7 @@
                 $realTotalMaterial+=$realCostMaterial*($heigth*$width); 
             }else{
                 $lengthMaterial = $lengthMaterial > 0 ? $lengthMaterial : 1;
-                $realCostMaterial = $priceMaterial/$areaMaterial; 
+                $realCostMaterial = $priceMaterial/$lengthMaterial; 
                 $costMaterial = ceil($realCostMaterial*$factor); 
                 $perimetro = (($heigth + $width)*2)+$wasteMaterial;
                 $total+=$costMaterial*($perimetro); 
