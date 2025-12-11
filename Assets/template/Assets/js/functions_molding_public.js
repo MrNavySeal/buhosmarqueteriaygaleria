@@ -519,8 +519,6 @@ function selectTypeFrame(flag = true){
         sortFrame.setAttribute("data-id",element.getAttribute("data-id"));
         const arrPropContent = Array.from(document.querySelectorAll(".selectPropContent"));
         const colorFrame = document.querySelector("#frame--color");
-        const colorSelectedFrame = document.querySelector(".color--frame.element--active");
-        let bgSelectedFrame = getComputedStyle(colorSelectedFrame.children[0]).backgroundColor;
         const data = arrDataMolding.filter(e=>e.name == sortFrame.value)[0];
         const frames = data.frames
         const needle = data.name.toLowerCase();
@@ -548,12 +546,15 @@ function selectTypeFrame(flag = true){
                 }
             }
         })
+
+        let bgSelectedFrame = "transparent";
         if(needle.includes("madera") && !needle.includes("muestras")){
+            const colorSelectedFrame = document.querySelector(".color--frame.element--active");
+            bgSelectedFrame = getComputedStyle(colorSelectedFrame.children[0]).backgroundColor;
             colorFrame.classList.remove("d-none");
             document.querySelector("#frameColor").innerHTML = colorSelectedFrame.getAttribute("title");
         }else{
             colorFrame.classList.add("d-none");
-            bgSelectedFrame = "transparent";
         }
 
         document.querySelector(".select--frames").innerHTML = contentFrames;
