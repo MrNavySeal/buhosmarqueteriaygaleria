@@ -591,15 +591,6 @@ function copyStyle(data,flag){
     let arrColorBorder = Array.from(document.querySelectorAll(".color--border"));
     let arrProps = Array.from(document.querySelectorAll(".selectProp"));
 
-    arrProps.forEach(function(e){
-        props.forEach(f => {
-            if(e.getAttribute("data-id") == f.prop){
-                e.value = f.option_prop;
-                updateFramingConfig(e,false);
-            }
-        });
-    });
-
     frames.forEach(function(e){e.classList.remove("element--active");});
     arrColorFrame.forEach(function(e){e.classList.remove("element--active");});
     arrColorMargin.forEach(function(e){e.classList.remove("element--active");});
@@ -614,6 +605,18 @@ function copyStyle(data,flag){
     selectedColorFrame.classList.add("element--active");
     selectedColorMargin.classList.add("element--active");
     selectedColorBorder.classList.add("element--active");
+
+    selectColor(selectedColorMargin,"margin");
+    selectColor(selectedColorBorder,"border");
+
+    arrProps.forEach(function(e){
+        props.forEach(f => {
+            if(e.getAttribute("data-id") == f.prop){
+                e.value = f.option_prop;
+                updateFramingConfig(e,false);
+            }
+        });
+    });
     
     if(flag){
         intHeight.value = height;
@@ -632,10 +635,7 @@ function copyStyle(data,flag){
     }
     selectFrame(frame,false);
     selectMargin(margin,false);
-    selectColor(selectedColorMargin,"margin");
-    selectColor(selectedColorBorder,"border");
     calcularMarco(frame);
-    
 }
 
 function showSpecs(){
@@ -777,7 +777,6 @@ async function addProduct(){
     const response = await fetch(base_url+"/Enmarcar/addCart",{method:"POST",body:formData});
     const objData = await response.json();
     if(objData.status){
-        console.log(objData);
         document.querySelector("#qtyCart").innerHTML=objData.qty;
         document.querySelector("#qtyCartbar").innerHTML=objData.qty;
         const toast = new bootstrap.Toast(toastLiveExample);
