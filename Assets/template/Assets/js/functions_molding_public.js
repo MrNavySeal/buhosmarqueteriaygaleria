@@ -11,6 +11,7 @@ const plusZoom = document.querySelector("#zoomPlus");
 const intHeight = document.querySelector("#intHeight");
 const intWidth = document.querySelector("#intWidth");
 const layoutImg = document.querySelector(".layout--img");
+const layoutContainer = document.querySelector(".layout--container");
 const layoutMargin = document.querySelector(".layout--margin");
 const layoutBorder = document.querySelector(".layout--border");
 const selectStyle = document.querySelectorAll(".selectProp");
@@ -41,6 +42,29 @@ window.addEventListener("load",function(){
     getConfig();
     resizeFrame(intWidth.value, intHeight.value);
 })
+
+const frameContainer = document.querySelector('.layout--container');
+let isDragging = false;
+let offsetX, offsetY;
+
+frameContainer.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  offsetX = e.clientX - frameContainer.offsetLeft;
+  offsetY = e.clientY - frameContainer.offsetTop;
+  frameContainer.style.cursor = 'grabbing';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    frameContainer.style.left = `${e.clientX - offsetX}px`;
+    frameContainer.style.top = `${e.clientY - offsetY}px`;
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  frameContainer.style.cursor = 'grab';
+});
 
 intHeight.addEventListener("change",function(){
     
@@ -1047,6 +1071,7 @@ async function showDefaultFraming(id,params){
         calcularMarco();
     }
 }
+
 
 $(".slider-examples").owlCarousel({
     autoplay:true,

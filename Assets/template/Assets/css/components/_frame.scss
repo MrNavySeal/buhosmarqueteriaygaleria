@@ -44,15 +44,24 @@
     height: 100%;
     overflow: hidden;
 }
-
-.layout--img{
+.layout--container{
     width: 150px;
     height: 150px;
     position: absolute;
     left: 50%;
     top: 50%;
-    z-index: 2;
+    z-index: 3;
     transform: translate(-50%,-50%);
+}
+
+.layout--img{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 2;
     img{
         height: 100%;
         width: 100%;
@@ -64,13 +73,13 @@
 }
 .layout--margin{
     background-color: #fff;
-    width: 150px;
-    height: 150px;
+    height: 100%;
+    width: 100%;
     position: absolute;
-    z-index: 1;
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
+    z-index: 1;
     border-image: url("/assets/images/moldura.gif") 40% repeat;
     border-color: #fff;
     border-style: solid;
@@ -81,8 +90,8 @@
 }
 .layout--border{
     background-color: transparent;
-    width: 150px;
-    height: 150px;
+    height: 100%;
+    width: 100%;
     position: absolute;
     z-index: 2;
     left: 50%;
