@@ -14,11 +14,13 @@
                     <i class="fas fa-search-plus" id="zoomPlus"></i>
                 </div>
                 <div class="layout">
-                    <div class="layout--img">
-                        <img src="" alt="">
+                    <div class="layout--container">
+                        <div class="layout--img">
+                            <img src="" alt="">
+                        </div>
+                        <div class="layout--margin"></div>
+                        <div class="layout--border"></div>
                     </div>
-                    <div class="layout--margin"></div>
-                    <div class="layout--border"></div>
                 </div>
             </div>
             <p class="mt-3 text-center fw-bold fs-5" id="imgQuality"></p>
