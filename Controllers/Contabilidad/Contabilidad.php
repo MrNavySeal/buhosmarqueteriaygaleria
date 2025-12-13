@@ -249,10 +249,10 @@
                         $btnDelete="";
                         $status="";
                         $type="";
-                        if($_SESSION['permitsModule']['u'] && $request[$i]['category_id'] != 2 && $request[$i]['category_id'] != 3 && $request[$i]['category_id'] != 1){
+                        if($_SESSION['permitsModule']['u']){
                             $btnEdit = '<button class="btn btn-success m-1" type="button" title="Edit" onclick="editItem('.$request[$i]['id_egress'].')"><i class="fas fa-pencil-alt"></i></button>';
                         }
-                        if($_SESSION['permitsModule']['d'] && $request[$i]['category_id'] != 2 && $request[$i]['category_id'] != 3 && $request[$i]['category_id'] != 1){
+                        if($_SESSION['permitsModule']['d']){
                             $btnDelete = '<button class="btn btn-danger m-1" type="button" title="Delete" onclick="deleteItem('.$request[$i]['id_egress'].')"><i class="fas fa-trash-alt"></i></button>';
                         }
                         if($request[$i]['estado']==1){
