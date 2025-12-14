@@ -1454,6 +1454,7 @@ nav a :hover {
 }
 
 .layout--container {
+  touch-action: none !important;
   width: 150px;
   height: 150px;
   position: absolute;

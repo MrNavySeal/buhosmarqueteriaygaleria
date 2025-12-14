@@ -45,6 +45,8 @@
     overflow: hidden;
 }
 .layout--container{
+    -ms-touch-action: none !important;
+    touch-action: none !important;
     width: 150px;
     height: 150px;
     position: absolute;

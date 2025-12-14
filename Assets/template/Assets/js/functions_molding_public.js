@@ -45,26 +45,20 @@ window.addEventListener("load",function(){
 
 const frameContainer = document.querySelector('.layout--container');
 let isDragging = false;
-let offsetX, offsetY;
+const position = { x: 0, y: 0 }
 
-frameContainer.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  offsetX = e.clientX - frameContainer.offsetLeft;
-  offsetY = e.clientY - frameContainer.offsetTop;
-  frameContainer.style.cursor = 'grabbing';
-});
+interact(frameContainer).draggable({
+  listeners: {
+    move (event) {
+      position.x += event.dx
+      position.y += event.dy
 
-document.addEventListener('mousemove', (e) => {
-  if (isDragging) {
-    frameContainer.style.left = `${e.clientX - offsetX}px`;
-    frameContainer.style.top = `${e.clientY - offsetY}px`;
+      event.target.style.transform =
+        `translate(${position.x}px, ${position.y}px)`
+    },
   }
-});
+})
 
-document.addEventListener('mouseup', () => {
-  isDragging = false;
-  frameContainer.style.cursor = 'grab';
-});
 
 intHeight.addEventListener("change",function(){
     
