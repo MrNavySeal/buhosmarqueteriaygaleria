@@ -5,6 +5,8 @@
     require_once('Libraries/PHPMailer/Exception.php');
     require_once('Libraries/PHPMailer/PHPMailer.php');
     require_once('Libraries/PHPMailer/SMTP.php');
+    require_once "Helpers/Pagination.php";
+
     function getCompanyInfo(){
         require_once('Models/Configuracion/EmpresaModel.php');
         $con = new EmpresaModel();
