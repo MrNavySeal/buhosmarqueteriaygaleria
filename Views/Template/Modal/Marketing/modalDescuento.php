@@ -10,17 +10,17 @@
             </div>
             <div class="col-md-6">
                 <app-select label="Tiempo límite"  v-model="intLimit">
-                    <option value="1">Sin límite</option>
-                    <option value="2">Con límite</option>
+                    <option value="0">Sin límite</option>
+                    <option value="1">Con límite</option>
                 </app-select>
             </div>
         </div>
-        <div class="row" v-if="intLimit == 2">
+        <div class="row" v-if="intLimit == 1">
             <div class="col-md-6">
-                <app-input label="Desde" type="date" :errors="common.errors.discount" v-model="strInitialDate" required="true"></app-input>
+                <app-input label="Desde" type="date" :errors="errors.from_date" v-model="strInitialDate" required="true"></app-input>
             </div>
             <div class="col-md-6">
-                <app-input label="Hasta" type="date" :errors="common.errors.discount" v-model="strFinalDate" required="true"></app-input>
+                <app-input label="Hasta" type="date" :errors="errors.to_date" v-model="strFinalDate" required="true"></app-input>
             </div>
         </div>
         <div class="row">
@@ -91,8 +91,11 @@
                     </app-button-input>
                 </div>
             </div>
+            <ul v-if="errors.wholesale">
+                <li class="text-danger" v-for="(data,index) in errors.wholesale">{{data}}<br></li>
+            </ul>
         </div>
-        <app-input v-else label="Descuento" type="text" :errors="common.errors.discount" v-model="intDiscount" required="true"></app-input>
+        <app-input v-else label="Descuento" type="text" :errors="errors.discount" v-model="intDiscount" required="true"></app-input>
         <app-select label="Estado"  v-model="intStatus">
             <option value="1">Activo</option>
             <option value="2">Inactivo</option>

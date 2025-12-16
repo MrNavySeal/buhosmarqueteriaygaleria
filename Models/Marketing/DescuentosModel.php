@@ -4,6 +4,8 @@
 		private $strCode;
         private $intDiscount;
 		private $intStatus;
+        private $arrData;
+        private $intId;
 
         public function __construct(){
             parent::__construct();
@@ -86,61 +88,59 @@
             return $request;
         }
         /*************************Discount methods*******************************/
-        public function insertDiscount(int $type,int $idCategory,int $idSubcategory, int $intDiscount, int $intStatus){
-			$return = 0;
-            $sql="";
-            if($type == 1){
-                $sql = "SELECT * FROM discount WHERE categoryid = $idCategory";
-            }else{
-                $sql = "SELECT * FROM discount WHERE subcategoryid = $idSubcategory";
-            }
-			$request = $this->select_all($sql);
+        public function insertDescuento(array $arrData){
+            $this->arrData = $arrData;
 
-			if(empty($request))
-			{ 
-				$query_insert  = "INSERT INTO discount(type,categoryid,subcategoryid,discount,status) VALUES(?,?,?,?,?)";
-								  
-	        	$arrData = array(
-                    $type,
-                    $idCategory,
-                    $idSubcategory,
-                    $intDiscount,
-                    $intStatus
-        		);
-	        	$request_insert = $this->insert($query_insert,$arrData);
-	        	$return = $request_insert;
-			}else{
-				$return = "exist";
-			}
-	        return $return;
+			$sql  = "INSERT INTO discount(type,categoryid,subcategoryid,discount,status,wholesale,time_limit,from_date,to_date) 
+            VALUES(?,?,?,?,?,?,?,?,?)";
+
+            $data = [
+                $this->arrData['type'],
+                intval($this->arrData['category']),
+                intval($this->arrData['subcategory']),
+                floatval($this->arrData['discount']),
+                $this->arrData['status'],
+                json_encode($this->arrData['wholesale_discount'],JSON_UNESCAPED_UNICODE),
+                $this->arrData['time_limit'],
+                $this->arrData['from_date'],
+                $this->arrData['to_date'],
+            ];
+
+            $this->intId = $this->insert($sql,$data);
+	        return $this->intId;
 		}
-        public function updateDiscount($idDiscount,$type,$idCategory,$idSubcategory,$intDiscount,$intStatus){
-            $sql="";
-            if($type == 1){
-                $sql = "SELECT * FROM discount WHERE categoryid = $idCategory AND id_discount != $idDiscount";
-            }else{
-                $sql = "SELECT * FROM discount WHERE subcategoryid = $idSubcategory AND id_discount !=$idDiscount";
-            }
-			$request = $this->select_all($sql);
 
-			if(empty($request)){
+        public function updateDescuento(int $intId,array $arrData){
+            $this->arrData = $arrData;
+            $this->intId = $intId;
 
-                $sql = "UPDATE discount SET type=?,categoryid=?,subcategoryid=?,discount=?,status=? ,date=NOW() WHERE id_discount =$idDiscount";
-                $arrData = array(
-                    $type,
-                    $idCategory,
-                    $idSubcategory,
-                    $intDiscount,
-                    $intStatus
-                );
-				$request = $this->update($sql,$arrData);
-			}else{
-				$request = "exist";
-			}
-			return $request;
-		
+			$sql  = "UPDATE discount SET type=?,categoryid=?,subcategoryid=?,discount=?,status=?,wholesale=?,time_limit=?,from_date=?,to_date=?,
+            date_update = NOW() WHERE id_discount = $this->intId";
+
+            $data = [
+                $this->arrData['type'],
+                intval($this->arrData['category']),
+                intval($this->arrData['subcategory']),
+                floatval($this->arrData['discount']),
+                $this->arrData['status'],
+                json_encode($this->arrData['wholesale_discount'],JSON_UNESCAPED_UNICODE),
+                $this->arrData['time_limit'],
+                $this->arrData['from_date'],
+                $this->arrData['to_date'],
+            ];
+            
+            $request = $this->update($sql,$data);
+            return $request;
 		}
-        public function selectDiscounts(){
+
+        public function selectDescuentos($pageNow,$perPage, $strBuscar){
+            $start = ($pageNow-1)*$perPage;
+            $limit ="";
+
+            if($perPage != 0){
+                $limit = " LIMIT $start,$perPage";
+            }
+
             $sql = "SELECT
                 d.id_discount,
                 d.type,
@@ -149,71 +149,52 @@
                 d.discount,
                 d.status,
                 c.name AS category,
+                d.time_limit,
+                d.from_date,
+                d.to_date,
                 CASE
                     WHEN d.subcategoryid = 0 THEN ''
                     ELSE s.name
                 END AS subcategory,
                 DATE_FORMAT(d.date, '%d/%m/%Y') AS date,
-                DATE_FORMAT(d.date_update, '%d/%m/%Y') AS date_update
-            FROM
-                discount d
-            INNER JOIN
-                category c ON c.idcategory = d.categoryid
-            LEFT JOIN
-                subcategory s ON d.subcategoryid = s.idsubcategory";       
+                DATE_FORMAT(d.date_update, '%d/%m/%Y') AS date_update,
+                CONCAT('Desde ',DATE_FORMAT(d.from_date,'%d/%m/%Y'),' hasta ',DATE_FORMAT(d.to_date,'%d/%m/%Y')) as range_time
+            FROM discount d
+            LEFT JOIN category c ON c.idcategory = d.categoryid
+            LEFT JOIN subcategory s ON d.subcategoryid = s.idsubcategory
+            WHERE c.name like '$strBuscar%' OR s.name like '$strBuscar%' OR d.type LIKE '%' ORDER BY d.id_discount DESC $limit";      
+
+            $sqlTotal = "SELECT count(*) as total 
+            FROM discount d
+            LEFT JOIN category c ON c.idcategory = d.categoryid
+            LEFT JOIN subcategory s ON d.subcategoryid = s.idsubcategory
+            WHERE c.name like '$strBuscar%' OR s.name like '$strBuscar%' OR d.type LIKE '%'";
+
             $request = $this->select_all($sql);
-            return $request;
+            $totalRecords = $this->select($sqlTotal)['total'];
+
+            $arrData = getCalcPages($totalRecords,$pageNow,$perPage);
+            $arrData['data'] = $request;
+            return $arrData;
         }
-        public function selectDiscount($id){
-            $idDiscount = $id;
-            $sql = "SELECT * FROM discount WHERE id_discount = $idDiscount";
+
+        public function selectDescuento($id){
+            $sql = "SELECT d.*,
+            c.name AS category,
+            CASE
+                WHEN d.subcategoryid = 0 THEN ''
+                ELSE s.name
+            END AS subcategory,
+            DATE_FORMAT(d.from_date, '%Y-%m-%d') AS from_date,
+            DATE_FORMAT(d.to_date, '%Y-%m-%d') AS to_date 
+            FROM discount d
+            LEFT JOIN category c ON c.idcategory = d.categoryid
+            LEFT JOIN subcategory s ON d.subcategoryid = s.idsubcategory
+            WHERE d.id_discount = $id";
             $request = $this->select($sql);
             return $request;
         }
-        public function selectCategories(){
-            $sql = "SELECT * FROM category ORDER BY idcategory DESC";
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function selectSubcategories(){
-            $sql = "SELECT * FROM subcategory";
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function getSelectSubcategories(int $intIdCategory){
-            $this->intIdCategory = $intIdCategory;
-            $sql = "SELECT  
-                    s.idsubcategory,
-                    s.name,
-                    s.categoryid,
-                    c.idcategory,
-                    c.name as category
-                    FROM subcategory s
-                    INNER JOIN category c
-                    ON c.idcategory = s.categoryid
-                    WHERE s.categoryid = $this->intIdCategory
-                    ORDER BY s.idsubcategory ASC";       
-            $request = $this->select_all($sql);
-            return $request;
-        }
-        public function selectCategory($id){
-            $this->intIdCategory = $id;
-            $sql = "SELECT * FROM category WHERE idcategory = $this->intIdCategory AND status = 1";
-            $request = $this->select($sql);
-            return $request;
-        }
-        public function selectSubCategory($id){
-            $this->intIdSubCategory = $id;
-            $sql = "SELECT
-                    c.idcategory,
-                    s.categoryid,
-                    s.idsubcategory
-                    FROM subcategory s
-                    INNER JOIN category c 
-                    WHERE s.categoryid = c.idcategory AND s.idsubcategory = $this->intIdSubCategory AND s.status = 1 AND c.status = 1";
-            $request = $this->select($sql);
-            return $request;
-        }
+
         public function applyDiscount($type,$idCategory,$idSubcategory,$intDiscount,$intStatus){
             $this->intDiscount = $intStatus == 1 ? $intDiscount : 0;
             $sql = "";
@@ -226,7 +207,8 @@
             $request = $this->update($sql,$arrData);
             return $request;
         }
-        public function deleteDiscount($id){
+        
+        public function deleteDescuento($id){
             $sql = "DELETE FROM discount WHERE id_discount = $id";
             $request = $this->delete($sql);
             return $request;

@@ -24,26 +24,23 @@ const App = {
             common:createCommon(),
             category:createCommon(),
             subcategory:createCommon(),
-            ingredients:createCommon(),
             objCategory:{name:"",id:""},
             objSubcategory:{name:"",id:"",categoryid:""},
             errors:[],
-            
             arrWholesalePrices:[],
             intWholeSalePercent:"",
             intWholeSaleMaxQty:"",
             intWholeSaleMinQty:"",
             intStatus:1,
-            strName:"",
             intType:1,
             intDiscount:"",
-            intLimit:1,
+            intLimit:0,
             strInitialDate:new Date().toISOString().split("T")[0],
             strFinalDate:new Date().toISOString().split("T")[0],
         }
     },
     mounted(){
-        //this.search();
+        this.search();
     },
     methods:{
         openModal:function(){
@@ -52,13 +49,14 @@ const App = {
             this.objCategory={name:"Todo",id:""};
             this.objSubcategory={name:"Todo",id:"",categoryid:""};
             this.intStatus=1,
-            this.strName="";
             this.arrWholesalePrices = [];
             this.intWholeSaleMinQty="";
             this.intWholeSaleMaxQty="";
             this.intWholeSalePercent ="";
             this.intDiscount ="";
             this.errors = [];
+            this.intType = 1;
+            this.intLimit = 0;
             this.strInitialDate = new Date().toISOString().split("T")[0];
             this.strFinalDate = new Date().toISOString().split("T")[0];
             this.common.modulesTitle = "Nuevo descuento";
@@ -66,61 +64,30 @@ const App = {
         },
 
         save:async function(){
-            const pricePurchase = this.intCheckRecipe && this.arrIngredientsAdded.length > 0 ? this.totalIngredients : this.intPurchasePrice;
-            
-            tinymce.triggerSave();
-            const strDescription = document.querySelector("#txtDescription").value;
             const formData = new FormData();
             const arrData = {
-                "images":this.arrImages.filter(function(e){return e.rename && e.rename!=""}),
-                "is_visible":this.intVisible,
                 "status":this.intStatus,
                 "id":this.common.intId,
-                "subcategory":this.objSubcategory.id,
-                "category":this.objCategory.id,
-                "framing_mode":this.intFraming,
-                "measure":this.intMeasure,
-                "import":this.intTax,
-                "is_product":this.intCheckProduct,
-                "is_ingredient":this.intCheckIngredient,
-                "is_combo":this.intCheckRecipe,
-                "is_stock":this.intCheckStock,
-                "price_purchase":pricePurchase,
-                "price_sell":this.intSellPrice,
-                "price_offer":this.intOfferPrice,
-                "product_type":this.intCheckVariant,
-                "stock":this.intStock,
-                "min_stock":this.intMinStock,
-                "short_description":this.strShortDescription,
-                "description":strDescription,
-                "name":this.strName,
-                "specs":this.arrSpecsAdded,
-                "reference":this.strReference,
-                "combinations": this.arrCombination,
-                "variants":this.arrVariantsToMix,
-                "is_stock":this.intCheckStock,
-                "ingredients":this.arrIngredientsAdded,
                 "wholesale_discount":this.arrWholesalePrices,
+                "from_date":this.strInitialDate,
+                "to_date":this.strFinalDate,
+                "time_limit":this.intLimit,
+                "category":this.objCategory.id,
+                "subcategory":this.objSubcategory.id,
+                "discount":this.intDiscount,
+                "type":this.intType,
             }
             formData.append("data",JSON.stringify(arrData));
-            formData.append("images[]",[]);
-            formData.append("image",this.strImage);
-            if(this.arrImages.length > 0){
-                this.arrImages.forEach(function(e){
-                    formData.append("images[]",e);
-                });
-            }
             this.common.processing =true;
-            const response = await fetch(base_url+"/Productos/Productos/setProduct",{method:"POST",body:formData});
+            const response = await fetch(base_url+"/Marketing/Descuentos/setDatos",{method:"POST",body:formData});
             const objData = await response.json();
             this.common.processing =false;
             if(objData.status){
                 this.common.strName ="";
                 this.common.intId =0;
-                this.common.showModalProduct = false;
+                this.common.showModalModule = false;
                 this.subcategory.modalType='';
                 this.category.modalType='';
-                this.ingredients.modalType='';
                 this.common.modalType='products';
                 this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
@@ -146,7 +113,7 @@ const App = {
                 formData.append("page",this.subcategory.intPage);
                 formData.append("per_page",this.subcategory.intPerPage);
                 formData.append("search",this.subcategory.strSearch);
-                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectSubcategorias",{method:"POST",body:formData, signal});
+                const response = await fetch(base_url+"/Marketing/Descuentos/getSelectSubcategorias",{method:"POST",body:formData, signal});
                 const objData = await response.json();
                 this.subcategory.arrData = objData.data;
                 this.subcategory.intStartPage  = objData.start_page;
@@ -159,7 +126,7 @@ const App = {
                 formData.append("page",this.category.intPage);
                 formData.append("per_page",this.category.intPerPage);
                 formData.append("search",this.category.strSearch);
-                const response = await fetch(base_url+"/Productos/ProductosMasivos/getSelectCategorias",{method:"POST",body:formData, signal});
+                const response = await fetch(base_url+"/Marketing/Descuentos/getSelectCategorias",{method:"POST",body:formData, signal});
                 const objData = await response.json();
                 this.category.arrData = objData.data;
                 this.category.intStartPage  = objData.start_page;
@@ -168,13 +135,13 @@ const App = {
                 this.category.intTotalResults = objData.total_records;
                 this.category.arrButtons = objData.buttons;
             }else{
-                /* this.common.intPage = page;
+                this.common.intPage = page;
                 formData.append("page",this.common.intPage);
                 formData.append("per_page",this.common.intPerPage);
                 formData.append("search",this.common.strSearch);
                 formData.append("type","products");
 
-                const response = await fetch(base_url+"/Productos/Productos/getProductos",{method:"POST",body:formData,signal},);
+                const response = await fetch(base_url+"/Marketing/Descuentos/getDescuentos",{method:"POST",body:formData,signal},);
                 const objData = await response.json();
 
                 this.common.arrData = objData.data;
@@ -182,30 +149,45 @@ const App = {
                 this.common.intTotalButtons = objData.limit_page;
                 this.common.intTotalPages = objData.total_pages;
                 this.common.intTotalResults = objData.total_records;
-                this.common.arrButtons = objData.buttons; */
+                this.common.arrButtons = objData.buttons;
             }
         },
 
-        edit:async function(data,type="edit"){
+        edit:async function(id){
             const formData = new FormData();
-            formData.append("id",data.idproduct);
-            const response = await fetch(base_url+"/Marketing/Descuentos/getDatos",{method:"POST",body:formData});
+            formData.append("id",id);
+            const response = await fetch(base_url+"/Marketing/Descuentos/getDescuento",{method:"POST",body:formData});
             const objData = await response.json();
             if(objData.status){
                 const data = objData.data;
+                this.common.intId =data.id_discount;
+                this.objCategory={name:data.categoryid != 0 ? data.category : "Todo",id:data.categoryid};
+                this.objSubcategory={name:data.subcategoryid != 0 ? data.subcategory : "Todo" ,id:data.subcategoryid,categoryid:data.categoryid};
+                this.intStatus=data.status;
+                this.arrWholesalePrices = data.wholesale;
+                this.strInitialDate = data.from_date,
+                this.strFinalDate = data.to_date;
+                this.intDiscount = data.discount;
+                this.intType = data.type;
+                this.intLimit = data.time_limit;
+
+                if(this.arrWholesalePrices.length > 0){
+                    this.intWholeSaleMinQty = parseFloat(this.arrWholesalePrices[this.arrWholesalePrices.length-1].max)+1;
+                }
+
+                this.common.modulesTitle = "Editar descuento";
+                this.common.showModalModule = true;
                 this.errors = [];
-                
             }else{
                 Swal.fire("Error",objData.msg,"error");
             } 
         },
 
-        del:async function(data){
+        del:async function(id){
             const objVue = this;
             this.subcategory.modalType='';
             this.category.modalType='';
-            this.ingredients.modalType='';
-            this.common.modalType='products';
+            this.common.modalType='discounts';
             Swal.fire({
                 title:"¿Esta seguro de eliminar?",
                 text:"Se eliminará para siempre...",
@@ -218,8 +200,8 @@ const App = {
             }).then(async function(result){
                 if(result.isConfirmed){
                     const formData = new FormData();
-                    formData.append("id",data.idproduct);
-                    const response = await fetch(base_url+"/Marketing/Productos/delProduct",{method:"POST",body:formData});
+                    formData.append("id",id);
+                    const response = await fetch(base_url+"/Marketing/Descuentos/delDescuento",{method:"POST",body:formData});
                     const objData = await response.json();
                     if(objData.status){
                         Swal.fire("Eliminado!",objData.msg,"success");
