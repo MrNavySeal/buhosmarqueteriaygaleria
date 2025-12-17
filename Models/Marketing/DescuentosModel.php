@@ -195,17 +195,79 @@
             return $request;
         }
 
-        public function applyDiscount($type,$idCategory,$idSubcategory,$intDiscount,$intStatus){
-            $this->intDiscount = $intStatus == 1 ? $intDiscount : 0;
-            $sql = "";
-            if($type == 1){
-                $sql = "UPDATE product SET discount=? WHERE categoryid = $idCategory";
-            }else{
-                $sql = "UPDATE product SET discount=? WHERE subcategoryid = $idSubcategory";
+        public function applyDiscount(int $intId,$delete = false){
+            $arrData = $this->selectDescuento($intId);
+            
+            $idCategory = $arrData['categoryid'];
+            $idSubcategory = $arrData['subcategoryid'];
+            $intDiscount = $arrData['discount'];
+            $intType = $arrData['type'];
+            $intStatus = $delete ? 2 : $arrData['status'];
+            $arrWholesale = json_decode($arrData['wholesale'],true);
+            $where ="";
+
+            if($idCategory != 0){
+                $where = " AND categoryid = $idCategory";
+                if($idSubcategory != 0){
+                    $where.=" AND subcategoryid = $idSubcategory";
+                }
             }
-            $arrData = array($this->intDiscount);
-            $request = $this->update($sql,$arrData);
-            return $request;
+            $sql = "SELECT * FROM product WHERE status = 1 $where";
+            $arrProducts = $this->select_all($sql);
+
+            foreach ($arrProducts as $product) {
+                $idProduct = $product['idproduct'];
+                $productType = $product['product_type'];
+                if($intStatus == 1){
+                    if($intType == 2){
+                        $this->delete("DELETE FROM product_wholesale_discount WHERE product_id = $idProduct");
+                        foreach ($arrWholesale as $sale) {
+                            $sql = "INSERT INTO product_wholesale_discount(product_id,min,max,percent) VALUES(?,?,?,?)";
+                            $this->insert($sql,[$idProduct,$sale['min'],$sale['max'],$sale['percent']]);
+                        }
+                    }else if($intType == 1){ 
+
+                        if($productType){
+                            $sql = "SELECT * FROM product_variations_options WHERE product_id = $idProduct";
+                            $arrVariants = $this->select_all($sql);
+                            foreach ($arrVariants as $variant) {
+                                $variantName = $variant['name'];
+                                $idVariation = $variant['product_variation_id'];
+                                $priceSell = $variant['price_sell'];
+                                $priceOffer = 0;
+                                if($priceSell > 0){
+                                    $priceOffer = $priceSell - ($priceSell*($intDiscount/100));
+                                }
+
+                                $sql = "UPDATE product_variations_options SET price_offer = ? 
+                                WHERE product_id = $idProduct AND product_variation_id = $idVariation AND name = '$variantName'";
+                                $this->update($sql,[$priceOffer]);
+                                
+                            }
+                        }else{
+                            $priceSell = $product['price'];
+                            $priceOffer = 0;
+                            if($priceSell > 0){
+                                $priceOffer = $priceSell - ($priceSell*($intDiscount/100));
+                            }
+                            $sql = "UPDATE product SET discount = ? WHERE idproduct = $idProduct";
+                            $this->update($sql,[$priceOffer]);
+                        }
+                    }
+                }else{
+                    if($intType == 2){
+                        $this->delete("DELETE FROM product_wholesale_discount WHERE product_id = $idProduct");
+                    }else if($intType == 1){ 
+                        if($productType){
+                            $sql = "UPDATE product_variations_options SET price_offer = ? WHERE product_id = $idProduct";
+                            $this->update($sql,[0]);
+                        }else{
+                            $sql = "UPDATE product SET discount = ? WHERE idproduct = $idProduct";
+                            $this->update($sql,[0]);
+                        }
+                    }
+                }
+            }
         }
         
         public function deleteDescuento($id){

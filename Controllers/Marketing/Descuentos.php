@@ -214,8 +214,10 @@
 
                         if($request > 0 ){
                             if($option == 1){
+                                $this->model->applyDiscount($request);
                                 $arrResponse = array('status' => true, 'msg' => 'Datos guardados.');
                             }else{
+                                $this->model->applyDiscount($intId);
                                 $arrResponse = array('status' => true, 'msg' => 'Datos actualizados.');
                             }
                         }else{
@@ -284,7 +286,7 @@
                     $id = intval($_POST['id']);
                     $request = $this->model->selectDescuento($id);
                     if(!empty($request)){
-                        //$this->model->applyDiscount($request['type'],$request['categoryid'],$request['subcategoryid'],0,2);
+                        $this->model->applyDiscount($id,true);
                         $request = $this->model->deleteDescuento($id);
                         if($request=="ok"){
                             $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado");
