@@ -7,7 +7,7 @@
     $excel = $data['botones']['excel']['titulo'];
     $pdf = $data['botones']['pdf']['titulo'];
 ?>
-<div class="d-flex justify-content-end mb-3 flex-wrap gap-2">
+<div class="d-flex justify-content-end flex-wrap gap-2">
     <?php if($data['botones']['atras']['mostrar']) { ?>
         <button type="button" class="btn btn-primary " <?=$data['botones']['atras']['evento']."=".'"'.$data['botones']['atras']['funcion'].'"'?>><?= $atras != "" ? $atras : "Atrás"?> <i class="fas fa-reply"></i></button>
     <?php }?>
