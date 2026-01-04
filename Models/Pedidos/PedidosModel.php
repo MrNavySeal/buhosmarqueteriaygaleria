@@ -386,7 +386,10 @@
             $request = $this->select_all($sql);
             $sql = "UPDATE orderdata SET status=?,statusorder =? WHERE idorder = $this->intIdOrder;DELETE FROM count_amount WHERE order_id = $this->intIdOrder";
             $return = $this->update($sql,array("canceled","anulado"));
-            if(!empty($request)){$this->insertAdjustment($id,$request);}
+            if(!empty($request)){
+                HelperWarehouse::delMovement(HelperWarehouse::SALIDA_VENTA,$this->intIdOrder);
+                $this->insertAdjustment($id,$request);
+            }
             return $return;
         }
         public function insertAdjustment($id,$arrData){
@@ -400,9 +403,16 @@
                     $arrDet = $description['detail'];
                     $variantName = implode("-",array_values(array_column($arrDet,"option")));
                 }
-                $price_purchase = getLastPrice($data['productid'],$variantName);
+                $price_purchase = HelperWarehouse::getLastPrice($data['productid'],$variantName);
                 $total+=$price_purchase;
             }
+
+            HelperWarehouse::setMovement([
+                "movement"=>HelperWarehouse::ENTRADA_AJUSTE,
+                "document"=>$this->intIdOrder,
+                "total"=>$total,
+                "detail"=>$arrData,
+            ]);
 
             $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
             $request = $this->insert($sql,["Factura de venta No. ".$id." Anulada",$total,$_SESSION['userData']['idperson']]);
@@ -423,10 +433,7 @@
                     $sqlProduct = "SELECT stock,is_stock,product_type,name FROM product WHERE idproduct = $data[productid]";
                     $requestProduct = $this->select($sqlProduct);
                 }
-                $price_purchase = getLastPrice($data['productid'],$variantName);
-                if($price_purchase == 0){
-                    $price_purchase = $data['price_purchase'];
-                }
+                $price_purchase = HelperWarehouse::getLastPrice($data['productid'],$variantName);
                 $stock = $requestProduct['stock']+$data['quantity'];
                 $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
                 $arrValues = [
@@ -455,6 +462,8 @@
                 $msg = "Entrada de insumos por anulación de venta de producto de la factura de venta No. $this->intIdOrder";
                 setAdjustment( 1, $msg, [], ["id"=>$data['productid'],"qty"=>$data['quantity'],"variant_name"=>$variantName],true);
             }
+
+            
         }
         public function updateOrder(int $id,string $statusOrder,string $strSendBy,string $strGuide){
             $sql = "UPDATE orderdata SET statusorder =?, send_by =?,number_guide =?  WHERE idorder = $id";

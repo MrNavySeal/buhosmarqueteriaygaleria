@@ -124,10 +124,10 @@
                             $sheetReport->setCellValue("D$row","Unidad");
                             $sheetReport->setCellValue("E$row","Valor");
                             $sheetReport->setCellValue("F$row","Cantidad");
-                            $sheetReport->setCellValue("G$row","Saldo");
+                            $sheetReport->setCellValue("G$row","Total");
                             $sheetReport->setCellValue("H$row","Valor");
                             $sheetReport->setCellValue("I$row","Cantidad");
-                            $sheetReport->setCellValue("J$row","Saldo");
+                            $sheetReport->setCellValue("J$row","Total");
                             $sheetReport->setCellValue("K$row","Valor");
                             $sheetReport->setCellValue("L$row","Cantidad");
                             $sheetReport->setCellValue("M$row","Saldo");
@@ -289,10 +289,10 @@
                             $pdf->MultiCell(10, 5,"UN", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                             $pdf->MultiCell(22, 5,"Valor", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                             $pdf->MultiCell(20, 5,"Cantidad", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
-                            $pdf->MultiCell(20, 5,"Saldo", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
+                            $pdf->MultiCell(20, 5,"Total", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                             $pdf->MultiCell(22, 5,"Valor", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                             $pdf->MultiCell(20, 5,"Cantidad", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
-                            $pdf->MultiCell(20, 5,"Saldo", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
+                            $pdf->MultiCell(20, 5,"Total", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                             $pdf->MultiCell(21, 5,"Valor", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                             $pdf->MultiCell(20, 5,"Cantidad", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  
                             $pdf->MultiCell(20, 5,"Saldo", "LBRT", 'C', 1, 0, '', "", true,0,0,1,5,"M");  

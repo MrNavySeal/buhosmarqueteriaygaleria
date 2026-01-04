@@ -33,9 +33,9 @@
                     <th>Categoria</th>
                     <th>Subcategoria</th>
                     <th>Unidad</th>
+                    <th>Valor</th>
                     <th>Stock</th>
-                    <th>Costo</th>
-                    <th class="text-nowrap">Costo total</th>
+                    <th class="text-nowrap">Total</th>
                 </tr>
             </thead>
             <tbody id="tableData"></tbody>

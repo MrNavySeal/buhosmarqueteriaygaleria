@@ -23,14 +23,12 @@ async function getData(page = 1){
     btnGenerate.removeAttribute("disabled");
 
     const arrHtml = objData.html;
-    arrData = objData.data;
-    floatTotal = objData.total;
     document.querySelector("#pagination").innerHTML = arrHtml.pages;
-    document.querySelector("#totalInventory").innerHTML = objData.total_format;
     document.querySelector("#tableData").innerHTML =arrHtml.products;
-    document.querySelector("#tableData").innerHTML =arrHtml.products;
+    document.querySelector("#totalInventory").innerHTML = objData.total;
     document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
 }
+
 function exportExcel(){
     if(arrData.length == 0){
         Swal.fire("Error","No hay datos generados para exportar.","error");
@@ -46,6 +44,7 @@ function exportExcel(){
     form.submit();
     form.remove();
 }
+
 function exportPdf(){
     if(arrData.length == 0){
         Swal.fire("Error","No hay datos generados para exportar.","error");

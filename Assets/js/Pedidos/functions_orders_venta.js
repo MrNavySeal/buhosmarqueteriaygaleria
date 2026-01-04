@@ -241,6 +241,7 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
         "qty":1,
         "price_sell":"",
         "price_offer":"",
+        "price_purchase":"",
         "discount":0,
         "reference":"",
         "product_type":false,
@@ -268,6 +269,7 @@ function addProduct(product={},topic=2,id="",variantName="",productType=""){
         obj.qty = 1;
         obj.price_sell = product.price_sell;
         obj.price_offer = product.price_offer;
+        obj.price_purchase = product.price_purchase;
         obj.reference=product.reference;
         obj.name=product.product_name;
         obj.variant_name=variantName;

@@ -4,12 +4,6 @@
     error_reporting(E_ALL);*/
     class ComprasModel extends Mysql{
         private $intId;
-        private $strNit;
-        private $strName;
-        private $strPhone;
-        private $strEmail;
-        private $strAddress;
-        private $intTotal;
         private $arrData;
         private $arrProducts;
 
@@ -40,7 +34,14 @@
             $request = $this->insert($sql,$arrData);
             //Insert detail
             if($request > 0){
-                $this->insertPurchaseDet($request,$this->arrProducts);
+                $this->insertPurchaseDet($request,$this->arrProducts,$this->arrData['date']);
+                HelperWarehouse::setMovement([
+                    "movement"=>HelperWarehouse::ENTRADA_COMPRA,
+                    "document"=>$request,
+                    "total"=>$data['total']['total'],
+                    "detail"=>$this->arrProducts,
+                    "date"=>$this->arrData['date']
+                ]);
                 //insert egress
                 if($data['type']!="credito"){
                     $this->insertEgress($request,2,2,"Compra de material",$data['total']['total'],$data['date'],1,$data['type']);
@@ -49,7 +50,7 @@
             return $request;
         }
 
-        public function insertPurchaseDet(int $id,array $data){
+        public function insertPurchaseDet(int $id,array $data,$date){
             $this->intId = $id;
             $this->arrData = $data;
             $total = count($this->arrData);
@@ -88,18 +89,21 @@
 
                 $this->update($sqlProduct,$arrData);
                 $msg = "Entrada de insumos por compra de producto de la factura No. $this->intId";
-                setAdjustment( 1, $msg, [], ["id"=>$this->arrData[$i]['id'],"qty"=>$this->arrData[$i]['qty'],"variant_name"=>$this->arrData[$i]['variant_name']],true);
+                setAdjustment( 1, $msg, [], ["id"=>$this->arrData[$i]['id'],"qty"=>$this->arrData[$i]['qty'],"variant_name"=>$this->arrData[$i]['variant_name']],true,$date);
             }
         }
 
         public function deletePurchase($id){
             $this->intId = $id;
-            $sql = "SELECT * FROM purchase_det WHERE purchase_id = $this->intId";
+            $sql = "SELECT purchase_id,product_id,qty,price_purchase,variant_name FROM purchase_det WHERE purchase_id = $this->intId";
             $request = $this->select_all($sql);
             $sql = "UPDATE purchase SET status = ? WHERE idpurchase = $this->intId;DELETE FROM count_amount WHERE purchase_id = $this->intId";
             $arrData = array(2);
             $return = $this->update($sql,$arrData);
-            if(!empty($request)){$this->insertAdjustment($id,$request);}
+            if(!empty($request)){
+                HelperWarehouse::delMovement(HelperWarehouse::ENTRADA_COMPRA,$this->intId);
+                $this->insertAdjustment($id,$request);
+            }
             return $return;
         }
 
@@ -108,6 +112,14 @@
             $total = $this->select("SELECT total FROM purchase WHERE idpurchase = $this->intId")['total'];
             $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
             $request = $this->insert($sql,["Factura de compra No. ".$this->intId." Anulada",$total,$_SESSION['userData']['idperson']]);
+            
+            HelperWarehouse::setMovement([
+                "movement"=>HelperWarehouse::SALIDA_AJUSTE,
+                "document"=>$request,
+                "total"=>$total,
+                "detail"=>$arrData,
+            ]);
+
             foreach ($arrData as $data) {
                 $variantName =$data['variant_name'];
                 if($variantName!=""){

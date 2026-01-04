@@ -118,6 +118,7 @@
                         "price_sell_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_sell']) : formatNum($pro['price_sell']),
                         "price_offer"=>$pro['variant_name'] != "" ? $pro['variant_offer'] : $pro['price_offer'],
                         "price_offer_format"=>$pro['variant_name'] != "" ? formatNum($pro['variant_offer']) : formatNum($pro['price_offer']),
+                        "price_purchase"=>$pro['variant_name'] != "" ? $pro['variant_purchase'] : $pro['price_purchase'],
                         "category"=>$pro['category'],
                         "subcategory"=>$pro['subcategory'],
                         "stock"=>$pro['variant_name'] != "" ? $pro['variant_stock'] : $pro['stock'],
@@ -192,7 +193,15 @@
             $request = $this->insert($sql,$arrData);
 
             if($request > 0){
-                $this->insertOrderDet($request,$this->arrCustomer['id'],$this->arrProducts,$this->arrCustomer['name'],$this->arrCustomer['address']);
+                HelperWarehouse::setMovement([
+                    "movement"=>HelperWarehouse::SALIDA_VENTA,
+                    "document"=>$request,
+                    "total"=>$this->arrData['total']['total'],
+                    "detail"=>$this->arrProducts,
+                    "date"=>$this->arrData['date']
+                ]);
+                
+                $this->insertOrderDet($request,$this->arrCustomer['id'],$this->arrProducts,$this->arrCustomer['name'],$this->arrCustomer['address'],$this->arrData['date']);
                 if($data['type']!="credito"){
                     $this->insertIncome($request,3,1,"Venta de artículos y/o servicios",$data['total']['total'],
                     $data['date'],1,$data['type']);
@@ -204,12 +213,14 @@
             return $request;
         }
 
-        private function insertOrderDet(int $id,int $idCustom,array $data,string $customer,string $address){
+        private function insertOrderDet(int $id,int $idCustom,array $data,string $customer,string $address,string $date){
             $this->intIdUser = $idCustom;
             $this->intId = $id;
             $this->arrData = $data;
             $strAddress = explode("/",$address)[1];
             $total = count($this->arrData);
+
+
             for ($i=0; $i < $total ; $i++) {
                 $this->arrData[$i]['id'] = intval($this->arrData[$i]['id']);
                 if($this->arrData[$i]['id']!=""){
@@ -270,7 +281,11 @@
                     if($this->arrData[$i]['topic'] == 2){
                         updateStock($this->arrData[$i]);
                         $msg = "Salida de insumos por venta de producto de la factura de venta No. $this->intId";
-                        setAdjustment( 2, $msg, [], ["id"=>$this->arrData[$i]['id'],"qty"=>$this->arrData[$i]['qty'],"variant_name"=>$this->arrData[$i]['variant_name']],true);
+                        setAdjustment( 2, $msg, [], [
+                            "id"=>$this->arrData[$i]['id'],
+                            "qty"=>$this->arrData[$i]['qty'],
+                            "variant_name"=>$this->arrData[$i]['variant_name'],
+                        ],true,$date);
                     }
                 }
             }
