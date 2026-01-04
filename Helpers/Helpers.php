@@ -880,35 +880,38 @@
                 $data = [];
             }
         }
-        foreach ($data as $det ) { $total += $det['subtotal']; }
 
-        $con = new Mysql();
-        $sql = "INSERT INTO adjustment_cab(concept,total,user,date) VALUES (?,?,?,?)";
-        $request = $con->insert($sql,[$concept,$total,$_SESSION['userData']['idperson'],$date]);
-
-        HelperWarehouse::setMovement([
-            "movement"=>$type == 2 ? HelperWarehouse::SALIDA_AJUSTE : HelperWarehouse::ENTRADA_AJUSTE,
-            "document"=>$request,
-            "total"=>$total,
-            "detail"=>$data,
-            "date"=>$date
-        ]);
-        
-        foreach ($data as $det) { 
-            updateStock($det,$type);
-            $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
-            $arrValues = [
-                $request,
-                $det['id'],
-                $det['current_stock'],
-                $det['qty'],
-                $det['price'],
-                $type,
-                $det['result_stock'],
-                $det['variant_name'],
-                $det['subtotal']
-            ];
-            $con->insert($sql,$arrValues);
+        if(!empty($data)){
+            foreach ($data as $det ) { $total += $det['subtotal']; }
+    
+            $con = new Mysql();
+            $sql = "INSERT INTO adjustment_cab(concept,total,user,date) VALUES (?,?,?,?)";
+            $request = $con->insert($sql,[$concept,$total,$_SESSION['userData']['idperson'],$date]);
+    
+            HelperWarehouse::setMovement([
+                "movement"=>$type == 2 ? HelperWarehouse::SALIDA_AJUSTE : HelperWarehouse::ENTRADA_AJUSTE,
+                "document"=>$request,
+                "total"=>$total,
+                "detail"=>$data,
+                "date"=>$date
+            ]);
+            
+            foreach ($data as $det) { 
+                updateStock($det,$type);
+                $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
+                $arrValues = [
+                    $request,
+                    $det['id'],
+                    $det['current_stock'],
+                    $det['qty'],
+                    $det['price'],
+                    $type,
+                    $det['result_stock'],
+                    $det['variant_name'],
+                    $det['subtotal']
+                ];
+                $con->insert($sql,$arrValues);
+            }
         }
     }
 

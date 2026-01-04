@@ -8,6 +8,7 @@
             }
             parent::__construct();
         }
+
         public function ajuste(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -24,6 +25,7 @@
                 die();
             }
         }
+
         public function reporte(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -42,6 +44,7 @@
                 die();
             }
         }
+
         public function reporteDetalle(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -60,6 +63,7 @@
                 die();
             }
         }
+
         public function getProducts(){
             if($_SESSION['permitsModule']['r']){
                 $strSearch = strClean($_POST['search']);
@@ -78,6 +82,7 @@
             }
             die();
         }
+
         public function getInventoryHtml(array $data,int $pages,$page){
             $maxButtons = 4;
             $totalPages = $pages;
@@ -128,17 +133,26 @@
             ';
             return array("products"=>$html,"pages"=>$htmlPages);
         }
+
         public function setAdjustment(){
             if($_SESSION['permitsModule']['w']){
                 if($_POST){
                     $arrData = json_decode($_POST['products'],true);
                     if(is_array($arrData)){
                         $strConcept = strClean(clear_cadena($_POST['concept']));
+                        $strDate = strClean($_POST['date']);
+                        $intType = intval($_POST['type']);
                         $floatTotal = floatval($_POST['total']);
-                        $request = $this->model->insertCab($strConcept,$floatTotal);
+                        $request = $this->model->insertCab($strConcept,$floatTotal,$strDate,$intType);
                         if($request > 0){
                             $requestDet = $this->model->insertDet($request,$arrData);
                             if($requestDet > 0){
+                                HelperWarehouse::setMovement([
+                                    "movement"=>$intType == 1 ? HelperWarehouse::ENTRADA_AJUSTE : HelperWarehouse::SALIDA_AJUSTE,
+                                    "document"=>$request,
+                                    "total"=>$floatTotal,
+                                    "detail"=>$arrData,
+                                ]);
                                 $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
                             }else{
                                 $arrResponse = array("status"=>false,"msg"=>"Error en el detalle");
@@ -154,6 +168,7 @@
             }
             die();
         }
+
         public function getAdjustment(){
             if($_SESSION['permitsModule']['r']){
                 $strSearch = strClean($_POST['search']);
@@ -174,6 +189,7 @@
             }
             die();
         }
+
         public function getAdjustmentHtml(array $data,int $pages,$page){
             $maxButtons = 4;
             $totalPages = $pages;
@@ -228,6 +244,7 @@
             ';
             return array("products"=>$html,"pages"=>$htmlPages);
         }
+
         public function getAdjustmentDet(){
             if($_SESSION['permitsModule']['r']){
                 $strSearch = strClean($_POST['search']);
@@ -248,6 +265,7 @@
             }
             die();
         }
+
         public function getAdjustmentDetHtml(array $data,int $pages,$page){
             $maxButtons = 4;
             $totalPages = $pages;

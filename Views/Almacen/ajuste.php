@@ -70,35 +70,49 @@
             </div>
         </div>
         <div class="col-md-7">
-            <h3 class="bg-primary p-1 mb-0 text-center text-white">Datos de ajuste</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="strDate" class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="strDate">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="" class="form-label">Tipo de ajuste</label>
+                        <select class="form-select" id="selectType" onchange="updateTypeProduct()">
+                            <option value="1">Adición</option>
+                            <option value="2">Reducción</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-1">
+                <label for="" class="form-label">Motivo</label>
+                <textarea rows="1" name="strNote" id="txtNote" class="form-control"></textarea>
+            </div>
             <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
                 <table class="table align-middle">
                     <thead>
                         <tr>
-                            <th class="text-nowrap text-center">Referencia</th>
                             <th class="text-nowrap text-center">Artículo</th>
                             <th class="text-nowrap text-center">Actual</th>
                             <th class="text-nowrap text-center">Costo</th>
-                            <th class="text-center">Tipo</th>
                             <th class="text-center">Ajuste</th>
                             <th class="text-center">Resultado</th>
-                            <th class="text-nowrap text-center">Valor ajuste</th>
+                            <th class="text-nowrap text-center">Valor</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody id="tablePurchase"></tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="7" class="text-end fw-bold">Total:</td>
+                            <td colspan="5" class="text-end fw-bold">Total:</td>
                             <td class="text-end" id="totalProducts">$0</td>
                         </tr>
                     </tfoot>
                     </table>
                 </table>
-            </div>
-            <div class="mb-1">
-                <label for="" class="form-label">Motivo</label>
-                <textarea rows="2" name="strNote" id="txtNote" class="form-control"></textarea>
             </div>
             <div class="d-flex">
                 <button type="button" class="btn btn-primary w-100" id="btnSave">Guardar</button>

@@ -3,9 +3,13 @@
         private $intId;
         private $strConcept;
         private $floatTotal;
+        private $strDate;
+        private $intType;
+
         public function __construct(){
             parent::__construct();
         }
+
         public function selectTotalInventory(string $strSearch){
             $sql = "SELECT coalesce(count(*),0) as total
             FROM product p
@@ -18,6 +22,7 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+
         public function selectProducts(string $strSearch,int $intPerPage,int $intPageNow){
             $start = ($intPageNow-1)*$intPerPage;
             $arrProducts = [];
@@ -90,6 +95,7 @@
             }
             return array("products"=>$arrProducts,"pages"=>$totalPages);
         }
+
         public function selectProductsAdjustment(string $strSearch,int $intPerPage,int $intPageNow){
             $start = ($intPageNow-1)*$intPerPage;
             $sql = "SELECT 
@@ -138,6 +144,7 @@
             }
             return array("products"=>$request,"pages"=>$totalPages);
         }
+
         public function selectProduct($id){
             $this->intId = $id;
             $sql = "SELECT 
@@ -169,13 +176,23 @@
             }
             return $request;
         }
-        public function insertCab(string $strConcept,float $floatTotal){
+
+        public function insertCab(string $strConcept,float $floatTotal,string $strDate,int $intType){
             $this->strConcept = $strConcept;
             $this->floatTotal = $floatTotal;
-            $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
-            $request = $this->insert($sql,[$this->strConcept,$this->floatTotal,$_SESSION['userData']['idperson']]);
+            $this->intType = $intType;
+            $this->strDate = $strDate;
+            $sql = "INSERT INTO adjustment_cab(concept,total,user,date,type) VALUES (?,?,?,?,?)";
+            $request = $this->insert($sql,[
+                $this->strConcept,
+                $this->floatTotal,
+                $_SESSION['userData']['idperson'],
+                $this->strDate,
+                $this->intType
+            ]);
             return $request;
         }
+
         public function insertDet(int $intId,array $arrData){
             $this->intId = $intId;
             foreach ($arrData as $data) {
@@ -199,7 +216,7 @@
                     $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
                     WHERE product_id = $data[id] AND name = '$data[variant_name]'";
                 } 
-                $price_purchase = getLastPrice($this->intId,$data['variant_name']);
+                $price_purchase = HelperWarehouse::getLastPrice($this->intId,$data['variant_name']);
                 if($price_purchase == 0){
                     $price_purchase = $data['price_purchase'];
                 }
@@ -214,6 +231,7 @@
             }
             return $request;
         }
+
         public function selectAdjustment(string $strInitialDate,string $strFinalDate,string $strSearch,int $intPerPage,int $intPageNow){
             $totalPages = 0;
             $totalRecords = 0;
@@ -277,6 +295,7 @@
             }
             return array("products"=>$request,"pages"=>$totalPages,"data"=>$requestTotal,"total_records"=>$totalRecords);
         }
+
         public function selectAdjustmentDet(string $strInitialDate,string $strFinalDate,string $strSearch,int $intPerPage,int $intPageNow){
             $totalPages = 0;
             $totalRecords = 0;
