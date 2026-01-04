@@ -3,6 +3,9 @@
 		if(file_exists("Libraries/".'Core/'.$class.".php")){
 			require_once("Libraries/".'Core/'.$class.".php");
 		}
+		if(file_exists("Helpers/".$class.".php")){
+			require_once("Helpers/".$class.".php");
+		}
 		if(file_exists("Interfaces/".$class.".php")){
 			require_once("Interfaces/".$class.".php");
 		}

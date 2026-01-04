@@ -869,8 +869,9 @@
         $con->update($sqlProduct,$arrData);
     }
 
-    function setAdjustment($type = 2,$concept,$data=[],$ingredient=[],$isRoot=false){
+    function setAdjustment($type = 2,$concept,$data=[],$ingredient=[],$isRoot=false,$date=""){
         $total = 0;
+        $date = $date !="" ? date_format(date_create($date),"Y-m-d") : date_format(date_create("now"),"Y-m-d");
         if(empty($data)){
             $data = getIngredientsAdjustment($ingredient['id'],$ingredient['qty'],1,$ingredient['variant_name'],$isRoot);
             if(!empty($data)){
@@ -882,8 +883,16 @@
         foreach ($data as $det ) { $total += $det['subtotal']; }
 
         $con = new Mysql();
-        $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
-        $request = $con->insert($sql,[$concept,$total,$_SESSION['userData']['idperson']]);
+        $sql = "INSERT INTO adjustment_cab(concept,total,user,date) VALUES (?,?,?,?)";
+        $request = $con->insert($sql,[$concept,$total,$_SESSION['userData']['idperson'],$date]);
+
+        HelperWarehouse::setMovement([
+            "movement"=>$type == 2 ? HelperWarehouse::SALIDA_AJUSTE : HelperWarehouse::ENTRADA_AJUSTE,
+            "document"=>$request,
+            "total"=>$total,
+            "detail"=>$data,
+            "date"=>$date
+        ]);
         
         foreach ($data as $det) { 
             updateStock($det,$type);
