@@ -62,6 +62,7 @@
             }
             return  array("data"=>$request,"pages"=>$totalPages);
         }
+
         public function selectQuote(int $id){
             $sql = "SELECT * ,DATE_FORMAT(date, '%d/%m/%Y') as date,
             DATE_FORMAT(date_beat, '%d/%m/%Y') as date_beat
@@ -74,6 +75,7 @@
             }
             return $request;
         }
+
         public function insertOrder(int $id,array $data){
             $this->intId = $id;
             $status = $data['type'] != "credito" ? "approved" : "pendent";
@@ -101,6 +103,13 @@
             if($request > 0){
                 $this->update("UPDATE quote_cab SET status = ? WHERE id = $this->intId",["facturado"]);
                 $this->insertOrderDet($request,$data['personid'],$data['detail'],$data['name'],$data['address']);
+                HelperWarehouse::setMovement([
+                    "movement"=>HelperWarehouse::SALIDA_VENTA,
+                    "document"=>$request,
+                    "total"=>$data['amount'],
+                    "detail"=>$data['detail'],
+                    "date"=>$data['date']
+                ]);
             }
             return $request;
         }

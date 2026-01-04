@@ -54,6 +54,7 @@ let tableMolding = new DataTable("#tableMolding",{
 window.addEventListener("load",function(){
     getProducts();
     document.querySelector("#txtDate").value = new Date().toISOString().split("T")[0];
+    document.querySelector("#strDateQuote").value = new Date().toISOString().split("T")[0];
 });
 
 searchHtml.addEventListener("input",function(){getProducts();});
@@ -85,6 +86,7 @@ btnPurchase.addEventListener("click",function(){
 });
 
 btnQuote.addEventListener("click",function(){
+    getInitialData();
     modalPurchase.show();
     orderType = 2;
     document.querySelector("#modalPurchase .modal-title").innerHTML="Información de cotización";
