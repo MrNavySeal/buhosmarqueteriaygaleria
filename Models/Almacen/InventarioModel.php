@@ -44,6 +44,7 @@
             $fullData = $this->select_all($sqlTotal);
             $totalRecords = count($fullData);
             $arrProducts = [];
+            $arrFullProducts = [];
             $total = 0;
 
             foreach ($request as $pro) {
@@ -53,11 +54,12 @@
 
             foreach ($fullData as $pro) {
                 $data = HelperWarehouse::getProductMovement($pro['id'],$pro['variant_name']);
-                if(!empty($data)){ $total+=$data['total']; }
+                if(!empty($data)){ $total+=$data['total'];array_push($arrFullProducts,$data); }
             }
 
             $arrData = getCalcPages($totalRecords,$intPageNow,$intPerPage);
             $arrData['data'] = $arrProducts;
+            $arrData['full_data'] = $arrFullProducts;
             $arrData['total_balance'] = $total;
             return $arrData;
         }

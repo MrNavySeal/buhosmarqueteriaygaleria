@@ -23,9 +23,11 @@ async function getData(page = 1){
     btnGenerate.removeAttribute("disabled");
 
     const arrHtml = objData.html;
+    arrData = objData.full_data;
+    floatTotal = objData.total;
     document.querySelector("#pagination").innerHTML = arrHtml.pages;
     document.querySelector("#tableData").innerHTML =arrHtml.products;
-    document.querySelector("#totalInventory").innerHTML = objData.total;
+    document.querySelector("#totalInventory").innerHTML = objData.total_format;
     document.querySelector("#totalRecords").innerHTML = `<strong>Total de registros: </strong> ${objData.total_records}`;
 }
 
@@ -40,7 +42,7 @@ function exportExcel(){
     addField("total",floatTotal,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/Almacen/InventarioExport/excel";
+    form.action=base_url+"/Almacen/Inventario/inventarioExcel";
     form.submit();
     form.remove();
 }
@@ -56,7 +58,7 @@ function exportPdf(){
     addField("total",floatTotal,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/Almacen/InventarioExport/pdf";
+    form.action=base_url+"/Almacen/Inventario/inventarioPdf";
     form.submit();
     form.remove();
 }

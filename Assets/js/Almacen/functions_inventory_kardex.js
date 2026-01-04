@@ -13,6 +13,7 @@ window.addEventListener("load",function(e){
     finallDateHtml.value = finalDateFormat;   // Get the current date
     getKardex();
 })
+
 async function getKardex(){
     const formData = new FormData();
     formData.append("initial_date",initialDateHtml.value);
@@ -44,7 +45,7 @@ function exportExcel(){
     addField("strFinalDate",finallDateHtml.value,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/Almacen/InventarioKardexExport/excel";
+    form.action=base_url+"/Almacen/Inventario/kardexExcel";
     form.submit();
     form.remove();
 }
@@ -60,7 +61,7 @@ function exportPdf(){
     addField("strFinalDate",finallDateHtml.value,"hidden",form);
     form.target="_blank";
     form.method="POST";
-    form.action=base_url+"/Almacen/InventarioKardexExport/pdf";
+    form.action=base_url+"/Almacen/Inventario/kardexPdf";
     form.submit();
     form.remove();
 }

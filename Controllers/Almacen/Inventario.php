@@ -31,6 +31,32 @@
             }
         }
 
+        public function inventarioExcel(){
+            if($_SESSION['permitsModule']['r']){
+                $data['data'] = json_decode($_POST['data'],true);
+                $data['total'] = floatval($_POST['total']);
+                $data['file_name'] = 'reporte_inventario_'.rand()*10;
+                $data['file_title'] = "Inventario";
+                $this->views->getView($this,"inventario-excel",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+
+        public function inventarioPdf(){
+            if($_SESSION['permitsModule']['r']){
+                $data['data'] = json_decode($_POST['data'],true);
+                $data['total'] = floatval($_POST['total']);
+                $data['file_name'] = 'reporte_inventario_'.rand()*10;
+                $data['file_title'] = "Inventario";
+                $this->views->getView($this,"inventario-pdf",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+
         public function kardex(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -49,6 +75,34 @@
             }
         }
 
+        public function kardexExcel(){
+            if($_SESSION['permitsModule']['r']){
+                $data['data'] = json_decode($_POST['data'],true);
+                $data['initial_date'] = $_POST['strInititalDate'];
+                $data['final_date'] = $_POST['strFinalDate'];
+                $data['file_name'] = 'reporte_kardex_'.rand()*10;
+                $data['file_title'] = "Kardex";
+                $this->views->getView($this,"kardex-excel",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+
+        public function kardexPdf(){
+            if($_SESSION['permitsModule']['r']){
+                $data['data'] = json_decode($_POST['data'],true);
+                $data['initial_date'] = $_POST['strInititalDate'];
+                $data['final_date'] = $_POST['strFinalDate'];
+                $data['file_name'] = 'reporte_kardex_'.rand()*10;
+                $data['file_title'] = "Kardex";
+                $this->views->getView($this,"kardex-pdf",$data);
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+
         public function getProducts(){
             if($_SESSION['permitsModule']['r']){
                 $strSearch = strClean($_POST['search']);
@@ -57,7 +111,9 @@
                 $request = $this->model->selectBalance($strSearch,$intPerPage,$intPageNow);
                 $arrData = array(
                     "data"=>$request['data'],
-                    "total"=>formatNum($request['total_balance']),
+                    "full_data"=>$request['full_data'],
+                    "total_format"=>formatNum($request['total_balance']),
+                    "total"=>$request['total_balance'],
                     "total_records"=>$request['total_records'],
                     "html"=>$this->getInventoryHtml($intPageNow,$request),
                 );
