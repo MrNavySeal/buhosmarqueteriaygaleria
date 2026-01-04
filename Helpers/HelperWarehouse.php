@@ -47,9 +47,9 @@
                             $arrDet = $description['detail'];
                             $variantName = implode("-",array_values(array_column($arrDet,"option")));
                         }
-                        $productId = $det['productid'];
+                        $productId = isset($det['productid']) ? $det['productid'] : $det['product_id'];
                         $price = HelperWarehouse::getLastPrice($productId,$variantName);
-                        $qty = $det['quantity'];
+                        $qty = isset($det['quantity']) ? $det['quantity'] : $det['qty'];
                         $total = $qty*$price;
                     }
     

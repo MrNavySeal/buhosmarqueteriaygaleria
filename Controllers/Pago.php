@@ -64,6 +64,7 @@
                 die();
             }
         } */
+       
         public function confirmar(){
             $paymentId = strClean($_GET['payment_id']);
             $request = $this->getOrder($paymentId);
@@ -92,6 +93,7 @@
             }
             die();
         }
+
         public function error(){
             $company=getCompanyInfo();
             $data['page_tag'] = $company['name'];
@@ -99,12 +101,14 @@
             $data['page_name'] = "Error";
             $this->views->getView($this,"error",$data); 
         }
+
         public function getPaymentMethods(){
             MercadoPagoConfig::setAccessToken(getCredentials()['secret']);
             $client = new PaymentMethodClient();
             $payment_methods = $client->list();
             echo json_encode($payment_methods,JSON_UNESCAPED_UNICODE);
         }
+
         public function notificacion(){
             $input = file_get_contents("php://input");
             $data = json_decode($input, true);
@@ -128,6 +132,7 @@
                 }
             }
         }
+
         public function setPayment(){
             if($_POST){
                 $errors = validator()->validate([   
@@ -285,6 +290,7 @@
             }
             die();
         }
+
         public function calcTotalCart($arrProducts,$code=null,$city=null,$situ=null,$idOrder=null,$setCupon=false){
             $arrShipping = $this->selectShippingMode();
             $total=0;
@@ -327,6 +333,7 @@
             $arrData = array("total"=>$total,"discount"=>$discount,"cupon"=>$cupon,"arrcupon"=>$arrCupon,"subtotal"=>$subtotal,"status"=>$status);
             return $arrData;
         }
+
         public function calculateShippingCity(){
             if($_POST){
                 $arrProducts = $_SESSION['arrCart'];
@@ -386,6 +393,14 @@
                     "city"=>$strCity,
                     "name"=>$strName
                 );
+
+                HelperWarehouse::setMovement([
+                    "movement"=>HelperWarehouse::SALIDA_VENTA,
+                    "document"=>$request,
+                    "total"=>$total,
+                    "detail"=>$arrOrder['products'],
+                ]);
+
                 $requestDetail = $this->insertOrderDetail($arrOrder);
                 $orderInfo = $this->getOrder($request);
                 $company = getCompanyInfo();
@@ -404,6 +419,7 @@
             }
             return $orderData;
         }
+
         public function setCouponCode(){
             if($_POST){
                 if(empty($_POST['cupon'])){
@@ -429,6 +445,7 @@
             }
             die();
         }
+
         public function getCountries(){
             $request = $this->selectCountries();
             $html='
@@ -438,6 +455,7 @@
             echo json_encode($html,JSON_UNESCAPED_UNICODE);
             die();
         }
+
         public function getSelectCountry($id){
             $request = $this->selectStates($id);
             $html='<option value="0" selected>Seleccione</option>';
@@ -447,6 +465,7 @@
             echo json_encode($html,JSON_UNESCAPED_UNICODE);
             die();
         }
+
         public function getSelectState($id){
             $request = $this->selectCities($id);
             $html='<option value="0" selected>Seleccione</option>';

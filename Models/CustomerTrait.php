@@ -315,9 +315,16 @@
                     $arrDet = $description['detail'];
                     $variantName = implode("-",array_values(array_column($arrDet,"option")));
                 }
-                $price_purchase = getLastPrice($data['productid'],$variantName);
+                $price_purchase = HelperWarehouse::getLastPrice($data['productid'],$variantName);
                 $total+=$price_purchase;
             }
+
+            HelperWarehouse::setMovement([
+                "movement"=>HelperWarehouse::ENTRADA_AJUSTE,
+                "document"=>$id,
+                "total"=>$total,
+                "detail"=>$arrData,
+            ]);
 
             $this->con = new Mysql();
             $this->intIdOrder = $id;
