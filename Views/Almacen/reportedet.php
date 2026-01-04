@@ -34,7 +34,7 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive" style="max-height:45vh">
+    <div class="table-responsive" style="max-height:55vh">
         <table class="table align-middle" >
             <thead class="text-center">
                 <tr>
