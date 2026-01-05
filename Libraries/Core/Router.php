@@ -1,4 +1,5 @@
 <?php
+    session_start();
     class Router{
         private $arrRoutes;
         private $strUrl;
@@ -24,6 +25,12 @@
         public function dispatch(){
             //Se obtiene la ruta nombrada, en caso de no encontrarla, despacha la automática.
             $arrUrl = $this->getRoute();
+            if(isset($_SESSION['login'])){
+                $idUser = $_SESSION['idUser'];
+                $user = HelperUsers::getUser($idUser);
+                if(empty($user) || $user['status']==2){ HelperUsers::destroySession(); }
+            }
+            
             if(!empty($arrUrl)){
                 $controllerFile = $arrUrl['file'];
                 $controller = $arrUrl['controller'];
