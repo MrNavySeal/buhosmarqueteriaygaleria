@@ -34,7 +34,6 @@
             $request = $this->insert($sql,$arrData);
             //Insert detail
             if($request > 0){
-                $this->insertPurchaseDet($request,$this->arrProducts,$this->arrData['date']);
                 HelperWarehouse::setMovement([
                     "movement"=>HelperWarehouse::ENTRADA_COMPRA,
                     "document"=>$request,
@@ -42,6 +41,7 @@
                     "detail"=>$this->arrProducts,
                     "date"=>$this->arrData['date']
                 ]);
+                $this->insertPurchaseDet($request,$this->arrProducts,$this->arrData['date']);
                 //insert egress
                 if($data['type']!="credito"){
                     $this->insertEgress($request,2,2,"Compra de material",$data['total']['total'],$data['date'],1,$data['type']);
@@ -68,28 +68,13 @@
                     $this->arrData[$i]['variant_name']
                 );
                 $this->insert($sql,$arrData);
-                //Update products
 
-                $sqlProduct ="UPDATE product SET stock=?, price=?, price_purchase=? 
-                WHERE idproduct = {$this->arrData[$i]['id']}";
-                if($this->arrData[$i]['product_type']){
-                    $sqlProduct = "UPDATE product_variations_options SET stock=?,price_sell=?, price_purchase=?
-                    WHERE product_id = {$this->arrData[$i]['id']} AND name = '{$this->arrData[$i]['variant_name']}'";
-                } 
-                $price_purchase = getLastPrice($this->arrData[$i]['id'],$this->arrData[$i]['variant_name']);
-                if($price_purchase == 0){
-                    $price_purchase = $this->arrData[$i]['price_purchase'];
-                }
-
-                $arrData = array(
-                    $this->arrData[$i]['qty']+getStock($this->arrData[$i]['id'],$this->arrData[$i]['variant_name']),
-                    $this->arrData[$i]['price_sell'],
-                    $price_purchase
-                );
-
-                $this->update($sqlProduct,$arrData);
                 $msg = "Entrada de insumos por compra de producto de la factura No. $this->intId";
-                setAdjustment( 1, $msg, [], ["id"=>$this->arrData[$i]['id'],"qty"=>$this->arrData[$i]['qty'],"variant_name"=>$this->arrData[$i]['variant_name']],true,$date);
+                HelperWarehouse::setAdjustment( 1, $msg, [], [
+                    "id"=>$this->arrData[$i]['id'],
+                    "qty"=>$this->arrData[$i]['qty'],
+                    "variant_name"=>$this->arrData[$i]['variant_name']
+                ],true,$date);
             }
         }
 
@@ -109,59 +94,10 @@
 
         public function insertAdjustment($id,$arrData){
             $this->intId = $id;
-            $total = $this->select("SELECT total FROM purchase WHERE idpurchase = $this->intId")['total'];
-            $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
-            $request = $this->insert($sql,["Factura de compra No. ".$this->intId." Anulada",$total,$_SESSION['userData']['idperson']]);
-            
-            HelperWarehouse::setMovement([
-                "movement"=>HelperWarehouse::SALIDA_AJUSTE,
-                "document"=>$request,
-                "total"=>$total,
-                "detail"=>$arrData,
-            ]);
-
             foreach ($arrData as $data) {
                 $variantName =$data['variant_name'];
-                if($variantName!=""){
-                    $sqlProduct = "SELECT pv.stock,p.is_stock,product_type
-                    FROM product_variations_options pv
-                    INNER JOIN product p ON p.idproduct = pv.product_id
-                    WHERE pv.name='$variantName' AND pv.product_id = $data[product_id]";
-                    $requestProduct = $this->select($sqlProduct);
-                }else{
-                    $sqlProduct = "SELECT stock,is_stock,product_type FROM product WHERE idproduct = $data[product_id]";
-                    $requestProduct = $this->select($sqlProduct);
-                }
-
-                $stock = $requestProduct['stock']-$data['qty'];
-                $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
-                $arrValues = [
-                    $request,
-                    $data['product_id'],
-                    $requestProduct['stock'],
-                    $data['qty'],
-                    $data['price_purchase'],
-                    2,
-                    $stock,
-                    $variantName,
-                    $data['qty']*$data['price_purchase']
-                ];
-                $this->insert($sql,$arrValues);
-                //Update products
-                $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
-                WHERE idproduct = $data[product_id]";
-                if($requestProduct['product_type']){
-                    $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
-                    WHERE product_id = $data[product_id] AND name = '$variantName'";
-                } 
-                $price_purchase = getLastPrice($data['product_id'],$variantName);
-                if($price_purchase == 0){
-                    $price_purchase = $data['price_purchase'];
-                }
-                $this->update($sqlProduct,[$stock,$price_purchase]);
-
                 $msg = "Salida de insumos por anulación de compra de producto de la factura No. $this->intId";
-                setAdjustment( 2, $msg, [], ["id"=>$data['product_id'],"qty"=>$data['qty'],"variant_name"=>$variantName],true);
+                HelperWarehouse::setAdjustment( 2, $msg, [], ["id"=>$data['product_id'],"qty"=>$data['qty'],"variant_name"=>$variantName],true);
             }
         }
 

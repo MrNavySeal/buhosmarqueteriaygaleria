@@ -290,6 +290,7 @@
                 $statusOrder = "rechazado";
                 $sql = "SELECT * FROM orderdetail WHERE orderid  = $id AND topic = 2";
                 $request = $this->con->select_all($sql);
+                HelperWarehouse::delMovement(HelperWarehouse::SALIDA_VENTA,$id);
                 $this->insertAdjustment($id,$request);
             }else if ($status =="pending"){
                 $status = "pendent";
@@ -306,82 +307,23 @@
                 $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
             }
         }
+
         public function insertAdjustment($id,$arrData){
-            $total = 0;
-            foreach ($arrData as $data) {
-                $description = json_decode($data['description'],true);
-                $variantName ="";
-                if(is_array($description)){
-                    $arrDet = $description['detail'];
-                    $variantName = implode("-",array_values(array_column($arrDet,"option")));
-                }
-                $price_purchase = HelperWarehouse::getLastPrice($data['productid'],$variantName);
-                $total+=$price_purchase;
-            }
-
-            HelperWarehouse::setMovement([
-                "movement"=>HelperWarehouse::ENTRADA_AJUSTE,
-                "document"=>$id,
-                "total"=>$total,
-                "detail"=>$arrData,
-            ]);
-
             $this->con = new Mysql();
             $this->intIdOrder = $id;
-            $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
-            $request = $this->con->insert($sql,["Factura de venta No. ".$id." Anulada",$total,$_SESSION['userData']['idperson']]);
-
             foreach ($arrData as $data) {
-
                 $description = json_decode($data['description'],true);
                 $variantName ="";
 
                 if(is_array($description)){
                     $arrDet = $description['detail'];
                     $variantName = implode("-",array_values(array_column($arrDet,"option")));
-                    $sqlProduct = "SELECT pv.stock,p.is_stock,product_type
-                    FROM product_variations_options pv
-                    INNER JOIN product p ON p.idproduct = pv.product_id
-                    WHERE pv.name='$variantName' AND pv.product_id = $data[productid]";
-                    $requestProduct = $this->con->select($sqlProduct);
-                }else{
-                    $sqlProduct = "SELECT stock,is_stock,product_type FROM product WHERE idproduct = $data[productid]";
-                    $requestProduct = $this->con->select($sqlProduct);
                 }
-                
-                $price_purchase = getLastPrice($data['productid'],$variantName);
-                if($price_purchase == 0){
-                    $price_purchase = $data['price_purchase'];
-                }
-
-                $stock = $requestProduct['stock']+$data['quantity'];
-                $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
-                $arrValues = [
-                    $request,
-                    $data['productid'],
-                    $requestProduct['stock'],
-                    $data['quantity'],
-                    $price_purchase,
-                    1,
-                    $stock,
-                    $variantName,
-                    $data['quantity']*$price_purchase
-                ];
-                $this->con->insert($sql,$arrValues);
-                //Update products
-                $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
-                WHERE idproduct = $data[productid]";
-                if($requestProduct['product_type']){
-                    $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
-                    WHERE product_id = $data[productid] AND name = '$variantName'";
-                } 
-                
-                $this->con->update($sqlProduct,[$stock,$price_purchase]);
-
                 $msg = "Entrada de insumos por anulación de venta de producto de la factura de venta No. $this->intIdOrder";
-                setAdjustment( 1, $msg, [], ["id"=>$data['productid'],"qty"=>$data['quantity'],"variant_name"=>$variantName],true);
+                HelperWarehouse::setAdjustment( 1, $msg, [], ["id"=>$data['productid'],"qty"=>$data['quantity'],"variant_name"=>$variantName],true);
             }
         }
+
         public function setMessage($strName,$strPhone,$strEmail,$strSubject,$strMessage){
             $this->con = new Mysql();
             $this->strName = $strName;
@@ -395,6 +337,7 @@
             $request = $this->con->insert($sql,$arrData);
             return $request;
         }
+
         public function setSuscriberT($strEmail){
             $this->con = new Mysql();
             $this->strEmail = $strEmail;
@@ -411,12 +354,14 @@
             }
             return $return;
         }
+
         public function statusCouponSuscriberT(){
             $this->con = new Mysql();
             $sql = "SELECT * FROM coupon WHERE id = 1 AND status = 1 AND discount > 0";
             $request = $this->con->select($sql);
             return $request;
         }
+
         public function selectShippingMode(){
             $this->con = new Mysql();
             $sql = "SELECT * FROM shipping WHERE status = 1";
@@ -437,6 +382,7 @@
             }
             return $request;
         }
+
         public function selectShippingCity($id){
             $this->con = new Mysql();
             $sql = "SELECT
@@ -451,6 +397,7 @@
             $request = $this->con->select($sql);
             return $request;
         }
+        
         public function selectStock($id,$variant=null){
             $this->con = new Mysql();
             $this->intIdProduct = $id;
@@ -464,6 +411,7 @@
             }
             return $stock;
         }
+
         public function updateStock($id,$stock,$variant=null){
             $this->con = new Mysql();
             $this->intIdProduct = $id;
@@ -477,6 +425,7 @@
             $request = $this->con->update($sql,$arrData);
             return $request;
         }
+
         public function insertIncome(int $id, int $intType,int $intTopic,string $strName,$intAmount,int $intStatus){
             $this->con = new Mysql();
             $sql  = "INSERT INTO count_amount(order_id,type_id,category_id,name,amount,status,method) VALUES(?,?,?,?,?,?,?)";		  
@@ -492,6 +441,7 @@
             $request = $this->con->insert($sql,$arrData);
 	        return $request;
 		}
+
         public function insertEgress(int $id, int $intType,int $intTopic,string $strName,int $intStatus,string $idTransaction){
             $objTransaction = array();
             $urlTransaction ="https://api.mercadopago.com/v1/payments/".$idTransaction;
@@ -512,6 +462,7 @@
             }
 	        return $request;
 		}
+
         public function updateDateBeat($idOrder){
             $this->con = new Mysql();
             $request = $this->con->select("select DATE_FORMAT(date,'%Y-%m-%d') as date FROM orderdata WHERE idorder = $idOrder")['date'];
@@ -529,6 +480,7 @@
             $arrData = array($dateBeat);
             $this->con->update("UPDATE orderdata SET date_beat=? WHERE idorder=$idOrder",$arrData);
         }
+        
         public function setTransaction($idOrder,$idTransaction){
             $this->con = new Mysql();
             $this->strIdTransaction = $idTransaction;

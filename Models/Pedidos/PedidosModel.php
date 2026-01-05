@@ -20,6 +20,7 @@
         private $intIdProduct;
         private $suscription;
         private $intStatus;
+        
         public function __construct(){
             parent::__construct();
         }
@@ -28,6 +29,7 @@
             $request = $this->select_all("SELECT *,DATE_FORMAT(date, '%Y-%m-%d') as date FROM order_advance");
             return $request;
         }
+
         public function selectTotalDetailOrders($idPerson, $strSearch,$strInitialDate,$strFinalDate){
             $whre="";
             if($idPerson!="")$whre=" AND personid=$idPerson";
@@ -41,6 +43,7 @@
             $request = $this->select($sql)['total'];
             return $request;
         }
+
         public function selectOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate,$strStatusOrder,$strStatusPayment){
             $start = ($intPageNow-1)*$intPerPage;
             $whre="";
@@ -161,6 +164,7 @@
             ); 
             return  $arrResponse;
         }
+
         public function selectOrder(int $idOrder){
             $sql = "SELECT 
             idorder,
@@ -206,6 +210,7 @@
             }
             return $request;
         }
+
         public function selectCreditOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate,$strStatusOrder,$strStatusPayment){
             $start = ($intPageNow-1)*$intPerPage;
             $whre="";
@@ -325,6 +330,7 @@
             ); 
             return  $arrResponse;
         }
+
         public function selectDetailOrders($idPerson,string $strSearch,int $intPerPage,int $intPageNow,$strInitialDate,$strFinalDate){
             $start = ($intPageNow-1)*$intPerPage;
             $whre="";
@@ -360,6 +366,7 @@
 
             return  array("data"=>$request,"pages"=>$totalPages);
         }
+
         public function selectTransaction(string $intIdTransaction,$idPerson){
             $objTransaction = array();
             $this->intIdUser = $idPerson;
@@ -380,6 +387,7 @@
             }
             return $objTransaction;
         }
+
         public function deleteOrder($id){
             $this->intIdOrder = $id;
             $sql = "SELECT * FROM orderdetail WHERE orderid  = $this->intIdOrder AND topic = 2";
@@ -392,10 +400,9 @@
             }
             return $return;
         }
+
         public function insertAdjustment($id,$arrData){
             $this->intIdOrder = $id;
-            $total = 0;
-
             foreach ($arrData as $data) {
                 $description = json_decode($data['description'],true);
                 $variantName ="";
@@ -403,68 +410,13 @@
                     $arrDet = $description['detail'];
                     $variantName = implode("-",array_values(array_column($arrDet,"option")));
                 }
-                $price_purchase = HelperWarehouse::getLastPrice($data['productid'],$variantName);
-                $total+=$price_purchase;
-            }
-
-            HelperWarehouse::setMovement([
-                "movement"=>HelperWarehouse::ENTRADA_AJUSTE,
-                "document"=>$this->intIdOrder,
-                "total"=>$total,
-                "detail"=>$arrData,
-            ]);
-
-            $sql = "INSERT INTO adjustment_cab(concept,total,user) VALUES (?,?,?)";
-            $request = $this->insert($sql,["Factura de venta No. ".$id." Anulada",$total,$_SESSION['userData']['idperson']]);
-
-            foreach ($arrData as $data) {
-
-                $description = json_decode($data['description'],true);
-                $variantName ="";
-                if(is_array($description)){
-                    $arrDet = $description['detail'];
-                    $variantName = implode("-",array_values(array_column($arrDet,"option")));
-                    $sqlProduct = "SELECT pv.stock,p.is_stock,product_type,p.name
-                    FROM product_variations_options pv
-                    INNER JOIN product p ON p.idproduct = pv.product_id
-                    WHERE pv.name='$variantName' AND pv.product_id = $data[productid]";
-                    $requestProduct = $this->select($sqlProduct);
-                }else{
-                    $sqlProduct = "SELECT stock,is_stock,product_type,name FROM product WHERE idproduct = $data[productid]";
-                    $requestProduct = $this->select($sqlProduct);
-                }
-                $price_purchase = HelperWarehouse::getLastPrice($data['productid'],$variantName);
-                $stock = $requestProduct['stock']+$data['quantity'];
-                $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) VALUES(?,?,?,?,?,?,?,?,?)";
-                $arrValues = [
-                    $request,
-                    $data['productid'],
-                    $requestProduct['stock'],
-                    $data['quantity'],
-                    $price_purchase,
-                    1,
-                    $stock,
-                    $variantName,
-                    $data['quantity']*$price_purchase
-                ];
-                $this->insert($sql,$arrValues);
-
-                //Update products
-                $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
-                WHERE idproduct = $data[productid]";
-                if($requestProduct['product_type']){
-                    $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
-                    WHERE product_id = $data[productid] AND name = '$variantName'";
-                } 
-                
-                $this->update($sqlProduct,[$stock,$price_purchase]);
-
                 $msg = "Entrada de insumos por anulación de venta de producto de la factura de venta No. $this->intIdOrder";
-                setAdjustment( 1, $msg, [], ["id"=>$data['productid'],"qty"=>$data['quantity'],"variant_name"=>$variantName],true);
+                HelperWarehouse::setAdjustment( 1, $msg, [], ["id"=>$data['productid'],"qty"=>$data['quantity'],"variant_name"=>$variantName],true);
             }
 
             
         }
+
         public function updateOrder(int $id,string $statusOrder,string $strSendBy,string $strGuide){
             $sql = "UPDATE orderdata SET statusorder =?, send_by =?,number_guide =?  WHERE idorder = $id";
             $request = $this->update($sql,array($statusOrder,$strSendBy,$strGuide));
@@ -496,6 +448,7 @@
             }
             return intval($request);
         }
+
         public function insertIncome(int $id,int $intType,int $intTopic,string $strName,int $intAmount,string $strDate,int $intStatus, string $method){
             $request="";
             

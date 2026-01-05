@@ -279,9 +279,8 @@
                     $this->insert($sql,$arrData);
                     //Update products
                     if($this->arrData[$i]['topic'] == 2){
-                        updateStock($this->arrData[$i]);
                         $msg = "Salida de insumos por venta de producto de la factura de venta No. $this->intId";
-                        setAdjustment( 2, $msg, [], [
+                        HelperWarehouse::setAdjustment( 2, $msg, [], [
                             "id"=>$this->arrData[$i]['id'],
                             "qty"=>$this->arrData[$i]['qty'],
                             "variant_name"=>$this->arrData[$i]['variant_name'],
