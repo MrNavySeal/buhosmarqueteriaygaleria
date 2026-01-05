@@ -15,6 +15,12 @@
             setcookie('passwordcookie', null, -1, '/'); 
             session_destroy();
         }
+
+        public static function validEmail($email){
+            $emailDomain = explode("@",$email)[1];
+            $disposableDomains = ["airsworld.net"];
+            return in_array($emailDomain,$disposableDomains);
+        }
     }
     
 ?>

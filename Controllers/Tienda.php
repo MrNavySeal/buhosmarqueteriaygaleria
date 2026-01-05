@@ -182,22 +182,27 @@
                 }else{
                     $strName = ucwords(strClean($_POST['txtSignName']));
                     $strEmail = strtolower(strClean($_POST['txtSignEmail']));
-                    $company = getCompanyInfo();
-                    $code = code(); 
-                    $dataUsuario = array('nombreUsuario'=> $strName, 
-                                        'email_remitente' => $company['email'], 
-                                        'email_usuario'=>$strEmail, 
-                                        'company' =>$company,
-                                        'asunto' =>'Código de verificación - '.$company['name'],
-                                        'codigo' => $code);
-                    $_SESSION['code'] = $code;
-                    $sendEmail = sendEmail($dataUsuario,'email_validData');
-                    if($sendEmail){
-                        $arrResponse = array("status"=>true,"msg"=>"Se ha enviado un código a tu correo electrónico para validar tus datos.");
-                        
+                    if(HelperUsers::validEmail($strEmail)){
+                        $arrResponse = array("status"=>false,"msg"=>"El correo no es válido.");
                     }else{
-                        $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo.");
+                        $company = getCompanyInfo();
+                        $code = code(); 
+                        $dataUsuario = array('nombreUsuario'=> $strName, 
+                                            'email_remitente' => $company['email'], 
+                                            'email_usuario'=>$strEmail, 
+                                            'company' =>$company,
+                                            'asunto' =>'Código de verificación - '.$company['name'],
+                                            'codigo' => $code);
+                        $_SESSION['code'] = $code;
+                        $sendEmail = sendEmail($dataUsuario,'email_validData');
+                        if($sendEmail){
+                            $arrResponse = array("status"=>true,"msg"=>"Se ha enviado un código a tu correo electrónico para validar tus datos.");
+                            
+                        }else{
+                            $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo.");
+                        }
                     }
+
                 }
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
 
