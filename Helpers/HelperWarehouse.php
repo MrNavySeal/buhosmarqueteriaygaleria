@@ -80,10 +80,16 @@
             $con->delete($sql);
         }
 
-        public static function getProductMovement($idProduct,$variantName="",$initialDate=""){
+        public static function getProductMovement($idProduct,$variantName="",$dates = []){
             $con = new Mysql();
             $condition = $variantName != "" ? " WHERE det.product_id =  $idProduct AND det.variant_name = '$variantName'" : " WHERE det.product_id =  $idProduct";
-            $initialDate = $initialDate != "" ? " AND cab.date_create < '$initialDate'" : "";
+            $conditionDates ="";
+            if(!empty($dates)){
+                $initialDate = $dates['initial_date'];
+                $finalDate = $dates['final_date'];
+                $conditionDates = " AND cab.date_create BETWEEN '$initialDate' AND '$finalDate'";
+                $initialDate = $dates['initial_date'] != "" ? " AND cab.date_create < '$dates[initial_date]'" : "";
+            }
 
             $data = [];
             $sql = "SELECT 
@@ -100,7 +106,7 @@
             INNER JOIN category c ON c.idcategory = p.categoryid
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             LEFT JOIN measures m ON m.id_measure = p.measure
-            $condition
+            $condition $conditionDates
             GROUP BY det.product_id,det.variant_name
             ORDER BY cab.date_create";
             $product = $con->select($sql);
@@ -148,6 +154,14 @@
                     $initialMov['input_total'] = $initial['input_total'];
                     $initialMov['output'] = $initial['output'];
                     $initialMov['output_total'] = $initial['output_total'];
+
+                    $totalQty = $initial['input'] - $initial['output'];
+                    $totalBalance = $initial['input_total'] - $initial['output_total'];
+                    $price = $totalQty > 0 ? $totalBalance/$totalQty : 0;
+
+                    $initialMov['last_price'] = $price;
+                    $initialMov['balance'] = $totalQty;
+                    $initialMov['balance_total'] = $totalBalance;
                 }
     
                 array_push($kardex,$initialMov);
@@ -167,7 +181,7 @@
                 INNER JOIN warehouse_movements_det det ON cab.id = det.warehouse_movement_id
                 INNER JOIN product p ON p.idproduct = det.product_id
                 LEFT JOIN measures m ON m.id_measure = p.measure
-                $condition AND p.is_stock = 1
+                $condition $conditionDates AND p.is_stock = 1
                 ORDER BY cab.date_create";
     
                 $movements = $con->select_all($sqlMovements);

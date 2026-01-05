@@ -152,6 +152,7 @@
                                     "document"=>$request,
                                     "total"=>$floatTotal,
                                     "detail"=>$arrData,
+                                    "date"=>$strDate
                                 ]);
                                 $arrResponse = array("status"=>true,"msg"=>"Datos guardados.");
                             }else{

@@ -83,7 +83,10 @@
             $request = $this->select_all($sql);
             $arrProducts = [];
             foreach ($request as $pro) {
-                $data = HelperWarehouse::getProductMovement($pro['id'],$pro['variant_name'],$strInitialDate);
+                $data = HelperWarehouse::getProductMovement($pro['id'],$pro['variant_name'],[
+                    "initial_date"=>$strInitialDate,
+                    "final_date"=>$strFinalDate
+                ]);
                 if(!empty($data)){ array_push($arrProducts,$data); }    
             }
             return $arrProducts;
