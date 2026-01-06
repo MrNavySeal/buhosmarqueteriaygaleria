@@ -371,10 +371,6 @@
             $cupon = $arrTotal['discount'];
             $total = $arrTotal['total'];
 
-            /* if($type==""){
-                $status = "approved";
-            } */
-
             $arrShipping = $this->selectShippingMode();
             if($arrShipping['id']<3){
                 $envio = $arrShipping['value'];
@@ -401,7 +397,7 @@
                     "detail"=>$arrOrder['products'],
                 ]);
 
-                $requestDetail = $this->insertOrderDetail($arrOrder);
+                $this->insertOrderDetail($arrOrder);
                 $orderInfo = $this->getOrder($request);
                 $company = getCompanyInfo();
                 $dataEmailOrden = array(

@@ -68,13 +68,6 @@
                     $this->arrData[$i]['variant_name']
                 );
                 $this->insert($sql,$arrData);
-
-                $msg = "Entrada de insumos por compra de producto de la factura No. $this->intId";
-                HelperWarehouse::setAdjustment( 1, $msg, [], [
-                    "id"=>$this->arrData[$i]['id'],
-                    "qty"=>$this->arrData[$i]['qty'],
-                    "variant_name"=>$this->arrData[$i]['variant_name']
-                ],true,$date);
             }
         }
 
@@ -87,18 +80,8 @@
             $return = $this->update($sql,$arrData);
             if(!empty($request)){
                 HelperWarehouse::delMovement(HelperWarehouse::ENTRADA_COMPRA,$this->intId);
-                $this->insertAdjustment($id,$request);
             }
             return $return;
-        }
-
-        public function insertAdjustment($id,$arrData){
-            $this->intId = $id;
-            foreach ($arrData as $data) {
-                $variantName =$data['variant_name'];
-                $msg = "Salida de insumos por anulación de compra de producto de la factura No. $this->intId";
-                HelperWarehouse::setAdjustment( 2, $msg, [], ["id"=>$data['product_id'],"qty"=>$data['qty'],"variant_name"=>$variantName],true);
-            }
         }
 
         public function selectTotalPurchases(string $strSearch,$strInitialDate,$strFinalDate){

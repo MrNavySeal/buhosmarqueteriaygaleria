@@ -26,7 +26,7 @@
             INNER JOIN category c ON c.idcategory = p.categoryid
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             WHERE (p.name like '$strSearch%' OR det.variant_name like '$strSearch%' OR c.name like '$strSearch%' OR s.name like '$strSearch%') 
-            AND p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
+            AND p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1
             GROUP BY det.product_id,det.variant_name $limit";
 
             $sqlTotal = "SELECT 
@@ -37,7 +37,7 @@
             INNER JOIN category c ON c.idcategory = p.categoryid
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             WHERE (p.name like '$strSearch%' OR det.variant_name like '$strSearch%' OR c.name like '$strSearch%' OR s.name like '$strSearch%') 
-            AND p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
+            AND p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1
             GROUP BY det.product_id,det.variant_name";
 
             $request = $this->select_all($sql);
@@ -77,7 +77,7 @@
             INNER JOIN subcategory s ON s.idsubcategory = p.subcategoryid
             WHERE cab.date_create BETWEEN '$strInitialDate' AND '$strFinalDate' 
             AND (p.name like '$strSearch%' OR det.variant_name like '$strSearch%')
-            AND p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1 AND (p.is_product = 1 OR p.is_combo = 1)
+            AND p.is_stock = 1 AND p.status = 1 AND c.status = 1 AND s.status = 1
             GROUP BY det.product_id,det.variant_name";
 
             $request = $this->select_all($sql);

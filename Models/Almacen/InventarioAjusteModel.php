@@ -209,25 +209,6 @@
                     $data['subtotal']
                 ];
                 $request = $this->insert($sql,$arrValues);
-                //Update products
-                $sqlProduct ="UPDATE product SET stock=?, price_purchase=? 
-                WHERE idproduct = $data[id]";
-                if($data['product_type']){
-                    $sqlProduct = "UPDATE product_variations_options SET stock=?, price_purchase=?
-                    WHERE product_id = $data[id] AND name = '$data[variant_name]'";
-                } 
-                $price_purchase = HelperWarehouse::getLastPrice($this->intId,$data['variant_name']);
-                if($price_purchase == 0){
-                    $price_purchase = $data['price_purchase'];
-                }
-                $this->update($sqlProduct,[$data['qty_result'],$price_purchase]);
-                if($data['type'] == 1){
-                    $msg = "Entrada de insumos por ajuste No. $this->intId";
-                    setAdjustment( $data['type'], $msg, [], ["id"=>$data['id'],"qty"=>$data['qty'],"variant_name"=>$data['variant_name']],true);
-                }else{
-                    $msg = "Salida de insumos por ajuste No. $this->intId";
-                    setAdjustment($data['type'], $msg, [], ["id"=>$data['id'],"qty"=>$data['qty'],"variant_name"=>$data['variant_name']],true);
-                }
             }
             return $request;
         }

@@ -223,36 +223,8 @@
                         $arrOrder['city']
                     );
                     $this->con->insert($sql_config,$arrDataConfig);
-                }else{
-                    $stock = $this->selectStock($this->intIdProduct,$pro['variant']);
-                    $description = $pro['name'];
-                    if($pro['producttype'] == 1){
-                        $arrVariant = explode("-",$pro['variant']['name']); 
-                        $props = $pro['props'];
-                        $propsTotal = count($props);
-                        $arrComb = [];
-                        for ($j=0; $j < $propsTotal; $j++) { 
-                            $options = $props[$j]['options'];
-                            $optionsTotal = count($options);
-                            for ($k=0; $k < $optionsTotal ; $k++) { 
-                                if($options[$k]== $arrVariant[$j]){
-                                    array_push($arrComb,
-                                        array(
-                                        "name"=>$props[$j]['name'],
-                                        "option"=>$arrVariant[$j])
-                                    );
-                                    break;
-                                }
-                            }
-                        }
-                        $description = json_encode(array("name"=>$pro['name'],"detail"=>$arrComb));
-                    }
-                    $stock = $stock-$pro['qty'];
-                    $this->updateStock($this->intIdProduct,$stock,$pro['variant']['name']);
-
-                    $msg = "Salida de insumos por venta del producto ".$pro['name']." ".$pro['variant']['name'];
-                    setAdjustment( 2, $msg, [], ["id"=>$this->intIdProduct,"qty"=>$pro['qty'],"variant_name"=>$pro['variant']['name']],true);
                 }
+                
                 $query = "INSERT INTO orderdetail(orderid,personid,productid,topic,description,quantity,price,reference)
                         VALUE(?,?,?,?,?,?,?,?)";
                 $arrData=array(
@@ -291,7 +263,6 @@
                 $sql = "SELECT * FROM orderdetail WHERE orderid  = $id AND topic = 2";
                 $request = $this->con->select_all($sql);
                 HelperWarehouse::delMovement(HelperWarehouse::SALIDA_VENTA,$id);
-                $this->insertAdjustment($id,$request);
             }else if ($status =="pending"){
                 $status = "pendent";
             }else{
@@ -305,22 +276,6 @@
             if($status=="approved"){ 
                 $this->insertIncome($request,3,1,"Venta de producto",$total,1);
                 $this->insertEgress($request,1,27,"Comisión de mercado pago",1,$this->strIdTransaction);
-            }
-        }
-
-        public function insertAdjustment($id,$arrData){
-            $this->con = new Mysql();
-            $this->intIdOrder = $id;
-            foreach ($arrData as $data) {
-                $description = json_decode($data['description'],true);
-                $variantName ="";
-
-                if(is_array($description)){
-                    $arrDet = $description['detail'];
-                    $variantName = implode("-",array_values(array_column($arrDet,"option")));
-                }
-                $msg = "Entrada de insumos por anulación de venta de producto de la factura de venta No. $this->intIdOrder";
-                HelperWarehouse::setAdjustment( 1, $msg, [], ["id"=>$data['productid'],"qty"=>$data['quantity'],"variant_name"=>$variantName],true);
             }
         }
 

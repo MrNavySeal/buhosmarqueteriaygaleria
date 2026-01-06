@@ -1,15 +1,49 @@
 <?php
     class HelperWarehouse{
 
-        public const ENTRADA_COMPRA = ["id"=>1,"name"=>"Entrada por compra","status"=>true,"pair"=>HelperWarehouse::SALIDA_COMPRA_ANULADA];
-        public const ENTRADA_VENTA_ANULADA = ["id"=>2,"name"=>"Entrada por venta anulada","status"=>true];
-        public const ENTRADA_AJUSTE = ["id"=>3,"name"=>"Entrada por ajuste","status"=>true];
-        public const SALIDA_AJUSTE = ["id"=>4,"name"=>"Salida por ajuste","status"=>false];
-        public const SALIDA_VENTA = ["id"=>5,"name"=>"Salida por venta","status"=>false,"pair"=>HelperWarehouse::ENTRADA_VENTA_ANULADA];
-        public const SALIDA_COMPRA_ANULADA = ["id"=>6,"name"=>"Salida por compra anulada","status"=>false];
+        public const ENTRADA_COMPRA = [
+            "id"=>1,"name"=>
+            "Entrada por compra",
+            "status"=>true,
+            "stock_ingredient"=>true,
+            "pair"=>HelperWarehouse::SALIDA_COMPRA_ANULADA,
+        ];
+        public const ENTRADA_VENTA_ANULADA = [
+            "id"=>2,
+            "name"=>"Entrada por venta anulada",
+            "status"=>true,
+            "stock_ingredient"=>false,
+        ];
+        public const ENTRADA_AJUSTE = [
+            "id"=>3,
+            "name"=>"Entrada por ajuste",
+            "status"=>true,
+            "stock_ingredient"=>true
+        ];
+        public const SALIDA_AJUSTE = [
+            "id"=>4,
+            "name"=>"Salida por ajuste",
+            "status"=>false,
+            "stock_ingredient"=>true
+        ];
+        public const SALIDA_VENTA = [
+            "id"=>5,
+            "name"=>"Salida por venta",
+            "status"=>false,
+            "stock_ingredient"=>false,
+            "pair"=>HelperWarehouse::ENTRADA_VENTA_ANULADA
+        ];
+        public const SALIDA_COMPRA_ANULADA = [
+            "id"=>6,
+            "name"=>"Salida por compra anulada",
+            "status"=>false,
+            "stock_ingredient"=>true
+        ];
 
         public static function setMovement(array $data){
+            
             $arrMovement = $data['movement'];
+            $stockIngredient = $arrMovement['stock_ingredient'];
             $total = $data['total'];
             $detail = $data['detail'];
             $document = $data['document'];
@@ -73,6 +107,13 @@
                     ]);
 
                     HelperWarehouse::updateStock($productId,$variantName); 
+                    if($stockIngredient){
+                        HelperWarehouse::updateStockIngredient([
+                            "data"=>HelperWarehouse::getIngredients($productId,$qty,$variantName),
+                            "id"=>$request,
+                            "flag"=>$flag,
+                        ]); 
+                    }
                 }
             }
         }
@@ -80,6 +121,8 @@
         public static function delMovement($data,$document){
             $movement = $data['id'];
             $pair = $data['pair'];
+            $stockIngredient = $pair['stock_ingredient'];
+            $flag = $pair['status'];
             $con = new Mysql();
 
             $sql = "SELECT * FROM warehouse_movements WHERE movement = $movement AND document = $document";
@@ -93,19 +136,34 @@
                     $sql = "SELECT * FROM warehouse_movements_det WHERE warehouse_movement_id = $id";
                     $detail = $con->select_all($sql);
                     foreach ($detail as $det) {
+
+                        $inQty = $flag ? $det['out_qty'] : 0;
+                        $outQty = !$flag ? $det['in_qty'] : 0;
+
+                        $qty = $inQty-$outQty;
+                        $price = $det['price'];
+                        $variantName = $det['variant_name'];
+
                         $sqlDet = "INSERT INTO warehouse_movements_det(warehouse_movement_id,product_id,variant_name,
                         in_qty,out_qty,price,total) VALUES(?,?,?,?,?,?,?)";
                         $con->insert($sqlDet,[
                             $newDocument,
                             $det['product_id'],
                             $det['variant_name'],
-                            $det['out_qty'],
-                            $det['in_qty'],
-                            $det['price'],
+                            $inQty,
+                            $outQty,
+                            $price,
                             $det['total']
                         ]);
 
-                        HelperWarehouse::updateStock($det['product_id'],$det['variant_name']); 
+                        HelperWarehouse::updateStock($det['product_id'],$det['variant_name']);
+                        if($stockIngredient){
+                            HelperWarehouse::updateStockIngredient([
+                                "data"=>HelperWarehouse::getIngredients($det['product_id'],$qty,$variantName),
+                                "id"=>$newDocument,
+                                "flag"=>$flag,
+                            ]); 
+                        } 
                     }
                 }
             }
@@ -283,52 +341,37 @@
             $con->update($sql,[$stock,$pricePurchase]);
         }
 
-        public static function setAdjustment($type = 2,$concept,$data=[],$ingredient=[],$isRoot=false,$date=""){
-            $total = 0;
-            $date = $date !="" ? date_format(date_create($date),"Y-m-d") : date_format(date_create("now"),"Y-m-d");
-            if(empty($data)){
-                $data = HelperWarehouse::getIngredientsAdjustment($ingredient['id'],$ingredient['qty'],1,$ingredient['variant_name'],$isRoot);
-                if(!empty($data)){
-                    $data = array_filter($data,function($e){ return $e['key'] !== "";});
-                }else{
-                    $data = [];
-                }
-            }
+        private static function updateStockIngredient($data){
+            $con = new Mysql();
+            $detail = $data['data'];
+            $id = $data['id'];
+            $flag = $data['flag'];
+            
+            foreach ($detail as $det) {
 
-            if(!empty($data)){
-                foreach ($data as $det ) { $total += $det['subtotal']; }
-                $con = new Mysql();
-                $sql = "INSERT INTO adjustment_cab(concept,total,user,date) VALUES (?,?,?,?)";
-                $request = $con->insert($sql,[$concept,$total,$_SESSION['userData']['idperson'],$date]);
-        
-                HelperWarehouse::setMovement([
-                    "movement"=>$type == 2 ? HelperWarehouse::SALIDA_AJUSTE : HelperWarehouse::ENTRADA_AJUSTE,
-                    "document"=>$request,
-                    "total"=>$total,
-                    "detail"=>$data,
-                    "date"=>$date
+                $variantName = $det['variant_name'];
+                $productId = $det['id'];
+                $price = $det['price'] !="" ? $det['price'] : 0;
+                $qty = $det['qty'];
+                $total = $qty*$price;
+                $inQty = !$flag ? $qty : 0;
+                $outQty = $flag ? $qty : 0;
+
+                $sql = "INSERT INTO warehouse_movements_det(warehouse_movement_id,product_id,variant_name,in_qty,out_qty,price,total) VALUES(?,?,?,?,?,?,?)";
+                $con->insert($sql,[
+                    $id,
+                    $productId,
+                    $variantName,
+                    $inQty,
+                    $outQty,
+                    $price,
+                    $total
                 ]);
-                
-                foreach ($data as $det) { 
-                    $sql = "INSERT INTO adjustment_det(adjustment_id,product_id,current,adjustment,price,type,result,variant_name,subtotal) 
-                    VALUES(?,?,?,?,?,?,?,?,?)";
-                    $arrValues = [
-                        $request,
-                        $det['id'],
-                        $det['current_stock'],
-                        $det['qty'],
-                        $det['price'],
-                        $type,
-                        $det['result_stock'],
-                        $det['variant_name'],
-                        $det['subtotal']
-                    ];
-                    $con->insert($sql,$arrValues);
-                }
+                HelperWarehouse::updateStock($productId,$variantName); 
             }
         }
 
-        private static function getIngredientsAdjustment($id,$qty,$type=2,$variantProductName,$isRoot,&$visited = []){
+        private static function getIngredients($id,$qty,$variantProductName,&$visited = [],$isRoot=true){
             if (in_array($id, $visited)) {
                 throw new Exception("Circular reference detected for item $id");
             }
@@ -336,7 +379,6 @@
             $con = new Mysql();
             $sql = "SELECT product as id,qty,variant_name,product_id FROM product_ingredients WHERE product_id = $id";
             $arrIngredients = $con->select_all($sql);
-
             if(!$isRoot){
                 if($variantProductName != ""){
                     $sql = "SELECT op.price_purchase,op.stock,p.name
@@ -348,42 +390,23 @@
                 }
                 $arrProduct = $con->select($sql);
                 $visited[] = $id;
-                $resolved[] = [
-                    'id' => $id,
-                    'name' => $arrProduct['name']." ".$variantProductName,
-                    "key"=>str_replace(" ","",$arrProduct['name']." ".$variantProductName),
-                    "variant_name"=>$variantProductName,
-                    'qty' => $qty,
-                    'current_stock' => $arrProduct['stock'],
-                    'result_stock' => ($type == 1) ? $arrProduct['stock'] + $qty : $arrProduct['stock'] - $qty,
-                    'price' => $arrProduct['price_purchase'],
-                    'subtotal' => $qty * $arrProduct['price_purchase']
-                ];
             }
-
             foreach ($arrIngredients as $ingr) {
-                $variantName ="";
-                if($ingr['variant_name'] != ""){
-                    $variantName = $ingr['variant_name'];
+                $variantName =$ingr['variant_name'] != "" ? $ingr['variant_name'] : "";
+                if($variantName != ""){
                     $sql = "SELECT price_purchase,stock FROM product_variations_options 
-                    WHERE name = '{$ingr['variant_name']}' AND product_id = {$ingr['id']}";
+                    WHERE name = '$variantName' AND product_id = {$ingr['id']}";
                 }else{
                     $sql = "SELECT price_purchase,stock FROM product WHERE idproduct = {$ingr['id']}";
                 }
-                $arrProduct = $con->select($sql);
                 $ingr['qty'] = $qty*$ingr['qty'];
-
                 $ingr['name'] = $ingr['name']." ".$variantName;
                 $ingr['key'] = str_replace(" ","",$ingr['name']);
-                $ingr['current_stock'] = $arrProduct['stock'];
-                $ingr['result_stock'] = ($type == 1) ? $ingr['current_stock']+$ingr['qty'] : $ingr['current_stock']-$ingr['qty'];
-                
                 $ingr['price'] = $arrProduct['price_purchase'];
-                $ingr['subtotal'] = $ingr['qty']*$ingr['price'];
                 $resolved[] = $ingr;
-
-                $subIngredients = getIngredientsAdjustment($ingr['id'], $ingr['qty'], $type,$variantName, false,$visited);
-                $resolved = array_merge($resolved, $subIngredients);
+                
+                $subIngredients = HelperWarehouse::getIngredients($ingr['id'], $ingr['qty'],$variantName,$visited,false);
+                $resolved = array_merge($resolved, is_array($subIngredients) ? $subIngredients : []);
             }
             return $resolved;
         }

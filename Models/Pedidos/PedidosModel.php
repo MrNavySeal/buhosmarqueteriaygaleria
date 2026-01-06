@@ -396,25 +396,8 @@
             $return = $this->update($sql,array("canceled","anulado"));
             if(!empty($request)){
                 HelperWarehouse::delMovement(HelperWarehouse::SALIDA_VENTA,$this->intIdOrder);
-                $this->insertAdjustment($id,$request);
             }
             return $return;
-        }
-
-        public function insertAdjustment($id,$arrData){
-            $this->intIdOrder = $id;
-            foreach ($arrData as $data) {
-                $description = json_decode($data['description'],true);
-                $variantName ="";
-                if(is_array($description)){
-                    $arrDet = $description['detail'];
-                    $variantName = implode("-",array_values(array_column($arrDet,"option")));
-                }
-                $msg = "Entrada de insumos por anulación de venta de producto de la factura de venta No. $this->intIdOrder";
-                HelperWarehouse::setAdjustment( 1, $msg, [], ["id"=>$data['productid'],"qty"=>$data['quantity'],"variant_name"=>$variantName],true);
-            }
-
-            
         }
 
         public function updateOrder(int $id,string $statusOrder,string $strSendBy,string $strGuide){

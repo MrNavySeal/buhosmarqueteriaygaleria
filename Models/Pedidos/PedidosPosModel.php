@@ -277,15 +277,6 @@
                         $this->arrData[$i]['reference']
                     );
                     $this->insert($sql,$arrData);
-                    //Update products
-                    if($this->arrData[$i]['topic'] == 2){
-                        $msg = "Salida de insumos por venta de producto de la factura de venta No. $this->intId";
-                        HelperWarehouse::setAdjustment( 2, $msg, [], [
-                            "id"=>$this->arrData[$i]['id'],
-                            "qty"=>$this->arrData[$i]['qty'],
-                            "variant_name"=>$this->arrData[$i]['variant_name'],
-                        ],true,$date);
-                    }
                 }
             }
         }
