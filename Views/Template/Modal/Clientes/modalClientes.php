@@ -7,10 +7,13 @@
             <input class="d-none" type="file" id="strImagen" @change="uploadImagen"  accept="image/*"> 
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
+                <app-input label="Fecha" type="date" v-model="strFecha" required="true"></app-input>
+            </div>
+            <div class="col-md-4">
                 <app-input label="Nombre" type="text" v-model="strNombre" required="true"></app-input>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <app-input label="Apellido" type="text" v-model="strApellido"></app-input>
             </div>
         </div>

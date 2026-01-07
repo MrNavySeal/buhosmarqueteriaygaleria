@@ -27,6 +27,7 @@ const App = {
             intPorPagina:25,
             intTotalResultados:0,
             arrData:[],
+            strFecha:new Date().toISOString().split("T")[0], 
             arrBotones:[],
             strBuscar:"",
 
@@ -131,6 +132,8 @@ const App = {
             formData.append("direccion",this.strDireccion);
             formData.append("contrasena",this.strContrasena);
             formData.append("estado",this.intEstado);
+            formData.append("fecha",this.strFecha);
+
             this.common.processing = true;
             const response = await fetch(base_url+"/clientes/clientes/setUsuario",{method:"POST",body:formData});
             const objData = await response.json();
@@ -187,6 +190,7 @@ const App = {
                 this.strDocumento= objData.data.identification;
                 this.strCorreo= objData.data.email;
                 this.intPais= objData.data.countryid;
+                this.strFecha = objData.data.date;
                 await this.setFiltro("paises");
                 this.intDepartamento= objData.data.stateid,
                 await this.setFiltro("departamentos");

@@ -14,11 +14,14 @@
         private $strDocumento;
         private $intRolId;
         private $strImagenNombre;
+        private $strFecha;
+
         public function __construct(){
             parent::__construct();
         }
-        public function insertUsuario(string $strNombre, string $strApellido,string $intTelefono, string $strCorreo, string $strDireccion, 
-        int $intPais, int $intDepartamento, int $intCiudad,string $strContrasena,int $intEstado,string $strDocumento,int $intRolId,string $strImagenNombre){
+
+        public function insertUsuario(string $strNombre, string $strApellido,string $intTelefono, string $strCorreo, string $strDireccion, int $intPais, 
+        int $intDepartamento, int $intCiudad,string $strContrasena,int $intEstado,string $strDocumento,int $intRolId,string $strImagenNombre,string $strFecha){
             $this->strImagenNombre = $strImagenNombre;
 			$this->strNombre = $strNombre;
 			$this->strApellido = $strApellido;
@@ -32,6 +35,7 @@
             $this->strContrasena = $strContrasena;
             $this->intEstado = $intEstado;
             $this->intRolId = $intRolId;
+            $this->strFecha = $strFecha;
             
 			$return = 0;
             $strDocumento = "";
@@ -45,8 +49,8 @@
             $sql= "SELECT * FROM person WHERE phone = '{$this->intTelefono}' $strDocumento $strCorreo";
 			$request = $this->select_all($sql);
 			if(empty($request)){ 
-				$sql  = "INSERT INTO person(image,firstname,lastname,email,phone,address,countryid,stateid,cityid,identification,password,status,roleid) 
-								  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				$sql  = "INSERT INTO person(image,firstname,lastname,email,phone,address,countryid,
+                stateid,cityid,identification,password,status,roleid,date) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	        	$arrData = array(
                     $this->strImagenNombre,
                     $this->strNombre,
@@ -61,6 +65,7 @@
                     $this->strContrasena,
                     $this->intEstado,
                     $this->intRolId,
+                    $this->strFecha,
         		);
 	        	$return = $this->insert($sql,$arrData);
 			}else{
@@ -68,8 +73,9 @@
 			}
 	        return $return;
 		}
-        public function updateUsuario(int $intId,string $strNombre, string $strApellido,string $intTelefono, string $strCorreo, string $strDireccion, 
-        int $intPais, int $intDepartamento, int $intCiudad,string $strContrasena,int $intEstado,string $strDocumento,int $intRolId, $strImagenNombre){
+
+        public function updateUsuario(int $intId,string $strNombre, string $strApellido,string $intTelefono, string $strCorreo, string $strDireccion,int $intPais, 
+         int $intDepartamento, int $intCiudad,string $strContrasena, int $intEstado,string $strDocumento,int $intRolId, $strImagenNombre,string $strFecha){
             $this->intId = $intId;
             $this->strImagenNombre = $strImagenNombre;
 			$this->strNombre = $strNombre;
@@ -84,6 +90,8 @@
             $this->strContrasena = $strContrasena;
             $this->intEstado = $intEstado;
             $this->intRolId = $intRolId;
+            $this->strFecha = $strFecha;
+
             $strDocumento = "";
             $strCorreo ="";
             if($this->strDocumento != "222222222"){
@@ -98,8 +106,7 @@
 			if(empty($request)){
 				if($this->strContrasena  != ""){
 					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,cityid=?,identification=?, 
-                    password=?, status=?,roleid=?
-                    WHERE idperson = $this->intId";
+                    password=?, status=?,roleid=? ,date=? WHERE idperson = $this->intId";
 					$arrData = array(
                         $this->strImagenNombre,
                         $this->strNombre,
@@ -114,10 +121,11 @@
                         $this->strContrasena,
                         $this->intEstado,
                         $this->intRolId,
+                        $this->strFecha,
                     );
 				}else{
-					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,cityid=?,identification=?,status=?,roleid=?
-                            WHERE idperson = $this->intId";
+					$sql = "UPDATE person SET image=?, firstname=?, lastname=?,email=?, phone=?,address=?,countryid=?,stateid=?,
+                    cityid=?,identification=?,status=?,roleid=?,date=? WHERE idperson = $this->intId";
 					$arrData = array(
                         $this->strImagenNombre,
                         $this->strNombre,
@@ -131,6 +139,7 @@
                         $this->strDocumento,
                         $this->intEstado,
                         $this->intRolId,
+                        $this->strFecha,
                     );
 				}
 				$request = $this->update($sql,$arrData);
@@ -140,6 +149,7 @@
 			return $request;
 		
 		}
+
         public function selectUsuarios($intPage,$intPerPage,$strSearch){
             $limit ="";
             $intStartPage = ($intPage-1)*$intPerPage;
@@ -206,18 +216,21 @@
             );
             return $arrData;
         }
+
         public function selectUsuario(int $intId){
             $this->intId = $intId;
             $sql = "SELECT *, idperson as id FROM person WHERE idperson = $this->intId";
             $request = $this->select($sql);
             return $request;
         }
+
         public function deleteUsuario($id){
             $this->intId = $id;
             $sql = "DELETE FROM person WHERE idperson = $this->intId";
             $request = $this->delete($sql);
             return $request;
         }
+        
         public function selectRoles(){
             $sql = "SELECT * FROM role ORDER BY name";
             $request = $this->select_all($sql);

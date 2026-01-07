@@ -10,6 +10,7 @@
             parent::__construct();
             sessionCookie();
         }
+
         public function clientes(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -27,6 +28,7 @@
                 die();
             }
         }
+
         public function getDatosIniciales(){
             if($_SESSION['permitsModule']['r']){
                 $arrResponse = array(
@@ -37,6 +39,7 @@
             }
             die();
         }
+
         public function setUsuario(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
@@ -46,6 +49,7 @@
                         $arrResponse = array("status" => false, "msg" => 'Todos los campos con (*) son obligatorios');
                     }else{ 
                         $intId = intval($_POST['id']);
+                        $strFecha = strClean($_POST['fecha']);
                         $strNombre = ucwords(strClean($_POST['nombre']));
                         $strApellido = ucwords(strClean($_POST['apellido']));
                         $intTelefono = doubleval(strClean($_POST['telefono']));
@@ -94,6 +98,7 @@
                                     $strDocumento,
                                     $intRolId,
                                     $strImagenNombre,
+                                    $strFecha
                                 );
                             }
                         }else{
@@ -130,6 +135,7 @@
                                     $strDocumento,
                                     $intRolId,
                                     $strImagenNombre,
+                                    $strFecha
                                 ));
                             }
                         }
@@ -180,6 +186,7 @@
             }
 			die();
 		}
+
         public function getBuscar(){
             if($_SESSION['permitsModule']['r']){
                 $intPage = intval($_POST['page']);
@@ -190,6 +197,7 @@
             }
             die();
         }
+
         public function getDatos(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
@@ -206,6 +214,7 @@
             }
             die();
         }
+
         public function getEstados($params){
             $arrParams = explode(",",$params);
             $strTipo = $arrParams[0];
@@ -214,6 +223,7 @@
             else{$request = getCiudades($intId);}
             echo json_encode($request,JSON_UNESCAPED_UNICODE);
         }
+
         public function delDatos(){
             if($_SESSION['permitsModule']['d']){
                 if($_POST){
