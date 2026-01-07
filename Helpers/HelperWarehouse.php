@@ -299,7 +299,7 @@
                 }
 
                 $lastMov = $kardex[count($kardex)-1];
-                $finalPrice = $lastMov['last_price'];
+                $finalPrice = $lastMov['last_price'] != "" ? $lastMov['last_price'] : 0;
                 $finalStock = $lastMov['balance'];
                 $data = array(
                     "id"=>$product['id'],
