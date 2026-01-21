@@ -1,6 +1,6 @@
 export default {
     template:`
-        <div class="mb-3" v-if="type != 'hidden' && type != 'switch'">
+        <div :class="$attrs.class || defaultClass" v-if="type != 'hidden' && type != 'switch'">
             <label :for="label" class="form-label">{{label != '' && title =='' ? label : title}} <span class="text-danger" v-if="required == 'true'">*</span></label>
             <input :type="type" :placeholder="placeholder" :value="modelValue" :required="required=='true' ? true : false" :disabled=disabled class="form-control" :id="label" @input="$emit('update:modelValue', $event.target.value)">
             <ul>
@@ -19,6 +19,7 @@ export default {
         <input v-else :type="type" :placeholder="placeholder" :value="modelValue" :required=required :disabled=disabled class="form-control" :id="label" @input="$emit('update:modelValue', $event.target.value)">
         
     `,
+    inheritAttrs: false,
     props:{
         modelValue:[String,Number,Boolean],
         label:{
@@ -36,6 +37,10 @@ export default {
         errors:{
             type:Array,
             default:[],
+        },
+        defaultClass: {
+            type: String,
+            default: "mb-3",
         },
         disabled:"",
         placeholder:"",

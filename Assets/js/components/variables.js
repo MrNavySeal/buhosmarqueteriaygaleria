@@ -6,6 +6,7 @@ export const common = {
     strInitialDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0],
     strFinalDate: new Date().toISOString().split("T")[0],
     strName:"",
+    intStatus:1,
     intId:0,
     processing:false,
 

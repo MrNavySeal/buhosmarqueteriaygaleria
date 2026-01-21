@@ -59,6 +59,7 @@
     $router->setRoute("contabilidad/categorias/","Contabilidad/Contabilidad/categorias",false);
     $router->setRoute("contabilidad/movimientos/","Contabilidad/Contabilidad/movimientos",false);
     $router->setRoute("contabilidad/informe/","Contabilidad/Contabilidad/informe",false);
+    $router->setRoute("contabilidad/cuentas-contables/","Contabilidad/CuentasContables/cuentas",false);
 
     //Configuracion
     $router->setRoute("configuracion/parametros/","Configuracion/Empresa/empresa",false);
