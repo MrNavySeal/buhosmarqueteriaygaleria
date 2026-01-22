@@ -12,29 +12,18 @@
             return $accounts;
         }
 
-        public static function getParentAccounts($account,$accounts=[]){
+        public static function getParentAccounts($account,$accounts=[],$flag = true){
             $con = new Mysql();
-            $sql = "SELECT * FROM accounting_accounts WHERE id = '$account'";
+            $sql = "SELECT * FROM accounting_accounts WHERE id = $account";
             $request = $con->select($sql);
 
-            if($request['parent_id'] != 0){
-                $accounts = HelperAccounting::getParentAccounts($request['parent_id'],$accounts);
-            }else{
-                $accounts[] = $request;
-            }
-
-
-            /* while ($request['parent_id'] > 0) {
-                $sql = "SELECT * FROM accounting_accounts WHERE parent_id = '$request[parent_id]'";
-                $parent = $con->select($sql);
-                if(!empty($parent)){
-                    $accounts[] = $parent;
-                    $request['parent_id'] = $parent['parent_id'];
-                }else{
-                    break;
+            if ($request) {
+                if (!empty($request['parent_id']) && $request['parent_id'] != 0) {
+                    $accounts = HelperAccounting::getParentAccounts($request['parent_id'], $accounts);
                 }
-            } */
-
+                if($flag){$accounts[] = $request;}
+                
+            }
             return $accounts;
         }
     }

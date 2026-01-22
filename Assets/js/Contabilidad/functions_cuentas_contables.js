@@ -55,6 +55,7 @@ const App = {
             this.errors = {};
             if(objData.status){
                 this.common.showModalModule = false;
+                this.getData();
                 Swal.fire("Guardado!",objData.msg,"success");
             }else{
                 Swal.fire("Error",objData.msg,"error");

@@ -39,17 +39,17 @@
                 if($_POST){
                     $arrAccount = json_decode($_POST['account'],true);
                     $strType = strClean($_POST['type']);
-                    $request = HelperAccounting::getParentAccounts($arrAccount['id']);
+                    $request = HelperAccounting::getParentAccounts($arrAccount['id'],[],$strType == "new" ? true : false);
                     $newAccount = [];
                     if($strType == "new"){
-                        $request[] = $arrAccount;
                         if($arrAccount['type']=="clase"){
                             $newAccount = [
                                 "level"=>2,
                                 "parent_id"=>$arrAccount['id'],
                                 "parent_code"=>substr($arrAccount['code'],0,$arrAccount['level']),
                                 "name"=>"",
-                                "status"=>1,
+                                "digits"=>1,
+                                "status"=>$arrAccount['status'],
                                 "type"=>"grupo",
                                 "nature"=>$arrAccount['nature'],
                                 "parents"=>$request,
@@ -62,8 +62,37 @@
                                 "parent_id"=>$arrAccount['id'],
                                 "parent_code"=>substr($arrAccount['code'],0,$arrAccount['level']),
                                 "name"=>"",
-                                "status"=>1,
+                                "digits"=>2,
+                                "status"=>$arrAccount['status'],
                                 "type"=>"cuenta",
+                                "nature"=>$arrAccount['nature'],
+                                "parents"=>$request,
+                                "code"=>"",
+                                "id"=>0,
+                            ];
+                        }else if($arrAccount['type']=="cuenta"){
+                            $newAccount = [
+                                "level"=>6,
+                                "parent_id"=>$arrAccount['id'],
+                                "parent_code"=>substr($arrAccount['code'],0,$arrAccount['level']),
+                                "name"=>"",
+                                "digits"=>2,
+                                "status"=>$arrAccount['status'],
+                                "type"=>"subcuenta",
+                                "nature"=>$arrAccount['nature'],
+                                "parents"=>$request,
+                                "code"=>"",
+                                "id"=>0,
+                            ];
+                        }else if($arrAccount['type']=="subcuenta"){
+                            $newAccount = [
+                                "level"=>8,
+                                "parent_id"=>$arrAccount['id'],
+                                "parent_code"=>substr($arrAccount['code'],0,$arrAccount['level']),
+                                "name"=>"",
+                                "digits"=>2,
+                                "status"=>$arrAccount['status'],
+                                "type"=>"auxiliar",
                                 "nature"=>$arrAccount['nature'],
                                 "parents"=>$request,
                                 "code"=>"",
@@ -71,7 +100,26 @@
                             ];
                         }
                     }else{
-                        $newAccount = $arrAccount;
+                        $arrAccount['children'] = [];
+                        if($arrAccount['parent_id'] != 0){
+                            $parent = $request[count($request)-1];
+                            $code = substr($arrAccount['code'],strlen($parent['code']),$parent['digits']);
+                            $newAccount = [
+                                "level"=>$arrAccount['level'],
+                                "parent_id"=>$arrAccount['parent_id'],
+                                "parent_code"=>$parent['code'],
+                                "name"=>$arrAccount['name'],
+                                "digits"=>$parent['digits'],
+                                "status"=>$arrAccount['status'],
+                                "type"=>$arrAccount['type'],
+                                "nature"=>$arrAccount['nature'],
+                                "parents"=>$request,
+                                "code"=>$code,
+                                "id"=>$arrAccount['id'],
+                            ];
+                        }else{
+                            $newAccount = $arrAccount;
+                        }
                         $newAccount['parents'] = $request;
                     }
                     echo json_encode($newAccount,JSON_UNESCAPED_UNICODE);
@@ -83,8 +131,9 @@
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
                     $arrData = json_decode($_POST['account'],true);
+                    $intDigits = $arrData['digits'];
                     $errores = validator()->validate([
-                        "code"=>"required|min:$arrData[parent_code]|max:$arrData[parent_code];codigo",
+                        "code"=>"required|min:$intDigits|max:$intDigits;codigo",
                         "name"=>"required;nombre",
                     ],$arrData)->getErrors();
 

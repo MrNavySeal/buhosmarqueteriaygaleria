@@ -23,7 +23,7 @@
           <p class="m-0">{{clase.name}}</p>
       </button>
     </h2>
-    <div :id="'collapseOne'+clase.code" class="accordion-collapse collapse show" data-bs-parent="#accordionClase">
+    <div :id="'collapseOne'+clase.code" class="accordion-collapse collapse" data-bs-parent="#accordionClase">
       <div class="accordion-body">
             <div class="accordion" :id="'accordion'+clase.code">
                 <div class="accordion-item" v-for="(grupo,k) in clase.children" :key="k">
@@ -37,11 +37,47 @@
                     </h2>
                     <div :id="'collapseOne'+grupo.code" class="accordion-collapse collapse show" :data-bs-parent="'#accordion'+grupo.code">
                         <div class="accordion-body">
-
+                            <div class="accordion" :id="'accordion'+grupo.code">
+                                <div class="accordion-item" v-for="(cuenta,j) in grupo.children" :key="j">
+                                    <h2 class="accordion-header">
+                                    <button class="accordion-button d-flex gap-2" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapseOne'+cuenta.code" aria-expanded="true" :aria-controls="'collapseOne'+cuenta.code">
+                                        <app-button  icon="new" btn="primary" @click="openModal(cuenta)"></app-button>
+                                        <app-button  icon="edit" btn="success" @click="openModal(cuenta,'edit')"></app-button>
+                                        <p class="m-0">{{cuenta.code}}</p>
+                                        <p class="m-0">{{cuenta.name}}</p>
+                                    </button>
+                                    </h2>
+                                    <div :id="'collapseOne'+cuenta.code" class="accordion-collapse collapse show" :data-bs-parent="'#accordion'+cuenta.code">
+                                        <div class="accordion-body">
+                                            <div class="accordion" :id="'accordion'+cuenta.code">
+                                                <div class="accordion-item" v-for="(subcuenta,j) in cuenta.children" :key="j">
+                                                    <h2 class="accordion-header">
+                                                    <button class="accordion-button d-flex gap-2" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapseOne'+subcuenta.code" aria-expanded="true" :aria-controls="'collapseOne'+subcuenta.code">
+                                                        <app-button  icon="new" btn="primary" @click="openModal(subcuenta)"></app-button>
+                                                        <app-button  icon="edit" btn="success" @click="openModal(subcuenta,'edit')"></app-button>
+                                                        <p class="m-0">{{subcuenta.code}}</p>
+                                                        <p class="m-0">{{subcuenta.name}}</p>
+                                                    </button>
+                                                    </h2>
+                                                    <div :id="'collapseOne'+subcuenta.code" class="accordion-collapse collapse show" :data-bs-parent="'#accordion'+subcuenta.code">
+                                                        <div class="accordion-body">
+                                                            <div class="d-flex gap-2 align-items-center" v-for="(auxiliar,k) in subcuenta.children" :key="k">
+                                                                <app-button  icon="edit" btn="success" @click="openModal(auxiliar,'edit')"></app-button>
+                                                                <p class="m-0">{{auxiliar.code}}</p>
+                                                                <p class="m-0">{{auxiliar.name}}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                </div>
+            </div>
       </div>
     </div>
   </div>
