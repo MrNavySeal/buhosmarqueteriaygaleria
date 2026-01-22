@@ -62,6 +62,36 @@ const App = {
                 this.errors = objData.errors;
             }
             console.log(objData);
+        },
+
+        del:async function(data){
+            const objVue = this;
+            Swal.fire({
+                title:"¿Esta seguro de eliminar?",
+                text:"Se eliminará para siempre...",
+                icon: 'warning',
+                showCancelButton:true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText:"Sí, eliminar",
+                cancelButtonText:"No, cancelar"
+            }).then(async function(result){
+                if(result.isConfirmed){
+                    const formData = new FormData();
+                    formData.append("id",data.id);
+                    const response = await fetch(base_url+"/Contabilidad/CuentasContables/delDatos",{method:"POST",body:formData});
+                    const objData = await response.json();
+                    if(objData.status){
+                        Swal.fire("Eliminado!",objData.msg,"success");
+                        objVue.getData();
+                    }else{
+                        Swal.fire("Error",objData.msg,"error");
+                    }
+                }else{
+                    objVue.getData();
+                }
+            });
+            
         }
     }
 };

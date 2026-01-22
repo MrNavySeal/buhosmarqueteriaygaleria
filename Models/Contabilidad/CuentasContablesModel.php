@@ -51,5 +51,11 @@
             }
             return $request;
         }
+
+        public function deleteDatos($id){
+            $sql = "DELETE FROM accounting_accounts WHERE id = $id";
+            $request = $this->delete($sql);
+            return $request;
+        }
     }
 ?>

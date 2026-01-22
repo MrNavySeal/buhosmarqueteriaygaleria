@@ -63,6 +63,7 @@
                                                         <div class="accordion-body">
                                                             <div class="d-flex gap-2 align-items-center" v-for="(auxiliar,k) in subcuenta.children" :key="k">
                                                                 <app-button  icon="edit" btn="success" @click="openModal(auxiliar,'edit')"></app-button>
+                                                                <app-button  icon="delete" btn="danger" @click="del(auxiliar)"></app-button>
                                                                 <p class="m-0">{{auxiliar.code}}</p>
                                                                 <p class="m-0">{{auxiliar.name}}</p>
                                                             </div>

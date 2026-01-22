@@ -174,5 +174,19 @@
                 }
             }
         }
+
+        public function delDatos(){
+            if($_SESSION['permitsModule']['d']){
+                $id = intval($_POST['id']);
+                $request = $this->model->deleteDatos($id);
+                if(!empty($request)){
+                    $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado correctamente");
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"No se ha podido eliminar.");
+                }
+                echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                die();
+            }
+        }
     }
 ?>
