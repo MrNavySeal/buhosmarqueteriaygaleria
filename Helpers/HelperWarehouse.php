@@ -330,9 +330,12 @@
         }
 
         public static function updateStock($id,$variantName,$pricePurchase){
-            $product = HelperWarehouse::getProductMovement($id,$variantName); 
-            $stock =  $product['is_stock'] ? $product['stock'] : 0;
-            $pricePurchase = $product['is_stock'] ? $product['price_purchase'] : $pricePurchase;
+            $product = HelperWarehouse::getProductMovement($id,$variantName);
+            $stock =  0; 
+            if($product['is_stock']){
+                $stock =  $product['stock'];
+                $pricePurchase = $product['price_purchase'] > 0 ? $product['price_purchase'] : $pricePurchase;
+            }
             
             $con = new Mysql();
             $sql ="UPDATE product SET stock=?, price_purchase=? 
