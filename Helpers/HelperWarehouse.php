@@ -57,6 +57,7 @@
             $request = $con->insert($sql,[$movement,$document,$description,$total,$date]);
             foreach ($detail as $det) {
                 if($arrMovement['id'] != 5 || $arrMovement['id'] == 5 && $det['topic'] == 2){
+
                     $price = 0;
                     $total = 0;
                     
@@ -106,7 +107,7 @@
                         $total
                     ]);
 
-                    HelperWarehouse::updateStock($productId,$variantName); 
+                    HelperWarehouse::updateStock($productId,$variantName,$price); 
                     if($stockIngredient){
                         HelperWarehouse::updateStockIngredient([
                             "data"=>HelperWarehouse::getIngredients($productId,$qty,$variantName),
@@ -184,6 +185,7 @@
             $sql = "SELECT 
             det.product_id as id,
             det.variant_name,
+            p.is_stock,
             p.reference,
             c.name as category,
             s.name as subcategory,
@@ -313,6 +315,7 @@
                     "total"=>$finalStock*$finalPrice,
                     "total_format"=>formatNum($finalStock*$finalPrice),
                     "measure"=>$product['measure'],
+                    "is_stock"=>$product['is_stock'],
                     "detail"=>$kardex
                 );
             }
@@ -326,10 +329,10 @@
             return $price;
         }
 
-        public static function updateStock($id,$variantName){
+        public static function updateStock($id,$variantName,$pricePurchase){
             $product = HelperWarehouse::getProductMovement($id,$variantName); 
-            $stock = $product['stock'];
-            $pricePurchase = $product['price_purchase'];
+            $stock =  $product['is_stock'] ? $product['stock'] : 0;
+            $pricePurchase = $product['is_stock'] ? $product['price_purchase'] : $pricePurchase;
             
             $con = new Mysql();
             $sql ="UPDATE product SET stock=?, price_purchase=? 
@@ -367,7 +370,7 @@
                     $price,
                     $total
                 ]);
-                HelperWarehouse::updateStock($productId,$variantName); 
+                HelperWarehouse::updateStock($productId,$variantName,$price); 
             }
         }
 
