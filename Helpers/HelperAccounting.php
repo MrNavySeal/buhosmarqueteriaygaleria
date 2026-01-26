@@ -1,13 +1,22 @@
 <?php
     class HelperAccounting{
-        public static function getAccounts($parent = 0){
+        public static function getAccounts($parent = 0,$search=""){
             $con = new Mysql();
-            $sql = "SELECT * FROM accounting_accounts WHERE parent_id = $parent ORDER BY code";
-            $request = $con->select_all($sql);
             $accounts = [];
-            foreach ($request as $acc) {
-                $acc['children'] = HelperAccounting::getAccounts($acc['id']);
-                $accounts[] = $acc;
+            if($search != ""){
+                $sql = "SELECT * FROM accounting_accounts WHERE code = '$search' OR name = '$search'  ORDER BY code";
+                $request = $con->select_all($sql);
+                foreach ($request as $acc) {
+                    $acc['children'] = HelperAccounting::getAccounts($acc['id']);
+                    $accounts[] = $acc;
+                }
+            }else{
+                $sql = "SELECT * FROM accounting_accounts WHERE parent_id = $parent  ORDER BY code";
+                $request = $con->select_all($sql);
+                foreach ($request as $acc) {
+                    $acc['children'] = HelperAccounting::getAccounts($acc['id']);
+                    $accounts[] = $acc;
+                }
             }
             return $accounts;
         }

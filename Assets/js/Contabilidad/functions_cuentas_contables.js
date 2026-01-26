@@ -23,8 +23,12 @@ const App = {
     },mounted(){
         this.getData();
     },methods:{
-        search:function(){
-             
+        search:async function(){
+            const formData = new FormData();
+            formData.append("search",this.common.strSearch);
+            const response = await fetch(base_url+"/Contabilidad/CuentasContables/getBuscar",{method:"POST",body:formData});
+            const objData = await response.json();
+            this.arrAccounts = objData;
         },
 
         openModal:async function(account,type="new"){
@@ -61,7 +65,6 @@ const App = {
                 Swal.fire("Error",objData.msg,"error");
                 this.errors = objData.errors;
             }
-            console.log(objData);
         },
 
         del:async function(data){

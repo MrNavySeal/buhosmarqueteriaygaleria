@@ -61,7 +61,7 @@
             <?php require('Views/Template/nav_header_admin.php');?>
             <div class="p-2">
                 <div class="body flex-grow-1 px-3" id="<?=$data['page_name']?>">
-                    <div class="d-flex w-100 mb-2 justify-content-between align-items-center">
-                        <h2 class="text-center"><?=$data['page_title']?></h2>
+                    <div class="d-flex w-100 flex-wrap mb-2 justify-content-between align-items-center">
+                        <h2><?=$data['page_title']?></h2>
                         <?php getComponent("buttonsAdmin",$data);?>
                     </div>

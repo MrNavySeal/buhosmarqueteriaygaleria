@@ -127,6 +127,15 @@
             }
         }
 
+        public function getBuscar(){
+            if($_SESSION['permitsModule']['r']){
+                $strSearch = strClean($_POST['search']);
+                $request = HelperAccounting::getAccounts(0,$strSearch);
+                echo json_encode($request,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+
         public function setDatos(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
