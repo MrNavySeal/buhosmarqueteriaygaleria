@@ -157,7 +157,7 @@
                             $det['total']
                         ]);
 
-                        HelperWarehouse::updateStock($det['product_id'],$det['variant_name']);
+                        HelperWarehouse::updateStock($det['product_id'],$det['variant_name'],$price);
                         if($stockIngredient){
                             HelperWarehouse::updateStockIngredient([
                                 "data"=>HelperWarehouse::getIngredients($det['product_id'],$qty,$variantName),
