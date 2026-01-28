@@ -173,6 +173,32 @@ function editItem(id){
     document.querySelector("#id").value = id;
     openModal("edit");
 }
+function deleteItem(id){
+    Swal.fire({
+        title:"¿Estás segur@ de anular la cotización?",
+        text:"Tendrás que volverla a hacer...",
+        icon: 'warning',
+        showCancelButton:true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText:"Sí, anular",
+        cancelButtonText:"No, cancelar"
+    }).then(function(result){
+        if(result.isConfirmed){
+            let url = base_url+"/Pedidos/Cotizaciones/delOrder"
+            let formData = new FormData();
+            formData.append("id",id);
+            request(url,formData,"post").then(function(objData){
+                if(objData.status){
+                    Swal.fire("Anulado",objData.msg,"success");
+                    getData();
+                }else{
+                    Swal.fire("Error",objData.msg,"error");
+                }
+            });
+        }
+    });
+}
 //Modal
 function openModal(type=""){
     if(type=="view"){

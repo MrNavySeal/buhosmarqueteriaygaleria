@@ -137,6 +137,7 @@
                         $btnWpp="";
                         $btnPdf='<a href="'.base_url().'/Pedidos/Cotizaciones/pdf/'.$request[$i]['id'].'" target="_blank" class="btn btn-primary text-white m-1" type="button" title="Imprimir factura"><i class="fas fa-print"></i></a>';
                         $btnEdit ="";
+                        $btnDelete="";
                         $status=$request[$i]['status'];
                         $currentDate = date("Y-m-d",strtotime("now"));
                         $strDateBeat = date("Y-m-d",strtotime($request[$i]['compare']));
@@ -151,6 +152,8 @@
                             $status = '<span class="badge bg-success text-white">Facturado</span>';
                         }else if($request[$i]['status'] =="vencido"){
                             $status = '<span class="badge bg-danger text-white">Vencido</span>';
+                        }else if($request[$i]['status'] =="anulado"){
+                            $status = '<span class="badge bg-danger text-white">Anulado</span>';
                         }
                         
                         if($_SESSION['permitsModule']['u'] && $request[$i]['status'] =="cotizado"){
@@ -159,6 +162,11 @@
                         if($_SESSION['userData']['roleid'] != 2){
                             $btnWpp='<a href="https://wa.me/57'.$request[$i]['phone'].'?text=Buen%20dia%20'.$request[$i]['name'].'" class="btn btn-success text-white m-1" type="button" title="Whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>';
                         }
+
+                        if($_SESSION['permitsModule']['d'] && $request[$i]['status'] =="cotizado"){
+                            $btnDelete = '<button class="btn btn-danger m-1 text-white" type="button" title="Anular" onclick="deleteItem('.$request[$i]['id'].')" ><i class="fas fa-trash-alt"></i></button>';
+                        }
+
                         $request[$i]['format_amount'] = formatNum($request[$i]['amount']);
                         $request[$i]['status'] = $status;
                         $pro = $request[$i];
@@ -173,7 +181,7 @@
                             <td data-title="CC/NIT">'.$pro['identification'].'</td>
                             <td data-title="Total" class="text-end">'.$pro['format_amount'].'</td>
                             <td data-title="Estado" class="text-center">'.$status.'</td>
-                            <td data-title="Opciones" ><div class="d-flex">'.$btnView.$btnWpp.$btnPdf.$btnEdit.'</div></td>
+                            <td data-title="Opciones" ><div class="d-flex">'.$btnView.$btnWpp.$btnPdf.$btnEdit.$btnDelete.'</div></td>
                         </tr>
                         ';
                     }
@@ -235,11 +243,14 @@
                         $arrResponse=array("status"=>false,"msg"=>"Error de datos");
                     }else{
                         $id = intval($_POST['id']);
-                        $request = $this->model->deleteOrder($id);
-                        if($request=="ok"){
-                            $arrResponse = array("status"=>true,"msg"=>"La factura ha sido anulada correctamente.");
-                        }else{
-                            $arrResponse = array("status"=>false,"msg"=>"No es posible anular, intenta de nuevo.");
+                        $request = $this->model->selectQuote($id);
+                        if(!empty($request)){
+                            $request = $this->model->deleteOrder($id);
+                            if($request > 0){
+                                $arrResponse = array("status"=>true,"msg"=>"La cotización ha sido anulada correctamente.");
+                            }else{
+                                $arrResponse = array("status"=>false,"msg"=>"No es posible anular, intenta de nuevo.");
+                            }
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);

@@ -186,5 +186,10 @@
             $request = $this->update($sql,array($statusOrder,$strSendBy,$strGuide));
             return $request;
         }
+        public function deleteOrder($id){
+            $sql = "UPDATE quote_cab SET status =? WHERE id  = $id";
+            $request = $this->update($sql,['anulado']);
+            return $request;
+        }
     }
 ?>
