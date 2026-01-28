@@ -139,10 +139,10 @@ const App = {
             formData.append("tipo_persona",this.intTipoPersona);
             formData.append("fecha",this.strFecha);
 
-            //this.common.processing = true;
+            this.common.processing = true;
             const response = await fetch(base_url+"/configuracion/terceros/setDatos",{method:"POST",body:formData});
             const objData = await response.json();
-            //this.common.processing = false;
+            this.common.processing = false;
             if(objData.status){
                 Swal.fire("Guardado!",objData.msg,"success");
                 if(this.intId == 0){
