@@ -11,9 +11,6 @@
     $router->setRoute("sistema/roles/","Sistema/Roles",false);
     $router->setRoute("sistema/usuarios/","Sistema/Usuarios",false);
 
-    //Clientes
-    $router->setRoute("clientes/","Clientes/Clientes",false);
-
     //Productos
     $router->setRoute("productos/categorias/","Productos/ProductosCategorias/categorias",false);
     $router->setRoute("productos/subcategorias/","Productos/ProductosCategorias/subcategorias",false);
@@ -68,6 +65,7 @@
     $router->setRoute("configuracion/pagina/","Configuracion/Paginas/pagina",true);
     $router->setRoute("configuracion/banners/","Configuracion/Banners/banners",false);
     $router->setRoute("configuracion/medios-de-pago/","Configuracion/MedioPagos/medioPagos",false);
+    $router->setRoute("configuracion/terceros/","Configuracion/Terceros/terceros",false);
 
     //Marketing
     $router->setRoute("marketing/cupones/","Marketing/Descuentos/cupones",false);

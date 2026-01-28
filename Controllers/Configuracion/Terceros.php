@@ -1,5 +1,5 @@
 <?php
-    class Clientes extends Controllers{
+    class Terceros extends Controllers{
 
         public function __construct(){
             session_start();
@@ -11,18 +11,19 @@
             sessionCookie();
         }
 
-        public function clientes(){
+        public function terceros(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
-                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL."/clientes/clientes/"."','','');mypop.focus();"],
+                    "duplicar" => ["mostrar"=>true, "evento"=>"onClick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
                     "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"@click","funcion"=>"openModal()"],
                 ];
-                $data['page_tag'] = "Clientes";
-                $data['page_title'] = "Clientes";
-                $data['page_name'] = "clientes";
+
+                $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
+                $data['page_name'] = strtolower($_SESSION['permitsModule']['option']);
                 $data['script_type'] = "module";
-                $data['panelapp'] = "/Clientes/functions_clientes.js";
-                $this->views->getView($this,"clientes",$data);
+                $data['panelapp'] = "/Configuracion/functions_terceros.js";
+                $this->views->getView($this,"terceros",$data);
             }else{
                 header("location: ".base_url());
                 die();
@@ -33,40 +34,59 @@
             if($_SESSION['permitsModule']['r']){
                 $arrResponse = array(
                     "paises"=>getPaises(),
-                    "roles"=>$this->model->selectRoles()
+                    "tipo_regimen"=>HelperUsers::TIPO_REGIMEN,
+                    "tipo_identificacion"=>HelperUsers::TIPO_IDENTIFICACION,
+                    "tipo_persona"=>HelperUsers::TIPO_PERSONA
                 );
                 echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
             }
             die();
         }
 
-        public function setUsuario(){
+        public function setDatos(){
             if($_SESSION['permitsModule']['r']){
                 if($_POST){
-                    if(empty($_POST['nombre']) || empty($_POST['apellido']) || empty($_POST['telefono']) 
-                    || empty($_POST['pais']) || empty($_POST['departamento'])  || empty($_POST['ciudad'])
-                    ){
-                        $arrResponse = array("status" => false, "msg" => 'Todos los campos con (*) son obligatorios');
-                    }else{ 
+                    $intTipoPersona = intval($_POST['tipo_persona']);
+                    $nickNombre = $intTipoPersona != 1 ? "nombre" : "razón social";
+                    $errores = validator()->validate([
+                        "nombre"=>"required;$nickNombre",
+                        "pais"=>"required;pais",
+                        "departamento"=>"required;departamento",
+                        "ciudad"=>"required;ciudad",
+                        "telefono"=>"required|numeric;telefono",
+                        "tipo_documento"=>"required; tipo de documento",
+                        "tipo_regimen"=>"required; tipo de regimen",
+                        "tipo_persona"=>"required; tipo de persona",
+                    ])->getErrors();
+                    if(empty($errores)){
                         $intId = intval($_POST['id']);
-                        $strFecha = strClean($_POST['fecha']);
-                        $strNombre = ucwords(strClean($_POST['nombre']));
-                        $strApellido = ucwords(strClean($_POST['apellido']));
-                        $intTelefono = doubleval(strClean($_POST['telefono']));
-                        $strCorreo = $_POST['correo'] != "" ? strtolower(strClean($_POST['correo'])) : "generico@generico.co";
-                        $strDireccion = strClean($_POST['direccion']);
-                        $intPais = intval($_POST['pais']) != 0 ? intval($_POST['pais']) : 99999;
-                        $intDepartamento = isset($_POST['departamento']) && intval($_POST['departamento']) != 0   ? intval($_POST['departamento']) : 99999;
-                        $intCiudad = isset($_POST['ciudad']) && intval($_POST['ciudad']) != 0 ? intval($_POST['ciudad']) : 99999;
-                        $strContrasena = strClean($_POST['contrasena']);
-                        $intRolId = 2;
-                        $intEstado = intval($_POST['estado']);
-                        $strTempContrasena =$strContrasena;
+                        $data = [
+                            "fecha"=>strClean($_POST['fecha']), 
+                            "nombre"=>ucwords(strClean($_POST['nombre'])),
+                            "apellido"=>ucwords(strClean($_POST['apellido'])),
+                            "telefono"=>doubleval(strClean($_POST['telefono'])),
+                            "indicativo"=>intval($_POST['indicativo']),
+                            "correo"=>$_POST['correo'] != "" ? strtolower(strClean($_POST['correo'])) : "generico@generico.co",
+                            "direccion"=>strClean($_POST['direccion']),
+                            "pais"=>intval($_POST['pais']) != 0 ? intval($_POST['pais']) : 99999, 
+                            "departamento"=>isset($_POST['departamento']) && intval($_POST['departamento']) != 0   ? intval($_POST['departamento']) : 99999,
+                            "ciudad"=>isset($_POST['ciudad']) && intval($_POST['ciudad']) != 0 ? intval($_POST['ciudad']) : 99999,
+                            "estado"=>intval($_POST['estado']),
+                            "documento"=>strClean($_POST['documento']) !="" ? strClean($_POST['documento']) : "222222222",
+                            "rol"=>2,
+                            "tipo_documento"=>intval($_POST['tipo_documento']),
+                            "tipo_regimen"=>intval($_POST['tipo_regimen']),
+                            "tipo_persona"=>$intTipoPersona,
+                            "is_cliente"=>intval($_POST['is_cliente']),
+                            "is_proveedor"=>intval($_POST['is_proveedor']),
+                            "is_otro"=>intval($_POST['is_otro']),
+                            "digito_verificacion"=>strClean($_POST['digito_verificacion'])
+                        ];
                         $request = "";
-                        $strDocumento = strClean($_POST['documento']) !="" ? strClean($_POST['documento']) : "222222222";
                         $strImagen = "";
                         $strImagenNombre="";
-                        $company = getCompanyInfo();
+                        $strContrasena = strClean($_POST['contrasena']);
+                        $strTempContrasena = $strContrasena;
                         if($intId == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
@@ -83,27 +103,12 @@
                                     $strTempContrasena =bin2hex(random_bytes(4));
                                     $strContrasena =  hash("SHA256",$strTempContrasena);
                                 }
-    
-                                $request = $this->model->insertUsuario(
-                                    $strNombre, 
-                                    $strApellido,
-                                    $intTelefono,
-                                    $strCorreo, 
-                                    $strDireccion, 
-                                    $intPais,
-                                    $intDepartamento,
-                                    $intCiudad,
-                                    $strContrasena,
-                                    $intEstado,
-                                    $strDocumento,
-                                    $intRolId,
-                                    $strImagenNombre,
-                                    $strFecha
-                                );
+                                $data['contrasena']=$strContrasena;
+                                $data['imagen']=$strImagenNombre;
+                                $request = $this->model->insertUsuario($data);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
-    
                                 $option = 2;
                                 $request = $this->model->selectUsuario($intId);
     
@@ -119,67 +124,26 @@
                                     $strImagenNombre = 'profile_'.bin2hex(random_bytes(6)).'.png';
                                 }
                                 if($strContrasena!=""){ $strContrasena =  hash("SHA256",$strContrasena); }
-                                
-                                $request = doubleval($this->model->updateUsuario(
-                                    $intId, 
-                                    $strNombre, 
-                                    $strApellido,
-                                    $intTelefono,
-                                    $strCorreo, 
-                                    $strDireccion, 
-                                    $intPais,
-                                    $intDepartamento,
-                                    $intCiudad,
-                                    $strContrasena,
-                                    $intEstado,
-                                    $strDocumento,
-                                    $intRolId,
-                                    $strImagenNombre,
-                                    $strFecha
-                                ));
+
+                                $data['contrasena']=$strContrasena;
+                                $data['imagen']=$strImagenNombre;
+                                $request = doubleval($this->model->updateUsuario($intId,$data));
                             }
                         }
                         if(is_numeric($request) && $request > 0){
-                            if($strImagen!=""){
-                                uploadImage($strImagen,$strImagenNombre);
-                            }
+                            if($strImagen!=""){ uploadImage($strImagen,$strImagenNombre); }
                             if($option == 1){
-                                $data['nombreUsuario'] = $strNombre." ".$strApellido;
-                                $data['asunto']="Credenciales";
-                                $data['email_usuario'] = $strCorreo;
-                                $data['email_remitente'] = $company['email'];
-                                $data['password'] = $strTempContrasena;
-                                $data['company'] = $company;
-                                if($strCorreo !="generico@generico.co"){
-                                    try { sendEmail($data,"email_credentials"); } catch (\Throwable $th) {}
-                                    $arrResponse = array("status"=>true,"msg"=>'Datos guardados. Se ha enviado un correo electrónico al usuario con las credenciales.');
-                                }else{
-                                    $arrResponse = array("status"=>true,"msg"=>'Datos guardados.');
-                                }
+                                $arrResponse = array("status"=>true,"msg"=>'Datos guardados.');
                             }else{
-                                if($strContrasena!=""){
-                                    $data['nombreUsuario'] = $strNombre." ".$strApellido;
-                                    $data['asunto']="Credenciales";
-                                    $data['email_usuario'] = $strCorreo;
-                                    $data['email_remitente'] = $company['email'];
-                                    $data['password'] = $strTempContrasena;
-                                    $data['company'] = $company;
-                                    if($strCorreo !="generico@generico.co"){
-                                        try { sendEmail($data,"email_passwordUpdated"); } catch (\Throwable $th) {}
-                                        $arrResponse = array("status"=>true,"msg"=>'La contraseña ha sido actualizada, se ha enviado un correo electrónico con la nueva contraseña.');
-                                    }else{
-                                        $arrResponse = array("status"=>true,"msg"=>'Datos actualizados');
-                                    }
-                                }else{
-                                    $arrResponse = array("status"=>true,"msg"=>'Datos actualizados');
-                                }
-                                
+                                $arrResponse = array("status"=>true,"msg"=>'Datos actualizados');
                             }
                         }else if($request == 'exist'){
                             $arrResponse = array('status' => false, 'msg' => '¡Atención! el correo electrónico, la identificación o el número de teléfono ya están registrados, pruebe con otro.');		
                         }else{
                             $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
                         }
+                    }else{
+                        $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.',"errores"=>$errores);
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
                 }

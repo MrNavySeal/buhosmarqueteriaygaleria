@@ -1,6 +1,6 @@
 <?php 
     headerAdmin($data);
-    getModal("Clientes/modalClientes"); 
+    getModal("Configuracion/modalTerceros"); 
 ?>
 <div class="row">
     <div class="col-md-4">

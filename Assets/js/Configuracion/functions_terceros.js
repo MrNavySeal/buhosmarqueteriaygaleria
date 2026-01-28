@@ -39,46 +39,51 @@ const App = {
             strApellido:"",
             strDocumento:"",
             strCorreo:"",
-            intPais:"",
+            intPais:47,
             intDepartamento:"",
             intCiudad:"",
             strTelefono:"",
             strDireccion:"",
             strContrasena:"",
             intEstado:"",
-            intTipoDocumento:"",
+            intTipoDocumento:13,
+            intTipoPersona:2,
+            intTipoRegimen:2,
+            strDv:"",
             strTituloModal:"",
             intTelefonoCodigo:"",
-            arrTiposDocumento:"",
+            arrTipoDocumento:[],
+            arrTipoRegimen:[],
+            arrTipoPersona:[],
             arrPaises:[],
             arrDepartamentos:[],
             arrCiudades:[],
-
-            showPermissionModal:false,
-            arrPermissions:[],
-            checkR:false,
-            checkW:false,
-            checkU:false,
-            checkD:false, 
+            errores:[],
+            intCheckCliente:false,
+            intCheckProveedor:false,
+            intCheckOtro:false,
         };
     },mounted(){
         this.search();
         this.getDatosIniciales();
     },methods:{
         getDatosIniciales:async function(){
-            const response = await fetch(base_url+"/clientes/clientes/getDatosIniciales");
+            const response = await fetch(base_url+"/configuracion/terceros/getDatosIniciales");
             const objData = await response.json();
             this.arrPaises = objData.paises;
+            this.arrTipoDocumento = objData.tipo_identificacion;
+            this.arrTipoPersona = objData.tipo_persona; 
+            this.arrTipoRegimen = objData.tipo_regimen;
         },
         setFiltro:async function(tipo){
             if(tipo == "paises" && this.intPais != ""){
-                this.intTelefonoCodigo = this.intPais;
-                const response = await fetch(base_url+"/clientes/clientes/getEstados/estado/"+this.intPais);
+                this.intTelefonoCodigo = this.getPhoneCode;
+                const response = await fetch(base_url+"/configuracion/terceros/getEstados/estado/"+this.intPais);
                 const objData = await response.json();
                 this.arrDepartamentos = objData;
                 this.arrCiudades = [];
             }else if(tipo == "departamentos" && this.intDepartamento != ""){
-                const response = await fetch(base_url+"/clientes/clientes/getEstados/ciudad/"+this.intDepartamento);
+                const response = await fetch(base_url+"/configuracion/terceros/getEstados/ciudad/"+this.intDepartamento);
                 const objData = await response.json();
                 this.arrCiudades = objData;
             }
@@ -87,7 +92,7 @@ const App = {
             await this.getDatosIniciales();
             this.common.showModalModule = true;
             this.common.intId =0;
-            this.common.modulesTitle = "Nuevo cliente";
+            this.common.modulesTitle = "Nuevo tercero";
             this.strImgUrl= base_url+'/Assets/images/uploads/user.jpg';
             this.strImagen= "";
             this.strNombre ="";
@@ -99,25 +104,17 @@ const App = {
             this.strContrasena="";
             this.intEstado= 1;
             this.intPais= 47;
+            this.intCheckCliente=false;
+            this.intCheckProveedor = false;
+            this.intCheckOtro = false;
+            this.intTelefonoCodigo="";
+            this.strDv="";
+            this.intTipoDocumento=13;
+            this.intTipoRegimen=2;
+            this.intTipoPersona=2;
             await this.setFiltro("paises");
         },
         save: async function(){
-            if(this.strNombre == "" || this.strApellido == "" || this.strTelefono == ""   || this.intPais == "" 
-                || this.intDepartamento == "" || this.intCiudad == "" || this.intRol ==""
-            ){
-                Swal.fire("Error","Todos los campos marcados con (*) son obligatorios","error");
-                return false;
-            }
-            if(this.strContrasena !=""){
-                if(this.strContrasena.length < 8){
-                    Swal.fire("Error","La contraseña debe tener al menos 8 caracteres","error");
-                    return false;
-            }
-            }
-            if(!fntEmailValidate(this.strCorreo) && this.strCorreo!=""){
-                Swal.fire("Error","El email es invalido","error");
-                return false;
-            }
             const formData = new FormData();
             formData.append("id",this.common.intId);
             formData.append("imagen",this.strImagen);
@@ -132,12 +129,20 @@ const App = {
             formData.append("direccion",this.strDireccion);
             formData.append("contrasena",this.strContrasena);
             formData.append("estado",this.intEstado);
+            formData.append("is_cliente",this.intCheckCliente ? 1 : 0);
+            formData.append("is_proveedor",this.intCheckProveedor ? 1 : 0);
+            formData.append("is_otro",this.intCheckOtro ? 1 : 0);
+            formData.append("indicativo",this.intTelefonoCodigo);
+            formData.append("digito_verificacion",this.strDv);
+            formData.append("tipo_documento",this.intTipoDocumento);
+            formData.append("tipo_regimen",this.intTipoRegimen);
+            formData.append("tipo_persona",this.intTipoPersona);
             formData.append("fecha",this.strFecha);
 
-            this.common.processing = true;
-            const response = await fetch(base_url+"/clientes/clientes/setUsuario",{method:"POST",body:formData});
+            //this.common.processing = true;
+            const response = await fetch(base_url+"/configuracion/terceros/setDatos",{method:"POST",body:formData});
             const objData = await response.json();
-            this.common.processing = false;
+            //this.common.processing = false;
             if(objData.status){
                 Swal.fire("Guardado!",objData.msg,"success");
                 if(this.intId == 0){
@@ -153,13 +158,21 @@ const App = {
                     this.strDireccion="";
                     this.strContrasena="";
                     this.intTipoDocumento="";
-                    this.intTelefonoCodigo="";
                     this.intEstado= 1;
+                    this.intCheckCliente=false;
+                    this.intCheckProveedor = false;
+                    this.intCheckOtro = false;
+                    this.intTelefonoCodigo="";
+                    this.strDv="";
+                    this.intTipoDocumento=13;
+                    this.intTipoRegimen=2;
+                    this.intTipoPersona=2;
                 }
                 this.common.showModalModule = false
                 this.search();
             }else{
               Swal.fire("Error",objData.msg,"error");
+              this.errores = objData.errores ? objData.errores : [];
             }
         },
         search:async function (page=1){
@@ -168,7 +181,7 @@ const App = {
             formData.append("page",this.common.intPage);
             formData.append("per_page",this.common.intPerPage);
             formData.append("search",this.common.strSearch);
-            const response = await fetch(base_url+"/clientes/clientes/getBuscar",{method:"POST",body:formData});
+            const response = await fetch(base_url+"/configuracion/terceros/getBuscar",{method:"POST",body:formData});
             const objData = await response.json();
             this.common.arrData = objData.data;
             this.common.intStartPage  = objData.start_page;
@@ -180,10 +193,9 @@ const App = {
         edit:async function(data){
           const formData = new FormData();
           formData.append("id",data.id);
-          const response = await fetch(base_url+"/clientes/clientes/getDatos",{method:"POST",body:formData});
+          const response = await fetch(base_url+"/configuracion/terceros/getDatos",{method:"POST",body:formData});
           const objData = await response.json();
           if(objData.status){
-                
                 this.strImgUrl= objData.data.url;
                 this.strNombre= objData.data.firstname;
                 this.strApellido= objData.data.lastname;
@@ -198,13 +210,20 @@ const App = {
                 this.strTelefono= objData.data.phone;
                 this.strDireccion= objData.data.address;
                 this.intTipoDocumento=objData.data.typeid;
-                this.intTelefonoCodigo = objData.data.phone_country;
+                //this.intTelefonoCodigo = objData.data.phonecode;
                 this.intEstado= objData.data.status;
                 this.intRol = objData.data.roleid;
                 this.strContrasena="";
+                this.intCheckCliente=objData.data.is_client;
+                this.intCheckProveedor =objData.data.is_supplier;
+                this.intCheckOtro =objData.data.is_other;
+                this.strDv=objData.data.dv;
+                this.intTipoDocumento=objData.data.identification_type;
+                this.intTipoRegimen=objData.data.regimen_type;
+                this.intTipoPersona=objData.data.person_type;
                 this.common.intId = objData.data.id;
                 this.common.showModalModule = true;
-                this.common.modulesTitle = "Editar usuario";
+                this.common.modulesTitle = "Editar tercero";
           }else{
                 Swal.fire("Error",objData.msg,"error");
           }
@@ -240,7 +259,7 @@ const App = {
               if(result.isConfirmed){
                   const formData = new FormData();
                   formData.append("id",data.id);
-                  const response = await fetch(base_url+"/clientes/clientes/delDatos",{method:"POST",body:formData});
+                  const response = await fetch(base_url+"/configuracion/terceros/delDatos",{method:"POST",body:formData});
                   const objData = await response.json();
                   if(objData.status){
                     Swal.fire("Eliminado!",objData.msg,"success");
@@ -253,6 +272,11 @@ const App = {
               }
           });
         },
+    },computed:{
+        getPhoneCode(){
+            const code = this.intPais;
+            return this.arrPaises.filter(function(e){return e.id == code})[0]['phonecode']
+        }
     }
 };
 const app = Vue.createApp(App);
