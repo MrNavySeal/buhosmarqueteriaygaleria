@@ -88,7 +88,7 @@
                                 <app-input label="Indicativo" type="phone" v-model="intTelefonoCodigo" disabled="disabled"></app-input>
                             </div>
                             <div class="col-md-9">
-                                <app-input label="Teléfono" type="phone" v-model="strTelefono" :errors="errores.telefono" required="true"></app-input>
+                                <app-input label="Teléfono" type="phone" v-model="strTelefono"></app-input>
                             </div>
                         </div>
                     </div>

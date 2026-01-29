@@ -22,16 +22,8 @@
 
         public function insertUsuario(array $data){
 			$return = 0;
-            $strDocumento = "";
-            $strCorreo ="";
-            if($data['documento'] != "222222222"){
-                $strDocumento = " OR identification = '{$this->strDocumento}'";
-            }
-            if($data['correo'] != "generico@generico.co"){
-                $strCorreo = " OR email = '{$this->strCorreo}'";
-            }
-
-            $sql= "SELECT * FROM person WHERE phone = '{$data['telefono']}' $strDocumento $strCorreo";
+            $sql= "SELECT * FROM person WHERE (identification = '$data[documento]' 
+            AND identification !='222222222') OR (email = '$data[correo]' AND email !='generico@generico.co')";
 			$request = $this->select_all($sql);
 			if(empty($request)){ 
 				$sql  = "INSERT INTO person(image,firstname,lastname,email,phone,address,countryid,
@@ -69,15 +61,8 @@
 
         public function updateUsuario(int $intId,array $data){
             $this->intId = $intId;
-            $strDocumento = "";
-            $strCorreo ="";
-            if($data['documento'] != "222222222"){
-                $strDocumento = " OR identification = '{$data['documento']}'";
-            }
-            if($data['correo'] != "generico@generico.co"){
-                $strCorreo = " OR email = '{$data['correo']}'";
-            }
-            $sql= "SELECT * FROM person WHERE  (phone = '$data[telefono]' $strDocumento $strCorreo) AND  idperson != $this->intId";
+            $sql= "SELECT * FROM person WHERE  idperson != $this->intId AND ((identification = '$data[documento]' 
+            AND identification !='222222222') OR (email = '$data[correo]' AND email !='generico@generico.co'))";
             $request = $this->select_all($sql);
             
 			if(empty($request)){
