@@ -90,9 +90,10 @@ export function createCommon() {
         categoryTitle:"Nueva categoría",
         subcategoryTitle:"Nueva subcategoría",
         productTitle:"Nuevo producto",
+        title:"",
         
         //Show Modals
-        showModal:"",
+        showModal:false,
         showModalModule:false,
         showModalCategory:false,
         showModalSubcategory:false,
