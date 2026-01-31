@@ -60,7 +60,7 @@
                                                                                     <p class="m-0" :class="auxiliar.status == 2 ? 'text-danger' : ''">{{auxiliar.name}}</p>
                                                                                 </div>
                                                                                 <div class="d-flex gap-2">
-                                                                                    <app-button  icon="new" btn="primary" @click="selectItem(cuenta,'cuentas')"></app-button>
+                                                                                    <app-button  icon="new" btn="primary" @click="selectItem(auxiliar,'cuentas')"></app-button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
