@@ -4,6 +4,7 @@ import AppInput from "../components/input.js";
 import AppSelect from "../components/select.js";
 import AppPagination from "../components/pagination.js"
 import AppButtonInput from "../components/button_input.js"
+import AppButtonSelect from "../components/button_select.js"
 import {createCommon} from "../components/variables.js";
 
 const App = {
@@ -11,6 +12,7 @@ const App = {
         "app-button":AppButton,
         "app-input":AppInput,
         "app-button-input":AppButtonInput,
+        "app-button-select":AppButtonSelect,
         "app-select":AppSelect,
         "app-pagination":AppPagination,
         "app-modal":AppModal
@@ -78,10 +80,10 @@ const App = {
             const formData = new FormData();
             formData.append("data",JSON.stringify(obj));
 
-            //this.common.processing = true;
+            this.common.processing = true;
             const response = await fetch(base_url+"/Contabilidad/ConceptosContables/setDatos",{method:"POST",body:formData});
             const objData = await response.json();
-            //this.common.processing = false;
+            this.common.processing = false;
             if(objData.status){
                 Swal.fire("Guardado!",objData.msg,"success");
                 if(this.common.intId == 0){

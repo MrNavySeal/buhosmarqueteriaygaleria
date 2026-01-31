@@ -1,10 +1,11 @@
 <?php
     class HelperAccounting{
         const TIPOS_CONCEPTOS = [
-            1=>["id"=>1,"name"=>"Ingreso"],
-            2=>["id"=>2,"name"=>"Gasto"],
+            1=>["id"=>1,"name"=>"Ingresos"],
+            2=>["id"=>2,"name"=>"Gastos"],
             3=>["id"=>3,"name"=>"Almacén"],
-            4=>["id"=>4,"name"=>"Retención"],
+            4=>["id"=>4,"name"=>"Retenciones"],
+            5=>["id"=>5,"name"=>"Impuestos"],
         ];
 
         public static function getAccounts($parent = 0,$search=""){

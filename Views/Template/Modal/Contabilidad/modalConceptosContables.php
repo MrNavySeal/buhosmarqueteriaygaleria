@@ -19,12 +19,6 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                <app-select label="Naturaleza"  v-model="objCuenta.nature" required="true">
-                    <option value="debito">Débito</option>
-                    <option value="credito">Crédito</option>
-                </app-select>
-            </div>
-            <div class="col-md-6">
                 <app-button-input title="Cuenta contable"
                 btn="primary" icon="new" 
                 v-model="objCuenta.name" 
@@ -33,10 +27,18 @@
                     <template #left>
                         <app-button icon="search" btn="primary" @click="cuentas.showModal = true;cuentas.modalType='cuentas';"></app-button>
                     </template>
+                </app-button-input>
+            </div>
+            <div class="col-md-6">
+                <app-button-select  label="naturaleza" placeholder="Seleccione" title="Naturaleza" v-model="objCuenta.nature">
+                    <template #options>
+                        <option value="debito">Débito</option>
+                        <option value="credito">Crédito</option>
+                    </template>
                     <template #right>
                         <app-button icon="new" btn="primary" @click="addItem()" title="agregar"></app-button>
                     </template>
-                </app-button-input>
+                </app-button-select>
             </div>
         </div>
         <ul class="m-0">
