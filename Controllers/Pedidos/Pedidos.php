@@ -14,6 +14,8 @@
                 $data['botones'] = [
                     "duplicar" => ["mostrar"=>true, "evento"=>"onclick","funcion"=>"mypop=window.open('".BASE_URL.$_SESSION['permitsModule']['route']."','','');mypop.focus();"],
                     "nuevo" => ["mostrar"=>$_SESSION['permitsModule']['w'], "evento"=>"onclick","funcion"=>"window.location.href='".BASE_URL."/pedidos/punto-venta/'"],
+                    "pdf" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportData('pdf')"],
+                    "excel" => ["mostrar"=>$_SESSION['permitsModule']['r'], "evento"=>"onclick","funcion"=>"exportData('excel')"],
                 ];
                 $data['page_tag'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
                 $data['page_title'] = implode(" | ",[$_SESSION['permitsModule']['option'],$_SESSION['permitsModule']['module']]);
@@ -25,6 +27,38 @@
                 die();
             }
         }
+
+        public function reportePedidos(){
+            if($_SESSION['permitsModule']['r']){
+                $data['total'] = floatval($_POST['total']);
+                $data['file_name'] = 'reporte_pedidos_'.rand()*10;
+                $data['file_title'] = "Pedidos";
+                $strSearch = strClean($_POST['search']);
+                $intPerPage = 1;
+                $intPageNow = 1;
+                $strInitialDate = strClean($_POST['initial_date']);
+                $strFinalDate = strClean($_POST['final_date']);
+                $strStatusOrder = strClean($_POST['status_order']);
+                $strStatusPayment = strClean($_POST['status_payment']);
+                $strType = strClean($_POST['type']);
+                $idPersona = "";
+                if($_SESSION['userData']['roleid'] == 2){
+                    $idPersona = $_SESSION['idUser'];
+                }
+
+                $request = $this->model->selectOrders($idPersona,$strSearch,$intPerPage,$intPageNow,$strInitialDate,$strFinalDate,$strStatusOrder,$strStatusPayment);
+                $data['data'] = $request['full_data'];
+                if($strType=="pdf"){
+                    $this->views->getView($this,"pedidos-pdf",$data);
+                }else{
+                    $this->views->getView($this,"pedidos-excel",$data);
+                }
+            }else{
+                header("location: ".base_url());
+                die();
+            }
+        }
+
         public function creditos(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -41,6 +75,7 @@
                 die();
             }
         }
+
         public function detalle(){
             if($_SESSION['permitsModule']['r']){
                 $data['botones'] = [
@@ -58,6 +93,7 @@
                 die();
             }
         }
+
         public function transaccion($idTransaction){
             if($_SESSION['permitsModule']['r']){
                 $idPerson ="";
@@ -81,6 +117,7 @@
                 die();
             }
         }
+
         public function pdf($params){
             if($_SESSION['permitsModule']['r']){
                 $data['page_title'] = " Factura de venta No. ".$params." | ".$_SESSION['permitsModule']['module'];
@@ -92,6 +129,7 @@
                 die();
             }
         }
+
         public function getOrders(){
             if($_SESSION['permitsModule']['r']){
                 $idPersona = "";
@@ -205,6 +243,7 @@
             }
             die();
         }
+
         public function getCreditOrders(){
             if($_SESSION['permitsModule']['r']){
                 $idPersona = "";
@@ -317,6 +356,7 @@
             }
             die();
         }
+
         public function getDetailOrders(){
             if($_SESSION['permitsModule']['r']){
                 $idPersona = "";
@@ -464,6 +504,7 @@
             }
             die();
         }
+
         public function getTransaction(string $idTransaction){
             if($_SESSION['permitsModule']['r'] && $_SESSION['userData']['roleid'] !=2){
                 $idTransaction = strClean($idTransaction);
@@ -477,6 +518,7 @@
             }
             die();
         }
+
         public function updateOrder(){
             if($_SESSION['permitsModule']['u']){
                 if($_POST){
@@ -517,6 +559,7 @@
             }
             die();
         }
+
         public function delOrder(){
             if($_SESSION['permitsModule']['d']){
                 if($_POST){

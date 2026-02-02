@@ -275,3 +275,19 @@ function openModal(type=""){
     }
 }
 
+function exportData(type){
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    addField("initial_date",initialDateHtml.value,"hidden",form);
+    addField("final_date",finallDateHtml.value,"hidden",form);
+    addField("status_payment",selectPago.value,"hidden",form);
+    addField("status_order",selectPedido.value,"hidden",form);
+    addField("type",type,"hidden",form);
+
+    form.target="_blank";
+    form.method="POST";
+    form.action=base_url+"/pedidos/reporte/";
+    form.submit();
+    form.remove();
+}
+
