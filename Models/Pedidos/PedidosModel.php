@@ -96,7 +96,7 @@
             FROM orderdata WHERE (idorder like '$strSearch%' OR idtransaction like '$strSearch%' OR name like '$strSearch%'
             OR identification like '$strSearch%' OR email like '$strSearch%' OR phone like '$strSearch%' OR amount like '$strSearch%'
             OR type like '$strSearch%') AND DATE(date) BETWEEN '$strInitialDate' AND '$strFinalDate' 
-            AND statusorder like '$strStatusOrder%' AND status like '$strStatusPayment%' $whre";    
+            AND statusorder like '$strStatusOrder%' AND status like '$strStatusPayment%' $whre ORDER BY idorder DESC";    
             $requestFull = $this->select_all($sqlTotal);
             $totalRecords = count($requestFull);
             $totalPages = $totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0;  
