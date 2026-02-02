@@ -50,17 +50,15 @@
             if($intPerPage != 0){
                 $limit = " LIMIT $intStartPage,$intPerPage";
             }
-            $sql = "SELECT * FROM accounting_concepts 
-            WHERE name like '$strSearch%' AND type like '$filterType%' 
-            ORDER BY id DESC $limit";  
+            $sql = "SELECT co.*, ty.name as type
+            FROM accounting_concepts co
+            INNER JOIN accounting_concept_types ty ON co.type = ty.id
+            WHERE co.name like '$strSearch%' AND co.type like '$filterType%' 
+            ORDER BY co.id DESC $limit";  
             $request = $this->select_all($sql);
 
             $sqlTotal = "SELECT count(*) as total FROM accounting_concepts 
             WHERE name like '$strSearch%' AND type like '$filterType%'";
-
-            foreach ($request as &$data) { 
-                $data['type'] = HelperAccounting::TIPOS_CONCEPTOS[$data['type']]['name'];
-            }
 
             $totalRecords = $this->select($sqlTotal)['total'];
             $totalPages = intval($totalRecords > 0 ? ceil($totalRecords/$intPerPage) : 0);
@@ -81,7 +79,7 @@
                 "total_pages"=>$totalPages,
                 "total_records"=>$totalRecords,
                 "buttons"=>$arrButtons,
-                "tipos"=>HelperAccounting::TIPOS_CONCEPTOS
+                "tipos"=>HelperAccounting::getConceptTypes()
             );
             return $arrData;
         }

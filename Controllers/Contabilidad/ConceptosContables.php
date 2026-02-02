@@ -32,7 +32,7 @@
             if($_SESSION['permitsModule']['r']){
                 $request = [
                     "cuentas"=>HelperAccounting::getAccounts(),
-                    "tipos"=>HelperAccounting::TIPOS_CONCEPTOS
+                    "tipos"=>HelperAccounting::getConceptTypes()
                 ];
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }
@@ -206,7 +206,7 @@
                             "status"=>true,
                             "data"=>$request,
                             "cuentas"=>HelperAccounting::getAccounts(),
-                            "tipos"=>HelperAccounting::TIPOS_CONCEPTOS
+                            "tipos"=>HelperAccounting::getConceptTypes()
                         );
                     }else{
                         $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 

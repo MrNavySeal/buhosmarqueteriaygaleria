@@ -1,13 +1,5 @@
 <?php
     class HelperAccounting{
-        const TIPOS_CONCEPTOS = [
-            1=>["id"=>1,"name"=>"Ingresos"],
-            2=>["id"=>2,"name"=>"Gastos"],
-            3=>["id"=>3,"name"=>"Almacén"],
-            4=>["id"=>4,"name"=>"Retenciones"],
-            5=>["id"=>5,"name"=>"Impuestos"],
-        ];
-
         public static function getAccounts($parent = 0,$search=""){
             $con = new Mysql();
             $accounts = [];
@@ -42,6 +34,13 @@
                 
             }
             return $accounts;
+        }
+
+        public static function getConceptTypes(){
+            $sql = "SELECT id,name FROM accounting_concept_types WHERE status = 1 ORDER BY name";
+            $con = new Mysql();
+            $request = $con->select_all($sql);
+            return $request;
         }
     }
 ?>
