@@ -61,6 +61,9 @@
     $router->setRoute("contabilidad/conceptos-contables/","Contabilidad/ConceptosContables/conceptos",false);
     $router->setRoute("contabilidad/tipo-conceptos/","Contabilidad/TipoConceptos/tipos",false);
 
+    //Tesoreria
+    $router->setRoute("tesoreria/retenciones/","Tesoreria/Retenciones/retenciones",false);
+
     //Configuracion
     $router->setRoute("configuracion/parametros/","Configuracion/Empresa/empresa",false);
     $router->setRoute("configuracion/envios/","Configuracion/Administracion/envios",false);
