@@ -82,8 +82,7 @@
         }
 
         public function selectDato($id){
-            $this->intId = $id;
-            $sql = "SELECT * FROM accounting_concept_types WHERE id = $this->intId";
+            $sql = "SELECT * FROM accounting_concept_types WHERE id = $id";
             $request = $this->select($sql);
             return $request;
         }

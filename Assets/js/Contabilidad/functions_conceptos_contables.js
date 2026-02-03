@@ -167,7 +167,7 @@ const App = {
           if(objData.status){
                 this.common.intId = objData.data.id;
                 this.common.showModal = true;
-                this.common.modulesTitle = "Editar concepto contable";
+                this.common.title = "Editar concepto contable";
                 this.strNombre = objData.data.name
                 this.intTipo = objData.data.type
                 this.intEstado = objData.data.status
