@@ -46,6 +46,7 @@ const App = {
             arrDetalle:[],
             arrCuentas:[],
             errores:[],
+            currentController:null
             
         };
     },mounted(){
