@@ -101,7 +101,7 @@
         $format .= print_r('</pre>');
         return $format;
     }
-    function formatNum(int $num,$divisa=true){
+    function formatNum($num,$divisa=true,$decimal = DEC,$millar = MIL){
         $companyData = getCompanyInfo();
         if($divisa){
             $code = $companyData['currency']['code'];
