@@ -3,7 +3,7 @@
         <app-input label="" type="hidden"  v-model="common.intId"></app-input>
         <div class="row">
             <div class="col-md-7">
-                <app-input label="Nombre" type="text" v-model="strNombre" required="true"></app-input>
+                <app-input label="Nombre" type="text" v-model="strNombre" :errors="errores.nombre" required="true"></app-input>
             </div>
             <div class="col-md-3">
                 <app-select label="Tipo"  v-model="strTipo">
@@ -52,6 +52,9 @@
                 </app-button-input>
             </div>
         </div>
+        <ul class="m-0">
+            <li class="text-danger" v-for="(data,index) in errores.conceptos">{{data}}<br></li>
+        </ul>
         <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
             <table class="table align-middle table-hover">
                 <thead>
@@ -63,17 +66,29 @@
                 </thead>
                 <tbody>
                     <tr v-for="(data,index) in arrDetalle" :key="index">
-                        <td data-title="Concepto"></td>
-                        <td data-title="Valor"></td>
+                        <td data-title="Concepto">{{data.name}}</td>
+                        <td data-title="Valor">
+                            <app-input v-if="strTipo == 'valor'" label="" type="text"  v-model="data.valor.valor_formato"
+                             @input="formatInputNumber(data.valor,'valor_formato','valor')">
+                            </app-input>
+                            <app-input v-else label="" type="text" v-model="data.porcentaje"></app-input>
+                        </td>
                         <td data-title="Opciones">
                             <div class="d-flex justify-content-center gap-2">
                                 <app-button  icon="delete" btn="danger" @click="delItem(data)"></app-button>
                             </div>
                         </td>
                     </tr>
+                    <tr class="fw-bold">
+                        <td class="text-end">Total</td>
+                        <td>{{totalValor}}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+        <ul class="m-0">
+            <li class="text-danger" v-for="(data,index) in errores.total">{{data}}<br></li>
+        </ul>
     </template>
     <template #footer>
         <app-button icon="save" @click="save()" btn="primary" title="Guardar" :disabled="common.processing" :processing="common.processing"></app-button>

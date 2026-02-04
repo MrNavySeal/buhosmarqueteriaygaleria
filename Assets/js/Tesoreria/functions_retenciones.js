@@ -23,12 +23,14 @@ const app = {
             concepto:createCommon(),
             errores:[],
             intEstado:1,
+            intPorcentaje:0,
+            intTotal:0,
+            intFiltroTipo:"",
             strTipo:"valor",
+            strNombre:"",
             objValor:{valor:0,valor_formato:formatNumber(0)},
             objConcepto:{name:""},
             arrDetalle:[],
-            intPorcentaje:0,
-            intFiltroTipo:"",
             arrTipos:[],
             currentController:null
         }
@@ -41,27 +43,37 @@ const app = {
             this.common.showModal = true;
             this.common.strName ="";
             this.common.intId =0;
-            this.intStatus = 1;
+            this.intEstado = 1;
             this.common.title = "Nueva retención";
         },
 
         save:async function(){
-            const formData = new FormData();
-            formData.append("nombre",this.common.strName);
-            formData.append("id",this.common.intId);
-            formData.append("estado",this.intStatus);
-            this.common.processing =true;
-            const response = await fetch(base_url+"/Contabilidad/TipoConceptos/setDatos",{method:"POST",body:formData});
+            const data = {
+                "tipo":this.strTipo,
+                "nombre":this.strNombre,
+                "estado":this.intEstado,
+                "detalle":this.arrDetalle,
+                "total":this.intTotal,
+                "id":this.common.intId
+            }
+            
+            //this.common.processing =true;
+            const response = await fetch(base_url+"/Tesoreria/Retenciones/setDatos",{method:"POST",body:JSON.stringify(data)});
             const objData = await response.json();
-            this.common.processing =false;
+            //this.common.processing =false;
             if(objData.status){
-                this.common.strName ="";
                 this.common.intId =0;
                 this.common.showModal = false;
+                this.objConcepto = {}
+                this.arrDetalle = [];
+                this.strNombre = "";
+                this.strTipo = "valor";
+                this.intEstado = 1;
                 this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
             }else{
                 Swal.fire("Error",objData.msg,"error");
+                this.errores = objData.errores ? objData.errores : [];
             }
         },
 
@@ -107,16 +119,39 @@ const app = {
 
         },
 
+        addItem:function(){
+            if(this.objConcepto.name == ""){
+                Swal.fire("Atención!","Debe seleccionar un concepto","warning");
+                return false;
+            }
+            const data = this.objConcepto;
+            const valid = this.arrDetalle.filter(function(e){return data.id == e.id});
+            if(valid.length > 0){
+                Swal.fire("Atención!","Este concepto ya fue agregado","warning");
+                return false;
+            }
+            data['valor'] = this.objValor;
+            data['porcentaje'] = this.intPorcentaje;
+            this.arrDetalle.push(JSON.parse(JSON.stringify(data)));
+        },
+
+        delItem:function(data){
+            const index = this.arrDetalle.findIndex(function(e){return e.id == data.id});
+            this.arrDetalle.splice(index,1);
+        },
+
         edit:async function(data){
             const formData = new FormData();
             formData.append("id",data.id);
-            const response = await fetch(base_url+"/Contabilidad/TipoConceptos/getDatos",{method:"POST",body:formData});
+            const response = await fetch(base_url+"/Tesoreria/Retenciones/getDatos",{method:"POST",body:formData});
             const objData = await response.json();
             if(objData.status){
-                this.common.strName =objData.data.name;
+                this.strNombre =objData.data.name;
                 this.common.intId = objData.data.id;
-                this.intStatus = objData.data.status;
-                this.common.modulesTitle = "Editar tipo de concepto";
+                this.intEstado = objData.data.status;
+                this.strTipo = objData.data.type;
+                this.arrDetalle = objData.data.detalle;
+                this.common.title = "Editar retención";
                 this.common.showModal = true;
             }else{
                 Swal.fire("Error",objData.msg,"error");
@@ -138,7 +173,7 @@ const app = {
                 if(result.isConfirmed){
                     const formData = new FormData();
                     formData.append("id",data.id);
-                    const response = await fetch(base_url+"/Contabilidad/TipoConceptos/delDatos",{method:"POST",body:formData});
+                    const response = await fetch(base_url+"/Tesoreria/Retenciones/delDatos",{method:"POST",body:formData});
                     const objData = await response.json();
                     if(objData.status){
                         Swal.fire("Eliminado!",objData.msg,"success");
@@ -153,10 +188,39 @@ const app = {
             
         },
 
+        selectItem:function(data,type=""){
+            this.objConcepto = data;
+            this.concepto.showModal = false;
+        },
+
         formatInputNumber(data,conFormato, sinFormato) {
             data[conFormato] = formatNumber(cleanFormatNumber(data[conFormato]));
             data[sinFormato] = cleanFormatNumber(data[conFormato]);
         },
+    },
+    computed:{
+        totalValor:function(){
+            let total = 0;
+            let tipo = this.strTipo;
+            this.arrDetalle.forEach(e => {
+                if(tipo=="valor"){
+                    total+=parseFloat(e.valor.valor);
+                }else{
+                    total+=parseFloat(e.porcentaje);
+                }
+            });
+            this.intTotal = total;
+            if(tipo == "porcentaje"){
+                if(total > 100 || total < 0){
+                    Swal.fire("Atención!","El porcentaje total no debe ser mayor a 100 o menor a 0","warning");
+                    return 0;
+                }
+                total = total+"%";
+            }else{
+                total = formatNumber(total);
+            }
+            return total;
+        }
     }
 };
 

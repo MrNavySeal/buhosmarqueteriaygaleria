@@ -52,8 +52,8 @@
                     if(empty($_POST)){
                         $arrResponse = array("status"=>false,"msg"=>"Error de datos");
                     }else{
-                        $idCategory = intval($_POST['id']);
-                        $request = $this->model->selectDato($idCategory);
+                        $id = intval($_POST['id']);
+                        $request = $this->model->selectDato($id);
                         if(!empty($request)){
                             $arrResponse = array("status"=>true,"data"=>$request);
                         }else{
@@ -68,27 +68,29 @@
 
         public function setDatos(){
             if($_SESSION['permitsModule']['r']){
-                if($_POST){
-                    $errores = validator()->validate([
-                        "nombre"=>"required",
-                    ])->getErrors();
+                $data = json_decode(file_get_contents("php://input"),true);
+                if(!empty($data)){
+                    $campos = [ "nombre"=>$data['nombre'], "tipo"=>$data['tipo'], "conceptos"=>$data['detalle'],"total"=>$data['total']];
+                    $validar = [ "nombre"=>"required", "tipo"=>"required", "conceptos"=>"required|array|min:1","total"=>"min:1"];
+                    if($data['tipo']=="porcentaje"){
+                        $validar['total'] = "min:1|max:100";
+                    }
+
+                    $errores = validator()->validate($validar,$campos)->getErrors();
 
                     if(!empty($errores)){
                         $arrResponse = ["status"=>false,"msg"=>"Por favor, revise los campos.","errores"=>$errores];
                     }else{ 
-                        $intId = intval($_POST['id']);
-                        $strNombre = ucwords(strClean($_POST['nombre']));
-                        $intEstado = intval($_POST['estado']);
-
+                        $intId = intval($data['id']);
                         if($intId == 0){
                             if($_SESSION['permitsModule']['w']){
                                 $option = 1;
-                                $request= $this->model->insertDatos($strNombre,$intEstado);
+                                $request= $this->model->insertDatos($data);
                             }
                         }else{
                             if($_SESSION['permitsModule']['u']){
                                 $option = 2;
-                                $request= $this->model->updateDatos($intId,$strNombre,$intEstado);
+                                $request= $this->model->updateDatos($data);
                             }
                         }
                         if(is_numeric($request) && $request > 0){
@@ -98,12 +100,14 @@
                                 $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
                             }
                         }else if($request == 'exist'){
-                            $arrResponse = array('status' => false, 'msg' => 'El tipo ya existe, pruebe con otro nombre.');		
+                            $arrResponse = array('status' => false, 'msg' => 'La retención ya existe, pruebe con otro nombre.');		
                         }else{
-                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.');
+                            $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.',"error"=>$request);
                         }
                     }
                     echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+                }else{
+                    $arrResponse = array("status"=>false,"msg"=>"No hay datos.");
                 }
             }
 			die();
@@ -116,8 +120,6 @@
                     $request = $this->model->deleteDatos($id);
                     if($request=="ok"){
                         $arrResponse = array("status"=>true,"msg"=>"Se ha eliminado.");
-                    }else if($request =="exist"){
-                        $arrResponse = array("status"=>false,"msg"=>"El tipo de concepto ya está siendo usado, no puede ser eliminado.");
                     }else{
                         $arrResponse = array("status"=>false,"msg"=>"No es posible eliminar, intenta de nuevo.");
                     }

@@ -23,6 +23,7 @@
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
+                <th>Tipo</th>
                 <th>Estado</th>
                 <th>Opciones</th>
             </tr>
@@ -31,6 +32,7 @@
             <tr v-for="(data,index) in common.arrData" :key="index">
                 <td data-title="Id">{{data.id}}</td>
                 <td data-title="Nombre">{{data.name}}</td>
+                <td data-title="Tipo">{{data.type}}</td>
                 <td data-title="Estado" class="text-center">
                     <span :class="data.status == '1' ? 'bg-success' : 'bg-danger'" class="badge text-white">
                         {{ data.status == '1' ? "Activo" : "Inactivo" }}
