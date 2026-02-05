@@ -44,6 +44,8 @@ const app = {
             this.common.strName ="";
             this.common.intId =0;
             this.intEstado = 1;
+            this.strNombre ="";
+            this.arrDetalle = [];
             this.common.title = "Nueva retención";
         },
 
