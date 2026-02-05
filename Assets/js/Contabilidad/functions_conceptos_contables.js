@@ -67,6 +67,8 @@ const App = {
             this.common.title = "Nuevo concepto contable";
             this.strNombre ="";
             this.intTipo="";
+            this.arrDetalle = [];
+            this.objCuenta = {id:"",code:"",name:"",nature:""};
         },
 
         save: async function(){
