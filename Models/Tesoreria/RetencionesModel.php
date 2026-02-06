@@ -15,8 +15,8 @@
                 $sql = "SELECT * FROM withholding WHERE name = ?";
                 $request = $this->select_all($sql,[$this->data['nombre']]);
                 if(empty($request)){
-                    $sql = "INSERT INTO withholding(name,type,status) VALUES(?,?,?)";
-                    $this->id = $this->insert($sql,[$this->data['nombre'],$this->data['tipo'],$this->data['estado']]);
+                    $sql = "INSERT INTO withholding(name,type,status,kind) VALUES(?,?,?,?)";
+                    $this->id = $this->insert($sql,[$this->data['nombre'],$this->data['tipo'],$this->data['estado'],$this->data['clase']]);
                     $return = $this->id;
                     $this->insertDatosDetalle();
                 }else{
@@ -49,8 +49,8 @@
                 $sql = "SELECT * FROM withholding WHERE name = ? AND id != ?";
                 $request = $this->select_all($sql,[$this->data['nombre'],$this->id]);
                 if(empty($request)){
-                    $sql = "UPDATE withholding SET name=?,type=?,status=? WHERE id = ?";
-                    $request = $this->update($sql,[$this->data['nombre'],$this->data['tipo'],$this->data['estado'],$this->id]);
+                    $sql = "UPDATE withholding SET name=?,type=?,status=?, kind=? WHERE id = ?";
+                    $request = $this->update($sql,[$this->data['nombre'],$this->data['tipo'],$this->data['estado'],$this->data['clase'],$this->id,]);
                     $this->insertDatosDetalle();
                 }else{
                     $request = "exist";
