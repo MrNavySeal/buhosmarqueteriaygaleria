@@ -62,6 +62,7 @@
     $router->setRoute("contabilidad/tipo-conceptos/","Contabilidad/TipoConceptos/tipos",false);
 
     //Tesoreria
+    $router->setRoute("tesoreria/ingresos-pagos/","Tesoreria/Retenciones/retenciones",false);
     $router->setRoute("tesoreria/retenciones/","Tesoreria/Retenciones/retenciones",false);
     $router->setRoute("tesoreria/formas-de-pago/","Tesoreria/FormaPago/formaPago",false);
 

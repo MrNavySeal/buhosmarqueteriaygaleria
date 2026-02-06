@@ -32,7 +32,8 @@ const app = {
             objConcepto:{name:""},
             arrDetalle:[],
             arrTipos:[],
-            currentController:null
+            currentController:null,
+            strClase:"retencion",
         }
     },
     mounted(){
@@ -52,6 +53,7 @@ const app = {
         save:async function(){
             const data = {
                 "tipo":this.strTipo,
+                "clase":this.strClase,
                 "nombre":this.strNombre,
                 "estado":this.intEstado,
                 "detalle":this.arrDetalle,
@@ -59,10 +61,10 @@ const app = {
                 "id":this.common.intId
             }
             
-            //this.common.processing =true;
+            this.common.processing =true;
             const response = await fetch(base_url+"/Tesoreria/Retenciones/setDatos",{method:"POST",body:JSON.stringify(data)});
             const objData = await response.json();
-            //this.common.processing =false;
+            this.common.processing =false;
             if(objData.status){
                 this.common.intId =0;
                 this.common.showModal = false;
@@ -152,6 +154,7 @@ const app = {
                 this.common.intId = objData.data.id;
                 this.intEstado = objData.data.status;
                 this.strTipo = objData.data.type;
+                this.strClase = objData.data.kind;
                 this.arrDetalle = objData.data.detalle;
                 this.common.title = "Editar retención";
                 this.common.showModal = true;

@@ -1,25 +1,31 @@
-<app-modal :title="common.title" id="modalTaxHolding" v-model="common.showModal" size="lg">
+<app-modal :title="common.title" id="modalTaxHolding" v-model="common.showModal" size="xl">
     <template #body>
         <app-input label="" type="hidden"  v-model="common.intId"></app-input>
         <div class="row">
-            <div class="col-md-7">
+            <div class="col-md-6">
                 <app-input label="Nombre" type="text" v-model="strNombre" :errors="errores.nombre" required="true"></app-input>
             </div>
-            <div class="col-md-3">
-                <app-select label="Tipo"  v-model="strTipo">
+            <div class="col-md-2">
+                <app-select label="Clase"  v-model="strClase" :errors="errores.clase">
+                    <option value="retencion">Retenciones/gastos</option>
+                    <option value="ingreso">Ingreso</option>
+                </app-select>
+            </div>
+            <div class="col-md-2">
+                <app-select label="Tipo"  v-model="strTipo" :errors="errores.tipo">
                     <option value="valor">Valor</option>
                     <option value="porcentaje">Porcentaje</option>
                 </app-select>
             </div>
             <div class="col-md-2">
-                <app-select label="Estado"  v-model="intEstado">
+                <app-select label="Estado"  v-model="intEstado" :errors="errores.estado">
                     <option value="1">Activo</option>
                     <option value="2">Inactivo</option>
                 </app-select>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-7">
+            <div class="col-md-6">
                 <app-button-input title="Concepto contable"
                 btn="primary" icon="new" 
                 v-model="objConcepto.name" 
@@ -30,7 +36,7 @@
                     </template>
                 </app-button-input>
             </div>
-            <div class="col-md-5" v-if="strTipo == 'valor'">
+            <div class="col-md-6" v-if="strTipo == 'valor'">
                 <app-button-input title="Valor"
                 btn="primary" icon="new" 
                 v-model="objValor.valor_formato"
@@ -41,7 +47,7 @@
                     </template>
                 </app-button-input>
             </div>
-            <div class="col-md-5" v-else>
+            <div class="col-md-6" v-else>
                 <app-button-input title="Porcentaje"
                 btn="primary" icon="new" 
                 v-model="intPorcentaje"
@@ -61,22 +67,23 @@
                     <tr>
                         <th>Concepto</th>
                         <th>Valor</th>
-                        <th>Opciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(data,index) in arrDetalle" :key="index">
                         <td data-title="Concepto">{{data.name}}</td>
                         <td data-title="Valor">
-                            <app-input v-if="strTipo == 'valor'" label="" type="text"  v-model="data.valor.valor_formato"
-                             @input="formatInputNumber(data.valor,'valor_formato','valor')">
-                            </app-input>
-                            <app-input v-else label="" type="text" v-model="data.porcentaje"></app-input>
-                        </td>
-                        <td data-title="Opciones">
-                            <div class="d-flex justify-content-center gap-2">
-                                <app-button  icon="delete" btn="danger" @click="delItem(data)"></app-button>
-                            </div>
+                            <app-button-input v-if="strTipo == 'valor'" title="" btn="primary" icon="new"  v-model="data.valor.valor_formato"
+                            @input="formatInputNumber(data.valor,'valor_formato','valor')" >
+                                <template #right>
+                                    <app-button  icon="delete" btn="danger" @click="delItem(data)"></app-button>
+                                </template>
+                            </app-button-input>
+                            <app-button-input v-else title="" btn="primary" icon="new"  v-model="data.porcentaje" >
+                                <template #right>
+                                    <app-button  icon="delete" btn="danger" @click="delItem(data)"></app-button>
+                                </template>
+                            </app-button-input>
                         </td>
                     </tr>
                     <tr class="fw-bold">

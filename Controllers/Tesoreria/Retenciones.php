@@ -70,10 +70,10 @@
             if($_SESSION['permitsModule']['r']){
                 $data = json_decode(file_get_contents("php://input"),true);
                 if(!empty($data)){
-                    $campos = [ "nombre"=>$data['nombre'], "tipo"=>$data['tipo'], "conceptos"=>$data['detalle'],"total"=>$data['total']];
-                    $validar = [ "nombre"=>"required", "tipo"=>"required", "conceptos"=>"required|array|min:1","total"=>"min:1"];
+                    $campos = [ "nombre"=>$data['nombre'], "tipo"=>$data['tipo'], "conceptos"=>$data['detalle'],"total"=>$data['total'],"clase"=>$data['clase'],];
+                    $validar = [ "nombre"=>"required", "tipo"=>"required", "conceptos"=>"required|array|min:1", "clase"=>"required","total"=>"min:0"];
                     if($data['tipo']=="porcentaje"){
-                        $validar['total'] = "min:1|max:100";
+                        $validar['total'] = "min:0|max:100";
                     }
 
                     $errores = validator()->validate($validar,$campos)->getErrors();
