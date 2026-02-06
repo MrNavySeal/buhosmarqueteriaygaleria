@@ -34,6 +34,7 @@ const app = {
             arrTipos:[],
             currentController:null,
             strClase:"retencion",
+            strFiltroClase:""
         }
     },
     mounted(){
@@ -108,6 +109,7 @@ const app = {
                 this.arrTipos = objData.tipos;
             }else{
                 this.common.intPage = page;
+                formData.append("filter_class",this.strFiltroClase);
                 formData.append("page",this.common.intPage);
                 formData.append("per_page",this.common.intPerPage);
                 formData.append("search",this.common.strSearch);

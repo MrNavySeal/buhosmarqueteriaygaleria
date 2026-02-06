@@ -35,11 +35,12 @@
                 $strSearch = strClean($_POST['search']);
                 $strType = strClean($_POST['type']);
                 $filterType = strClean($_POST['filter_type']);
+                $filterClass = strClean($_POST['filter_class']);
 
                 if($strType =="concepto"){
                     $request = HelperPagination::getConceptosContables($intPage,$intPerPage,$filterType,$strSearch);
                 }else{
-                    $request = $this->model->selectDatos($intPage,$intPerPage,$strSearch);
+                    $request = $this->model->selectDatos($intPage,$intPerPage,$strSearch,$filterClass);
                 }
                 echo json_encode($request,JSON_UNESCAPED_UNICODE);
             }

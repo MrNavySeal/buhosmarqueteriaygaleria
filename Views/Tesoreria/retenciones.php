@@ -4,7 +4,7 @@
     getModal("Paginacion/modalPaginacionConceptosContables");
 ?>
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <app-select label="Por página"  @change="search()" v-model="common.intPerPage">
             <option value="10" selected>10</option>
             <option value="25">25</option>
@@ -13,7 +13,14 @@
             <option value="1000">1000</option>
         </app-select>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-3">
+        <app-select label="Clase"  @change="search()" v-model="strFiltroClase" :errors="errores.clase">
+            <option value="">Todo</option>
+            <option value="retencion">Retenciones/gastos</option>
+            <option value="ingreso">Ingreso</option>
+        </app-select>
+    </div>
+    <div class="col-md-6">
         <app-input label="Buscar" @input="search()" v-model="common.strSearch"></app-input>
     </div>
 </div>

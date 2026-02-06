@@ -69,16 +69,17 @@
             return $request;
         }
 
-        public function selectDatos($intPage,$intPerPage,$strSearch){
+        public function selectDatos($intPage,$intPerPage,$strSearch,$strFilterClass=""){
             $limit ="";
             $intStartPage = ($intPage-1)*$intPerPage;
             if($intPerPage != 0){
                 $limit = " LIMIT $intStartPage,$intPerPage";
-            }    
-            $sql = "SELECT * FROM withholding WHERE name like '$strSearch%' ORDER BY id DESC $limit";  
+            }
+   
+            $sql = "SELECT * FROM withholding WHERE name like '$strSearch%' AND kind LIKE '$strFilterClass%' ORDER BY id DESC $limit";  
             $request = $this->select_all($sql);
 
-            $sqlTotal = "SELECT count(*) as total FROM withholding WHERE name like '$strSearch%' ORDER BY id";
+            $sqlTotal = "SELECT count(*) as total FROM withholding WHERE name like '$strSearch%' AND kind LIKE '$strFilterClass%' ORDER BY id";
 
             $totalRecords = $this->select($sqlTotal)['total'];
             $arrData = getCalcPages($totalRecords,$intPage,$intPerPage);
