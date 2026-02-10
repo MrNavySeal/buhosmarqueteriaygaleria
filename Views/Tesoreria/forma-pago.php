@@ -1,7 +1,7 @@
 <?php 
     headerAdmin($data);
-    getModal("Tesoreria/modalRetencion");
-    getModal("Paginacion/modalPaginacionConceptosContables");
+    getModal("Tesoreria/modalFormaPago");
+    getModal("Paginacion/modalPaginacionRetenciones");
 ?>
 <div class="row">
     <div class="col-md-4">
@@ -24,15 +24,19 @@
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Tipo</th>
+                <th>Relación</th>
+                <th>Ingreso/Pago</th>
                 <th>Estado</th>
                 <th>Opciones</th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="(data,index) in common.arrData" :key="index">
-                <td data-title="Id">{{data.id}}</td>
+                <td data-title="ID">{{data.id}}</td>
                 <td data-title="Nombre">{{data.name}}</td>
                 <td data-title="Tipo">{{data.type}}</td>
+                <td data-title="Relación">{{data.relation}}</td>
+                <td data-title="Ingreso/Pago">{{data.withholding}}</td>
                 <td data-title="Estado" class="text-center">
                     <span :class="data.status == '1' ? 'bg-success' : 'bg-danger'" class="badge text-white">
                         {{ data.status == '1' ? "Activo" : "Inactivo" }}
@@ -42,9 +46,6 @@
                     <div class="d-flex gap-2">
                         <?php if($_SESSION['permitsModule']['u']){ ?>
                         <app-button  icon="edit" btn="success" @click="edit(data)"></app-button>
-                        <?php } ?>
-                        <?php if($_SESSION['permitsModule']['d']){ ?>
-                        <app-button  icon="delete" btn="danger" @click="del(data)"></app-button>
                         <?php } ?>
                     </div>
                 </td>

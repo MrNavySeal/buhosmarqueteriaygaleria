@@ -28,6 +28,17 @@
         }
 
         /*************************Category methods*******************************/
+        public function getDatosIniciales(){
+            if($_SESSION['permitsModule']['r']){
+                $data = [
+                    "tipo_pago"=>HelperGeneral::TIPO_PAGO,
+                    "relacion_pago"=>HelperGeneral::RELACION_PAGO,
+                ];
+                echo json_encode($data,JSON_UNESCAPED_UNICODE);
+            }
+            die();
+        }
+
         public function getBuscar(){
             if($_SESSION['permitsModule']['r']){
                 $intPage = intval($_POST['page']);
@@ -36,8 +47,8 @@
                 $strType = strClean($_POST['type']);
                 $filterType = strClean($_POST['filter_type']);
 
-                if($strType =="concepto"){
-                    $request = HelperPagination::getConceptosContables($intPage,$intPerPage,$filterType,$strSearch);
+                if($strType =="retenciones"){
+                    $request = HelperPagination::getRetenciones($intPage,$intPerPage,$strSearch,$filterType);
                 }else{
                     $request = $this->model->selectDatos($intPage,$intPerPage,$strSearch);
                 }
@@ -55,7 +66,7 @@
                         $id = intval($_POST['id']);
                         $request = $this->model->selectDato($id);
                         if(!empty($request)){
-                            $arrResponse = array("status"=>true,"data"=>$request);
+                            $arrResponse = array("status"=>true,"data"=>$request,"tipo_pago"=>HelperGeneral::TIPO_PAGO,"relacion_pago"=>HelperGeneral::RELACION_PAGO);
                         }else{
                             $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
                         }
@@ -70,12 +81,8 @@
             if($_SESSION['permitsModule']['r']){
                 $data = json_decode(file_get_contents("php://input"),true);
                 if(!empty($data)){
-                    $campos = [ "nombre"=>$data['nombre'], "tipo"=>$data['tipo'], "conceptos"=>$data['detalle'],"total"=>$data['total']];
-                    $validar = [ "nombre"=>"required", "tipo"=>"required", "conceptos"=>"required|array|min:1","total"=>"min:1"];
-                    if($data['tipo']=="porcentaje"){
-                        $validar['total'] = "min:1|max:100";
-                    }
-
+                    $campos = [ "nombre"=>$data['nombre'], "tipo"=>$data['tipo'], "relacion"=>$data['relacion'],"ingreso"=>$data['ingreso']];
+                    $validar = [ "nombre"=>"required", "tipo"=>"required", "relacion"=>"required","ingreso"=>"required"];
                     $errores = validator()->validate($validar,$campos)->getErrors();
 
                     if(!empty($errores)){
@@ -100,7 +107,7 @@
                                 $arrResponse = array("status"=>true,"msg"=>"Datos actualizados.");
                             }
                         }else if($request == 'exist'){
-                            $arrResponse = array('status' => false, 'msg' => 'La retención ya existe, pruebe con otro nombre.');		
+                            $arrResponse = array('status' => false, 'msg' => 'La forma de pago ya existe, pruebe cambiano el nombre, tipo o relación.');		
                         }else{
                             $arrResponse = array("status" => false, "msg" => 'No es posible guardar los datos.',"error"=>$request);
                         }

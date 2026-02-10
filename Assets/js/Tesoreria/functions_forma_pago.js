@@ -20,18 +20,20 @@ const app = {
     data(){
         return {
             common:createCommon(),
-            concepto:createCommon(),
+            retenciones:createCommon(),
             errores:[],
             intEstado:1,
             intPorcentaje:0,
-            intTotal:0,
             intFiltroTipo:"",
-            strTipo:"valor",
+            intTipoRetencion:"",
+            strTipo:"",
             strNombre:"",
-            objValor:{valor:0,valor_formato:formatNumber(0)},
-            objConcepto:{name:""},
+            objRetencion:{name:""},
+            objIngreso:{name:""},
             arrDetalle:[],
             arrTipos:[],
+            arrRelaciones:[],
+            strRelacion:"",
             currentController:null
         }
     },
@@ -39,35 +41,50 @@ const app = {
         this.search();
     },
     methods:{
+        getData:async function(){
+            const response = await fetch(base_url+"/Tesoreria/FormaPago/getDatosIniciales");
+            const objData = await response.json();
+            this.arrTipos = objData.tipo_pago;
+            this.arrRelaciones = objData.relacion_pago;
+        },
+
         openModal:function(){
+            this.getData();
             this.common.showModal = true;
             this.common.strName ="";
             this.common.intId =0;
             this.intEstado = 1;
-            this.common.title = "Nueva retención";
+            this.objIngreso = {}
+            this.arrDetalle = [];
+            this.strNombre = "";
+            this.strTipo = "";
+            this.strRelacion = "";
+            this.common.title = "Nueva forma de pago";
         },
 
         save:async function(){
             const data = {
                 "tipo":this.strTipo,
+                "relacion":this.strRelacion,
                 "nombre":this.strNombre,
                 "estado":this.intEstado,
                 "detalle":this.arrDetalle,
-                "total":this.intTotal,
+                "ingreso":this.objIngreso.id,
                 "id":this.common.intId
             }
             
             //this.common.processing =true;
-            const response = await fetch(base_url+"/Tesoreria/Retenciones/setDatos",{method:"POST",body:JSON.stringify(data)});
+            const response = await fetch(base_url+"/Tesoreria/FormaPago/setDatos",{method:"POST",body:JSON.stringify(data)});
             const objData = await response.json();
             //this.common.processing =false;
             if(objData.status){
                 this.common.intId =0;
                 this.common.showModal = false;
-                this.objConcepto = {}
+                this.objIngreso = {}
                 this.arrDetalle = [];
                 this.strNombre = "";
-                this.strTipo = "valor";
+                this.strTipo = "";
+                this.strRelacion = "";
                 this.intEstado = 1;
                 this.search(this.common.intPage);
                 Swal.fire("Guardado",objData.msg,"success");
@@ -86,28 +103,27 @@ const app = {
             const { signal } = this.currentController;
 
             const formData = new FormData();
-            if(type=="concepto"){
-                this.concepto.intPage = page;
+            if(type=="retenciones"){
+                this.retenciones.intPage = page;
                 formData.append("type",type);
                 formData.append("filter_type",this.intFiltroTipo);
-                formData.append("page",this.concepto.intPage);
-                formData.append("per_page",this.concepto.intPerPage);
-                formData.append("search",this.concepto.strSearch);
-                const response = await fetch(base_url+"/Tesoreria/Retenciones/getBuscar",{method:"POST",body:formData,signal});
+                formData.append("page",this.retenciones.intPage);
+                formData.append("per_page",this.retenciones.intPerPage);
+                formData.append("search",this.retenciones.strSearch);
+                const response = await fetch(base_url+"/Tesoreria/FormaPago/getBuscar",{method:"POST",body:formData,signal});
                 const objData = await response.json();
-                this.concepto.arrData = objData.data;
-                this.concepto.intStartPage  = objData.start_page;
-                this.concepto.intTotalButtons = objData.limit_page;
-                this.concepto.intTotalPages = objData.total_pages;
-                this.concepto.intTotalResults = objData.total_records;
-                this.concepto.arrButtons = objData.buttons;
-                this.arrTipos = objData.tipos;
+                this.retenciones.arrData = objData.data;
+                this.retenciones.intStartPage  = objData.start_page;
+                this.retenciones.intTotalButtons = objData.limit_page;
+                this.retenciones.intTotalPages = objData.total_pages;
+                this.retenciones.intTotalResults = objData.total_records;
+                this.retenciones.arrButtons = objData.buttons;
             }else{
                 this.common.intPage = page;
                 formData.append("page",this.common.intPage);
                 formData.append("per_page",this.common.intPerPage);
                 formData.append("search",this.common.strSearch);
-                const response = await fetch(base_url+"/Tesoreria/Retenciones/getBuscar",{method:"POST",body:formData,signal});
+                const response = await fetch(base_url+"/Tesoreria/FormaPago/getBuscar",{method:"POST",body:formData,signal});
                 const objData = await response.json();
                 this.common.arrData = objData.data;
                 this.common.intStartPage  = objData.start_page;
@@ -116,22 +132,19 @@ const app = {
                 this.common.intTotalResults = objData.total_records;
                 this.common.arrButtons = objData.buttons;
             }
-
         },
 
         addItem:function(){
-            if(this.objConcepto.name == ""){
-                Swal.fire("Atención!","Debe seleccionar un concepto","warning");
+            if(this.objRetencion.name == ""){
+                Swal.fire("Atención!","Debe seleccionar un descuento","warning");
                 return false;
             }
-            const data = this.objConcepto;
+            const data = this.objRetencion;
             const valid = this.arrDetalle.filter(function(e){return data.id == e.id});
             if(valid.length > 0){
-                Swal.fire("Atención!","Este concepto ya fue agregado","warning");
+                Swal.fire("Atención!","Este descuento ya fue agregado","warning");
                 return false;
             }
-            data['valor'] = this.objValor;
-            data['porcentaje'] = this.intPorcentaje;
             this.arrDetalle.push(JSON.parse(JSON.stringify(data)));
         },
 
@@ -143,15 +156,19 @@ const app = {
         edit:async function(data){
             const formData = new FormData();
             formData.append("id",data.id);
-            const response = await fetch(base_url+"/Tesoreria/Retenciones/getDatos",{method:"POST",body:formData});
+            const response = await fetch(base_url+"/Tesoreria/FormaPago/getDatos",{method:"POST",body:formData});
             const objData = await response.json();
             if(objData.status){
                 this.strNombre =objData.data.name;
                 this.common.intId = objData.data.id;
                 this.intEstado = objData.data.status;
                 this.strTipo = objData.data.type;
+                this.strRelacion = objData.data.relation;
+                this.objIngreso = {name:objData.data.withholding,id:objData.data.withholding_id}
                 this.arrDetalle = objData.data.detalle;
-                this.common.title = "Editar retención";
+                this.arrTipos = objData.tipo_pago;
+                this.arrRelaciones = objData.relacion_pago;
+                this.common.title = "Editar forma de pago";
                 this.common.showModal = true;
             }else{
                 Swal.fire("Error",objData.msg,"error");
@@ -173,7 +190,7 @@ const app = {
                 if(result.isConfirmed){
                     const formData = new FormData();
                     formData.append("id",data.id);
-                    const response = await fetch(base_url+"/Tesoreria/Retenciones/delDatos",{method:"POST",body:formData});
+                    const response = await fetch(base_url+"/Tesoreria/FormaPago/delDatos",{method:"POST",body:formData});
                     const objData = await response.json();
                     if(objData.status){
                         Swal.fire("Eliminado!",objData.msg,"success");
@@ -189,42 +206,16 @@ const app = {
         },
 
         selectItem:function(data,type=""){
-            this.objConcepto = data;
-            this.concepto.showModal = false;
+            if(this.intTipoRetencion == "retencion"){
+                this.objRetencion = data;
+            }else{
+                this.objIngreso = data;
+            }
+            this.retenciones.showModal = false;
         },
 
-        formatInputNumber(data,conFormato, sinFormato) {
-            data[conFormato] = formatNumber(cleanFormatNumber(data[conFormato]));
-            data[sinFormato] = cleanFormatNumber(data[conFormato]);
-        },
-    },
-    computed:{
-        totalValor:function(){
-            let total = 0;
-            let tipo = this.strTipo;
-            this.arrDetalle.forEach(e => {
-                if(tipo=="valor"){
-                    total+=parseFloat(e.valor.valor);
-                }else{
-                    total+=parseFloat(e.porcentaje);
-                }
-            });
-            this.intTotal = total;
-            if(tipo == "porcentaje"){
-                if(total > 100 || total < 0){
-                    Swal.fire("Atención!","El porcentaje total no debe ser mayor a 100 o menor a 0","warning");
-                    return 0;
-                }
-                total = total+"%";
-            }else{
-                total = formatNumber(total);
-            }
-            return total;
-        }
     }
 };
 
 const App = Vue.createApp(app);
-App.config.globalProperties.$formatNumber = formatNumber;
-App.config.globalProperties.$cleanFormatNumber = cleanFormatNumber;
 App.mount("#app");
