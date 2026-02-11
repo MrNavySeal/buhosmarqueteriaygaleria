@@ -46,6 +46,10 @@
     $router->setRoute("pedidos/factura/","Pedidos/Pedidos/pdf");
     $router->setRoute("pedidos/reporte/","Pedidos/Pedidos/reportePedidos",false);
 
+    //Ventas
+    $router->setRoute("ventas/sucursales/","Ventas/Sucursales/sucursales",false);
+    $router->setRoute("ventas/cajas/","Ventas/Cajas/cajas",false);
+
     //Compras
     $router->setRoute("compras/","Compras/Compras/compras",false);
     $router->setRoute("compras/nueva-compra/","Compras/Compras/compra",false);

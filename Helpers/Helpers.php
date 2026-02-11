@@ -665,7 +665,7 @@
     }
     function getPaises(){
         $con = new Mysql();
-        $request = $con->select_all("SELECT * FROM countries ORDER BY name");
+        $request = $con->select_all("SELECT * FROM countries WHERE id = 47 ORDER BY name");
         return $request;
     }
     function getDepartamentos(int $id){
