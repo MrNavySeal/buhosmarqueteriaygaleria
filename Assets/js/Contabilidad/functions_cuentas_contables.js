@@ -54,8 +54,10 @@ const App = {
             const formData = new FormData();
             this.objAccount['status'] = this.common.intStatus;
             formData.append("account",JSON.stringify(this.objAccount));
+            this.common.processing =true;
             const response = await fetch(base_url+"/Contabilidad/CuentasContables/setDatos",{method:"POST",body:formData});
             const objData = await response.json();
+            this.common.processing =false;
             this.errors = {};
             if(objData.status){
                 this.common.showModalModule = false;

@@ -78,10 +78,10 @@ const App = {
                 "estado":this.intEstado,
             }
 
-            //this.common.processing =true;
+            this.common.processing =true;
             const response = await fetch(base_url+"/Ventas/Sucursales/setDatos",{method:"POST",body:JSON.stringify(obj)});
             const objData = await response.json();
-            //this.common.processing =false;
+            this.common.processing =false;
             if(objData.status){
                 this.common.strName ="";
                 this.common.intId =0;
