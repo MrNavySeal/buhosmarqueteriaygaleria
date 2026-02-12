@@ -1,6 +1,6 @@
 <app-modal title="Buscar cuentas contables" id="modalCatalogoPuc" v-model="cuentas.showModal" size="lg">
     <template #body>
-        <app-input label="Buscar" @input="search()" v-model="cuentas.strSearch"></app-input>
+        <app-input label="Buscar" @input="search(1,'cuentas')" v-model="cuentas.strSearch"></app-input>
         <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
             <div class="accordion" id="accordionClase">
                 <div class="accordion-item" v-for="(clase,i) in arrCuentas" :key="i">
