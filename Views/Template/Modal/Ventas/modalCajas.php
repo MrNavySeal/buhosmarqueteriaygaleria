@@ -69,10 +69,10 @@
                         <app-input :label="metodo.nombre" :title="metodo.nombre" type="switch" v-model="metodo.checked"></app-input>
                     </div>
                     <div class="col-sm-8 d-flex align-items-center" v-if="metodo.checked">
-                        <app-multiselect tag="tipos" class="w-100" title="" format="-" :values="['id']"  :showup="['name']" 
+                        <app-multiselect :tag="metodo.nombre+index" class="w-100" title="" format="-" :values="['id']"  :showup="['name']" 
                             :options="metodo.formas"  v-model="metodo.seleccionados">
                             <template v-slot="{options}">
-                                <app-multiselect-option v-for="(data,index) in options"  :key="index"  :checked="data.is_checked" :tag="'tipos'+index" :data="data">
+                                <app-multiselect-option v-for="(data,j) in options"  :key="j"  :checked="data.is_checked" :tag="metodo.nombre+j" :data="data">
                                     {{data.name}}
                                 </app-multiselect-option>
                             </template>
