@@ -171,7 +171,7 @@
             LEFT JOIN states st ON p.stateid = st.id
             LEFT JOIN cities ci ON p.cityid = ci.id
             LEFT JOIN role r ON r.idrole = p.roleid 
-            WHERE p.roleid != 2 AND p.idperson != 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
+            WHERE p.is_user = 1 AND p.idperson != 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
             OR p.address like '$strSearch%' OR co.name like '$strSearch%' OR st.name like '$strSearch%' 
             OR ci.name like '$strSearch%') 
             ORDER BY p.idperson DESC $limit";  
@@ -182,7 +182,7 @@
             LEFT JOIN states st ON p.stateid = st.id
             LEFT JOIN cities ci ON p.cityid = ci.id
             LEFT JOIN role r ON r.idrole = p.roleid 
-            WHERE p.roleid != 2 AND p.idperson != 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
+            WHERE p.is_user = 1 AND p.idperson != 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
             OR p.address like '$strSearch%' OR co.name like '$strSearch%' OR st.name like '$strSearch%' 
             OR ci.name like '$strSearch%') 
             ORDER BY p.idperson";

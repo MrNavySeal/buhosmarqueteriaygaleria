@@ -135,7 +135,7 @@
         }
 
         public function selectCustomers(){
-            $sql = "SELECT *,CONCAT(firstname,' ',lastname) as name FROM person WHERE roleid=2 AND status = 1 ORDER BY idperson DESC";
+            $sql = "SELECT *,CONCAT(firstname,' ',lastname) as name FROM person WHERE is_client=1 AND status = 1 ORDER BY idperson DESC";
             $request = $this->select_all($sql);
             return $request;
         }
