@@ -62,6 +62,7 @@ const App = {
             intCheckCliente:false,
             intCheckProveedor:false,
             intCheckOtro:false,
+            intCheckUsuario:false,
         };
     },mounted(){
         this.search();
@@ -132,6 +133,7 @@ const App = {
             formData.append("is_cliente",this.intCheckCliente ? 1 : 0);
             formData.append("is_proveedor",this.intCheckProveedor ? 1 : 0);
             formData.append("is_otro",this.intCheckOtro ? 1 : 0);
+            formData.append("is_usuario",this.intCheckUsuario ? 1 : 0);
             formData.append("indicativo",this.intTelefonoCodigo);
             formData.append("digito_verificacion",this.strDv);
             formData.append("tipo_documento",this.intTipoDocumento);
@@ -175,6 +177,7 @@ const App = {
               this.errores = objData.errores ? objData.errores : [];
             }
         },
+
         search:async function (page=1){
             this.common.intPage = page;
             const formData = new FormData();
@@ -190,6 +193,7 @@ const App = {
             this.common.intTotalResults = objData.total_records;
             this.common.arrButtons = objData.buttons;
         },
+
         edit:async function(data){
           const formData = new FormData();
           formData.append("id",data.id);
@@ -203,24 +207,26 @@ const App = {
                 this.strCorreo= objData.data.email;
                 this.intPais= objData.data.countryid;
                 this.strFecha = objData.data.date;
-                await this.setFiltro("paises");
                 this.intDepartamento= objData.data.stateid,
-                await this.setFiltro("departamentos");
                 this.intCiudad= objData.data.cityid;
                 this.strTelefono= objData.data.phone;
                 this.strDireccion= objData.data.address;
                 this.intTipoDocumento=objData.data.typeid;
-                //this.intTelefonoCodigo = objData.data.phonecode;
                 this.intEstado= objData.data.status;
                 this.intRol = objData.data.roleid;
                 this.strContrasena="";
                 this.intCheckCliente=objData.data.is_client;
                 this.intCheckProveedor =objData.data.is_supplier;
                 this.intCheckOtro =objData.data.is_other;
+                this.intCheckUsuario = objData.data.is_user;
                 this.strDv=objData.data.dv;
                 this.intTipoDocumento=objData.data.identification_type;
                 this.intTipoRegimen=objData.data.regimen_type;
                 this.intTipoPersona=objData.data.person_type;
+                this.arrDepartamentos = objData.departamentos;
+                this.arrCiudades = objData.ciudades;
+                this.arrPaises = objData.paises;
+                this.intTelefonoCodigo = this.getPhoneCode;
                 this.common.intId = objData.data.id;
                 this.common.showModalModule = true;
                 this.common.modulesTitle = "Editar tercero";
@@ -228,11 +234,13 @@ const App = {
                 Swal.fire("Error",objData.msg,"error");
           }
         },
+
         openBotones:function(tipo,dato){ 
             if(tipo == "correo")window.open('mailto:'+dato);
             if(tipo == "llamar")window.open('tel:'+dato);
             if(tipo == "wpp")window.open('https://wa.me/'+dato);
         },
+
         uploadImagen:function(e){
             this.strImagen = e.target.files[0];
             let type = this.strImagen.type;
@@ -244,6 +252,7 @@ const App = {
                 this.strImgUrl = route;
             }
         },
+
         del:function(data){
             const objVue = this;
             Swal.fire({
@@ -272,6 +281,7 @@ const App = {
               }
           });
         },
+
     },computed:{
         getPhoneCode(){
             const code = this.intPais;

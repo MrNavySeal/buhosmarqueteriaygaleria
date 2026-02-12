@@ -79,6 +79,7 @@
                             "is_cliente"=>intval($_POST['is_cliente']),
                             "is_proveedor"=>intval($_POST['is_proveedor']),
                             "is_otro"=>intval($_POST['is_otro']),
+                            "is_usuario"=>intval($_POST['is_usuario']),
                             "digito_verificacion"=>strClean($_POST['digito_verificacion'])
                         ];
                         $request = "";
@@ -168,7 +169,13 @@
                     $request = $this->model->selectUsuario($intId);
                     if(!empty($request)){
                         if(isset($request['image'])){$request['url'] = media()."/images/uploads/".$request['image'];}
-                        $arrResponse = array("status"=>true,"data"=>$request);
+                        $arrResponse = array(
+                            "status"=>true,
+                            "data"=>$request,
+                            "departamentos"=>getDepartamentos($request['countryid']),
+                            "ciudades"=>getCiudades($request['stateid']),
+                            "paises"=>getPaises(),
+                        );
                     }else{
                         $arrResponse = array("status"=>false,"msg"=>"Error, intenta de nuevo"); 
                     }

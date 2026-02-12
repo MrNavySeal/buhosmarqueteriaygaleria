@@ -1,20 +1,7 @@
 <?php 
     class TercerosModel extends Mysql{
         private $intId;
-        private $strNombre; 
-        private $strApellido;
-        private $intTelefono;
-        private $strCorreo; 
-        private $strDireccion; 
-        private $intPais;
-        private $intDepartamento;
-        private $intCiudad;
         private $strContrasena;
-        private $intEstado;
-        private $strDocumento;
-        private $intRolId;
-        private $strImagenNombre;
-        private $strFecha;
 
         public function __construct(){
             parent::__construct();
@@ -28,7 +15,7 @@
 			if(empty($request)){ 
 				$sql  = "INSERT INTO person(image,firstname,lastname,email,phone,address,countryid,
                 stateid,cityid,identification,password,status,roleid,date,is_client,is_supplier,is_other,dv,
-                person_type,identification_type,regimen_type) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                person_type,identification_type,regimen_type,is_user) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	        	$arrData = array(
                     $data['imagen'],
                     $data['nombre'],
@@ -51,6 +38,7 @@
                     $data['tipo_persona'],
                     $data['tipo_documento'],
                     $data['tipo_regimen'],
+                    $data['is_usuario'],
         		);
 	        	$return = $this->insert($sql,$arrData);
 			}else{
@@ -69,7 +57,7 @@
 				if($this->strContrasena  != ""){
 					$sql = "UPDATE person SET image=?,firstname=?,lastname=?,email=?,phone=?,address=?,countryid=?,
                     stateid=?,cityid=?,identification=?,password=?,status=?,roleid=?,date=?,is_client=?,is_supplier=?,is_other=?,dv=?,
-                    person_type=?,identification_type=?,regimen_type=? WHERE idperson = $this->intId";
+                    person_type=?,identification_type=?,regimen_type=?,is_user=? WHERE idperson = $this->intId";
 					$arrData = array(
                         $data['imagen'],
                         $data['nombre'],
@@ -92,11 +80,12 @@
                         $data['tipo_persona'],
                         $data['tipo_documento'],
                         $data['tipo_regimen'],
+                        $data['is_usuario'],
                     );
 				}else{
 					$sql = "UPDATE person SET image=?,firstname=?,lastname=?,email=?,phone=?,address=?,countryid=?,
                     stateid=?,cityid=?,identification=?,status=?,roleid=?,date=?,is_client=?,is_supplier=?,is_other=?,dv=?,
-                    person_type=?,identification_type=?,regimen_type=? WHERE idperson = $this->intId";
+                    person_type=?,identification_type=?,regimen_type=?,is_user=? WHERE idperson = $this->intId";
 					$arrData = array(
                         $data['imagen'],
                         $data['nombre'],
@@ -118,6 +107,7 @@
                         $data['tipo_persona'],
                         $data['tipo_documento'],
                         $data['tipo_regimen'],
+                        $data['is_usuario'],
                     );
 				}
 				$request = $this->update($sql,$arrData);
@@ -142,8 +132,6 @@
             co.name as pais,
             st.name as departamento,
             ci.name as ciudad,
-            r.name as role,
-            p.roleid,
             p.phone as telefono,
             CONCAT(p.firstname,' ',p.lastname) as nombre,
             p.address as direccion
@@ -151,8 +139,7 @@
             LEFT JOIN countries co ON p.countryid = co.id
             LEFT JOIN states st ON p.stateid = st.id
             LEFT JOIN cities ci ON p.cityid = ci.id
-            LEFT JOIN role r ON r.idrole = p.roleid 
-            WHERE p.roleid = 2 AND p.idperson != 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
+            WHERE p.idperson != 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
             OR p.address like '$strSearch%' OR co.name like '$strSearch%' OR st.name like '$strSearch%' 
             OR ci.name like '$strSearch%') 
             ORDER BY p.idperson DESC $limit";  
@@ -162,8 +149,7 @@
             LEFT JOIN countries co ON p.countryid = co.id
             LEFT JOIN states st ON p.stateid = st.id
             LEFT JOIN cities ci ON p.cityid = ci.id
-            LEFT JOIN role r ON r.idrole = p.roleid 
-            WHERE p.roleid = 2 AND p.idperson != 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
+            WHERE p.idperson != 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
             OR p.address like '$strSearch%' OR co.name like '$strSearch%' OR st.name like '$strSearch%' 
             OR ci.name like '$strSearch%') 
             ORDER BY p.idperson";

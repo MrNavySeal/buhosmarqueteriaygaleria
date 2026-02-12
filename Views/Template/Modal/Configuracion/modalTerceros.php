@@ -101,14 +101,17 @@
                 <div class="row">
                     <h5>Tipo de tercero</h5>
                     <p class="text-secondary">Puede seleccionar uno o varios</p>
-                    <div class="col-md-4">
-                        <app-input label="checkCliente"  title="Seleccione si el tercero es un cliente" type="switch" v-model="intCheckCliente"></app-input>
+                    <div class="col-md-3">
+                        <app-input label="checkCliente"  title="Seleccione si es un cliente" type="switch" v-model="intCheckCliente"></app-input>
                     </div>
-                    <div class="col-md-4">
-                        <app-input label="checkProveedor"  title="Seleccione si el tercero es un proveedor" type="switch" v-model="intCheckProveedor"></app-input>
+                    <div class="col-md-3">
+                        <app-input label="checkProveedor"  title="Seleccione si es un proveedor" type="switch" v-model="intCheckProveedor"></app-input>
                     </div>
-                    <div class="col-md-4">
-                        <app-input label="checkOtro"  title="Seleccione si el tercero es otra entidad" type="switch" v-model="intCheckOtro"></app-input>
+                    <div class="col-md-3">
+                        <app-input label="checkUsuario"  title="Seleccione si es un usuario" type="switch" v-model="intCheckUsuario"></app-input>
+                    </div>
+                    <div class="col-md-3">
+                        <app-input label="checkOtro"  title="Seleccione si es otra entidad" type="switch" v-model="intCheckOtro"></app-input>
                     </div>
                 </div>
                 <app-select label="Estado"  v-model="intEstado">
