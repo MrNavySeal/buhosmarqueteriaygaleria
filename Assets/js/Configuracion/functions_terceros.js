@@ -227,6 +227,7 @@ const App = {
                 this.arrCiudades = objData.ciudades;
                 this.arrPaises = objData.paises;
                 this.intTelefonoCodigo = this.getPhoneCode;
+                this.errores = [];
                 this.common.intId = objData.data.id;
                 this.common.showModalModule = true;
                 this.common.modulesTitle = "Editar tercero";

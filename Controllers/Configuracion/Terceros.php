@@ -57,6 +57,11 @@
                         "tipo_regimen"=>"required; tipo de regimen",
                         "tipo_persona"=>"required; tipo de persona",
                     ])->getErrors();
+                    
+                    if(!array_any([$_POST['is_cliente'], $_POST['is_proveedor'], $_POST['is_otro'], $_POST['is_usuario']],
+                        function($e){return $e;})){
+                            $errores['tipo_tercero'] = ["Debe marcar al menos un tipo de tercero"];
+                    }
                     if(empty($errores)){
                         $intId = intval($_POST['id']);
                         $data = [

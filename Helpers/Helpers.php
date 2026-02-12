@@ -1010,4 +1010,22 @@
         return $data;
     }
 
+    function array_every(array $arr, callable $callback){
+        foreach ($arr as $e) {
+            if(!$callback($e)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function array_any(array $arr, callable $callback){
+        foreach ($arr as $e) {
+            if($callback($e)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 ?>

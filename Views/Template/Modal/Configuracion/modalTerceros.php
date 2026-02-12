@@ -114,6 +114,9 @@
                         <app-input label="checkOtro"  title="Seleccione si es otra entidad" type="switch" v-model="intCheckOtro"></app-input>
                     </div>
                 </div>
+                <ul class="m-0">
+                    <li class="text-danger" v-for="(data,index) in errores.tipo_tercero">{{data}}<br></li>
+                </ul>
                 <app-select label="Estado"  v-model="intEstado">
                     <option value="1">Activo</option>
                     <option value="2">Inactivo</option>
