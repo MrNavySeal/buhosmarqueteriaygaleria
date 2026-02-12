@@ -6,7 +6,7 @@
                 <app-input label="Nombre" type="text" v-model="strNombre" :errors="errores.nombre" required="true"></app-input>
             </div>
             <div class="col-md-3">
-                <app-select label="Tipo"  v-model="strTipo" :errors="errores.tipo" required="true">
+                <app-select label="Método de pago"  v-model="strTipo" :errors="errores.tipo" required="true">
                     <option v-for="(data,index) in arrTipos" :key="index" :value="data.id">{{data.nombre}}</option>
                 </app-select>
             </div>
@@ -62,9 +62,6 @@
             </div>
             <div class="table-responsive overflow-y no-more-tables" style="max-height:50vh">
                 <table class="table align-middle table-hover">
-                    <thead>
-                        <tr> <th>Descuentos agregados</th></tr>
-                    </thead>
                     <tbody>
                         <tr v-for="(data,index) in arrDetalle" :key="index">
                             <td data-title="Descuentos">
