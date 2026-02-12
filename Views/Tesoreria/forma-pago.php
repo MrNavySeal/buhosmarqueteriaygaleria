@@ -1,6 +1,7 @@
 <?php 
     headerAdmin($data);
     getModal("Tesoreria/modalFormaPago");
+    getModal("Contabilidad/modalCatalogoPuc"); 
     getModal("Paginacion/modalPaginacionRetenciones");
 ?>
 <div class="row">
@@ -25,7 +26,7 @@
                 <th>Nombre</th>
                 <th>Método de pago</th>
                 <th>Relación</th>
-                <th>Ingreso/Pago</th>
+                <th>Cuenta contable</th>
                 <th>Estado</th>
                 <th>Opciones</th>
             </tr>
@@ -36,7 +37,7 @@
                 <td data-title="Nombre">{{data.name}}</td>
                 <td data-title="Método de pago">{{data.type}}</td>
                 <td data-title="Relación">{{data.relation}}</td>
-                <td data-title="Ingreso/Pago">{{data.withholding}}</td>
+                <td data-title="Cuenta contable">{{data.withholding}}</td>
                 <td data-title="Estado" class="text-center">
                     <span :class="data.status == '1' ? 'bg-success' : 'bg-danger'" class="badge text-white">
                         {{ data.status == '1' ? "Activo" : "Inactivo" }}

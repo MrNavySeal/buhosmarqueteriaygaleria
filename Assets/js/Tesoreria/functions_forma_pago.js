@@ -21,6 +21,7 @@ const app = {
         return {
             common:createCommon(),
             retenciones:createCommon(),
+            cuentas:createCommon(),
             errores:[],
             intEstado:1,
             intPorcentaje:0,
@@ -30,9 +31,11 @@ const app = {
             strNombre:"",
             objRetencion:{name:""},
             objIngreso:{name:""},
+            objCuenta:{id:"",code:"",name:"",nature:""},
             arrDetalle:[],
             arrTipos:[],
             arrRelaciones:[],
+            arrCuentas:[],
             strRelacion:"",
             currentController:null
         }
@@ -69,7 +72,7 @@ const app = {
                 "nombre":this.strNombre,
                 "estado":this.intEstado,
                 "detalle":this.arrDetalle,
-                "ingreso":this.objIngreso.id,
+                "ingreso":this.objCuenta.id,
                 "id":this.common.intId
             }
             
@@ -103,9 +106,9 @@ const app = {
             const { signal } = this.currentController;
 
             const formData = new FormData();
+            formData.append("type",type);
             if(type=="retenciones"){
                 this.retenciones.intPage = page;
-                formData.append("type",type);
                 formData.append("filter_type",this.intFiltroTipo);
                 formData.append("page",this.retenciones.intPage);
                 formData.append("per_page",this.retenciones.intPerPage);
@@ -118,6 +121,12 @@ const app = {
                 this.retenciones.intTotalPages = objData.total_pages;
                 this.retenciones.intTotalResults = objData.total_records;
                 this.retenciones.arrButtons = objData.buttons;
+            }else if(type=="cuentas"){
+                formData.append("type","cuentas");
+                formData.append("search",this.cuentas.strSearch);
+                const response = await fetch(base_url+"/Tesoreria/FormaPago/getBuscar",{method:"POST",body:formData,signal});
+                const objData = await response.json();
+                this.arrCuentas = objData;
             }else{
                 this.common.intPage = page;
                 formData.append("page",this.common.intPage);
@@ -206,12 +215,17 @@ const app = {
         },
 
         selectItem:function(data,type=""){
-            if(this.intTipoRetencion == "retencion"){
-                this.objRetencion = data;
+            if(type=="cuentas"){
+                this.objCuenta = {id:data.id,code:data.code,name:data.name,nature:data.nature};
+                this.cuentas.showModal = false;
             }else{
-                this.objIngreso = data;
+                if(this.intTipoRetencion == "retencion"){
+                    this.objRetencion = data;
+                }else{
+                    this.objIngreso = data;
+                }
+                this.retenciones.showModal = false;
             }
-            this.retenciones.showModal = false;
         },
 
     }

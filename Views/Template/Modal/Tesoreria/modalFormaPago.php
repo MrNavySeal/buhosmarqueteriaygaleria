@@ -15,24 +15,18 @@
                     <option v-for="(data,index) in arrRelaciones" :key="index" :value="data.id">{{data.nombre}}</option>
                 </app-select>
             </div>
-            <!-- <div class="col-md-2">
-                <app-select label="Estado"  v-model="intEstado" :errors="errores.estado">
-                    <option value="1">Activo</option>
-                    <option value="2">Inactivo</option>
-                </app-select>
-            </div> -->
         </div>
         <div class="row">
             <div class="col-md-6">
-                <app-button-input title="Ingreso"
+                <app-button-input title="Cuenta contable"
                 btn="primary" icon="new" 
-                v-model="objIngreso.name" 
+                v-model="objCuenta.name" 
                 disabled
                 required="true"
                 :errors="errores.ingreso"
                 >
                     <template #left>
-                        <app-button icon="search" btn="primary" @click="retenciones.showModal = true;intTipoRetencion='ingreso';search(1,'retenciones');"></app-button>
+                        <app-button icon="search" btn="primary" @click="cuentas.showModal = true;search(1,'cuentas');"></app-button>
                     </template>
                 </app-button-input>
             </div>

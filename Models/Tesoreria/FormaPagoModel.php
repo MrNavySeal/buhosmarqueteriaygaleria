@@ -88,7 +88,7 @@
             }    
             $sql = "SELECT cab.*, wh.name as withholding 
             FROM payment_type cab
-            LEFT JOIN withholding wh ON wh.id = cab.withholding_id
+            LEFT JOIN accounting_accounts wh ON wh.id = cab.withholding_id
             WHERE cab.name like '$strSearch%' 
             ORDER BY cab.id DESC $limit";  
 
@@ -111,7 +111,7 @@
         public function selectDato($id){
             $sql = "SELECT cab.*,wh.name as withholding 
             FROM payment_type cab
-            LEFT JOIN withholding wh ON wh.id = cab.withholding_id
+            LEFT JOIN accounting_accounts wh ON wh.id = cab.withholding_id
             WHERE cab.id = ?";
             $request = $this->select($sql,[$id]);
             if(!empty($request)){

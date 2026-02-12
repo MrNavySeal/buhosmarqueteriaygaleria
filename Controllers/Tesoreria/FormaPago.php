@@ -49,6 +49,8 @@
 
                 if($strType =="retenciones"){
                     $request = HelperPagination::getRetenciones($intPage,$intPerPage,$strSearch,$filterType);
+                }else if($strType =="cuentas"){
+                    $request = HelperAccounting::getAccounts(0,$strSearch);
                 }else{
                     $request = $this->model->selectDatos($intPage,$intPerPage,$strSearch);
                 }
