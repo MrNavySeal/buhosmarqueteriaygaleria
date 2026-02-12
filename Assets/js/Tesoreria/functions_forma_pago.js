@@ -72,7 +72,7 @@ const app = {
                 "nombre":this.strNombre,
                 "estado":this.intEstado,
                 "detalle":this.arrDetalle,
-                "cuentas":this.objCuenta.id,
+                "ingreso":this.objCuenta.id,
                 "id":this.common.intId
             }
             
