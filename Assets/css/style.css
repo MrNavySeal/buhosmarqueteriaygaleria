@@ -50,6 +50,53 @@
   max-width: 100%;
 }
 
+.select-wrapper {
+  display: flex;
+  position: relative;
+}
+
+.select-multiple-container {
+  border: 1px solid #ced4da;
+  background-color: #fff;
+  cursor: pointer;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+}
+
+.select-multiple {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.select-multiple-content {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: 100%;
+  border-radius: 0.25rem;
+  z-index: 10;
+  max-height: 20vh;
+  overflow-y: scroll;
+  border: 1px solid #9da5b1;
+  background-color: #fff;
+}
+
+.select-multiple-content li {
+  padding: 0.5rem 1rem;
+  cursor: default;
+}
+
+.select-multiple-content label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
 .ui-datepicker-calendar {
   display: none;
 }/*# sourceMappingURL=style.css.map */
