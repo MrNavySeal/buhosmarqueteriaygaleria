@@ -86,7 +86,7 @@
             if($intPerPage != 0){
                 $limit = " LIMIT $intStartPage,$intPerPage";
             }    
-            $sql = "SELECT cab.*, wh.name as withholding 
+            $sql = "SELECT cab.*, wh.name as withholding,wh.code 
             FROM payment_type cab
             LEFT JOIN accounting_accounts wh ON wh.id = cab.withholding_id
             WHERE cab.name like '$strSearch%' 
@@ -109,7 +109,7 @@
         }
 
         public function selectDato($id){
-            $sql = "SELECT cab.*,wh.name as withholding 
+            $sql = "SELECT cab.*,wh.name as withholding,wh.code 
             FROM payment_type cab
             LEFT JOIN accounting_accounts wh ON wh.id = cab.withholding_id
             WHERE cab.id = ?";

@@ -83,8 +83,8 @@
             if($_SESSION['permitsModule']['r']){
                 $data = json_decode(file_get_contents("php://input"),true);
                 if(!empty($data)){
-                    $campos = [ "nombre"=>$data['nombre'], "tipo"=>$data['tipo'], "relacion"=>$data['relacion'],"ingreso"=>$data['ingreso']];
-                    $validar = [ "nombre"=>"required", "tipo"=>"required", "relacion"=>"required","ingreso"=>"required"];
+                    $campos = [ "nombre"=>$data['nombre'], "tipo"=>$data['tipo'], "relacion"=>$data['relacion'],"cuentas"=>$data['cuentas']];
+                    $validar = [ "nombre"=>"required", "tipo"=>"required", "relacion"=>"required","cuentas"=>"required;cuenta contable"];
                     $errores = validator()->validate($validar,$campos)->getErrors();
 
                     if(!empty($errores)){

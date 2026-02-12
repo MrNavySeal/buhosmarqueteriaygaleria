@@ -23,7 +23,7 @@
                 v-model="objCuenta.name" 
                 disabled
                 required="true"
-                :errors="errores.ingreso"
+                :errors="errores.cuentas"
                 >
                     <template #left>
                         <app-button icon="search" btn="primary" @click="cuentas.showModal = true;search(1,'cuentas');"></app-button>

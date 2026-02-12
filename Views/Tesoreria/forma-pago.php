@@ -37,7 +37,7 @@
                 <td data-title="Nombre">{{data.name}}</td>
                 <td data-title="Método de pago">{{data.type}}</td>
                 <td data-title="Relación">{{data.relation}}</td>
-                <td data-title="Cuenta contable">{{data.withholding}}</td>
+                <td data-title="Cuenta contable">{{data.code+"-"+data.withholding}}</td>
                 <td data-title="Estado" class="text-center">
                     <span :class="data.status == '1' ? 'bg-success' : 'bg-danger'" class="badge text-white">
                         {{ data.status == '1' ? "Activo" : "Inactivo" }}

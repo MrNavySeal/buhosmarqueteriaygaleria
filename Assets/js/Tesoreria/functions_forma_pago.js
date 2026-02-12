@@ -173,7 +173,7 @@ const app = {
                 this.intEstado = objData.data.status;
                 this.strTipo = objData.data.type;
                 this.strRelacion = objData.data.relation;
-                this.objCuenta = {name:objData.data.withholding,id:objData.data.withholding_id}
+                this.objCuenta = {name:objData.data.code+" - "+objData.data.withholding,id:objData.data.withholding_id}
                 this.arrDetalle = objData.data.detalle;
                 this.arrTipos = objData.tipo_pago;
                 this.arrRelaciones = objData.relacion_pago;
@@ -216,7 +216,7 @@ const app = {
 
         selectItem:function(data,type=""){
             if(type=="cuentas"){
-                this.objCuenta = {id:data.id,code:data.code,name:data.name,nature:data.nature};
+                this.objCuenta = {id:data.id,code:data.code,name:data.code+"-"+data.name,nature:data.nature};
                 this.cuentas.showModal = false;
             }else{
                 if(this.intTipoRetencion == "retencion"){
