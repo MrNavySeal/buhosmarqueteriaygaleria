@@ -68,6 +68,7 @@
     //Tesoreria
     $router->setRoute("tesoreria/ingresos-pagos/","Tesoreria/Retenciones/retenciones",false);
     $router->setRoute("tesoreria/formas-de-pago/","Tesoreria/FormaPago/formaPago",false);
+    $router->setRoute("tesoreria/bancos/","Tesoreria/Bancos/bancos",false);
 
     //Configuracion
     $router->setRoute("configuracion/parametros/","Configuracion/Empresa/empresa",false);

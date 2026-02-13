@@ -77,5 +77,63 @@
             $arrData['data'] = $request;
             return $arrData;
         }
+
+        public static function getTerceros($intPage,$intPerPage,$strSearch,$types=[]){
+            $isClient = isset($types['is_client']) ? " AND p.is_client = $types[is_client]" : "";
+            $isUser =isset($types['is_user']) ? " AND p.is_user = $types[is_user]" : "";
+            $isSupplier=isset($types['is_supplier']) ? " AND p.is_supplier = $types[is_supplier]" : "";
+            $isOther=isset($types['is_other']) ? " AND p.is_other = $types[is_other]" : "";
+
+            $con = new Mysql();
+
+            $limit ="";
+            $intStartPage = ($intPage-1)*$intPerPage;
+            if($intPerPage != 0){
+                $limit = " LIMIT $intStartPage,$intPerPage";
+            }
+
+            $sql = "SELECT p.idperson as id,
+            DATE_FORMAT(p.date, '%d/%m/%Y') as fecha,
+            p.status,
+            p.image,
+            p.identification as documento,
+            co.name as pais,
+            st.name as departamento,
+            ci.name as ciudad,
+            p.phone as telefono,
+            CONCAT(p.firstname,' ',p.lastname) as nombre,
+            p.address as direccion
+            FROM person p
+            LEFT JOIN countries co ON p.countryid = co.id
+            LEFT JOIN states st ON p.stateid = st.id
+            LEFT JOIN cities ci ON p.cityid = ci.id
+            WHERE p.idperson != 1 AND p.status = 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
+            OR p.address like '$strSearch%' OR co.name like '$strSearch%' OR st.name like '$strSearch%' 
+            OR ci.name like '$strSearch%') $isClient $isSupplier $isUser $isOther 
+            ORDER BY p.idperson DESC $limit";  
+            
+
+            $sqlTotal = "SELECT count(*) as total FROM person p
+            LEFT JOIN countries co ON p.countryid = co.id
+            LEFT JOIN states st ON p.stateid = st.id
+            LEFT JOIN cities ci ON p.cityid = ci.id
+            WHERE p.idperson != 1 AND p.status = 1 AND (CONCAT(p.firstname,p.lastname) like '$strSearch%' OR p.phone like '$strSearch%' 
+            OR p.address like '$strSearch%' OR co.name like '$strSearch%' OR st.name like '$strSearch%' 
+            OR ci.name like '$strSearch%') $isClient $isSupplier $isUser $isOther 
+            ORDER BY p.idperson";
+
+            $request = $con->select_all($sql);
+            $totalRecords = $con->select($sqlTotal)['total'];
+
+            foreach ($request as &$data) { 
+                $data['url'] = media()."/images/uploads/".$data['image'];
+            }
+
+            $request = $con->select_all($sql);
+            $totalRecords = $con->select($sqlTotal)['total'];
+            $arrData = getCalcPages($totalRecords,$intPage,$intPerPage);
+            $arrData['data'] = $request;
+            return $arrData;
+        }
     }
 ?>
