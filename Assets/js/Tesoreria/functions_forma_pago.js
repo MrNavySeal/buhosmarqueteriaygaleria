@@ -21,6 +21,7 @@ const app = {
         return {
             common:createCommon(),
             retenciones:createCommon(),
+            bancos:createCommon(),
             cuentas:createCommon(),
             errores:[],
             intEstado:1,
@@ -32,6 +33,7 @@ const app = {
             objRetencion:{name:""},
             objIngreso:{name:""},
             objCuenta:{id:"",code:"",name:"",nature:""},
+            objBanco:{name:"",id:""},
             arrDetalle:[],
             arrTipos:[],
             arrRelaciones:[],
@@ -73,7 +75,8 @@ const app = {
                 "estado":this.intEstado,
                 "detalle":this.arrDetalle,
                 "ingreso":this.objCuenta.id,
-                "id":this.common.intId
+                "id":this.common.intId,
+                "banco":this.objBanco.id,
             }
             
             this.common.processing =true;
@@ -84,6 +87,7 @@ const app = {
                 this.common.intId =0;
                 this.common.showModal = false;
                 this.objCuenta = {}
+                this.objBanco = {};
                 this.arrDetalle = [];
                 this.strNombre = "";
                 this.strTipo = "";
@@ -127,6 +131,19 @@ const app = {
                 const response = await fetch(base_url+"/Tesoreria/FormaPago/getBuscar",{method:"POST",body:formData,signal});
                 const objData = await response.json();
                 this.arrCuentas = objData;
+            }else if(type=="bancos"){
+                this.bancos.intPage = page;
+                formData.append("page",this.bancos.intPage);
+                formData.append("per_page",this.bancos.intPerPage);
+                formData.append("search",this.bancos.strSearch);
+                const response = await fetch(base_url+"/Tesoreria/FormaPago/getBuscar",{method:"POST",body:formData,signal});
+                const objData = await response.json();
+                this.bancos.arrData = objData.data;
+                this.bancos.intStartPage  = objData.start_page;
+                this.bancos.intTotalButtons = objData.limit_page;
+                this.bancos.intTotalPages = objData.total_pages;
+                this.bancos.intTotalResults = objData.total_records;
+                this.bancos.arrButtons = objData.buttons;
             }else{
                 this.common.intPage = page;
                 formData.append("page",this.common.intPage);
@@ -168,6 +185,7 @@ const app = {
             const response = await fetch(base_url+"/Tesoreria/FormaPago/getDatos",{method:"POST",body:formData});
             const objData = await response.json();
             if(objData.status){
+                
                 this.strNombre =objData.data.name;
                 this.common.intId = objData.data.id;
                 this.intEstado = objData.data.status;
@@ -177,6 +195,14 @@ const app = {
                 this.arrDetalle = objData.data.detalle;
                 this.arrTipos = objData.tipo_pago;
                 this.arrRelaciones = objData.relacion_pago;
+
+                if(this.strTipo == 2){
+                    const bank = objData.data.bank;
+                    this.objCuenta.name = bank.code+" - "+bank.account;
+                    this.objCuenta.id = bank.account_id; 
+                    this.objBanco = {id:bank.id,name:bank.name,nombre:bank.nombre}
+                }
+
                 this.common.title = "Editar forma de pago";
                 this.common.showModal = true;
             }else{
@@ -218,6 +244,11 @@ const app = {
             if(type=="cuentas"){
                 this.objCuenta = {id:data.id,code:data.code,name:data.code+"-"+data.name,nature:data.nature};
                 this.cuentas.showModal = false;
+            }else if(type=="bancos"){
+                this.objBanco = data;
+                this.strNombre = data.name;
+                this.objCuenta = {id:data.account_id,name:data.code+"-"+data.account}
+                this.bancos.showModal = false;
             }else{
                 if(this.intTipoRetencion == "retencion"){
                     this.objRetencion = data;

@@ -2,22 +2,36 @@
     <template #body>
         <app-input label="" type="hidden"  v-model="common.intId"></app-input>
         <div class="row">
-            <div class="col-md-6">
+            <div :class="strTipo == 2 ? 'col-md-4' : 'col-md-6'">
                 <app-input label="Nombre" type="text" v-model="strNombre" :errors="errores.nombre" required="true"></app-input>
             </div>
-            <div class="col-md-3">
+            <div :class="strTipo == 2 ? 'col-md-4' : 'col-md-6'">
                 <app-select label="Método de pago"  v-model="strTipo" :errors="errores.tipo" required="true">
                     <option v-for="(data,index) in arrTipos" :key="index" :value="data.id">{{data.nombre}}</option>
                 </app-select>
             </div>
-            <div class="col-md-3">
+            <div v-if="strTipo==2" class="col-md-4">
+                <app-button-input  v-if="strTipo==2" title="Banco"
+                    btn="primary" icon="new" 
+                    v-model="objBanco.name" 
+                    required="true"
+                    disabled
+                    :errors="errores.banco"
+                    >
+                        <template #left>
+                            <app-button icon="search" btn="primary" @click="bancos.showModal = true;search(1,'bancos');"></app-button>
+                        </template>
+                </app-button-input>
+            </div>
+        </div>
+       
+        <div class="row">
+            <div class="col-md-4">
                 <app-select label="Relación"  v-model="strRelacion" :errors="errores.relacion" required="true">
                     <option v-for="(data,index) in arrRelaciones" :key="index" :value="data.id">{{data.nombre}}</option>
                 </app-select>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <app-button-input title="Cuenta contable"
                 btn="primary" icon="new" 
                 v-model="objCuenta.name" 
@@ -26,17 +40,18 @@
                 :errors="errores.ingreso"
                 >
                     <template #left>
-                        <app-button icon="search" btn="primary" @click="cuentas.showModal = true;search(1,'cuentas');"></app-button>
+                        <app-button icon="search" btn="primary" v-if="strTipo != 2" @click="cuentas.showModal = true;search(1,'cuentas');"></app-button>
                     </template>
                 </app-button-input>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <app-select label="Estado"  v-model="intEstado" :errors="errores.estado">
                     <option value="1">Activo</option>
                     <option value="2">Inactivo</option>
                 </app-select>
             </div>
         </div>
+
         <div v-if="strTipo==5">
             <div class="row">
                 <div class="col-md-12">

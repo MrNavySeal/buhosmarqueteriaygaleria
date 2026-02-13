@@ -15,13 +15,14 @@
                 $sql = "SELECT * FROM payment_type WHERE name = ? AND type=? AND relation=?";
                 $request = $this->select_all($sql,[$this->data['nombre'],$this->data['tipo'],$this->data['relacion']]);
                 if(empty($request)){
-                    $sql = "INSERT INTO payment_type(name,type,relation,withholding_id,status) VALUES(?,?,?,?,?)";
+                    $sql = "INSERT INTO payment_type(name,type,relation,withholding_id,status,bank_id) VALUES(?,?,?,?,?,?)";
                     $this->id = $this->insert($sql,[
                         $this->data['nombre'],
                         $this->data['tipo'],
                         $this->data['relacion'],
                         $this->data['ingreso'],
-                        $this->data['estado']
+                        $this->data['estado'],
+                        $this->data['banco']
                     ]);
                     $return = $this->id;
                     $this->insertDatosDetalle();
@@ -53,13 +54,14 @@
                 $sql = "SELECT * FROM payment_type WHERE name = ? AND type=? AND relation=? AND id != ?";
                 $request = $this->select_all($sql,[$this->data['nombre'],$this->data['tipo'],$this->data['relacion'],$this->id]);
                 if(empty($request)){
-                    $sql = "UPDATE payment_type SET name=?,type=?,relation=?,withholding_id=?,status=? WHERE id = ?";
+                    $sql = "UPDATE payment_type SET name=?,type=?,relation=?,withholding_id=?,status=?,bank_id=? WHERE id = ?";
                     $request = $this->update($sql,[
                         $this->data['nombre'],
                         $this->data['tipo'],
                         $this->data['relacion'],
                         $this->data['ingreso'],
                         $this->data['estado'],
+                        $this->data['banco'],
                         $this->id
                     ]);
                     $this->insertDatosDetalle();
@@ -100,6 +102,11 @@
             foreach ($request as &$det) {
                 $det['type'] = HelperGeneral::TIPO_PAGO[$det['type']]['nombre'];
                 $det['relation'] = HelperGeneral::RELACION_PAGO[$det['relation']]['nombre'];
+                if($det['type']=="2"){
+                    $bank = HelperAccounting::getBankAccount($det['bank_id']);
+                    $det['withholding'] = $bank['account'];
+                    $det['code'] = $bank['code'];
+                }
             }
 
             unset($det);
@@ -115,6 +122,11 @@
             WHERE cab.id = ?";
             $request = $this->select($sql,[$id]);
             if(!empty($request)){
+                if($request['type']=="2"){
+                    $bank = HelperAccounting::getBankAccount($request['bank_id']);
+                    $request['bank'] = $bank;
+                }
+                
                 $sql = "SELECT wh.id, wh.name
                 FROM payment_type_discounts det 
                 LEFT JOIN withholding wh ON wh.id = det.withholding_id

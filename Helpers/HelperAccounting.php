@@ -42,5 +42,20 @@
             $request = $con->select_all($sql);
             return $request;
         }
+
+        public static function getBankAccount($id){
+            $con = new Mysql();
+            $sql = "SELECT cab.*, 
+            ac.name as account,
+            ac.code,
+            CONCAT(p.firstname,' ',p.lastname) as nombre,
+            CONCAT(p.firstname,' ',p.lastname,'-',cab.bank_account) as name  
+            FROM banks cab
+            LEFT JOIN person p ON p.idperson = cab.person_id
+            LEFT JOIN accounting_accounts ac ON ac.id = cab.account_id
+            WHERE cab.id = ?";
+            $request = $con->select($sql,[$id]);
+            return $request;
+        }
     }
 ?>

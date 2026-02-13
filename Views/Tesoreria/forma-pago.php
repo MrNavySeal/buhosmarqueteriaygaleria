@@ -3,6 +3,7 @@
     getModal("Tesoreria/modalFormaPago");
     getModal("Contabilidad/modalCatalogoPuc"); 
     getModal("Paginacion/modalPaginacionRetenciones");
+    getModal("Paginacion/modalPaginacionBancos");
 ?>
 <div class="row">
     <div class="col-md-4">

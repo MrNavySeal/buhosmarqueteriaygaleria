@@ -51,6 +51,8 @@
                     $request = HelperPagination::getRetenciones($intPage,$intPerPage,$strSearch,$filterType);
                 }else if($strType =="cuentas"){
                     $request = HelperAccounting::getAccounts(0,$strSearch);
+                }else if($strType =="bancos"){
+                    $request = HelperPagination::getCuentasBancarias($intPage,$intPerPage,$strSearch);
                 }else{
                     $request = $this->model->selectDatos($intPage,$intPerPage,$strSearch);
                 }
@@ -85,6 +87,11 @@
                 if(!empty($data)){
                     $campos = [ "nombre"=>$data['nombre'], "tipo"=>$data['tipo'], "relacion"=>$data['relacion'],"ingreso"=>$data['ingreso']];
                     $validar = [ "nombre"=>"required", "tipo"=>"required", "relacion"=>"required","ingreso"=>"required;cuenta contable"];
+                    if($data['tipo'] == 2){
+                        $campos['banco']=$data['banco'];
+                        $validar['banco']="required";
+                    }
+                    
                     $errores = validator()->validate($validar,$campos)->getErrors();
 
                     if(!empty($errores)){

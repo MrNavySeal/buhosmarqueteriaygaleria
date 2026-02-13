@@ -24,8 +24,8 @@
             <tr>
                 <th>ID</th>
                 <th>Banco</th>
-                <th>Cuenta bancaria</th>
                 <th>Tipo</th>
+                <th>Cuenta bancaria</th>
                 <th>Cuenta contable</th>
                 <th>Estado</th>
                 <th>Opciones</th>
@@ -35,8 +35,8 @@
             <tr v-for="(data,index) in common.arrData" :key="index">
                 <td data-title="ID">{{data.id}}</td>
                 <td data-title="Banco">{{data.nombre}}</td>
-                <td data-title="Cuenta bancaria">{{data.bank_account}}</td>
                 <td data-title="Tipo">{{data.type}}</td>
+                <td data-title="Cuenta bancaria">{{data.bank_account}}</td>
                 <td data-title="Cuenta contable">{{data.code+"-"+data.account}}</td>
                 <td data-title="Estado" class="text-center">
                     <span :class="data.status == '1' ? 'bg-success' : 'bg-danger'" class="badge text-white">

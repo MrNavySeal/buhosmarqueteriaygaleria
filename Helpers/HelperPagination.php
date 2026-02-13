@@ -135,5 +135,41 @@
             $arrData['data'] = $request;
             return $arrData;
         }
+        
+        public static function getCuentasBancarias($intPage,$intPerPage,$strSearch){
+            $con = new Mysql();
+            $limit ="";
+            $intStartPage = ($intPage-1)*$intPerPage;
+            if($intPerPage != 0){
+                $limit = " LIMIT $intStartPage,$intPerPage";
+            }    
+            $sql = "SELECT cab.*, 
+            ac.name as account,
+            ac.code,
+            CONCAT(p.firstname,' ',p.lastname) as nombre,
+            CONCAT(p.firstname,' ',p.lastname,'-',cab.bank_account) as name 
+            FROM banks cab
+            LEFT JOIN person p ON p.idperson = cab.person_id
+            LEFT JOIN accounting_accounts ac ON ac.id = cab.account_id
+            WHERE (cab.bank_account like '$strSearch%' 
+            OR p.firstname like '$strSearch%' 
+            OR p.lastname like '$strSearch%') AND cab.status = 1
+            ORDER BY cab.id DESC $limit";  
+
+            $sqlTotal = "SELECT count(*) as total 
+            FROM banks cab
+            LEFT JOIN person p ON p.idperson = cab.person_id
+            LEFT JOIN accounting_accounts ac ON ac.id = cab.account_id
+            WHERE (cab.bank_account like '$strSearch%' 
+            OR p.firstname like '$strSearch%' 
+            OR p.lastname like '$strSearch%') AND cab.status = 1";
+
+            $request = $con->select_all($sql);
+            $totalRecords = $con->select($sqlTotal)['total'];
+
+            $arrData = getCalcPages($totalRecords,$intPage,$intPerPage);
+            $arrData['data'] = $request;
+            return $arrData;
+        }
     }
 ?>
